@@ -134,6 +134,11 @@ public class PocketSphinx extends AbstractRecognizer {
             return new SimpleRecognizerResult(input);
         } else {
             recognizerInterrupted = false;
+            
+            if( decoder == null ) {
+                // TODO - localize
+                throw new RuntimeException("To use a PocketSphinx recognizer node, you must first select a speech recognizer model. Go to Dialog -> CMU PocketSphinx, install a model, and select it.");
+            }
 
             try {
                 Microphone mic = new Microphone(getAudioFormat());

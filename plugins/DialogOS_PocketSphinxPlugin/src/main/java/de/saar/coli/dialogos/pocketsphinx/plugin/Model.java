@@ -70,7 +70,7 @@ public class Model {
 
     public static Model remoteModelFromJson(JSONObject jsonObject, String id) throws ParseException {
         JSONObject modelRoot = (JSONObject) jsonObject.get(id);
-
+        
         String name = (String) modelRoot.get("name");
         String description = (String) modelRoot.get("description");
         int version = (int) (long) ((Long) modelRoot.get("version"));
@@ -88,16 +88,11 @@ public class Model {
     }
     
     private static File join(File dir, File sub) {
+        System.err.println("join: " + dir);
+        System.err.println("with: " + sub);
         Path joined = dir.toPath().resolve(sub.toPath());
+        System.err.println("joined: " + joined.toFile());
         return joined.toFile();
-    }
-
-    public Model localizeRemoteModel(File modelDir) {
-        File acoustic = join(modelDir, acousticModelDir);
-        File dictionary = join(modelDir, dictionaryFile);
-        File lm = join(modelDir, languageModelFile);
-        
-        return new Model(id, name, description, version, url, size, language, acoustic, dictionary, lm);
     }
     
     public String asJson() {
@@ -111,9 +106,13 @@ public class Model {
         modelRoot.put("url", url);
         modelRoot.put("size", size);
         modelRoot.put("language", language.getLocale().toLanguageTag());
-        modelRoot.put("acoustic", acousticModelDir.getAbsolutePath());
-        modelRoot.put("dictionary", dictionaryFile.getAbsolutePath());
-        modelRoot.put("lm", languageModelFile.getAbsolutePath());
+        
+        // Save relative paths for these; they will be concatenated
+        // with the modelDir when the model is loaded by loadModelFromCache
+        // (see above).
+        modelRoot.put("acoustic", acousticModelDir.toString());
+        modelRoot.put("dictionary", dictionaryFile.toString());
+        modelRoot.put("lm", languageModelFile.toString());
         
         return obj.toJSONString();
     }

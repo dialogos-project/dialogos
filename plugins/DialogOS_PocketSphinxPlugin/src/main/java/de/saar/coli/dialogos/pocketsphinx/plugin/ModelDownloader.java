@@ -75,7 +75,7 @@ public class ModelDownloader {
 
         File metadata = new File(modelDir, id + ".json");
         FileWriter w = new FileWriter(metadata);
-        w.write(model.localizeRemoteModel(modelDir).asJson());
+        w.write(model.asJson());
         w.flush();
         w.close();
     }
