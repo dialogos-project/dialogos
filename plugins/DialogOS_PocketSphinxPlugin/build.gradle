@@ -7,4 +7,6 @@ dependencies {
   compile name: 'pocketsphinx'
   
   compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+  compile group: 'org.zeroturnaround', name:'zt-zip', version: '1.12'
+
 }

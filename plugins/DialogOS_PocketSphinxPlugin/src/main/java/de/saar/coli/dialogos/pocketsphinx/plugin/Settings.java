@@ -8,6 +8,7 @@ package de.saar.coli.dialogos.pocketsphinx.plugin;
 import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
+import com.clt.diamant.Preferences;
 import com.clt.properties.DefaultBooleanProperty;
 import com.clt.properties.DefaultEnumProperty;
 import com.clt.properties.Property;
@@ -18,7 +19,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.*;
 
@@ -113,6 +113,9 @@ public class Settings extends PluginSettings {
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         final JButton installButton = new JButton(Resources.getString("Install more models"));
         installButton.addActionListener((ActionEvent e) -> {
+            ModelDownloader md = new ModelDownloader();
+            
+            
         });
         bottom.add(installButton);
         p.add(bottom, BorderLayout.SOUTH);
