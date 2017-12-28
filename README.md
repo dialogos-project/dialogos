@@ -2,7 +2,7 @@
 
 This is the source-code repository for the DialogOS dialog system. DialogOS was originally developed by CLT Sprachtechnologie GmbH. The rights were purchased by [Saarland University](https://www.uni-saarland.de/) in 2017, and DialogOS was subsequently open-sourced.
 
-DialogOS has been used in a variety of projects for university and high-school students, see e.g. [here](http://www.debacher.de/wiki/DialogOS) and [here](http://www.coli.uni-saarland.de/courses/lego-04/). It combines a very intuitive graphical interface with out-of-the-box speech recognition and synthesis (using [PocketSphinx](https://github.com/cmusphinx/pocketsphinx) and [MaryTTS](http://mary.dfki.de/). We are currently planning to also restore the seamless Lego integration of the commercial version.
+DialogOS has been used in a variety of projects for university and high-school students, see e.g. [here](http://www.debacher.de/wiki/DialogOS) and [here](http://www.coli.uni-saarland.de/courses/lego-04/). It combines a very intuitive graphical interface with out-of-the-box speech recognition and synthesis (using [PocketSphinx](https://github.com/cmusphinx/pocketsphinx) and [MaryTTS](http://mary.dfki.de/)). We are currently planning to also restore the seamless Lego integration of the commercial version.
 
 The open-source DialogOS runs under Windows, MacOS, and Linux. This is in contrast to the commercial version, which only worked under Windows due to limitations in the speech recognizer.
 
@@ -35,3 +35,5 @@ To do this, go to Dialog -> CMU PocketSphinx. You will find that initially there
 ## Documentation
 
 You can find an (outdated) manual for DialogOS in German [here](http://www.coli.uni-saarland.de/courses/pd/dialogos/Handbuch.pdf). Please bear with us while we are updating the documentation.
+
+Developers should check out the [Wiki](https://github.com/coli-saar/dialogos/wiki) for detailed technical information.
