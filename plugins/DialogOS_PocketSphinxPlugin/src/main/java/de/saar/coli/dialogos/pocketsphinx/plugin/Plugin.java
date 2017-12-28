@@ -58,7 +58,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
         System.err.println(getAvailableModels());
     }
     
-    public static List<Model> getAvailableModels() {
+    public static Model[] getAvailableModels() {
         List<String> ids = modelCache.getAllModelIds();
         List<Model> ret = new ArrayList<>();
         
@@ -73,8 +73,9 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
             }
         }
         
-        return ret;
+        return ret.toArray(new Model[0]);
     }
+    
     
     public static String getPluginId() {
         return "dialogos.plugin.pocketsphinx";

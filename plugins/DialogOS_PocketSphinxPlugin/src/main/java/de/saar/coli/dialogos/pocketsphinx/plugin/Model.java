@@ -31,10 +31,12 @@ public class Model {
     private File acousticModelDir;
     private File dictionaryFile;
     private File languageModelFile;
+    private String description;
 
-    private Model(String id, String name, int version, String url, int size, Language language, File acousticModelDir, File dictionaryFile, File languageModelFile) {
+    private Model(String id, String name, String description, int version, String url, int size, Language language, File acousticModelDir, File dictionaryFile, File languageModelFile) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.version = version;
         this.url = url;
         this.size = size;
@@ -51,6 +53,7 @@ public class Model {
         JSONObject modelRoot = (JSONObject) jsonObject.get(id);
 
         String name = (String) modelRoot.get("name");
+        String description = (String) modelRoot.get("description");
         int version = (int) (long) ((Long) modelRoot.get("version"));
         String url = (String) modelRoot.get("url");
         int size = (int) (long) ((Long) modelRoot.get("size"));
@@ -62,13 +65,14 @@ public class Model {
         Locale locale = Locale.forLanguageTag(language);
         Language lang = new Language(locale);
 
-        return new Model(id, name, version, url, size, lang, acoustic, dictionary, lm);
+        return new Model(id, name, description, version, url, size, lang, acoustic, dictionary, lm);
     }
 
     public static Model remoteModelFromJson(JSONObject jsonObject, String id) throws ParseException {
         JSONObject modelRoot = (JSONObject) jsonObject.get(id);
 
         String name = (String) modelRoot.get("name");
+        String description = (String) modelRoot.get("description");
         int version = (int) (long) ((Long) modelRoot.get("version"));
         String url = (String) modelRoot.get("url");
         int size = (int) (long) ((Long) modelRoot.get("size"));
@@ -80,7 +84,7 @@ public class Model {
         Locale locale = Locale.forLanguageTag(language);
         Language lang = new Language(locale);
 
-        return new Model(id, name, version, url, size, lang, acoustic, dictionary, lm);
+        return new Model(id, name, description, version, url, size, lang, acoustic, dictionary, lm);
     }
     
     private static File join(File dir, File sub) {
@@ -93,7 +97,7 @@ public class Model {
         File dictionary = join(modelDir, dictionaryFile);
         File lm = join(modelDir, languageModelFile);
         
-        return new Model(id, name, version, url, size, language, acoustic, dictionary, lm);
+        return new Model(id, name, description, version, url, size, language, acoustic, dictionary, lm);
     }
     
     public String asJson() {
@@ -102,6 +106,7 @@ public class Model {
         obj.put(id, modelRoot);
         
         modelRoot.put("name", name);
+        modelRoot.put("description", description);
         modelRoot.put("version", version);
         modelRoot.put("url", url);
         modelRoot.put("size", size);
@@ -119,6 +124,10 @@ public class Model {
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public int getVersion() {
