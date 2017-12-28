@@ -1,0 +1,4 @@
+dependencies {
+  compile group: 'com.apple', name: 'AppleJavaExtensions', version: '1.4'
+  compile group: 'mrj', name: 'MRJToolkitStubs', version: '1.0'
+}

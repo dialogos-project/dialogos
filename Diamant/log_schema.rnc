@@ -1,0 +1,58 @@
+start = Log
+Log = element log { Setup, Execution }
+Setup = element setup { Project, Start, Global_variables }
+Project =
+	element project { 
+		attribute name { text }
+	}
+Start =
+	element start {
+		attribute date { text },
+		attribute time { text }
+	}
+Global_variables = element global_variables { Var* }
+Var = 
+	element var {
+		Var_attr
+	}
+Var_attr = 
+	attribute name { text },
+	attribute value { text },
+	attribute type { text },
+	attribute is_groovy_only { text }
+	
+
+Execution = 
+	element execution { 
+		Graph 
+	}
+
+Graph = ( Node | Variable_updated | Error )*
+
+Node = 
+	element node {
+		attribute name { text },
+		attribute type { text },
+		attribute transition_time_ms { xsd:nonNegativeInteger },
+		Global_variables?,
+		Graph?
+	}
+	
+Variable_updated = 
+	element variable_updated {
+		Var_attr
+	}
+
+Error = 
+	element error {
+		attribute name { text },
+		attribute source { text },
+		attribute message { text },
+		attribute transition_time_ms { xsd:nonNegativeInteger }
+	}
+	
+	
+
+
+	
+	

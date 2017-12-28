@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- Boolean type -->
+<!ENTITY % boolean.type "(0 | 1)" >
+
+<!-- Positive number type -->
+<!ENTITY % number.type	"NMTOKEN">
+
+<!-- ID type -->
+<!ENTITY % id.type		"NMTOKEN">
+
+<!-- String type -->
+<!ENTITY % string.type	"CDATA">
+
+<!-- Class type -->
+<!ENTITY % class.type	"CDATA">
+
+<!-- Color type -->
+<!ENTITY % color.type	"%string.type;">
+
+<!-- Object type -->
+<!ENTITY % object.type	"(object | list | string | real | integer | boolean | text)">
+
+
+
+<!-- Wizard Element -->
+<!ELEMENT wizard (att*, device*, native_code?, grammar*, graph)>
+
+<!-- Graph Element -->
+<!ELEMENT graph (att*, grammar*, parameter*, variable*, node*, edge*, group*)>
+<!ATTLIST graph
+		directed	%boolean.type;	'0'
+		Graphic		%boolean.type;	#IMPLIED
+		Layout		%string.type;	#IMPLIED>
+		
+
+<!-- Variable Element -->
+<!ELEMENT variable (name, type, value, export?)>
+<!ATTLIST variable
+		uid			%id.type;		#IMPLIED>
+
+<!ELEMENT parameter (name, type, value, export?)>
+<!ATTLIST parameter
+		uid			%id.type;		#IMPLIED>
+
+<!-- Native Code Element -->
+<!ELEMENT native_code (fileref*)>
+
+<!-- File Reference Element -->
+<!ELEMENT fileref (#PCDATA)>
+
+<!-- Device Element -->
+<!ELEMENT device (name, type?, port)>
+<!ATTLIST device
+		id			%id.type;		#REQUIRED>
+
+<!-- Grammar Element -->
+<!ELEMENT grammar (file | (name, value))>
+<!ATTLIST grammar
+		id			%id.type;		#REQUIRED>
+
+<!-- Name Element -->
+<!ELEMENT name (#PCDATA)>
+
+<!-- File Element -->
+<!ELEMENT file (#PCDATA)>
+
+<!-- Type Element -->
+<!ELEMENT type (#PCDATA)>
+
+<!-- Port Element -->
+<!ELEMENT port (#PCDATA)>
+
+
+<!-- Value Element -->
+<!ELEMENT value (#PCDATA)>
+
+<!-- Export Element -->
+<!ELEMENT export EMPTY>
+
+
+
+<!-- Node Element -->
+<!ELEMENT node (graphics?, att*)>
+<!ATTLIST node
+		id			%id.type;		#REQUIRED
+		class		%class.type;	#REQUIRED>
+		
+
+<!-- Edge Element -->
+<!ELEMENT edge (att*)>
+<!ATTLIST edge
+		source		%id.type;		#REQUIRED
+		target		%id.type;		"-1">
+
+<!-- Group Element -->
+<!ELEMENT group (group* | noderef*)>
+
+<!-- Child Element -->
+<!ELEMENT noderef EMPTY>
+<!ATTLIST noderef
+		uid			%id.type;		#REQUIRED>
+
+
+<!-- Att Element -->
+<!ELEMENT att (value | ((att | graph)*))>
+<!ATTLIST att
+		name		%string.type;	#REQUIRED
+		type		%object.type;	#REQUIRED
+		value		%string.type;	#IMPLIED>
+
+<!-- Graphics Element -->
+<!ELEMENT graphics (att*)>
+<!ATTLIST graphics
+		x			%number.type;	#IMPLIED
+		y			%number.type;	#IMPLIED
+		fill		%color.type;	#IMPLIED>

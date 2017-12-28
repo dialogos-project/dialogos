@@ -1,0 +1,1 @@
+package com.clt.gui;public interface Commander    extends Commands {  // takes: command number  // gives: true, iff command was handled  public boolean doCommand(int cmd);}

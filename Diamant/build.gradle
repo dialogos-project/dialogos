@@ -1,0 +1,14 @@
+dependencies {
+  compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.1'
+  compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+  //Jing conflicts with MaryTTS, thats why it's taken out for now
+  //compile group: 'com.thaiopensource', name: 'jing', version: '20091111'
+
+
+  compile project(':com.clt.base')
+  compile project(':com.clt.xml')
+  compile project(':com.clt.audio')
+  compile project(':ClientInterface')
+
+  runtime fileTree(dir: "${projectDir}/../plugins", include: '*/build/libs/*.jar')
+}

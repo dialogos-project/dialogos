@@ -1,0 +1,1185 @@
+/*
+ * @(#)Parser.java
+ * Generated from script.cup by CUP
+ *
+ * Copyright (c) 2002 CLT Sprachtechnologie GmbH.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
+ * shall not disclose such Confidential Information and shall use
+ * it only in accordance with the terms of the license agreement
+ * you entered into with CLT Sprachtechnologie GmbH.
+ */ 
+
+package com.clt.script.parser;
+
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+import com.clt.script.*;
+import com.clt.script.exp.*;
+import com.clt.script.exp.expressions.*;
+import com.clt.script.exp.patterns.*;
+import com.clt.script.exp.values.*;
+import com.clt.script.exp.types.*;
+import com.clt.script.cmd.*;
+import com.clt.script.debug.*;
+import com.clt.srgf.*;
+
+
+action code {:
+	private Block currentBlock = null;
+	private Tag currentTag = null;
+
+	static <T> List<T> createList() {
+		return new Vector<T>();
+	}
+	
+	static <T> List<T> createList(T o) {
+		List<T> l = createList();
+		l.add(o);
+		return l;
+	}
+	
+	static <T> List<T> append(List<T> l, T o) {
+		l.add(o);
+		return l;
+	}
+	
+	static Expression getRValue(final Variable id) {
+		return new IDExpression(id);
+	}
+	
+	static Import createImport(String name) throws ParseException {
+		boolean ok = name.length() > 0;
+		for (int i=0; ok && i<name.length(); i++) {
+			char c = name.charAt(i);
+			if (!Character.isLetterOrDigit(c) && c != '.' && c != '_') {
+				if (!(c == '*' && i == name.length()-1 && i > 0 && name.charAt(i-1) == '.'))
+					ok = false;
+			}
+		}
+
+		if (!ok)
+			throw new ParseException("Illegal import statement: import " + name + ";");
+	
+		int pos = name.lastIndexOf('.');
+		if (pos >= 0 && pos < name.length() - 1)
+			return new Import(name.substring(0, pos), name.substring(pos+1));
+		else
+			throw new ParseException("Illegal import statement: import " + name + ";");
+	}
+	
+	static Variable createDotRef(final Variable variable, final String label) {
+		return new Variable() {
+			public String getName() {
+				return variable.getName() + "." + label;
+			}
+			public Value getValue() {
+				Value v = variable.getValue();
+				if (!(v instanceof Reference))
+					throw new EvaluationException(v + " does not have a member " + label);
+				else
+					return ((Reference) v).getValue(label);
+			}
+			public void setValue(Value value) {
+				Value v = variable.getValue();
+				if (!(v instanceof Reference))
+					throw new EvaluationException(v + " does not have a member " + label);
+				else
+					((Reference) v).setValue(label, value);
+			}
+			public Type getType() {
+				Type t = variable.getType();
+				if (t instanceof TypeVariable)
+					return new TypeVariable();
+				else if (!(t instanceof ReferenceType))
+					throw new TypeException(t + " does not have a member " + label);
+				else
+					return ((ReferenceType) t).getType(label);
+			}
+			public String toString() {
+				return getName();
+			}
+		};
+	}
+	
+	static Variable createAttributeRef(final Variable variable, final String attribute) {
+		return new Variable() {
+			public String getName() {
+				return variable.getName() + "#" + attribute;
+			}
+			public Value getValue() {
+				Value v = variable.getValue();
+				Value att = v.getAttribute(attribute);
+				if (att == null)
+					return new Undefined();
+				else
+					return att;
+			}
+			public void setValue(Value v) {
+				if (!(v instanceof PrimitiveValue))
+					throw new EvaluationException("Attempt to assign complex attribute value " + v + " + to value " + variable);
+				else
+					variable.getValue().setAttribute(attribute, (PrimitiveValue) v);
+			}
+			public Type getType() {
+				return new TypeVariable();
+			}			
+			public String toString() {
+				return getName();
+			}
+		};
+	}
+
+			
+	static void debug_output(String s) {
+		//System.out.println(s);
+	}
+	
+	private static class Elements<ElemType> {
+		public List<String> labels;
+		public List<ElemType> values;
+		
+		public Elements(String label, ElemType value) {
+			labels = new Vector<String>();
+			values = new Vector<ElemType>();
+			
+			labels.add(label);
+			values.add(value);
+		}
+		
+		public Elements<ElemType> add(Elements<ElemType> e) {
+			labels.addAll(e.labels);
+			values.addAll(e.values);
+			return this;
+		}
+	}
+:}
+
+
+parser code {:
+	Environment environment;
+	Grammar grammar;
+	Script script;
+	
+	Collection<String> lh_exports = new HashSet<String>();
+	Collection<String> lh_classes = new HashSet<String>();
+	
+	
+	public static Expression parseExpression(String s, Environment environment) 
+		throws Exception
+	{
+		return (Expression) parse(new StringReader(s),
+							   "$$EXPRESSION$$",
+							   "Unexpected symbol ''{0}'' at position {2}",
+							   environment);
+	}
+
+	public static Pattern parsePattern(String s) 
+		throws Exception
+	{
+		return (Pattern) parse(new StringReader(s),
+							   "$$PATTERN$$",
+							   "Unexpected symbol ''{0}'' at position {2}",
+							   new DefaultEnvironment());
+	}
+
+	public static Script parseScript(String s, Environment environment) 
+		throws Exception
+	{
+		return parseScript(s, false, environment);
+	}
+
+	public static Script parseFunctions(String s, Environment environment) 
+		throws Exception
+	{
+		return parseScript(s, true, environment);
+	}
+
+	private static Script parseScript(String s, boolean functionsOnly, Environment environment) 
+		throws Exception
+	{
+		Script script = new Script();
+
+		return (Script) parse(new StringReader(s),
+							   functionsOnly ? "$$FUNCTIONS$$" : "$$SCRIPT$$",
+							   "Unexpected symbol ''{0}'' at line {1}, position {2}",
+							   null,
+							   script,
+							   new StackedEnvironment(new ScriptEnvironment(script), environment));
+	}
+
+	public static Grammar parseSRGF(String s, Environment environment) 
+		throws Exception
+	{
+		return parseSRGF(new StringReader(s), environment);
+	}
+
+	public static Grammar parseSRGF(Reader in, Environment environment) 
+		throws Exception
+	{
+		Grammar g = new Grammar();
+		Script script = g.getScript();
+		return (Grammar) parse(in,
+							   "$$SRGF$$",
+							   "Unexpected symbol ''{0}'' at line {1}, position {2}",
+							   g,
+							   script,
+							   new StackedEnvironment(new ScriptEnvironment(script), environment));
+	}
+	
+	public static Expansion parseRuleExpansion(String in, Environment environment) 
+		throws Exception
+	{
+		return (Expansion) parse(new StringReader(in),
+							   "$$EXPANSION$$",
+							   "Unexpected symbol ''{0}'' at line {1}, position {2}",
+							   new Grammar(),
+							   null,
+							   environment != null ? environment : new DefaultEnvironment());
+	}
+
+	private static Object parse(Reader r, String prefix, String error, Environment env)
+		throws Exception
+	{
+		return parse(r, prefix, error, null, null, env);
+	}
+
+	private static Object parse(Reader r, String prefix, String error, Grammar g, Script script, Environment env)
+		throws Exception
+	{
+		Lexer l;
+		
+		if (prefix == null || prefix.length() == 0)
+			l = new Lexer(r);
+		else {
+			l = new Lexer(new PrefixedReader(r, prefix));
+			l.setOffset(prefix.length());
+		}
+		
+		if (error != null)
+			l.error_format = error;
+		
+		Parser p = new Parser(l);
+		
+		p.environment = env;
+		p.grammar = g;
+		p.script = script;
+		try {
+			Symbol s = p.parse();
+			return s.value;
+		}
+		catch (Lexer.ParseException exn) {
+			throw new ParseException(exn.getLocalizedMessage());
+		}
+	}
+
+
+	Type getType(String typeName) {
+		Type t = Type.getTypeForName(typeName);
+		if (t != null)
+			return t;
+		else {
+			t = environment.getType(typeName);
+			if (t != null)
+				return t;
+			else
+				throw new TypeException("Unknown type " + typeName);
+		}
+	}
+	
+	Expression createFunctionCall(String name, List<? extends Expression> arguments) {
+		return createFunctionCall(name,
+				arguments.toArray(new Expression[arguments.size()]));
+	}
+	
+	// must use a new named class, because we need the constructor in Function.copy()
+	public static class UnknownFunction extends Function {
+		private RuntimeException exn;
+		
+		public UnknownFunction(String name, Expression[] arguments, RuntimeException exn) {
+			super(name, arguments);
+			
+			this.exn = exn;
+		}
+		
+		@Override
+		protected Value eval(Debugger dbg, Value[] args) {
+			throw new EvaluationException("Unknown function or wrong type of arguments: " + toString());
+		}
+		
+		@Override
+		public Type getType() {
+			if (exn != null)
+				throw exn;
+			else
+				throw new Environment.NoSuchFunctionException(getName(), getArguments());				
+		}
+		
+		@Override
+		public Expression copy(Map<?, ?> mapping) {
+			Expression args[] = new Expression[numArguments()];
+			for (int i=0; i<args.length; i++)
+				args[i] = getArgument(i).copy(mapping);
+			return new UnknownFunction(getName(), args, exn);
+		}
+	};
+	
+	Expression createFunctionCall(String name, Expression[] arguments) {
+		try {
+			return environment.createFunctionCall(name, arguments);
+		}
+		catch (RuntimeException exn) {
+			if (arguments.length == 1) {
+				try {
+					Type t = getType(name);
+					if (t != null)
+						return new Cast(arguments[0], t);
+				}
+				catch (TypeException ignore) {}
+			}
+			
+			return new UnknownFunction(name, arguments, exn);
+		}
+	}
+	
+	Variable createIdExpression(final String id, final Block currentBlock) {
+		if (currentBlock != null && currentBlock.containsVariable(id)) {
+			return new Variable() {
+				public String getName() {
+					return id;
+				}
+				public Value getValue() {
+					return currentBlock.getVariableValue(id);
+				}
+				public void setValue(Value value) {
+					currentBlock.setVariableValue(id, value);
+				}
+				public Type getType() {
+					return currentBlock.getVariableType(id);
+				}
+				public String toString() {
+					return getName();
+				}
+			};
+		}
+		else {
+			try {
+				return environment.createVariableReference(id);
+			}
+			catch (Exception exn) {
+				return new Variable() {
+					public String getName() {
+						return id;
+					}
+					public Value getValue() {
+						throw new EvaluationException("Reference to unknown variable " + getName());
+					}
+					public void setValue(Value value) {
+						throw new EvaluationException("Reference to unknown variable " + getName());
+					}
+					public Type getType() {
+						throw new TypeException("Reference to unknown variable " + getName());
+					}
+					public String toString() {
+						return getName();
+					}
+				};
+			}
+		}
+	}
+	
+	void addRule(Rule r) {
+		grammar.add(r);
+	}
+	
+	Grammar postprocessGrammar(Grammar g) {
+		if (g.getRoot() == null) {
+			// If L&H grammar, we need to construct a virtual root.
+			if (lh_exports.size() == 1)
+				g.setRoot(lh_exports.iterator().next());
+			else if (lh_exports.size() > 1) {
+				String name = "vroot";
+				while (g.getRule(name) != null)
+					name = "v" + name;
+				Alternatives roots = new Alternatives();
+				for (String r : lh_exports) {
+					if (g.getRule(r) != null) {
+						Tag tag = new Tag();
+						tag.add(new SemanticAssignment("$", new SemanticID("$" + r, tag), tag));
+						roots.add(new Sequence(new Expansion[] { new Rulename(r), tag }));
+					}
+				}
+				Rule vroot = new Rule(true, false, name, roots);
+				g.add(vroot);
+				g.setRoot(vroot.getName());
+			}
+		}
+		
+		return g;
+	}
+	public void report_fatal_error(String message, Object info)
+		throws Exception
+	{
+		/* stop parsing (not really necessary since we throw an exception, but) */
+		done_parsing();
+	
+		/* use the normal error message reporting to put out the message */
+		report_error(message, info);
+		
+		if (message.equals("Couldn't repair and continue parse"))
+			message = "";
+		else
+			message = message + "\n";
+		
+		/* throw an exception */
+		throw new ParseException(info.toString());
+	}
+	
+	public void report_error(String message, Object info) {
+		//System.err.println(message);
+		//System.err.println(info.toString());
+	}	
+:}
+
+terminal
+	COLON, SEMI, COMMA, POINT, LPAREN, RPAREN, LRPAREN, RRPAREN, LEPAREN, REPAREN,
+	IF, ELSE, RETURN, FOR, WHILE, DO, IS, AS, CONS, UNDEF, SWITCH, CASE, DEFAULT, BREAK,
+	PLUS, MINUS, TIMES, DIVIDE, MOD, SIGN, LESSTHEN, EQUALLESS, ARROW,
+	PLUS_EQ, MINUS_EQ, TIMES_EQ, DIVIDE_EQ, MOD_EQ, PLUSPLUS, MINUSMINUS, UNDERSCORE,
+	GREATERTHEN, EQUALGREATER, EQUAL, NOTEQUAL, NOT, SHARP, QUESTIONMARK,
+	AND, OR, XOR, BITAND, BITOR, INSTANCEOF, COMMENT, ERROR,
+	PUBLIC, PRIVATE, CLASS, DOLLAR,
+	LH_OPTIONAL, LH_IGNORE, LH_ACTION, LH_REPEAT, LH_GRAMMAR, LH_EXPORT, LH_CLASS, LH_LANGUAGE,
+	__PATTERN__, __EXPRESSION__, __SRGF__, __FUNCTIONS__, __SCRIPT__, __EXPANSION__;
+
+terminal String
+	ID, STRING_TEXT, INT, FLOAT, REGEXP,
+	RULENAME, LHRULENAME, REPEAT, PROBABILITY, TOKEN, ABNF;
+	
+terminal boolean
+	FALSE, TRUE;
+
+non terminal
+	is, functions, function, script, all, srgf_header, srgf_head;
+
+non terminal String			varpattern, rulename, token;
+non terminal Expression		exp, expcmd, forexp;
+non terminal Variable		longid, fullid;
+non terminal List			exps, parameters, cmds, cases, ids;
+non terminal Constant		const, number;
+non terminal VarDef			parameter;
+non terminal Proc			fdef;
+non terminal Block			block;
+non terminal Command		cmd, opencmd, basiccmd, forinit, forinit_, forstep, casecmd;
+non terminal Loop			forhead;
+non terminal Definition		dec;
+non terminal Pattern		pattern,  listpattern,  structpattern;
+non terminal List			patterns;
+non terminal Elements		str_elem, str_elems;
+non terminal Elements		patternelem, patternelems;
+
+non terminal				assignmentList, assignment, tagbody, rules, grammar;
+non terminal Boolean		scope, cls;
+non terminal Rule			rule;
+non terminal Tag			tag;
+non terminal Alternatives	alternatives;
+non terminal Sequence		sequence;
+non terminal Expansion		subexpansion, sequenceElement;
+non terminal Double			probability;
+non terminal Expression		exp_jsgf;
+non terminal List			exps_jsgf;
+non terminal String			lProperty, rProperty, propid, repeatOperator;
+non terminal Elements		str_elems_jsgf, str_elem_jsgf;
+
+
+precedence right IS, PLUS_EQ, MINUS_EQ, TIMES_EQ, DIVIDE_EQ, MOD_EQ;
+precedence left QUESTIONMARK;
+precedence left OR;
+precedence left AND;
+precedence left BITOR;
+precedence left BITAND;
+precedence left XOR;
+precedence left EQUAL, NOTEQUAL;
+precedence left LESSTHEN, EQUALLESS, GREATERTHEN, EQUALGREATER, INSTANCEOF;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE, MOD;
+precedence right CONS;
+precedence right AS;
+precedence left NOT;
+precedence left SIGN;
+precedence nonassoc PLUSPLUS, MINUSMINUS;
+precedence left POINT, ARROW;
+
+
+all 		::= __SCRIPT__ {: currentBlock = parser.script.getMain(); :} script	{: RESULT = parser.script; :}
+			  | __FUNCTIONS__	functions:f	{: RESULT = parser.script; :}
+			  | __PATTERN__		pattern:p	{: RESULT = p; :}
+			  | __EXPRESSION__	exp:e		{: RESULT = e; :}
+			  | __SRGF__		grammar:g	{: RESULT = parser.postprocessGrammar(parser.grammar); :}
+			  | __EXPANSION__	alternatives:a {: RESULT = a; :}
+			  ;
+
+script		::= functions:f block:b
+			  ;
+
+
+exp			::= const:c						{: RESULT = c; :}
+			  | number:n					{: RESULT = n; :}
+			  | fullid:id					{: RESULT = getRValue(id); :}
+			  | exp:e1 PLUS exp:e2			{: RESULT = new Plus(e1,e2); :}
+			  | exp:e1 MINUS exp:e2			{: RESULT = new Minus(e1,e2); :}
+			  | exp:e1 TIMES exp:e2			{: RESULT = new Mult(e1,e2); :}
+			  | exp:e1 DIVIDE exp:e2		{: RESULT = new Div(e1,e2); :}
+			  | exp:e1 MOD exp:e2			{: RESULT = new Modulo(e1,e2); :}  
+			  | MINUS exp:e					{: RESULT = new Neg(e); :}  %prec SIGN
+			  | PLUS exp:e					{: RESULT = e; :}  %prec SIGN
+			  | exp:e INSTANCEOF ID:ty		{: RESULT = new InstanceOf(e, ty); :}
+			  | exp:e1 LESSTHEN exp:e2		{: RESULT = new Less(e1,e2); :}
+			  | exp:e1 EQUALLESS exp:e2		{: RESULT = new LessEqual(e1,e2); :}
+			  | exp:e1 GREATERTHEN exp:e2	{: RESULT = new Greater(e1,e2); :}  
+			  | exp:e1 EQUALGREATER exp:e2	{: RESULT = new GreaterEqual(e1,e2); :}
+			  | exp:e1 EQUAL exp:e2			{: RESULT = new Equal(e1,e2); :}
+			  | exp:e1 NOTEQUAL exp:e2		{: RESULT = new NotEqual(e1,e2); :} 
+			  | exp:e1 QUESTIONMARK exp:e2 COLON exp:e3	{: RESULT = new Conditional(e1, e2, e3); :}
+			  | exp:e1 AND exp:e2			{: RESULT = new And(e1, e2); :}
+			  | exp:e1 OR exp:e2			{: RESULT = new Or(e1, e2); :}
+			  | exp:e1 BITAND exp:e2		{: RESULT = new BitAnd(e1, e2); :}
+			  | exp:e1 BITOR exp:e2			{: RESULT = new BitOr(e1, e2); :}
+			  | exp:e1 XOR exp:e2			{: RESULT = new Xor(e1, e2); :}
+			  | exp:e1 CONS exp:e2			{: RESULT = new Cons(e1, e2); :}
+			  | NOT exp:e					{: RESULT = new Not(e); :}
+			  | expcmd:e					{: RESULT = e; :}
+			  | LRPAREN exp:e RRPAREN		{: RESULT = e; :}
+			  | LEPAREN REPAREN				{: RESULT = new ListExpression(new Expression[0]); :}
+			  | LEPAREN exps:es REPAREN		{: RESULT = new ListExpression(es); :}
+			  | LPAREN RPAREN				{: RESULT = new StructExpression(); :}
+			  | LPAREN str_elems:es RPAREN	{: RESULT = new StructExpression((String[]) es.labels.toArray(new String[es.labels.size()]), (Expression[]) es.values.toArray(new Expression[es.values.size()])); :}
+			  ;	
+
+exps		::= exp:e 				{: RESULT = createList(e); :}
+			  | exps:es COMMA exp:e	{: RESULT = append(es, e); :}
+			  ;
+
+str_elems	::= str_elem:e {: RESULT = e; :}
+			  | str_elems:sev COMMA str_elem:se {: RESULT = sev.add(se); :}
+			  ;
+
+str_elem	::= ID:a IS exp:e {: RESULT = new Elements<Expression>(a,e); :} ;
+
+
+fullid		::= longid:id				{: RESULT = id; :}
+			  | longid:id SHARP ID:attr	{: RESULT = createAttributeRef(id, attr); :}
+			  ;
+
+longid		::= ID:a					{: RESULT = parser.createIdExpression(a, currentBlock); :}
+			  | longid:id POINT ID:a	{: RESULT = createDotRef(id, a); :}
+			  ;
+
+const		::= UNDEF			{: RESULT = new Constant.Undefined(); :}
+			  | STRING_TEXT:s	{: RESULT = new Constant(s); :}
+			  | FALSE			{: RESULT = new Constant(false); :}
+			  | TRUE			{: RESULT = new Constant(true); :}
+			  ;
+
+number		::= INT:n			{: RESULT = new Constant(Long.parseLong(n)); :}
+			  | FLOAT:n			{: RESULT = new Constant(Double.parseDouble(n)); :}
+			  ;
+
+
+functions	::= 
+			  | functions function
+			  ;
+
+
+
+function	::= fdef:proc SEMI
+					{: parser.script.add(new Prototype(proc.getName(), proc.getReturnType(),
+													   proc.getParameterTypes())); :}
+			  | fdef:proc LPAREN
+					{:
+						Prototype pt = parser.script.getProcedure(proc.getName(), proc.getParameterTypes().length);
+						if (pt == null) {
+							pt = new Prototype(proc.getName(), proc.getReturnType(),
+											   proc.getParameterTypes());
+							parser.script.add(pt);
+						}
+						if (pt.getProcedure() != null)
+							throw new TypeException("Function " + proc.getName() + "() is already defined.");
+						pt.setProcedure(proc);
+						currentBlock = new Block(proc);
+					:} 
+				block:cmds RPAREN
+					{: 
+						currentBlock = currentBlock.getSuperBlock();
+						currentBlock.addCommand(cmds);
+						currentBlock = null;
+					:}
+			  ;
+
+
+fdef		::= ID:ty ID:name LRPAREN RRPAREN
+					{:
+						List<VarDef> params = createList();
+						RESULT = new Proc(name, parser.getType(ty), params);
+					:}
+			  | ID:ty ID:name LRPAREN parameters:ps RRPAREN
+					{: RESULT = new Proc(name, parser.getType(ty), ps); :}
+			  ;
+
+
+parameters	::= parameter:p {: RESULT = createList(p); :}
+			  | parameters:ps COMMA parameter:p {: RESULT = append(ps, p); :}
+			  ;
+
+parameter	::= ID:ty ID:nam	{: RESULT = new VarDef(nam, parser.getType(ty)); :}
+			  | ID:ty			{: RESULT = new VarDef(null, parser.getType(ty)); :}
+			  ;
+
+
+block		::= 	{: RESULT = currentBlock; :} 
+			  | cmd:a cmds:b
+					{:
+						currentBlock.addCommand(a);
+						currentBlock.addCommands(b);
+						RESULT = currentBlock;
+					:}
+			  | dec:a SEMI 
+					{: currentBlock.addCommand(a); :}
+				block:b
+					{: RESULT = currentBlock; :}
+			  ;
+
+
+dec			::= ID:ty ID:nam			{: RESULT = new Definition(nam,parser.getType(ty),null,currentBlock); :}
+			  | ID:ty ID:nam IS exp:e	{: RESULT = new Definition(nam,parser.getType(ty),e,currentBlock); :}
+			  ;
+
+cmds		::=					{: RESULT = createList(); :}
+			  | cmds:cs cmd:c	{: RESULT = append(cs, c); :}
+			  ;
+
+
+cmd			::= opencmd:c  {: RESULT = c; :}
+			  | basiccmd:c {: RESULT = c; :}
+			  ;
+
+opencmd		::= IF LRPAREN exp:condition RRPAREN cmd:consequence
+					{: RESULT = new If(condition, consequence); :}
+			  | IF LRPAREN exp:condition RRPAREN basiccmd:consequence ELSE opencmd:alternative
+					{: RESULT = new If(condition, consequence, alternative); :}
+			  | forhead:forcmd opencmd:body 
+					{:
+						forcmd.setBody(body);
+						RESULT = currentBlock;
+						currentBlock = currentBlock.getSuperBlock();
+					:}       
+			  | WHILE LRPAREN exp:e RRPAREN opencmd:a
+					{: RESULT = new While(e,a); :}
+			  ;
+
+
+forhead		::= forinit_:init SEMI forexp:condition SEMI forstep:step RRPAREN
+					{:
+						RESULT = new For(init, condition, step);
+						currentBlock.addCommand(RESULT);
+					:}
+			  | forinit_:init COLON exp:iterable RRPAREN
+			  		{:
+			  			if (!(init instanceof Definition))
+			  				throw new ParseException("Illegal definition in extended for loop");
+			  			if (((Definition) init).hasInitValue())
+			  				throw new ParseException("Illegal definition in extended for loop");
+						RESULT = new ForExtended((Definition) init, iterable);			  		
+						currentBlock.addCommand(RESULT);
+			  		:}
+			  ;
+
+forinit_	::= FOR
+					{:
+						// we need a new block in order to obtain the right scope
+						// for possible definitions in the for init command
+						currentBlock = new Block(currentBlock);
+					:}
+				LRPAREN forinit:init
+					{:
+						RESULT = init;
+					:}
+			  ;
+
+forinit		::= 			{: RESULT = null; :}
+			  | expcmd:c	{: RESULT = new ExpCmd(c); :}
+			  | dec:d		{: RESULT = d; :}
+			  ;
+
+forexp		::=				{: RESULT = null; :}
+			  | exp:e		{: RESULT = e; :}
+			  ;
+
+forstep		::=				{: RESULT = null; :}
+			  | expcmd:c	{: RESULT = new ExpCmd(c); :}
+			  ;
+
+
+expcmd	::= fullid:a IS exp:e
+				{: RESULT = new Assignment(a, e); :}
+		  | fullid:a PLUS_EQ exp:b
+				{: RESULT = new Assignment(a, new Plus(getRValue(a), b)); :}
+		  | fullid:a MINUS_EQ exp:b
+				{: RESULT = new Assignment(a, new Minus(getRValue(a), b)); :}
+		  | fullid:a TIMES_EQ exp:b
+				{: RESULT = new Assignment(a, new Mult(getRValue(a), b)); :}
+		  | fullid:a DIVIDE_EQ exp:b
+				{: RESULT = new Assignment(a, new Div(getRValue(a), b)); :}
+		  | fullid:a MOD_EQ exp:b
+				{: RESULT = new Assignment(a, new Modulo(getRValue(a), b));:}
+		  | fullid:a PLUSPLUS
+				{: RESULT = new Minus(new Assignment(a, new Plus(getRValue(a), new Constant(1))), new Constant(1));:}
+		  | PLUSPLUS fullid:a
+				{: RESULT = new Assignment(a, new Plus(getRValue(a), new Constant(1)));:}
+		  | fullid:a MINUSMINUS
+				{: RESULT = new Plus(new Assignment(a, new Minus(getRValue(a), new Constant(1))), new Constant(1)); :}
+		  | MINUSMINUS fullid:a
+				{: RESULT = new Assignment(a, new Minus(getRValue(a), new Constant(1))); :}
+		  | ID:id LRPAREN RRPAREN
+				{: RESULT = parser.createFunctionCall(id, new Expression[0]); :}
+		  | ID:id LRPAREN exps:arguments RRPAREN
+				{: RESULT = parser.createFunctionCall(id, arguments); :}
+		  ;
+
+
+basiccmd	::= SEMI	{: RESULT = new EmptyCommand(); :}
+			  | forhead:forcmd basiccmd:body 
+					{:
+						forcmd.setBody(body);
+						RESULT = currentBlock;
+						currentBlock = currentBlock.getSuperBlock();
+					:}       
+			  | WHILE LRPAREN exp:e RRPAREN basiccmd:a
+					{: RESULT = new While(e,a); :}
+			  | DO basiccmd:a WHILE LRPAREN exp:e RRPAREN SEMI
+					{: RESULT = new DoWhile(e,a); :}
+			  | IF LRPAREN exp:condition RRPAREN basiccmd:consequence ELSE basiccmd:alternative
+					{: RESULT = new If(condition, consequence, alternative); :}
+			  | SWITCH LRPAREN exp:e RRPAREN LPAREN cases:cs RPAREN
+					{: RESULT = new Switch(e, cs); :}
+			  | expcmd:c SEMI
+					{: RESULT = new ExpCmd(c); :}
+			  | LPAREN 
+					{: currentBlock = new Block(currentBlock); :}
+				block:cmds RPAREN
+					{:
+						RESULT = cmds;
+						currentBlock = currentBlock.getSuperBlock();
+					:}
+			  | RETURN exp:e SEMI
+					{: RESULT = new Return(e); :}
+			  | BREAK SEMI
+					{: RESULT = new Break(); :}
+			  ;
+
+cases		::= 					{: RESULT = new Vector(); :}
+			  | cases:cs casecmd:c	{: RESULT = append(cs, c); :}
+			  ;
+
+casecmd		::= cmd:c						{: RESULT = c; :}
+			  | CASE const:c COLON			{: RESULT = new CaseLabel(c); :}
+			  | CASE number:n COLON			{: RESULT = new CaseLabel(n); :}
+			  | CASE MINUS number:n COLON	{: RESULT = new CaseLabel(Constant.negate(n)); :}
+			  | DEFAULT COLON				{: RESULT = new CaseLabel(null); :}
+			  ;
+
+
+/**************************/
+/*** Pattern            ***/
+/**************************/
+
+varpattern		::= UNDERSCORE					{: RESULT = "_"; :}
+				  | ID:a						{: RESULT = a; :}
+				  ;
+
+
+pattern			::= varpattern:p				{: RESULT = new VarPattern(p); :}
+				  | const:c						{: RESULT = c; :}
+				  | number:n					{: RESULT = n; :}
+				  | PLUS number:n				{: RESULT = n; :}
+				  | MINUS number:n				{: RESULT = Constant.negate(n); :}
+				  | listpattern:p				{: RESULT = p; :}
+				  | structpattern:p				{: RESULT = p; :}
+				  | pattern:p1 CONS pattern:p2	{: RESULT = new ConsPattern(p1, p2); :}
+				  | pattern:p1 OR pattern:p2	{: RESULT = new OrPattern(new Pattern[] { p1, p2 } ); :}
+				  | ID:id AS pattern:p			{: RESULT = new AliasPattern(p, id); :}
+				  | pattern:p COLON ID:type		{: RESULT = new TypedPattern(p, parser.getType(type)); :}
+				  | LRPAREN pattern:p RRPAREN	{: RESULT = p; :}
+				  | REGEXP:re					{: RESULT = new RegExp(re, null); :}
+				  | REGEXP:re IS LRPAREN ids:l RRPAREN
+												{: RESULT = new RegExp(re, (Pattern[]) l.toArray(new Pattern[l.size()])); :}
+				  ;
+
+ids				::= varpattern:a						{: RESULT = createList(new VarPattern(a)); :}
+				  | ids:ids COMMA varpattern:a			{: RESULT = append(ids, new VarPattern(a)); :}
+				  ;
+
+
+patterns		::= pattern:p					{: RESULT = createList(p); :}
+				  | patterns:ps COMMA pattern:p	{: RESULT = append(ps, p); :}
+				  ;
+
+listpattern		::= LEPAREN REPAREN				{: RESULT = new ListPattern(new Pattern[0]); :}
+				  | LEPAREN patterns:ps REPAREN	{: RESULT = new ListPattern(ps); :}
+				  ;
+
+structpattern	::= LPAREN RPAREN					{: RESULT = new StructPattern(); :}
+				  | LPAREN patternelems:es RPAREN	{: RESULT = new StructPattern((String[]) es.labels.toArray(new String[es.labels.size()]), (Pattern[]) es.values.toArray(new Pattern[es.values.size()])); :}
+				  ;
+				  
+patternelems	::= patternelem:e							{: RESULT = e; :}
+				  | patternelems:es COMMA patternelem:e		{: RESULT = es.add(e); :}
+				  ;
+
+patternelem		::= ID:id IS pattern:p		{: RESULT = new Elements<Pattern>(id, p); :}
+				  | ID:id					{: RESULT = new Elements<Pattern>(id, new VarPattern(id)); :}
+				  ;
+
+
+/**************************/
+/*** SRGF               ***/
+/**************************/
+
+token		::= TOKEN:t
+					{:
+						RESULT = t;
+					:}
+			  ;
+
+grammar		::= srgf_header srgf_head rules  {: RESULT = parser.grammar; :} ;
+
+srgf_header	::=
+			  | ABNF:header 
+			  ;
+
+
+srgf_head	::=
+			  | srgf_head token:key TOKEN:value TIMES SEMI
+					{:
+						if (key.equals("import") && value.endsWith("."))
+							parser.grammar.addImport(createImport(value + "*"));
+						else
+							throw new ParseException("Illegal grammar property declaration: " + key + " " + value + "*;");
+					:}
+			  | srgf_head token:key TOKEN:value SEMI
+					{:
+						if (key.equals("import"))
+							parser.grammar.addImport(createImport(value));
+						else if (key.equals("grammar"))
+							parser.grammar.setName(value);
+						else
+							parser.grammar.setProperty(key, value);
+					:}
+			  | srgf_head token:key STRING_TEXT:value SEMI
+					{:
+						if (key.equals("import"))
+							throw new ParseException("Illegal import statement: import \"" + value + "\";");
+						else if (key.equals("grammar"))
+							throw new ParseException("Illegal grammar name declaration: grammar \"" + value + "\";");
+						else
+							parser.grammar.setProperty(key, value); 
+					:}
+			  | srgf_head token:feature RULENAME:name SEMI
+					{:	
+						if (feature.equals("root"))
+							parser.grammar.setRoot(name);
+						else
+							throw new ParseException("Illegal property definition: " + feature + " $" + name + ";");
+					:}
+			  | srgf_head token:feature LHRULENAME:name SEMI
+					{:	
+						if (feature.equals("root"))
+							parser.grammar.setRoot(name);
+						else if (feature.equals("lexicon"))
+							parser.grammar.addLexicon(name);
+						else if (feature.equals("tag-format"))
+							parser.grammar.setTagFormat(name);
+						else
+							throw new ParseException("Illegal property definition: " + feature + " <" + name + ">;");
+					:}
+			  | srgf_head token:meta STRING_TEXT:key TOKEN:is STRING_TEXT:value SEMI
+					{:	if (!(meta.equals("meta") || meta.equals("http-equiv")) || !is.equals("is"))
+							throw new ParseException("Illegal metadata definition: " + meta + " " + key + " " + is + " " + value + ";");
+						else
+							parser.grammar.setMetaData(key, value);
+					:}
+			  | srgf_head LPAREN functions RPAREN
+			  | srgf_head LH_GRAMMAR STRING_TEXT SEMI
+			  | srgf_head LH_LANGUAGE STRING_TEXT:lang SEMI
+			  		{:
+			  			parser.grammar.setProperty("language", lang);
+			  		:}
+			  ;
+
+rules		::=
+			  | rules rule:rd	{: parser.addRule(rd); :}
+			  | rules LH_EXPORT LHRULENAME:r SEMI
+			  		{:
+			  			parser.lh_exports.add(r);
+			  		:}
+			  | rules LH_CLASS LHRULENAME:r SEMI
+			  		{:
+			  			parser.lh_classes.add(r);
+			  		:}
+			  ;
+
+is		::= IS | COLON ;
+
+rulename	::= RULENAME:rn		{: RESULT = rn; :}
+			  | LHRULENAME:rn	{: RESULT = rn.equals("...") ? "GARBAGE" : rn; :}
+			  ;
+
+rule	::= scope:ispub cls:cls rulename:rn is alternatives:re SEMI
+				{:
+					debug_output("RULENAME=" + rn);
+					if (rn.indexOf('.') >= 0)
+						throw new ParseException("Rule definition error: Rule name may not contain '.' characters");
+					re.compact();
+					RESULT = new Rule(ispub.booleanValue() || parser.lh_exports.contains(rn),
+									  cls.booleanValue() || parser.lh_classes.contains(rn),
+									  rn, re);
+				:}
+		  | scope:ispub cls:cls rulename:rn is SEMI
+				{:
+					debug_output("RULENAME=" + rn);
+					if (rn.indexOf('.') >= 0)
+						throw new ParseException("Rule definition error: Rule name may not contain '.' characters");
+					RESULT = new Rule(ispub.booleanValue() || parser.lh_exports.contains(rn),
+									  cls.booleanValue() || parser.lh_classes.contains(rn),
+									  rn, new Alternatives());
+				:}
+		  ;
+
+cls				::= 		{: RESULT = Boolean.FALSE; :}
+				  | CLASS	{: RESULT = Boolean.TRUE; :}
+				  ;
+
+scope			::=			{: RESULT = Boolean.FALSE; :}
+				  | PRIVATE	{: RESULT = Boolean.FALSE; :}
+				  | PUBLIC	{: RESULT = Boolean.TRUE; :}  
+				  ;
+
+probability		::=					{: RESULT = new Double(1.0); :}
+				  | PROBABILITY:p	{: RESULT = new Double(p); :}
+				  ;
+
+alternatives	::= probability:p sequence:s
+						{:
+							Alternatives a = new Alternatives();
+							a.add(s, p.doubleValue());
+							RESULT = a;
+						:}
+				  | alternatives:as OR probability:p sequence:a
+						{:
+							as.add(a, p.doubleValue());
+							RESULT = as;
+						:}
+				  ;
+
+sequence		::=	sequenceElement:e
+						{:
+							Sequence s = new Sequence();
+							s.add(e);
+							RESULT = s;
+						:}
+				  | sequence:s sequenceElement:e
+						{:
+							s.add(e);
+							RESULT = s;
+						:}
+				  ;
+
+sequenceElement	::= subexpansion:se
+						{: RESULT = se; :}
+				  | subexpansion:se TIMES
+						{:
+							se.setRepeat(0, -1);
+							RESULT = se;
+						:}
+				  | subexpansion:se PLUS
+						{:
+							se.setRepeat(1, -1);
+							RESULT = se;
+						:}
+				  | subexpansion:se QUESTIONMARK
+						{:
+							se.setRepeat(0, 1);
+							RESULT = se;
+						:}
+				  | subexpansion:se repeatOperator:ro
+						{:
+							int min,max;
+							int bin = ro.indexOf('-');
+							if (bin == -1)
+								max = min = Integer.parseInt(ro);
+							else {
+								min = Integer.parseInt(ro.substring(0, bin));
+								if (bin == ro.length()-1)
+									max = -1;
+								else
+									max = Integer.parseInt(ro.substring(bin+1));
+							}
+							se.setRepeat(min, max);
+							RESULT = se;
+						:}
+				  ;
+
+subexpansion	::= tag:t			{: RESULT = t; :}
+				  | STRING_TEXT:t	{: RESULT = new Terminal(t); :}
+				  | rulename:rn		{: RESULT = new Rulename(rn); :}
+				  | token:t			{: RESULT = new Terminal(t); :}
+				  | INT:t			{: RESULT = new Terminal(t); :}
+				  | PUBLIC			{: RESULT = new Terminal("public"); :}
+				  | PRIVATE			{: RESULT = new Terminal("private"); :}
+				  | CLASS			{: RESULT = new Terminal("class"); :}
+				  | LRPAREN alternatives:e RRPAREN
+						{:
+							e.compact();
+							RESULT = e;
+						:}
+				  | LEPAREN alternatives:e REPAREN
+						{:
+							e.setRepeat(0, 1);
+							e.compact();
+							RESULT = e;
+						:}
+				  | LH_OPTIONAL LRPAREN alternatives:e RRPAREN
+						{:
+							e.compact();
+							e.setRepeat(0, 1);
+							RESULT = e;
+						:}
+				  | LH_REPEAT LRPAREN alternatives:e COMMA INT:min COMMA INT:max RRPAREN
+						{:
+							e.compact();
+							e.setRepeat(Integer.parseInt(min), Integer.parseInt(max));
+							RESULT = e;
+						:}
+				  | LH_REPEAT LRPAREN alternatives:e COMMA INT:min COMMA TIMES RRPAREN
+						{:
+							e.compact();
+							e.setRepeat(Integer.parseInt(min), -1);
+							RESULT = e;
+						:}
+				  | LH_IGNORE LRPAREN alternatives:e RRPAREN
+						{:
+							e.compact();
+							RESULT = e;
+						:}
+				  | LH_ACTION LRPAREN STRING_TEXT:s RRPAREN
+				  		{:
+				  			Tag tag = new Tag();
+				  			tag.add(new SemanticAssignment("$", new Constant(s), tag));
+				  			RESULT = tag;
+				  		:}
+				  ;
+
+
+repeatOperator	::= REPEAT:r {: RESULT = r.substring(1,r.length()-1); :} ; 
+
+tag				::= LPAREN
+						{: currentTag=new Tag(); :}
+					tagbody RPAREN
+						{: RESULT = currentTag; :}
+				  ;
+
+tagbody         ::= assignmentList
+                  | exp_jsgf:e		{: currentTag.add(new SemanticAssignment("$", e, currentTag)); :}
+				  ;
+
+assignmentList	::= assignment
+				  | assignmentList SEMI assignment
+				  ;
+
+assignment		::= 
+				  | lProperty:a IS exp_jsgf:e
+						{: currentTag.add(new SemanticAssignment(a, e, currentTag)); :}
+				  | lProperty:a PLUS_EQ exp_jsgf:e
+						{: currentTag.add(new SemanticAssignment(a,
+								new Plus(new SemanticID(a, currentTag), e), currentTag)); :}
+				  | lProperty:a MINUS_EQ exp_jsgf:e
+						{: currentTag.add(new SemanticAssignment(a,
+								new Minus(new SemanticID(a, currentTag), e), currentTag)); :}
+				  | lProperty:a TIMES_EQ exp_jsgf:e
+						{: currentTag.add(new SemanticAssignment(a,
+								new Mult(new SemanticID(a, currentTag), e), currentTag)); :}
+				  | lProperty:a DIVIDE_EQ exp_jsgf:e
+						{: currentTag.add(new SemanticAssignment(a,
+								new Div(new SemanticID(a, currentTag), e), currentTag)); :}
+				  | lProperty:a MOD_EQ exp_jsgf:e
+						{: currentTag.add(new SemanticAssignment(a,
+								new Modulo(new SemanticID(a, currentTag), e), currentTag)); :}
+				  ;
+
+propid			::= ID:a				{: RESULT = a; :}
+				  | propid:l POINT ID:a	{: RESULT = l + "." + a; :}
+				  ;
+
+
+lProperty		::= DOLLAR					{: RESULT = "$"; :}
+				  | propid:lid				{: RESULT = lid; :}
+				  | DOLLAR POINT propid:lid	{: RESULT = "$."+lid; :}
+				  ;
+
+exp_jsgf	::= rProperty:a				{: RESULT = new SemanticID(a, currentTag); :}
+			  | const:c					{: RESULT = c; :}
+			  | number:n				{: RESULT = n; :}
+			  | exp_jsgf:e1 PLUS exp_jsgf:e2			{: RESULT = new Plus(e1, e2); :}
+			  | exp_jsgf:e1 MINUS exp_jsgf:e2			{: RESULT = new Minus(e1, e2); :}
+			  | exp_jsgf:e1 TIMES exp_jsgf:e2			{: RESULT = new Mult(e1, e2); :}
+			  | exp_jsgf:e1 DIVIDE exp_jsgf:e2			{: RESULT = new Div(e1, e2); :}
+			  | exp_jsgf:e1 MOD exp_jsgf:e2				{: RESULT = new Modulo(e1, e2); :}
+			  | MINUS exp_jsgf:e						{: RESULT = new Neg(e); :}  %prec SIGN  
+			  | exp_jsgf:e INSTANCEOF ID:ty				{: RESULT = new InstanceOf(e, ty); :}
+			  | exp_jsgf:e1 LESSTHEN exp_jsgf:e2		{: RESULT = new Less(e1, e2); :}
+			  | exp_jsgf:e1 EQUALLESS exp_jsgf:e2		{: RESULT = new LessEqual(e1, e2); :}
+			  | exp_jsgf:e1 GREATERTHEN exp_jsgf:e2		{: RESULT = new Greater(e1, e2); :} 
+			  | exp_jsgf:e1 EQUALGREATER exp_jsgf:e2	{: RESULT = new GreaterEqual(e1, e2); :} 
+			  | exp_jsgf:e1 EQUAL exp_jsgf:e2			{: RESULT = new Equal(e1, e2); :}
+			  | exp_jsgf:e1 NOTEQUAL exp_jsgf:e2		{: RESULT = new NotEqual(e1, e2); :} 
+			  | exp_jsgf:e1 QUESTIONMARK exp_jsgf:e2 COLON exp_jsgf:e3	{: RESULT = new Conditional(e1, e2, e3); :}
+			  | exp_jsgf:e1 AND exp_jsgf:e2				{: RESULT = new And(e1, e2); :}
+			  | exp_jsgf:e1 OR exp_jsgf:e2				{: RESULT = new Or(e1, e2); :}
+			  | exp_jsgf:e1 BITAND exp_jsgf:e2			{: RESULT = new BitAnd(e1, e2); :}
+			  | exp_jsgf:e1 BITOR exp_jsgf:e2			{: RESULT = new BitOr(e1, e2); :}
+			  | exp_jsgf:e1 XOR exp_jsgf:e2				{: RESULT = new Xor(e1, e2); :}
+			  | exp_jsgf:e1 CONS exp_jsgf:e2			{: RESULT = parser.createFunctionCall("::", Arrays.asList(new Expression[] {e1,e2})); :}
+			  | NOT exp_jsgf:e							{: RESULT = new Not(e); :}
+
+			  | ID:f LRPAREN RRPAREN	{: RESULT = parser.createFunctionCall(f, new Expression[0]); :}
+			  | ID:f LRPAREN exps_jsgf:f_arguments RRPAREN
+					{: RESULT = parser.createFunctionCall(f, f_arguments); :}
+
+			  | LRPAREN exp_jsgf:e RRPAREN				{: RESULT = e; :}
+              | LEPAREN REPAREN							{: RESULT = new ListExpression(new Expression[0]); :}
+              | LEPAREN exps_jsgf:es REPAREN			{: RESULT = new ListExpression(es); :}
+              | LPAREN RPAREN							{: RESULT = new StructExpression(); :}
+              | LPAREN str_elems_jsgf:es RPAREN			{: RESULT = new StructExpression((String[]) es.labels.toArray(new String[es.labels.size()]), (Expression[]) es.values.toArray(new Expression[es.values.size()])); :}
+			  ;
+                   
+
+exps_jsgf	::= exp_jsgf:e						{: RESULT = createList(e); :}
+			  | exps_jsgf:es COMMA exp_jsgf:e	{: RESULT = append(es, e); :}
+			  ;
+
+str_elems_jsgf	::= str_elem_jsgf:e							{: RESULT = e; :}
+				  | str_elems_jsgf:es COMMA str_elem_jsgf:e	{: RESULT = es.add(e); :}
+				  ;
+
+str_elem_jsgf ::= ID:a IS exp_jsgf:e	{: RESULT = new Elements<Expression>(a,e); :} ;
+
+
+rProperty	::= lProperty:a					{: RESULT = a; :}
+			  | RULENAME:rn					{: RESULT = "$"+rn; :}
+			  ;
+
+
+

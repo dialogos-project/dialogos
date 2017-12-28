@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<installation version="1.0">
+    <info>
+        <appname>DialogOS</appname>
+        <appversion>AlphaNotReadyVersion</appversion>
+        <authors>
+            <author email="" name="Uni Hamburg Sprachtechn.-Projekt"/>
+        </authors>
+        <uninstaller name="DialogOSUninstaller.jar" write="yes"/>
+        <javaversion>1.8</javaversion>
+        <requiresjdk>no</requiresjdk>
+        <writeinstallationinformation>no</writeinstallationinformation>
+        <run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7"/>
+    </info>
+    <guiprefs height="470" resizable="yes" width="630">
+        <modifier key="useFlags" value="yes"/>
+        <modifier key="langDisplayType" value="default"/>
+    </guiprefs>
+    <locale>
+        <langpack iso3="eng"/>
+        <langpack iso3="deu"/>
+        <langpack iso3="fra"/>
+    </locale>
+    <resources>
+        <res id="shortcutSpec.xml" src="installer_shortcutSpec.xml"/>
+        <res id="Unix_shortcutSpec.xml" src="installer_Unix_shortcutSpec.xml"/>
+    </resources>
+    <panels>
+        <panel classname="CheckedHelloPanel"/>
+        <panel classname="PacksPanel"/>
+        <panel classname="TargetPanel"/>
+        <panel classname="InstallPanel"/>
+        <panel classname="ShortcutPanel"/>
+        <panel classname="SimpleFinishPanel"/>
+    </panels>
+    <variables>
+        <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
+    </variables>
+    <packs>
+        <pack name="DialogOS_All-In-One" preselected="yes" required="yes">
+            <description/>
+            <file override="update"
+                src="../build/libs/dialogos-all.jar" targetdir="$INSTALL_PATH/"/>
+        </pack>
+    </packs>
+    <native name="ShellLink.dll" type="izpack"/>
+    <native name="ShellLink_x64.dll" type="izpack"/>
+</installation>

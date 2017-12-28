@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+	<property name="src" value="${basedir}/src" />
+	<property name="build" value="${basedir}/build" />
+	<property name="dist" value="${basedir}/dist" />
+	<property name="doc" value="${basedir}/doc" />
+
+	<!--
+	<target name="javadoc">
+		<javadoc access="public" author="true" classpath="../Java libs/jug.jar;../Java libs/CUP_Runtime.jar;../com.clt.script/build;../Java libs/MRJToolkitStubsX.jar;../com.clt.base/build;../com.clt.xml/build;../Java libs/JRendezvous.jar;../com.clt.mac/build;../Java libs/AppleJavaExtensions.jar" destdir="doc" doctitle="CLT Client Interface" nodeprecated="false" nodeprecatedlist="false" noindex="true" nonavbar="false" notree="false" packagenames="com.clt.dialog.client" source="1.5" sourcepath="src" splitindex="false" use="true" version="true" />
+	</target>
+	-->
+	
+	<target name="javadoc">
+		<mkdir dir="${doc}" />
+		<javadoc
+				destdir="${doc}"
+				author="true"
+				version="true"
+				access="public"
+				header="CLT Client Interface 6.5"
+				windowtitle="CLT Client Interface"
+				sourcepath="${src}">
+			<doctitle><![CDATA[<h1>CLT Client Interface</h1>]]></doctitle>
+			<bottom><![CDATA[<i>Copyright &#169; 2001-2006 CLT Sprachtechnologie GmbH.</i>]]></bottom>
+			
+			<fileset dir="${src}" defaultexcludes="yes">
+			      <include name="com/clt/dialog/client/Client.java"/>
+			      <include name="com/clt/dialog/client/ConnectionState.java"/>
+		    </fileset>
+			<fileset dir="${basedir}/../com.clt.script/src" defaultexcludes="yes">
+			      <include name="com/clt/script/exp/Value.java"/>
+			      <include name="com/clt/script/exp/Type.java"/>
+			      <include name="com/clt/script/exp/values/*.java"/>
+			      <include name="com/clt/script/exp/types/*.java"/>
+			      <exclude name="com/clt/script/exp/values/PointerValue.java"/>
+			      <exclude name="com/clt/script/exp/types/PointerType.java"/>
+		    </fileset>
+		</javadoc>
+	</target>
+</project>

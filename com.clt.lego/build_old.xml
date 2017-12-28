@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="LegoLib" default="jar" basedir=".">
+	<property name="src" value="${basedir}/src" />
+	<property name="build" value="${basedir}/build" />
+	<property name="dist" value="${basedir}/dist" />
+
+
+	<target name="library">
+		<javah classpath="${build}" outputfile="${basedir}/native/src/LegoAPI.h" force="true">
+			<class name="com.clt.lego.nxt.NxtFantom" />
+			<class name="com.clt.lego.rcx.Tower" />
+			<class name="com.clt.lego.rcx.RcxGhost" />
+		</javah>
+	</target>
+
+	<target name="jar">
+		<mkdir dir="${dist}" />
+		<jar destfile="${dist}/Lego.jar" index="true">
+			<fileset dir="${build}" />
+		</jar>
+	</target>
+</project>

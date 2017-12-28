@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!ENTITY % wizard SYSTEM "Wizard.dtd">
+%wizard;
+
+
+<!ELEMENT log (setup, wizard, execution)>
+
+
+<!ELEMENT setup (VP | Kommentar | time)*>
+
+<!ELEMENT VP (#PCDATA)>
+<!ELEMENT Kommentar (#PCDATA)>
+<!ELEMENT time (#PCDATA)>
+
+
+<!ELEMENT execution (call | duration | end | error | event | exit | input | prompt | return | start | subgraph | transition | state)*>
+
+
+
+<!ELEMENT transition (src, dst, condition?)>
+<!ATTLIST transition
+		time		%number.type;	#REQUIRED>
+
+
+<!ELEMENT src (#PCDATA)>
+<!ATTLIST src
+		uid			%id.type;		#REQUIRED
+		class		%class.type;	#REQUIRED>
+
+
+<!ELEMENT dst (#PCDATA)>
+<!ATTLIST dst
+		uid			%id.type;		#REQUIRED
+		class		%class.type;	#REQUIRED>
+
+
+<!ELEMENT condition (#PCDATA)>
+
+<!ELEMENT message (#PCDATA)>
+
+<!ELEMENT start EMPTY>
+<!ATTLIST start
+		time		%number.type;	#REQUIRED>
+
+<!ELEMENT state EMPTY>
+<!ATTLIST state
+		time		%number.type;	#REQUIRED
+		value		%string.type;	#REQUIRED>
+
+
+<!ELEMENT end EMPTY>
+<!ATTLIST end
+		time		%number.type;	#REQUIRED>
+
+
+<!ELEMENT call EMPTY>
+<!ATTLIST call
+		title		%string.type;	#REQUIRED
+		uid			%id.type;		#REQUIRED
+		time		%number.type;	#REQUIRED>
+
+<!ELEMENT subgraph EMPTY>
+<!ATTLIST subgraph
+		title		%string.type;	#REQUIRED
+		uid			%id.type;		#REQUIRED
+		time		%number.type;	#REQUIRED>
+
+<!ELEMENT return EMPTY>
+<!ATTLIST return
+		title		%string.type;	#REQUIRED
+		uid			%id.type;		#REQUIRED
+		time		%number.type;	#REQUIRED>
+
+<!ELEMENT exit EMPTY>
+<!ATTLIST exit
+		title		%string.type;	#REQUIRED
+		uid			%id.type;		#REQUIRED
+		time		%number.type;	#REQUIRED>
+
+<!ELEMENT duration (#PCDATA)>
+<!ATTLIST duration
+		title		%string.type;	#REQUIRED
+		uid			%id.type;		#REQUIRED>
+
+
+<!ELEMENT event EMPTY>
+<!ATTLIST event
+		time		%number.type;	#REQUIRED
+		type		%string.type;	#REQUIRED>
+
+
+
+<!ELEMENT error (type, message?)>
+
+
+<!ELEMENT input (#PCDATA)>
+<!ATTLIST input
+		time		%number.type;	#REQUIRED
+		name		%string.type;	#REQUIRED
+		port		%number.type;	#REQUIRED
+		log			%boolean.type;	#IMPLIED>
+
+
+<!ELEMENT prompt (#PCDATA)>
+<!ATTLIST prompt
+		time		%number.type;	#REQUIRED
+		name		%string.type;	#REQUIRED
+		port		%number.type;	#REQUIRED>

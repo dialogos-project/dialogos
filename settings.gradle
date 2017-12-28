@@ -1,0 +1,16 @@
+include 'com.clt.base'
+include 'com.clt.xml'
+include 'com.clt.script'
+include 'com.clt.mac'
+include 'com.clt.audio'
+include 'ClientInterface'
+include 'Diamant'
+include 'com.clt.speech'
+include 'SpeechClient'
+include 'TTSClient'
+include 'RecognizerClient'
+
+include 'plugins:exampleplugin'
+include 'plugins:DialogOS_MaryTTSPlugin'
+include 'plugins:DialogOS_PocketSphinxPlugin'
+

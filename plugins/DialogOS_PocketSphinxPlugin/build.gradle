@@ -1,0 +1,10 @@
+dependencies {
+  compile project(':Diamant')
+  compile project(':RecognizerClient')
+  compile project(':com.clt.speech')
+  compile project(':com.clt.base')
+
+  compile name: 'pocketsphinx'
+  
+  compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+}

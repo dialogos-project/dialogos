@@ -1,0 +1,220 @@
+package com.clt.speech.htk;
+
+import java.util.*;
+import java.io.*;
+
+action code{:
+
+	private static MlfNonterminalNode createTree(List<List<MlfNode>> lines, Map<String, Map<List<String>, String>> substitutions) {
+		MlfNode matrix[][] = new MlfNode[lines.size()][];
+		int maxdepth = 0;
+		int size=0;
+		for (List<MlfNode> line : lines) {
+			MlfNode first = line.iterator().next();
+			if (!first.getLabel().equals("!ENTER") && !first.getLabel().equals("!EXIT")) {
+				matrix[size] = line.toArray(new MlfNode[line.size()]);
+				maxdepth = Math.max(maxdepth, matrix[size].length);
+				size++;
+			}
+		}
+		
+		if (size > 0 && matrix[0].length != maxdepth)
+			throw new IllegalArgumentException("Can't parse MLF. First line does not contain a root node.");
+		
+		MlfNonterminalNode vroot = new MlfNonterminalNode(null, "");
+	
+		MlfNode parents[] = new MlfNode[maxdepth];
+		for (int i=0; i<size; i++) {
+			int last = matrix[i].length-1;
+			for (int j=0; j<=last; j++)
+				parents[j] = matrix[i][j];
+			if (last >= maxdepth-1)
+				vroot.addChild(matrix[i][last]);
+			else
+				((MlfNonterminalNode) parents[last+1]).addChild(matrix[i][last]);
+		}
+		
+		substitute(vroot, substitutions);
+		
+		return vroot;
+	}
+	
+	private static void substitute(MlfNode n, Map<String, Map<List<String>, String>> substitutions) {
+		if (!apply(n, substitutions)) {
+			for (int i=0; i<n.numChildren(); i++)
+				substitute(n.getChild(i), substitutions);
+		}
+	}
+	
+
+	private static boolean apply(MlfNode n, Map<String, Map<List<String>, String>> substitutions) {
+		if (substitutions != null && n instanceof MlfNonterminalNode) {
+			Map<List<String>, String> subs = substitutions.get(n.getLabel());
+			if (subs != null) {
+				//System.out.println("Found substitutions for " + n.getLabel());
+				List<String> children = new ArrayList<String>(n.numChildren());
+				double confidence = 0.0;
+				long start = 0, end = 0;
+				//System.out.println("Tree children:");
+				for (int i=0; i<n.numChildren(); i++) {
+					MlfNode child = n.getChild(i);
+					if (i == 0) {
+						if (child instanceof MlfTerminalNode)
+							start = ((MlfTerminalNode) child).getStart();
+						else {
+							MlfNode c = child;
+							while (!(c instanceof MlfTerminalNode))
+								c = c.getChild(0);
+							start = ((MlfTerminalNode) c).getStart();
+						}
+					}
+					if (i == n.numChildren()-1) {
+						if (child instanceof MlfTerminalNode)
+							end = ((MlfTerminalNode) child).getEnd();
+						else {
+							MlfNode c = child;
+							while (!(c instanceof MlfTerminalNode))
+								c = c.getChild(c.numChildren()-1);
+							end = ((MlfTerminalNode) c).getEnd();
+						}
+					}
+					children.add(child.getLabel());
+					//System.out.print(child.getLabel() + " ");
+					confidence += child.getConfidence();
+				}
+				//System.out.println("\nSubstitutions are:");
+				/*
+				for (Iterator it = subs.keySet().iterator(); it.hasNext(); ) {
+					Object words = it.next();
+					System.out.print("  " + words + " -> " + subs.get(words));
+				}
+				*/
+				String phrase = subs.get(children);
+				if (phrase != null) {
+					n.removeAllChildren();
+					n.addChild(new MlfTerminalNode((MlfNonterminalNode) n, start, end, phrase, confidence/children.size()));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+:}
+
+parser code{:
+	Map<String, Map<List<String>, String>> substitutions = null;
+	boolean html;
+
+	static List<MlfUtterance> parse(Reader in, boolean html, Map<String, Map<List<String>, String>> substitutions) 
+		throws Exception
+	{
+		Parser p = new Parser(new Lexer(in));
+		p.substitutions = substitutions;
+		p.html = html;
+		return (List<MlfUtterance>) p.parse().value;
+	}
+	
+	
+	public void report_fatal_error(String message, Object info)
+		throws java.lang.Exception
+	{
+		/* stop parsing (not really necessary since we throw an exception, but) */
+		done_parsing();
+	
+		/* use the normal error message reporting to put out the message */
+		report_error(message, info);
+	
+		/* throw an exception */
+		//throw new Exception("fatal error at line "+Integer.toString(scanner.getLine()));
+		throw new ParseException(message + "\nUnexpected symbol: " + info.toString());
+	}
+
+	public void report_error(String message, Object info) {
+		System.err.println(message);
+		System.err.println("Unexpected symbol: " + info.toString());
+	}
+	
+	private static class ParseException extends Exception {
+		public ParseException(String s) {
+			super(s);
+		}
+	}
+:}
+
+
+
+terminal Double	DBL;
+terminal Long	INT;
+terminal String	NAME;
+terminal String	STRING;
+terminal		NL, DOT, ALT, MLF;
+
+non terminal List				all, block;
+non terminal List				trees, lines;
+non terminal MlfUtterance		alts;
+non terminal LinkedList			line;
+non terminal Double				score;
+non terminal MlfTerminalNode	t;
+non terminal MlfNonterminalNode	nt;
+non terminal 					header;
+
+all		::= header trees:trees		{: RESULT = trees; :} ;
+
+header	::=
+		  | MLF NL
+		  ;
+
+trees	::= alts:a				{: List ts = new LinkedList(); ts.add(a); RESULT = ts; :}
+		  | trees:ts alts:a		{: ts.add(a); RESULT = ts; :}
+		  ;
+
+alts	::= STRING:s NL block:b DOT	NL {: RESULT = new MlfUtterance(s, parser.html, (MlfNonterminalNode[]) b.toArray(new MlfNonterminalNode[b.size()])); :}
+		  ;
+
+block	::= lines:ls					{: List l = new LinkedList(); l.add(createTree(ls, parser.substitutions)); RESULT = l; :}
+		  | block:b ALT NL lines:ls		{: b.add(createTree(ls, parser.substitutions)); RESULT = b; :}
+		  ;
+
+
+lines	::= 					{: RESULT = new LinkedList(); :}
+		  | lines:ls line:l	NL	{: ls.add(l); RESULT = ls; :}	
+		  ;
+
+
+line	::= t:t
+				{:
+					LinkedList l = new LinkedList();
+					l.add(t);
+					RESULT = l;
+				:}
+		  | line:l nt:nt
+		  		{:
+		  			MlfNode last = (MlfNode) l.getLast();
+		  			if (nt.getLabel().equals(last.getLabel()))
+		  				l.add(last);
+		  			else {
+			  			l.add(nt);
+			  			nt.addChild(last);
+			  		}
+		  			RESULT = l;
+		  		:}
+		  ;
+
+
+score	::= INT:n	{: RESULT = new Double(n.longValue()); :}
+		  | DBL:n	{: RESULT = n; :}
+		  ;
+
+
+t		::= NAME:n
+				{: RESULT = new MlfTerminalNode(null, parser.html ? Lexer.decode(n) : n); :}
+		  | INT:start INT:end NAME:n score:score
+  				{: RESULT = new MlfTerminalNode(null, start.intValue(), end.intValue(), parser.html ? Lexer.decode(n) : n, score.doubleValue()); :}
+		  ;
+
+
+nt		::= NAME:n
+				{: RESULT = new MlfNonterminalNode(null, parser.html ? Lexer.decode(n) : n); :}
+		  | NAME:n score:score
+				{: RESULT = new MlfNonterminalNode(null, parser.html ? Lexer.decode(n) : n, score.doubleValue()); :}
+		  ;

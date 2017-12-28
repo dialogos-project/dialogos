@@ -1,0 +1,40 @@
+task 'parser' {
+  doLast {
+    ant.taskdef classname: "java_cup.anttask.CUPTask", name: "cup", classpath: configurations.javaCup.asPath
+    ant.cup srcfile: "${projectDir}/script.cup", destdir: "${projectDir}/src/main/java/", parser: 'Parser', symbols: 'Sym'
+  }
+}
+
+task 'lexer' {
+  doLast {
+    ant.taskdef classname: 'jflex.anttask.JFlexTask', name: 'flex', classpath: configurations.flex.asPath
+    ant.flex file: "${projectDir}/script.lex", destdir: "${projectDir}/src/main/java/"
+  }
+}
+
+configurations {
+  javaCup
+  flex
+}
+
+compileJava.dependsOn parser
+compileJava.dependsOn lexer
+
+clean.doFirst {
+  delete "${projectDir}/src/main/java/com/clt/script/parser/Parser.java"
+  delete "${projectDir}/src/main/java/com/clt/script/parser/Lexer.java"
+  delete "${projectDir}/src/main/java/com/clt/script/parser/Sym.java"
+}
+
+dependencies {
+  javaCup group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
+  flex group: 'de.jflex', name: 'jflex', version: '1.6.1'
+
+  compile group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
+  compile group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
+
+  compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
+
+  compile project(':com.clt.base')
+  compile project(':com.clt.xml')
+}

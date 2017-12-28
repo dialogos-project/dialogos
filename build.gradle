@@ -1,0 +1,77 @@
+plugins {
+  id 'application'
+  id 'com.github.johnrengelman.shadow' version '2.0.0'
+  id 'com.github.hierynomus.license' version '0.14.0'
+  id 'com.bmuschko.izpack' version '2.1'
+}
+
+allprojects {
+  repositories {
+    flatDir {
+      dirs "${rootDir}/libs"
+    }
+    mavenCentral()
+    jcenter()
+
+    maven { // for DummyRecognizer
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+  }
+
+  apply plugin: 'java'
+  sourceCompatibility = '1.8'
+
+  apply plugin: 'license'
+  licenseMain.onlyIf { project.file('LICENSE ').exists() }
+  licenseTest.onlyIf { project.file('LICENSE ').exists() }
+
+  dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+  }
+}
+
+dependencies {
+  compile subprojects
+  izpack 'org.codehaus.izpack:izpack-standalone-compiler:4.3.5'
+}
+
+mainClassName = 'com.clt.dialogos.DialogOS'
+
+run {
+  systemProperties System.getProperties()
+//  -Djava.library.path='/cygdrive/d/Eigene Dateien/Alexander/workspace/dirty-dialogos'
+  }
+
+shadowJar {
+  mergeServiceFiles()
+}
+
+def version = '1.4'
+
+izpack {
+    baseDir = file("$rootDir/izpack")
+    installFile = file("$baseDir/installer.xml")
+    outputFile = file("$buildDir/distributions/dialogos-${version}-installer.jar")
+    compression = 'deflate'
+    compressionLevel = 9
+    appProperties = ['app.group': 'DialogOS', 'app.name': 'DialogOS', 'app.title': 'DialogOS',
+                     'app.version': version, 'app.subpath': "Griffon-$version"]
+}
+
+task allJavadoc(type: Javadoc) {
+    source subprojects.collect { it.sourceSets.main.allJava }
+    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+    destinationDir = file("${buildDir}/docs/javadoc")
+}
+
+
+task clean_all {
+    subprojects.each {
+        it.afterEvaluate {
+            def cleanTask = it.tasks.findByName('clean')
+            if (cleanTask) {
+                dependsOn(cleanTask)
+            }
+        }
+    }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<shortcuts>
+    <skipIfNotSupported/>
+    <programGroup defaultName="DialogOS" location="applications"/>
+    <shortcut KdeUsername="root" applications="yes" desktop="yes"
+        encoding="UTF-8" initialState="normal" name="DialogOS"
+        programGroup="yes" startMenu="yes" startup="no"
+        target="$INSTALL_PATH/dialogos-all.jar" type="Application"/>
+</shortcuts>

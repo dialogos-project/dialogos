@@ -1,0 +1,11 @@
+dependencies {
+  // The project uses an ancient version of JRendezvous (now named JmDNS) that
+  // is not compatible with the current version, i.e. it tries to instantiate
+  // the JmDNS class that is now abstract.
+  // TODO: Switch to the maven package
+  // compile group: 'javax.jmdns', name: 'jmdns', version: '3.4.1'
+  compile name: 'JRendezvous'
+
+  compile project(':com.clt.script')
+  compile project(':com.clt.mac')
+}
