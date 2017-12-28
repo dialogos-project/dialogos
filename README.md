@@ -26,3 +26,12 @@ gradlew.bat run
 This command will first download and install [Gradle](http://gradle.org) if needed. Then it downloads dependencies from the Maven central repository, compiles all modules and plugins, and launches the application.
 
 
+## Speech recognizer models
+
+DialogOS comes bundled with the PocketSphinx speech recognizer, which needs at least one speech recognizer model for each language that it should recognize. Because these models are large, they are not distributed with DialogOS. However, you can download them easily from within DialogOS.
+
+To do this, go to Dialog -> CMU PocketSphinx. You will find that initially there are no models available in the "Model" dropdown box. Click on the button "Install more models" and select a model for the language you want. Once the model has been installed, it is _not_ automatically selected, but it is available in the "Model" dropdown box. Select it and close the configuration window. You are now ready to make PocketSphinx nodes and have DialogOS recognize your speech.
+
+## Documentation
+
+You can find an (outdated) manual for DialogOS in German [here](http://www.coli.uni-saarland.de/courses/pd/dialogos/Handbuch.pdf). Please bear with us while we are updating the documentation.
