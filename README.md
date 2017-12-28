@@ -4,6 +4,10 @@ This is the source-code repository for the DialogOS dialog system. DialogOS was 
 
 DialogOS has been used in a variety of projects for university and high-school students, see e.g. [here](http://www.debacher.de/wiki/DialogOS) and [here](http://www.coli.uni-saarland.de/courses/lego-04/). It combines a very intuitive graphical interface with out-of-the-box speech recognition and synthesis (using [PocketSphinx](https://github.com/cmusphinx/pocketsphinx) and [MaryTTS](http://mary.dfki.de/). We are currently planning to also restore the seamless Lego integration of the commercial version.
 
+The open-source DialogOS runs under Windows, MacOS, and Linux. This is in contrast to the commercial version, which only worked under Windows due to limitations in the speech recognizer.
+
+<img src="http://deacademic.com/pictures/dewiki/68/DialogOS.jpg" width="500" />
+
 
 ## Running DialogOS
 
