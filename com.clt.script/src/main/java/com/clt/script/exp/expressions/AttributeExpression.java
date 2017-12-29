@@ -31,8 +31,7 @@ import com.clt.script.exp.values.Undefined;
  * @version 1.0
  */
 
-public class AttributeExpression
-    extends Expression {
+public class AttributeExpression extends Expression {
 
   private Expression e;
   private String attribute;

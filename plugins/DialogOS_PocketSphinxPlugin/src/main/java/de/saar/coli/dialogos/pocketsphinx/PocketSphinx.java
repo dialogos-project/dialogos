@@ -27,6 +27,7 @@ import java.util.Map;
 
 import edu.cmu.pocketsphinx.*;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.logging.Level;
@@ -39,7 +40,7 @@ import javax.sound.sampled.LineUnavailableException;
  * @author koller
  */
 public class PocketSphinx extends AbstractRecognizer {
-    
+
     // Load native libraries for PocketSphinx.
     static {
         try {
@@ -68,8 +69,7 @@ public class PocketSphinx extends AbstractRecognizer {
             System.exit(1);
         }
     }
-    
-    
+
     private Model model;
     private boolean dummyMode = false; // true => inputs are typed into the keyboard, instead of calling the recognizer
     private RecognitionContext defaultContext;
@@ -78,15 +78,10 @@ public class PocketSphinx extends AbstractRecognizer {
     private RecognitionContext currentContext;
     private Domain currentDomain;
 
-    // TODO - configure later
-
     private Decoder decoder;
     private boolean recognizerInterrupted;
 
     public PocketSphinx() {
-        // TODO - support JSGF grammars
-////        c.setString("-jsgf", "test.jsgf");
-
         // The "decoder" field is not initialized here. This is done
         // whenever setModel is called with a different model than before
         // (see setModel for details).
@@ -105,15 +100,34 @@ public class PocketSphinx extends AbstractRecognizer {
             System.exit(1);
         }
     }
-    
+
     private void resetDecoder(Model model) {
         Config c = Decoder.defaultConfig();
-        
+
         c.setString("-hmm", model.getAcousticModelDir().getAbsolutePath());
         c.setString("-dict", model.getDictionaryFile().getAbsolutePath());
-        c.setString("-lm", model.getLanguageModelFile().getAbsolutePath());
+        
+//        c.setString("-lm", model.getLanguageModelFile().getAbsolutePath());
+        // no longer needed because we have grammars
 
         decoder = new Decoder(c);
+    }
+
+    public void setGrammar(Grammar grammar) {
+        StringWriter sw = new StringWriter();
+        
+        if( grammar.getName() == null ) {
+            grammar.setName("tmp_grammar_name");
+        }
+        
+        grammar.export(sw, Grammar.Format.JSGF);
+        
+//        System.err.println("SRGF:\n" + grammar);
+//        System.err.println("root -> " + grammar.getRoot());        
+//        System.err.println("JSGF:\n" + sw.toString());
+        
+        decoder.setJsgfString("jsgf", sw.toString());
+        decoder.setSearch("jsgf");
     }
 
     // TODO - make configurable?
@@ -134,8 +148,8 @@ public class PocketSphinx extends AbstractRecognizer {
             return new SimpleRecognizerResult(input);
         } else {
             recognizerInterrupted = false;
-            
-            if( decoder == null ) {
+
+            if (decoder == null) {
                 // TODO - localize
                 throw new RuntimeException("To use a PocketSphinx recognizer node, you must first select a speech recognizer model. Go to Dialog -> CMU PocketSphinx, install a model, and select it.");
             }
@@ -205,7 +219,6 @@ public class PocketSphinx extends AbstractRecognizer {
     // here to the Settings object, the #getRecognizer method in PocketSphinxNode
     // updates our settings each time a recognizer is requested, using the
     // methods below.
-    
     public boolean isDummyMode() {
         return dummyMode;
     }
@@ -219,15 +232,13 @@ public class PocketSphinx extends AbstractRecognizer {
     }
 
     public void setModel(Model model) {
-        if( model != this.model ) {
+        if (model != this.model) {
             // model was changed in the settings => reinitialize decoder with new model
             resetDecoder(model);
         }
-        
+
         this.model = model;
     }
-    
-    
 
     @Override
     protected Map<Domain, Map<String, RecognitionContext.Info>> loadContextCache(File grammarDirectory) throws SpeechException, IOException {
@@ -249,8 +260,7 @@ public class PocketSphinx extends AbstractRecognizer {
 
     @Override
     public RecognitionContext createTemporaryContext(Grammar g, Domain domain) throws SpeechException {
-        System.err.println("crate tmp con");
-        return null;
+        return new RecognitionContext("tmpcontext", domain, model.getLanguage(), g);
     }
 
     @Override
@@ -285,6 +295,15 @@ public class PocketSphinx extends AbstractRecognizer {
     @Override
     public void setContext(RecognitionContext context) throws SpeechException {
         currentContext = context;
+
+        if (context.getGrammar() != null) {
+            if( context.getGrammar().getRoot() == null ) {
+                // TODO - localize
+                throw new SpeechException("Your grammar does not define a root symbol. Set one with 'root $nonterminal;'.");
+            }
+            
+            setGrammar(context.getGrammar());
+        }
     }
 
     @Override

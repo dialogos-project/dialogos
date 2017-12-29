@@ -68,6 +68,7 @@ public class RecognitionThread {
 
                 for (int alt = 0; alt < recognitionResult.numAlternatives(); alt++) { // look for patterns in all recognizer hypotheses
                     Utterance utterance = RecognitionThread.this.recognitionResult.getAlternative(alt);
+//                    System.err.println("match with grammar: " + grammar);
                     Value r = grammar.match(utterance.getWords(), null);
                     System.err.printf("[%2d] Hyp: %s\n", alt, utterance.getWords());
 

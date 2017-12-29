@@ -125,6 +125,14 @@ public class PocketSphinxNode extends Node {
 
     private static Device voconDevice = new Device(Resources.getString("PocketSphinx"));
 
+    private static enum GrammarMode {
+        REAL_GRAMMAR,
+        DIRECT_GRAMMAR,
+        DYNAMIC_GRAMMAR
+    };
+    
+    private GrammarMode grammarMode; // distinguish whether we have a real grammar
+
     private static Object DIRECT_GRAMMAR = new Object() {
 
         @Override
@@ -133,6 +141,7 @@ public class PocketSphinxNode extends Node {
             return Resources.getString("DirectGrammar");
         }
     };
+
     private static Object DYNAMIC_GRAMMAR = new Object() {
 
         @Override
@@ -143,7 +152,6 @@ public class PocketSphinxNode extends Node {
     };
 
     private static final boolean supportDynamicGrammars = true;
-
 
     public PocketSphinxNode() {
 
@@ -158,10 +166,8 @@ public class PocketSphinxNode extends Node {
         this.setProperty(PocketSphinxNode.BACKGROUND, Boolean.FALSE);
 
 //        this.setProperty(SphinxNode.THRESHOLD, new Long(40)); // TODO put this back in
-
         this.removeAllEdges();
     }
-
 
     /**
      * Returns the default color of the node.
@@ -173,14 +179,12 @@ public class PocketSphinxNode extends Node {
         return Color.RED.darker();
     }
 
-
     private PocketSphinx getRecognizer() {
         PocketSphinx ret = Plugin.getRecognizer();
         ret.setDummyMode(getSettings().isDummyMode());
         ret.setModel(getSettings().getModel());
         return ret;
     }
-
 
     @Override
     public void updateEdges() {
@@ -208,9 +212,8 @@ public class PocketSphinxNode extends Node {
         this.reinstallEdges(patternEdges, timeoutEdge);
     }
 
-
     private void reinstallEdges(List<? extends Edge> patternEdges,
-                                TimeoutEdge timeoutEdge) {
+            TimeoutEdge timeoutEdge) {
 
         this.removeAllEdges();
 
@@ -227,7 +230,6 @@ public class PocketSphinxNode extends Node {
             }
         }
     }
-
 
     @Override
     public boolean editProperties(Component parent) {
@@ -248,8 +250,8 @@ public class PocketSphinxNode extends Node {
 
         if (super.editProperties(parent)) {
             @SuppressWarnings("unchecked")
-            List<Edge> es =
-                    (List<Edge>) this.getProperty(EdgeConditionModel.EDGE_PROPERTY);
+            List<Edge> es
+                    = (List<Edge>) this.getProperty(EdgeConditionModel.EDGE_PROPERTY);
 
             this.reinstallEdges(es, timeoutEdge);
 
@@ -258,7 +260,6 @@ public class PocketSphinxNode extends Node {
             return false;
         }
     }
-
 
     @Override
     protected JComponent createEditorComponent(final Map<String, Object> properties) {
@@ -277,7 +278,7 @@ public class PocketSphinxNode extends Node {
 
         final EdgeConditionModel edgeModel = new EdgeConditionModel(this,
                 properties, com.clt.diamant.Resources
-                .getString("InputPatterns"));
+                        .getString("InputPatterns"));
 
         Vector<Object> grammars = new Vector<Object>();
         grammars.add(PocketSphinxNode.DIRECT_GRAMMAR);
@@ -303,8 +304,7 @@ public class PocketSphinxNode extends Node {
                 if (selection instanceof Grammar) {
                     Grammar g = (Grammar) selection;
                     ScriptEditorDialog.editGrammar(p, g);
-                }
-                // this case happens if "generate from expression" was chosen.
+                } // this case happens if "generate from expression" was chosen.
                 // should a script-editor be used there?
                 else if (selection == PocketSphinxNode.DYNAMIC_GRAMMAR) {
                     String g = (String) properties.get(PocketSphinxNode.GRAMMAR_EXPRESSION);
@@ -327,23 +327,21 @@ public class PocketSphinxNode extends Node {
         });
 
         grammar.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-
                 language.setEnabled(true);
 
                 // A normal grammar is used.
                 if (grammar.getSelectedItem() instanceof Grammar) {
+                    PocketSphinxNode.this.grammarMode = GrammarMode.REAL_GRAMMAR;
+                    
                     Grammar g = (Grammar) grammar.getSelectedItem();
                     properties.put(PocketSphinxNode.GRAMMAR, g);
                     try {
-                        String lang = PocketSphinxNode.this.compileGrammar(properties, null)
-                                .getLanguage();
+                        String lang = PocketSphinxNode.this.compileGrammar(properties, null).getLanguage();
                         if (lang != null) {
                             LanguageName grammarLanguage = null;
                             Language l = new Language(lang);
-                            List<LanguageName> languages = Plugin
-                                    .getAvailableLanguages();
+                            List<LanguageName> languages = Plugin.getAvailableLanguages();
                             // first try exact locale matches
                             for (LanguageName ln : languages) {
                                 if (ln.getLanguage().equals(l)) {
@@ -355,10 +353,7 @@ public class PocketSphinxNode extends Node {
                             if (grammarLanguage == null) {
                                 // then try language only matches
                                 for (LanguageName ln : languages) {
-                                    if (ln
-                                            .getLanguage()
-                                            .getLocale()
-                                            .getLanguage()
+                                    if (ln.getLanguage().getLocale().getLanguage()
                                             .equals(l.getLocale().getLanguage())) {
                                         grammarLanguage = ln;
                                         break;
@@ -379,27 +374,33 @@ public class PocketSphinxNode extends Node {
                         // ignore
                     }
                     // properties.remove(GRAMMAR_EXPRESSION);
+
                     editGrammar.setText(Resources.getString("EditGrammar"));
                     editGrammar.setEnabled(true);
-                    edgeModel.setName(com.clt.diamant.Resources
-                            .getString("InputPatterns"));
-                }
+                    edgeModel.setName(com.clt.diamant.Resources.getString("InputPatterns"));
+                } 
+
                 // The words/sentences to be recognized is given as a list
-                // of words are sentences
+                // of words or sentences
                 else if (grammar.getSelectedItem() == PocketSphinxNode.DIRECT_GRAMMAR) {
+                    PocketSphinxNode.this.grammarMode = GrammarMode.DIRECT_GRAMMAR;
+                    
                     properties.remove(PocketSphinxNode.GRAMMAR);
                     properties.remove(PocketSphinxNode.GRAMMAR_EXPRESSION);
-                    editGrammar.setText(com.clt.diamant.Resources
-                            .getString("Edit"));
+                    editGrammar.setText(com.clt.diamant.Resources.getString("Edit"));
                     editGrammar.setEnabled(false);
                     edgeModel.setName(Resources.getString("InputWords"));
-                }
+                } 
+
                 // The grammar is given as an expression (to be evaluated).
                 else if (grammar.getSelectedItem() == PocketSphinxNode.DYNAMIC_GRAMMAR) {
+                    PocketSphinxNode.this.grammarMode = GrammarMode.DYNAMIC_GRAMMAR;
+                    
                     properties.remove(PocketSphinxNode.GRAMMAR);
                     if (properties.get(PocketSphinxNode.GRAMMAR_EXPRESSION) == null) {
                         properties.put(PocketSphinxNode.GRAMMAR_EXPRESSION, "");
                     }
+
                     editGrammar.setText(Resources.getString("EditExpression"));
                     editGrammar.setEnabled(true);
                     edgeModel.setName(com.clt.diamant.Resources.getString("InputPatterns"));
@@ -427,8 +428,7 @@ public class PocketSphinxNode extends Node {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(3, 3, 3, 3);
 
-        header.add(new JLabel(
-                com.clt.diamant.Resources.getString("Grammar") + ':'), gbc);
+        header.add(new JLabel(com.clt.diamant.Resources.getString("Grammar") + ':'), gbc);
         gbc.gridx++;
         gbc.weightx = 1.0;
         header.add(grammar, gbc);
@@ -461,8 +461,8 @@ public class PocketSphinxNode extends Node {
 
             @Override
             public Component getTableCellRendererComponent(JTable table,
-                                                           Object value, boolean isSelected, boolean hasFocus,
-                                                           int row, int column) {
+                    Object value, boolean isSelected, boolean hasFocus,
+                    int row, int column) {
 
                 JLabel label = (JLabel) super.getTableCellRendererComponent(
                         table, value, isSelected, hasFocus, row, column);
@@ -497,11 +497,11 @@ public class PocketSphinxNode extends Node {
         table.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
 
-                    public void valueChanged(ListSelectionEvent e) {
+            public void valueChanged(ListSelectionEvent e) {
 
-                        deleteButton.setEnabled(table.getSelectedRow() >= 0);
-                    }
-                });
+                deleteButton.setEnabled(table.getSelectedRow() >= 0);
+            }
+        });
 
         final JButton newButton = new CmdButton(new Runnable() {
 
@@ -525,7 +525,7 @@ public class PocketSphinxNode extends Node {
         final JCheckBox timeout = new JCheckBox(com.clt.diamant.Resources
                 .getString("Timeout") + ':');
         final JCheckBox forceTimeout = NodePropertiesDialog.createCheckBox(properties, PocketSphinxNode.FORCE_TIMEOUT, com.clt.diamant.Resources
-                        .getString(PocketSphinxNode.FORCE_TIMEOUT));
+                .getString(PocketSphinxNode.FORCE_TIMEOUT));
 
         timeout.addItemListener(new ItemListener() {
 
@@ -679,7 +679,6 @@ public class PocketSphinxNode extends Node {
         return tabs;
     }
 
-
     @Override
     public Color getPortColor(int portNumber) {
 
@@ -690,7 +689,6 @@ public class PocketSphinxNode extends Node {
             return super.getPortColor(portNumber);
         }
     }
-
 
     @Override
     public String getDescription(Edge selectedEdge) {
@@ -729,7 +727,6 @@ public class PocketSphinxNode extends Node {
         return buffer.toString();
     }
 
-
     @Override
     public void update(Mapping map) {
 
@@ -740,7 +737,6 @@ public class PocketSphinxNode extends Node {
                     .getProperty(PocketSphinxNode.GRAMMAR)));
         }
     }
-
 
     private com.clt.srgf.Grammar compileGrammar(Map<String, Object> properties, List<Edge> edges) throws Exception {
         Grammar grammar = (Grammar) properties.get(PocketSphinxNode.GRAMMAR);
@@ -792,46 +788,35 @@ public class PocketSphinxNode extends Node {
         return recGrammar;
     }
 
-
     @Override
     public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger) {
         return this.recognize(comm.getLayeredPane(), comm, input, this.properties, false);
     }
-    
+
     private Settings getSettings() {
         return (Settings) this.getGraph().getOwner().getPluginSettings(Plugin.class);
     }
 
-
-    private Node recognize(JLayeredPane layer, Debugger dbg,
-                           final InputCenter input, Map<String, Object> properties,
-                           boolean interactive) {
-
+    private Node recognize(JLayeredPane layer, Debugger dbg, final InputCenter input, Map<String, Object> properties, boolean interactive) {
         long timeout = 0;
         String t = (String) properties.get(PocketSphinxNode.TIMEOUT);
 
         if (t != null) {
             try {
-                timeout = ((IntValue) this.parseExpression(t).evaluate(dbg))
-                        .getInt();
+                timeout = ((IntValue) this.parseExpression(t).evaluate(dbg)).getInt();
             } catch (Exception exn) {
                 throw new NodeExecutionException(this,
-                        com.clt.diamant.Resources
-                                .getString("IllegalTimeoutValue")
-                                + " " + t, exn);
+                        com.clt.diamant.Resources.getString("IllegalTimeoutValue") + " " + t, exn);
             }
             if (timeout < 0) {
                 throw new NodeExecutionException(this,
-                        com.clt.diamant.Resources
-                                .getString("IllegalTimeoutValue")
-                                + " " + t);
+                        com.clt.diamant.Resources.getString("IllegalTimeoutValue") + " " + t);
             }
         }
 
         // Boolean b = (Boolean) properties.get(FORCE_TIMEOUT);
         // boolean forceTimeout = b != null ? b.booleanValue() : false;
-        boolean background = ((Boolean) properties.get(PocketSphinxNode.BACKGROUND))
-                .booleanValue();
+        boolean background = ((Boolean) properties.get(PocketSphinxNode.BACKGROUND)).booleanValue();
 
         Grammar grammar = (Grammar) properties.get(PocketSphinxNode.GRAMMAR);
 
@@ -842,8 +827,7 @@ public class PocketSphinxNode extends Node {
                 edges.add(this.getEdge(i));
             }
         } else {
-            edges = new ArrayList<Edge>((List<Edge>) properties
-                    .get(EdgeConditionModel.EDGE_PROPERTY));
+            edges = new ArrayList<Edge>((List<Edge>) properties.get(EdgeConditionModel.EDGE_PROPERTY));
             if (timeout > 0) {
                 edges.add(new TimeoutEdge(this));
             }
@@ -875,7 +859,7 @@ public class PocketSphinxNode extends Node {
                         throw new NodeExecutionException(this,
                                 com.clt.diamant.Resources
                                         .getString("IllegalPattern")
-                                        + ": " + e.getCondition(), exn);
+                                + ": " + e.getCondition(), exn);
                     }
                     patternTargets[n] = i;
                     n++;
@@ -888,12 +872,9 @@ public class PocketSphinxNode extends Node {
             recGrammar = this.compileGrammar(properties, edges);
         } catch (Exception exn) {
             if (grammar == null) {
-                throw new NodeExecutionException(this, Resources.format(
-                        "GrammarCompileError", "")
-                        + ".", exn);
+                throw new NodeExecutionException(this, Resources.format("GrammarCompileError", "") + ".", exn);
             } else {
-                throw new NodeExecutionException(this, Resources
-                        .getString("PatternCompileError"), exn);
+                throw new NodeExecutionException(this, Resources.getString("PatternCompileError"), exn);
             }
         }
 
@@ -914,9 +895,7 @@ public class PocketSphinxNode extends Node {
             this.getRecognizer().stopRecognition();
             this.getRecognizer().setContext(recGrammar);
         } catch (SpeechException exn) {
-            throw new NodeExecutionException(this, Resources
-                    .getString("RecognizerError")
-                    + ".", exn);
+            throw new NodeExecutionException(this, Resources.getString("RecognizerError") + ".", exn);
         }
 
         final RecognitionThread recThread = new RecognitionThread(this.getRecognizer());
@@ -926,11 +905,9 @@ public class PocketSphinxNode extends Node {
 
         if (background && !interactive && (input != null)) {
             new Thread(new Runnable() {
-
                 public void run() {
-
                     try {
-                        MatchResult mr = recThread.start(recGrammar, patterns,0, null, confidenceThreshold);
+                        MatchResult mr = recThread.start(recGrammar, patterns, 0, null, confidenceThreshold);
                         if (mr != null) {
                             Value result = mr.getMatch().get(backgroundPattern.getVariableName());
                             input.put(new DialogInput<Object>(PocketSphinxNode.voconDevice, result));
@@ -947,9 +924,7 @@ public class PocketSphinxNode extends Node {
 
             return edges.get(0).getTarget();
         } else {
-            int resultEdge = this.recognizeAsync(recThread, layer, recGrammar,
-                    patterns, timeout, timeoutEdge, interactive,
-                    confidenceThreshold);
+            int resultEdge = this.recognizeAsync(recThread, layer, recGrammar, patterns, timeout, timeoutEdge, interactive, confidenceThreshold);
 
             if (resultEdge == -1) {
                 throw new ExecutionStoppedException();
@@ -959,25 +934,21 @@ public class PocketSphinxNode extends Node {
         }
     }
 
-
     private int recognizeAsync(final RecognitionThread recThread,
-                               JLayeredPane layer, com.clt.srgf.Grammar recGrammar,
-                               final Pattern[] patterns, final long timeout, int timeoutEdge,
-                               final boolean interactive, float confidenceThreshold) {
+            JLayeredPane layer, com.clt.srgf.Grammar recGrammar,
+            final Pattern[] patterns, final long timeout, int timeoutEdge,
+            final boolean interactive, float confidenceThreshold) {
 
         final JButton stop = new JButton(GUI.getString("Cancel"));
         stop.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-
                 recThread.stop();
                 synchronized (stop) {
                     stop.notifyAll();
                 }
             }
         });
-        final JLabel micState =
-                new JLabel("", PocketSphinxNode.micOff, SwingConstants.LEFT);
+        final JLabel micState = new JLabel("", PocketSphinxNode.micOff, SwingConstants.LEFT);
         final TextBox result = new TextBox(1);
         result.setPreferredSize(new Dimension(300, 75));
         JPanel p = new JPanel(new BorderLayout(12, 12));
@@ -991,29 +962,20 @@ public class PocketSphinxNode extends Node {
         p.add(bottom, BorderLayout.SOUTH);
         p.setOpaque(false);
         Border bevel = new Border() {
-
             private int size = 20;
 
-
             public Insets getBorderInsets(Component c) {
-
                 return new Insets(this.size, this.size, this.size, this.size);
             }
 
-
             public boolean isBorderOpaque() {
-
                 return false;
             }
 
-
-            public void paintBorder(Component c, Graphics g, int x, int y,
-                                    int width, int height) {
-
+            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
                 g.setColor(new Color(0, 0, 0, 128));
                 g.fillRoundRect(x, y, width, height, this.size * 2, this.size * 2);
             }
-
         };
         p.setBorder(bevel);
         p.setBorder(new GroupBorder(Resources.getString("PocketSphinx")));
@@ -1063,7 +1025,7 @@ public class PocketSphinxNode extends Node {
                     List<Slot> accessible_vars = this.getGraph().getAllVariables(
                             Graph.LOCAL);
                     for (Iterator<String> vars = match.variables(); vars
-                            .hasNext(); ) {
+                            .hasNext();) {
                         String name = vars.next();
                         Slot v = null;
                         for (int j = accessible_vars.size() - 1; (j >= 0)
@@ -1078,7 +1040,7 @@ public class PocketSphinxNode extends Node {
                         } else {
                             throw new NodeExecutionException(this,
                                     "Attempt to bind non existing variable "
-                                            + name);
+                                    + name);
                         }
                     }
                 }
@@ -1134,7 +1096,6 @@ public class PocketSphinxNode extends Node {
         return resultEdge;
     }
 
-
     @Override
     public void validate(Collection<SearchResult> errors) {
 
@@ -1189,10 +1150,9 @@ public class PocketSphinxNode extends Node {
 
     }
 
-
     @Override
     protected void readAttribute(XMLReader r, String name, String value,
-                                 IdMap uid_map)
+            IdMap uid_map)
             throws SAXException {
 
         if (name.equals(PocketSphinxNode.TIMEOUT)) {
@@ -1233,7 +1193,6 @@ public class PocketSphinxNode extends Node {
             super.readAttribute(r, name, value, uid_map);
         }
     }
-
 
     @Override
     protected void writeAttributes(XMLWriter out, IdMap uid_map) {
@@ -1278,17 +1237,15 @@ public class PocketSphinxNode extends Node {
         }
     }
 
-
     @Override
     protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         // TODO Auto-generated method stub
     }
 
-
     /**
-     * The name under which this node type will be displayed
-     * in the {@link NodeToolbox}.
+     * The name under which this node type will be displayed in the
+     * {@link NodeToolbox}.
      *
      * @param c
      * @return

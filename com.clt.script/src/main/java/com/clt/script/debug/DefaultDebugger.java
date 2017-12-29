@@ -32,7 +32,7 @@ public class DefaultDebugger implements Debugger {
 
 
   public void preEvaluate(Expression e) {
-
+//     System.err.println("evaluate: " + e);
   }
 
 

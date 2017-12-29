@@ -965,9 +965,7 @@ public class Grammar implements NamedEntity {
      * @return The result of the evaluation of the grammars semantic tags
      * @see ParseOptions
      */
-    public Value match(TreeNode tree, String rulename, ParseOptions options)
-            throws SemanticException {
-
+    public Value match(TreeNode tree, String rulename, ParseOptions options) throws SemanticException {
         if (!this.compiled) {
             this.compile();
         }
@@ -1277,9 +1275,7 @@ public class Grammar implements NamedEntity {
      * @see Format#JSGF
      * @see Format#SRGF
      */
-    public void export(OutputStream out, Grammar.Format format)
-            throws IOException {
-
+    public void export(OutputStream out, Grammar.Format format) throws IOException {
         this.export(out, format, null);
     }
 
@@ -1290,9 +1286,7 @@ public class Grammar implements NamedEntity {
         PrintWriter w;
         switch (format) {
             case SRGF:
-                w
-                        = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,
-                                "ISO-8859-1")));
+                w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "ISO-8859-1")));
                 w.println("#ABNF 1.0 ISO-8859-1;");
                 w.println();
                 break;
@@ -1301,29 +1295,21 @@ public class Grammar implements NamedEntity {
                 break;
             case TEMIC:
             case JSGF:
-                w
-                        = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,
-                                "ISO-8859-1")));
+                w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "ISO-8859-1")));
                 w.println("#JSGF V1.0 ISO-8859-1;");
                 w.println();
                 break;
             case VOCON:
             case VOCON_G:
-                w
-                        = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,
-                                "UTF-16")));
+                w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "UTF-16")));
                 break;
             case LH:
             case NGSL:
-                w
-                        = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,
-                                "ISO-8859-1")));
+                w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "ISO-8859-1")));
                 w.println(";GSL2.0");
                 break;
             case EXTLAT:
-                w
-                        = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out,
-                                "ISO-8859-1")));
+                w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "ISO-8859-1")));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown export format");
@@ -1408,11 +1394,8 @@ public class Grammar implements NamedEntity {
      * @see Format#JSGF
      * @see Format#SRGF
      */
-    private void exportImpl(PrintWriter w, Grammar.Format format,
-            Tokenizer tokenizer) {
-
-        Collection<Rule> allRules
-                = new ArrayList<Rule>(this.rules.size() + this.defaultRules.size());
+    private void exportImpl(PrintWriter w, Grammar.Format format, Tokenizer tokenizer) {
+        Collection<Rule> allRules = new ArrayList<Rule>(this.rules.size() + this.defaultRules.size());
         allRules.addAll(this.rules.values());
         allRules.addAll(this.defaultRules.values());
 
@@ -1464,10 +1447,7 @@ public class Grammar implements NamedEntity {
                     props.put("tag-format", this.getTagFormat());
                 }
                 props.put("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-                props
-                        .put(
-                                "xsi:schemaLocation",
-                                "http://www.w3.org/2001/06/grammar http://www.w3.org/TR/speech-grammar/grammar.xsd");
+                props.put("xsi:schemaLocation", "http://www.w3.org/2001/06/grammar http://www.w3.org/TR/speech-grammar/grammar.xsd");
                 props.put("xmlns", "http://www.w3.org/2001/06/grammar");
                 props.remove("encoding");
                 if (this.getRoot() != null) {
@@ -1772,9 +1752,7 @@ public class Grammar implements NamedEntity {
     /**
      * Create a grammar from a string using the default environment.
      */
-    public static Grammar create(String s)
-            throws Exception {
-
+    public static Grammar create(String s) throws Exception {
         return Grammar.create(s, new com.clt.script.DefaultEnvironment());
     }
 
@@ -1783,18 +1761,14 @@ public class Grammar implements NamedEntity {
      * environment is used to resolve variables and function calls in semantic
      * tags
      */
-    public static Grammar create(String s, com.clt.script.Environment env)
-            throws Exception {
-
+    public static Grammar create(String s, com.clt.script.Environment env) throws Exception {
         return com.clt.script.parser.Parser.parseSRGF(s, env);
     }
 
     /**
      * Create a grammar from a Reader source using the default environment.
      */
-    public static Grammar create(Reader r)
-            throws Exception {
-
+    public static Grammar create(Reader r) throws Exception {
         return com.clt.script.parser.Parser.parseSRGF(r,
                 new com.clt.script.DefaultEnvironment());
     }
@@ -1802,9 +1776,48 @@ public class Grammar implements NamedEntity {
     /**
      * Create a grammar from a Reader source using the given environment.
      */
-    public static Grammar create(Reader r, com.clt.script.Environment env)
-            throws Exception {
-
+    public static Grammar create(Reader r, com.clt.script.Environment env) throws Exception {
         return com.clt.script.parser.Parser.parseSRGF(r, env);
+    }
+    
+    public static void main(String[] args) throws Exception, Exception {
+        String gr = "#ABNF 1.0 ISO-8859-1;\n" +
+"\n" +
+"// Default grammar language is US English\n" +
+"language en-US;\n" +
+                "root <request>;\n"+
+"\n" +
+"// Single language attachment to tokens\n" +
+"// Note that \"fr-CA\" (Canadian French) is applied to only\n" +
+"//  the word \"oui\" because of precedence rules\n" +
+"$yes = yes ;\n" +
+"\n" +
+"// Single language attachment to an expansion\n" +
+"$people1 = (Michel Tremblay | André Roy);\n" +
+"\n" +
+"// Handling language-specific pronunciations of the same word\n" +
+"// A capable speech recognizer will listen for Mexican Spanish and\n" +
+"//   US English pronunciations.\n" +
+"$people2 = John {name=\"john\"};\n" +
+"\n" +
+"/**\n" +
+" * Multi-lingual input possible\n" +
+" * @example may I speak to André Roy\n" +
+" * @example may I speak to Jose\n" +
+" */\n" +
+"public $request = may I speak to ($people1 | $people2) {name=people1.name};";
+
+        Grammar g = Grammar.create(gr);
+        g.setName("foo");
+        System.out.println(g);
+        g.export(System.out, Grammar.Format.JSGF);
+        
+        Value v = g.match("May I speak to John", "request"); //May I speak to 
+        System.out.println(v);
+        System.out.println(v.getClass());
+        
+        
+//        ParseNode tree_root = g.getBestParseTree("May I speak to John", "request");
+//        System.out.println(tree_root);
     }
 }
