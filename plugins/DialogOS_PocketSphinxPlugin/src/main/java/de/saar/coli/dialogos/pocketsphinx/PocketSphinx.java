@@ -30,6 +30,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
@@ -125,8 +128,24 @@ public class PocketSphinx extends AbstractRecognizer {
 //        System.err.println("SRGF:\n" + grammar);
 //        System.err.println("root -> " + grammar.getRoot());        
 //        System.err.println("JSGF:\n" + sw.toString());
+
+        String s = sw.toString();
+        System.err.println(s);
         
-        decoder.setJsgfString("jsgf", sw.toString());
+        
+        
+        byte[] ptext = s.getBytes(Charset.defaultCharset()); 
+        String value = new String(ptext); //, Charset.defaultCharset()); 
+//        System.err.println(value);
+
+        System.out.println(s.getBytes(UTF_8).length);
+        System.out.println(ptext.length);
+        
+        
+        
+        System.out.println("Default Charset=" + Charset.defaultCharset());
+        
+        decoder.setJsgfString("jsgf", value);
         decoder.setSearch("jsgf");
     }
 

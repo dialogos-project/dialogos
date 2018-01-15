@@ -373,7 +373,9 @@ public class Terminal
       switch (format) {
         case SRGF:
         case JSGF:
-          w.print(StringValue.toSourceString(s, true));
+          w.print(s);
+//          w.print(StringValue.toSourceString(s, true));
+          // AK, Jan 18: Let's not spell out unicode characters any more, shall we?
           break;
         case GRXML:
           w.println(com.clt.xml.XMLWriter.encode(s));

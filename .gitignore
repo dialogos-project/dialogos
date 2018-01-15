@@ -20,3 +20,4 @@
 /com.clt.speech/src/main/java/com/clt/speech/htk/Lexer.java
 /com.clt.speech/src/main/java/com/clt/speech/htk/Parser.java
 /com.clt.speech/src/main/java/com/clt/speech/htk/Sym.java
+/build/
