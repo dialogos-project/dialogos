@@ -124,28 +124,25 @@ public class PocketSphinx extends AbstractRecognizer {
         }
         
         grammar.export(sw, Grammar.Format.JSGF);
+        String s = sw.toString();
         
 //        System.err.println("SRGF:\n" + grammar);
 //        System.err.println("root -> " + grammar.getRoot());        
 //        System.err.println("JSGF:\n" + sw.toString());
 
-        String s = sw.toString();
-        System.err.println(s);
         
+        // This doesn't work - why? See issue #22.
         
-        
-        byte[] ptext = s.getBytes(Charset.defaultCharset()); 
-        String value = new String(ptext); //, Charset.defaultCharset()); 
+//        byte[] ptext = s.getBytes(Charset.defaultCharset()); 
+//        String value = new String(ptext); //, Charset.defaultCharset()); 
 //        System.err.println(value);
 
-        System.out.println(s.getBytes(UTF_8).length);
-        System.out.println(ptext.length);
+//        System.out.println(s.getBytes(UTF_8).length);
+//        System.out.println(ptext.length);
+       
+//        System.out.println("Default Charset=" + Charset.defaultCharset());
         
-        
-        
-        System.out.println("Default Charset=" + Charset.defaultCharset());
-        
-        decoder.setJsgfString("jsgf", value);
+        decoder.setJsgfString("jsgf", s);
         decoder.setSearch("jsgf");
     }
 
