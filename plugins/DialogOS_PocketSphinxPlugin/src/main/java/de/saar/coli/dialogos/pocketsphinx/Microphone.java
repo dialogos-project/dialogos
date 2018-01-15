@@ -33,8 +33,15 @@ public class Microphone {
     }
     
     public void stop() {
-        line.drain();
-        line.stop();
+//        System.err.println("in #stop");
+        line.close();
+        
+        // In some Java audio tutorials, it is recommended to call
+        // line.drain() and then line.stop(). This does not work on
+        // Windows, where apparently some other thread keeps writing
+        // into the line, and so drain never returns. Just closing
+        // the line seems to work fine, especially given that we always
+        // allocate a new Microphone object for each node call anyway.
     }
     
     /**

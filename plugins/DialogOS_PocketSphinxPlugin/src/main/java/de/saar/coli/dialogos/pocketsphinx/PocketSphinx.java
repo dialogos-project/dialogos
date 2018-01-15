@@ -143,6 +143,8 @@ public class PocketSphinx extends AbstractRecognizer {
 
     @Override
     protected RecognitionResult startImpl() throws SpeechException {
+//        System.err.println("startImp, dummy mode: " + isDummyMode());
+        
         if (isDummyMode()) {
             String input = KeyboardInputDialog.getInput();
             return new SimpleRecognizerResult(input);
@@ -196,7 +198,7 @@ public class PocketSphinx extends AbstractRecognizer {
                         }
                     }
                 }
-
+                
                 decoder.endUtt();
                 mic.stop();
 
@@ -224,6 +226,7 @@ public class PocketSphinx extends AbstractRecognizer {
     }
 
     public void setDummyMode(boolean dummyMode) {
+//        System.err.println("set dummy mode: " + dummyMode);
         this.dummyMode = dummyMode;
     }
 
