@@ -484,8 +484,7 @@ public abstract class Client {
       try {
         this.device = new ClientDevice(this);
         this.device.setPriority(this.priority);
-        this.device
-          .activate(port, null, this.useRendezvous(), !this.isPublic());
+        this.device.activate(port, null, this.useRendezvous(), !this.isPublic());
       } catch (IOException exn) {
         this.close();
         throw exn;

@@ -4,7 +4,9 @@ dependencies {
   // the JmDNS class that is now abstract.
   // TODO: Switch to the maven package
   // compile group: 'javax.jmdns', name: 'jmdns', version: '3.4.1'
-  compile name: 'JRendezvous'
+//  compile name: 'JRendezvous'
+  
+  compile group: 'org.jmdns', name: 'jmdns', version: '3.5.3'
 
   compile project(':com.clt.script')
   compile project(':com.clt.mac')
