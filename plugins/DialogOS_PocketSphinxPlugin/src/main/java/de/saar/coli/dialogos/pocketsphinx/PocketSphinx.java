@@ -49,6 +49,8 @@ public class PocketSphinx extends AbstractRecognizer {
         try {
             if (Platform.isMac()) {
                 // dynamic lib is 64-bit
+                NativeLibraryLoader.loadLibraryFromJar("/native/macos/libsphinxbase.3.dylib");
+                NativeLibraryLoader.loadLibraryFromJar("/native/macos/libpocketsphinx.3.dylib");
                 NativeLibraryLoader.loadLibraryFromJar("/native/macos/libpocketsphinx_jni.dylib");
             } else if (Platform.isLinux()) {
                 // dynamic lib is 64-bit
