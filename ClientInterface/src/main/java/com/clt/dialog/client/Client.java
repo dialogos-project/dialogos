@@ -560,7 +560,6 @@ public abstract class Client {
    * @see #useRendezvous()
    */
   public boolean isPublic() {
-
     return true;
   }
 

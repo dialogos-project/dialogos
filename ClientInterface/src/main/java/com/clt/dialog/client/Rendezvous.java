@@ -17,12 +17,13 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,6 @@ class Rendezvous {
                     return name;
                 }
 
-//                public void addService(JmDNS jmdns, String type, String name) {
                 @Override
                 public void serviceAdded(ServiceEvent event) {
 //                    name = this.normalizeName(name, type);
@@ -78,7 +78,6 @@ class Rendezvous {
 
                 @Override
                 public void serviceRemoved(ServiceEvent e) {
-//                public void removeService(JmDNS jmdns, String type, String name) {
                     if (e.getType().equals(Rendezvous.SERVICE_TYPE)) {
                         String name = this.normalizeName(e.getName(), e.getType());
 
@@ -95,7 +94,6 @@ class Rendezvous {
 
                 @Override
                 public void serviceResolved(ServiceEvent e) {
-//                public void resolveService(JmDNS jmdns, String type, String name, ServiceInfo info) {
                     if (e.getType().equals(Rendezvous.SERVICE_TYPE) && (e.getInfo() != null)) {
                         String name = this.normalizeName(e.getName(), e.getType());
 
@@ -169,16 +167,15 @@ class Rendezvous {
             Rendezvous.rendezvous[i] = JmDNS.create(addr[i]); //  new JmDNS(addr[i]);
             Rendezvous.rendezvous[i].registerServiceType(Rendezvous.SERVICE_TYPE);
             if (Rendezvous.VERBOSE) {
+                System.out.println("jmdns created on address " + addr[i]);
+                System.out.println("rendezvous type: " + Rendezvous.SERVICE_TYPE);
                 System.out.println("Rendezvous activated on interface " + Rendezvous.rendezvous[i].getInterface());
             }
         }
     }
 
-    public static ServiceInfo createService(String name, int port,
-            String version,
-            boolean localhostOnly) {
-
-        Hashtable<String, String> properties = new Hashtable<String, String>();
+    public static ServiceInfo createService(String name, int port, String version, boolean localhostOnly) {
+        Map<String, String> properties = new HashMap<String, String>();
         properties.put(Rendezvous.SERVICE_PROPERTY_VERSION, version);
         properties.put(Rendezvous.SERVICE_PROPERTY_PROTOCOL, "XML, BIN");
         if (localhostOnly) {
@@ -186,26 +183,26 @@ class Rendezvous {
         }
         properties.put(Rendezvous.SERVICE_PROPERTY_NAME, name);
 
-        return ServiceInfo.create(Rendezvous.SERVICE_TYPE, name + "." + Rendezvous.SERVICE_TYPE, port, 0, 0, properties);
-
-//        return new ServiceInfo(Rendezvous.SERVICE_TYPE, name + "." + Rendezvous.SERVICE_TYPE, port, 0, 0, properties);
+        return ServiceInfo.create(Rendezvous.SERVICE_TYPE, name, port, 0, 0, properties);
+        // AK 01/18: Removed duplicate ".<SERVICE_TYPE>" from service name,
+        // because it confused (modern?) Bonjour browsers.
     }
 
-    public static void addService(ServiceInfo service)
-            throws IOException {
-
+    public static void addService(ServiceInfo service) throws IOException {
         if (Rendezvous.rendezvous == null) {
             throw new IOException("Rendezvous not initialized");
         }
 
         for (int i = 0; i < Rendezvous.rendezvous.length; i++) {
             Rendezvous.rendezvous[i].registerService(service);
+
+            if (Rendezvous.VERBOSE) {
+                System.err.println("Rendezvous service activated: " + service);
+            }
         }
     }
 
-    public static void removeService(ServiceInfo service)
-            throws IOException {
-
+    public static void removeService(ServiceInfo service) throws IOException {
         if (Rendezvous.rendezvous == null) {
             throw new IOException("Rendezvous not initialized");
         }
@@ -227,14 +224,54 @@ class Rendezvous {
         }
     }
 
-    static ListModel getAllClients()
-            throws IOException {
-
+    static ListModel getAllClients() throws IOException {
         if (Rendezvous.rendezvous == null) {
             throw new IOException("Rendezvous not initialized");
         }
 
         return Rendezvous.clientList;
+    }
+
+    private static boolean isAddressInList(byte[] address, byte[][] addressList) {
+        for (int i = 0; i < addressList.length; i++) {
+            if (Arrays.equals(address, addressList[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String b(byte[] bs) {
+        return Arrays.toString(bs);
+    }
+
+    private static class ByteUtils {
+
+        private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+
+        public static byte[] intToBytes(int x) {
+            buffer.putInt(0, x);
+            return buffer.array();
+        }
+
+        public static int bytesToInt(byte[] bytes) {
+            return ByteBuffer.wrap(bytes).getInt();
+        }
+
+        public static String b(int x) {
+            return Arrays.toString(intToBytes(x));
+        }
+    }
+    
+    private static boolean contains(int value, int[] array) {
+        for( int i = 0; i < array.length; i++ ) {
+            if( array[i] == value ) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     static ServiceInfo[] getServiceInfo(String name, String server) throws IOException {
@@ -251,20 +288,21 @@ class Rendezvous {
             }
         }
 
-        System.err.println(Rendezvous.clients);
-
         for (ServiceInfo info : Rendezvous.clients.values()) {
             String clientName = info.getPropertyString(Rendezvous.SERVICE_PROPERTY_NAME);
             boolean local = "yes".equals(info.getPropertyString(Rendezvous.SERVICE_PROPERTY_LOCAL));
-            /*
-       * System.out.println("local: " + local);
-       * System.out.println("My address: " + InetAddress.getLocalHost());
-       * System.out.println("Client address: " + info.getAddress());
-             */
+
+            int localhostAddress = ByteUtils.bytesToInt(InetAddress.getLocalHost().getAddress());
+            int[] infoAddresses = new int[info.getInetAddresses().length];
+            for (int i = 0; i < info.getInetAddresses().length; i++) {
+                int v = ByteUtils.bytesToInt(info.getInetAddresses()[i].getAddress());
+                infoAddresses[i] = v;
+            }
+            
             if ((name == null) || info.getName().equals(name) || ((clientName != null) && clientName.equals(name))) {
-                if (local ? info.getAddress().equals(InetAddress.getLocalHost().getHostAddress()) : true) {
+                if (local ? contains(localhostAddress, infoAddresses) : true) {
                     if (server != null) {
-                        String server_addr;
+                        int serverAddress;
                         try {
                             InetAddress addr;
                             if (server.equalsIgnoreCase("localhost")) {
@@ -272,13 +310,13 @@ class Rendezvous {
                             } else {
                                 addr = InetAddress.getByName(server);
                             }
-                            server_addr = addr.getHostAddress();
+                            serverAddress = ByteUtils.bytesToInt(addr.getAddress());
                         } catch (IOException exn) {
                             System.err.println(exn);
                             throw exn;
                         }
 
-                        if (server_addr.equals(info.getAddress())) {
+                        if (contains(serverAddress, infoAddresses) ) {
                             infos.add(info);
                         }
                     } else {
@@ -291,9 +329,7 @@ class Rendezvous {
         return infos.toArray(new ServiceInfo[infos.size()]);
     }
 
-    public static String[] getLocalHostAddresses()
-            throws IOException {
-
+    public static String[] getLocalHostAddresses() throws IOException {
         String[] adr = new String[Rendezvous.rendezvous.length];
         for (int i = 0; i < Rendezvous.rendezvous.length; i++) {
             adr[i] = Rendezvous.rendezvous[i].getInterface().getHostAddress();

@@ -11,7 +11,6 @@
  * it only in accordance with the terms of the license agreement
  * you entered into with CLT Sprachtechnologie GmbH.
  */
-
 package com.clt.diamant;
 
 import java.awt.BorderLayout;
@@ -38,139 +37,123 @@ import com.clt.gui.CmdButton;
 import com.clt.gui.border.GroupBorder;
 
 /**
- * 
- * 
+ *
+ *
  * @author Daniel Bobbert
  * @version 1.0
  */
+public class DocumentAssistant extends Assistant {
+    private JList devices;
 
-public class DocumentAssistant
-    extends Assistant {
+    public DocumentAssistant(final SingleDocument doc) {
 
-  private JList devices;
+        super(Resources.getString("NewDialog"));
 
+        AssistantPanel dienste = new AssistantPanel("devices", new BorderLayout()) {
 
-  public DocumentAssistant(final SingleDocument doc) {
+            @Override
+            public String getNextPanel() {
 
-    super(Resources.getString("NewDialog"));
-
-    AssistantPanel dienste = new AssistantPanel("devices", new BorderLayout()) {
-
-      @Override
-      public String getNextPanel() {
-
-        return null;
-      }
-
-
-      @Override
-      public boolean isComplete() {
-
-        return true;
-      }
-    };
-
-    this.devices = new JList(new Vector<Device>(doc.getDevices()));
-
-    try {
-      JPanel availableClients = new JPanel(new BorderLayout());
-      final JList deviceList = new JList(ServerDevice.getAllClients());
-      availableClients.add(new JScrollPane(deviceList));
-      availableClients.setBorder(new GroupBorder(Resources
-        .getString("AvailableDevices")));
-      dienste.add(availableClients, BorderLayout.NORTH);
-
-      JPanel docClients = new JPanel(new BorderLayout());
-      docClients.add(new JScrollPane(this.devices));
-      docClients.setBorder(new GroupBorder(Resources.getString("Devices")));
-      dienste.add(docClients, BorderLayout.SOUTH);
-
-      JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-      final JButton add =
-        new CmdButton(Resources.getString("Add"), new Runnable() {
-
-          public void run() {
-
-            ServiceInfoDescription si =
-              (ServiceInfoDescription)deviceList.getSelectedValue();
-            if (si != null) {
-              Device d = new Device(si.getServiceName());
-              d.setConnector(new RendezvousCLTConnector(si.getServiceName(),
-                            si.getHostname()));
-              doc.getDevices().add(d);
-              DocumentAssistant.this.devices.setListData(new Vector<Device>(doc
-                .getDevices()));
+                return null;
             }
-          }
-        });
-      final JButton remove =
-        new CmdButton(Resources.getString("Remove"), new Runnable() {
 
-          public void run() {
+            @Override
+            public boolean isComplete() {
 
-            Object[] devs = DocumentAssistant.this.devices.getSelectedValues();
-            if (devs != null) {
-              for (int i = 0; i < devs.length; i++) {
-                doc.getDevices().remove(devs[i]);
-              }
+                return true;
             }
-            DocumentAssistant.this.devices.setListData(new Vector<Device>(doc
-              .getDevices()));
-          }
-        });
+        };
 
-      final Runnable updateButtons = new Runnable() {
+        this.devices = new JList(new Vector<Device>(doc.getDevices()));
 
-        public void run() {
+        try {
+            JPanel availableClients = new JPanel(new BorderLayout());
+            final JList deviceList = new JList(ServerDevice.getAllClients());
+            availableClients.add(new JScrollPane(deviceList));
+            availableClients.setBorder(new GroupBorder(Resources.getString("AvailableDevices")));
+            dienste.add(availableClients, BorderLayout.NORTH);
 
-          remove.setEnabled((DocumentAssistant.this.devices
-            .getSelectedIndices().length > 0)
-            && DocumentAssistant.this.devices.hasFocus());
-          add.setEnabled((deviceList.getSelectedIndices().length > 0)
+            JPanel docClients = new JPanel(new BorderLayout());
+            docClients.add(new JScrollPane(this.devices));
+            docClients.setBorder(new GroupBorder(Resources.getString("Devices")));
+            dienste.add(docClients, BorderLayout.SOUTH);
+
+            JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            final JButton add = new CmdButton(Resources.getString("Add"), new Runnable() {
+                        public void run() {
+
+                            ServiceInfoDescription si = (ServiceInfoDescription) deviceList.getSelectedValue();
+                            if (si != null) {
+                                Device d = new Device(si.getServiceName());
+                                d.setConnector(new RendezvousCLTConnector(si.getServiceName(), si.getHostname()));
+                                doc.getDevices().add(d);
+                                DocumentAssistant.this.devices.setListData(new Vector<Device>(doc.getDevices()));
+                            }
+                        }
+                    });
+            
+            final JButton remove = new CmdButton(Resources.getString("Remove"), new Runnable() {
+                        public void run() {
+                            Object[] devs = DocumentAssistant.this.devices.getSelectedValues();
+                            if (devs != null) {
+                                for (int i = 0; i < devs.length; i++) {
+                                    doc.getDevices().remove(devs[i]);
+                                }
+                            }
+                            DocumentAssistant.this.devices.setListData(new Vector<Device>(doc.getDevices()));
+                        }
+                    });
+
+            final Runnable updateButtons = new Runnable() {
+
+                public void run() {
+
+                    remove.setEnabled((DocumentAssistant.this.devices
+                            .getSelectedIndices().length > 0)
+                            && DocumentAssistant.this.devices.hasFocus());
+                    add.setEnabled((deviceList.getSelectedIndices().length > 0)
                             && deviceList.hasFocus());
+                }
+            };
+
+            ListSelectionListener lsl = new ListSelectionListener() {
+
+                public void valueChanged(ListSelectionEvent evt) {
+
+                    updateButtons.run();
+                }
+            };
+            FocusListener fl = new FocusAdapter() {
+
+                @Override
+                public void focusGained(FocusEvent evt) {
+
+                    updateButtons.run();
+                }
+            };
+            this.devices.addListSelectionListener(lsl);
+            this.devices.addFocusListener(fl);
+            deviceList.addListSelectionListener(lsl);
+            deviceList.addFocusListener(fl);
+
+            buttons.add(add);
+            buttons.add(remove);
+            dienste.add(buttons, BorderLayout.CENTER);
+        } catch (Exception exn) {
+            dienste.add(new JLabel(exn.toString()));
         }
-      };
+        this.add(dienste);
+    }
 
-      ListSelectionListener lsl = new ListSelectionListener() {
+    public static SingleDocument createDocument() {
 
-        public void valueChanged(ListSelectionEvent evt) {
+        SingleDocument d = new SingleDocument();
+        DocumentAssistant assistant = new DocumentAssistant(d);
 
-          updateButtons.run();
+        if (assistant.show(null, "devices")) {
+            return d;
+        } else {
+            return null;
         }
-      };
-      FocusListener fl = new FocusAdapter() {
-
-        @Override
-        public void focusGained(FocusEvent evt) {
-
-          updateButtons.run();
-        }
-      };
-      this.devices.addListSelectionListener(lsl);
-      this.devices.addFocusListener(fl);
-      deviceList.addListSelectionListener(lsl);
-      deviceList.addFocusListener(fl);
-
-      buttons.add(add);
-      buttons.add(remove);
-      dienste.add(buttons, BorderLayout.CENTER);
-    } catch (Exception exn) {
-      dienste.add(new JLabel(exn.toString()));
     }
-    this.add(dienste);
-  }
-
-
-  public static SingleDocument createDocument() {
-
-    SingleDocument d = new SingleDocument();
-    DocumentAssistant assistant = new DocumentAssistant(d);
-
-    if (assistant.show(null, "devices")) {
-      return d;
-    }
-    else {
-      return null;
-    }
-  }
 }

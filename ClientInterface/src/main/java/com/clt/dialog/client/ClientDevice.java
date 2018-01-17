@@ -186,10 +186,7 @@ class ClientDevice
         }
     }
 
-    public void activate(int port, final Runnable init, boolean advertise,
-            boolean localhostOnly)
-            throws IOException {
-
+    public void activate(int port, final Runnable init, boolean advertise, boolean localhostOnly) throws IOException {
         this.dying = false;
 
         // System.out.println("open on port " + port);
@@ -203,9 +200,7 @@ class ClientDevice
 
         port = this.getPort();
         if (advertise) {
-            this.service
-                    = Rendezvous.createService(this.client.getName(), port, Device.VERSION,
-                            localhostOnly);
+            this.service = Rendezvous.createService(this.client.getName(), port, Device.VERSION, localhostOnly);
             Rendezvous.addService(this.service);
         }
 
