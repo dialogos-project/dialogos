@@ -231,42 +231,10 @@ class Rendezvous {
 
         return Rendezvous.clientList;
     }
-
-    private static boolean isAddressInList(byte[] address, byte[][] addressList) {
-        for (int i = 0; i < addressList.length; i++) {
-            if (Arrays.equals(address, addressList[i])) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static String b(byte[] bs) {
-        return Arrays.toString(bs);
-    }
-
-    private static class ByteUtils {
-
-        private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-
-        public static byte[] intToBytes(int x) {
-            buffer.putInt(0, x);
-            return buffer.array();
-        }
-
-        public static int bytesToInt(byte[] bytes) {
-            return ByteBuffer.wrap(bytes).getInt();
-        }
-
-        public static String b(int x) {
-            return Arrays.toString(intToBytes(x));
-        }
-    }
     
-    private static boolean contains(int value, int[] array) {
+    private static boolean contains(byte[] value, byte[][] array) {
         for( int i = 0; i < array.length; i++ ) {
-            if( array[i] == value ) {
+            if( Arrays.equals(value, array[i])) {
                 return true;
             }
         }
@@ -292,17 +260,17 @@ class Rendezvous {
             String clientName = info.getPropertyString(Rendezvous.SERVICE_PROPERTY_NAME);
             boolean local = "yes".equals(info.getPropertyString(Rendezvous.SERVICE_PROPERTY_LOCAL));
 
-            int localhostAddress = ByteUtils.bytesToInt(InetAddress.getLocalHost().getAddress());
-            int[] infoAddresses = new int[info.getInetAddresses().length];
+            byte[] localhostAddress = InetAddress.getLocalHost().getAddress();
+            byte[][] infoAddresses = new byte[info.getInetAddresses().length][];
             for (int i = 0; i < info.getInetAddresses().length; i++) {
-                int v = ByteUtils.bytesToInt(info.getInetAddresses()[i].getAddress());
+                byte[] v = info.getInetAddresses()[i].getAddress();
                 infoAddresses[i] = v;
             }
             
             if ((name == null) || info.getName().equals(name) || ((clientName != null) && clientName.equals(name))) {
                 if (local ? contains(localhostAddress, infoAddresses) : true) {
                     if (server != null) {
-                        int serverAddress;
+                        byte[] serverAddress;
                         try {
                             InetAddress addr;
                             if (server.equalsIgnoreCase("localhost")) {
@@ -310,7 +278,7 @@ class Rendezvous {
                             } else {
                                 addr = InetAddress.getByName(server);
                             }
-                            serverAddress = ByteUtils.bytesToInt(addr.getAddress());
+                            serverAddress = addr.getAddress();
                         } catch (IOException exn) {
                             System.err.println(exn);
                             throw exn;
@@ -337,17 +305,7 @@ class Rendezvous {
         return adr;
     }
 
-    /*
-   * public static boolean isLocalAddress(InetAddress adr) throws IOException {
-   * // due to a bug in InetAddress.equals() we need to compare the bytes
-   * ourselves byte[] bs = adr.getAddress(); for (int i=0; i<rendezvous.length;
-   * i++) { byte[] rbs = rendezvous[i].getInterface().getAddress(); boolean eq =
-   * bs.length == rbs.length; for (int j=0; j<bs.length && eq; j++) if (bs[j] !=
-   * rbs[j]) eq = false; if (eq) return true; } return false; }
-     */
-    private static class ClientListModel
-            extends AbstractListModel {
-
+    private static class ClientListModel extends AbstractListModel {
         List<ServiceInfoDescription> cs = new ArrayList<ServiceInfoDescription>();
 
         public synchronized int getSize() {
