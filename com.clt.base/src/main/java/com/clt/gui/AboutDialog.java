@@ -38,15 +38,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JTextPane;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 import com.clt.util.StringTools;
 
@@ -87,9 +81,7 @@ public class AboutDialog {
    * @param credits
    *          The name of the developers who contributed to this software.
    */
-  public AboutDialog(final String name, final String version,
-      final String disclaimer, final String credits) {
-
+  public AboutDialog(final String name, final String version, final String disclaimer, final String credits) {
     this.name = name;
     this.version = version;
     this.disclaimer = disclaimer;

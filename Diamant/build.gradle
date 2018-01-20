@@ -13,3 +13,39 @@ dependencies {
   
   runtime fileTree(dir: "${projectDir}/../plugins", include: '*/build/libs/*.jar')
 }
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+ 
+    dependencies {
+        // Add dependency for build script,
+        // so we can access Git from our
+        // build script.
+        classpath 'org.ajoberstar:grgit:2.1.0'
+    }
+}
+ 
+
+ext {
+    // Open the Git repository in the current directory.
+    git = org.ajoberstar.grgit.Grgit.open()
+ 
+    // Get commit id of HEAD.
+    longGitRevision = git.head().id
+    shortGitRevision = git.head().abbreviatedId
+}
+
+task('saveGitRevision') {
+    def prop = new Properties()
+    prop.put("longGitRevision", longGitRevision)
+    prop.put("shortGitRevision", shortGitRevision)
+    
+    def propFile = rootProject.file("Diamant/src/main/resources/VERSION");
+    propFile.createNewFile();
+    prop.store(propFile.newWriter(), null);
+}
+
+build.dependsOn(saveGitRevision)
+

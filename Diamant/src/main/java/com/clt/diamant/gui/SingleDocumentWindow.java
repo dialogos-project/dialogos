@@ -121,8 +121,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument> extends
     private JPanel contentPanel;
     private Header header;
     private JComponent toolbars;
-    private Collection<ComponentListener> viewListeners
-            = new ArrayList<ComponentListener>();
+    private Collection<ComponentListener> viewListeners = new ArrayList<ComponentListener>();
     private boolean openSubWindows = false;
     private long delay = 0;
     private PropertyChangeListener documentPropertyListener;
@@ -132,9 +131,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument> extends
     private transient WozInterface runtime;
     private transient Thread executionThread;
 
-    public SingleDocumentWindow(DocType d, MenuCommander superCommander,
-            final RequiredEventHandler systemEventHandler, boolean singleWindow) {
-
+    public SingleDocumentWindow(DocType d, MenuCommander superCommander, final RequiredEventHandler systemEventHandler, boolean singleWindow) {
         super(d);
 
         this.superCommander = superCommander;
