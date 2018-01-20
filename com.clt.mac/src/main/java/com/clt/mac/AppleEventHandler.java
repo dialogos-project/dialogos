@@ -10,8 +10,7 @@ package com.clt.mac;
 
 import java.util.Hashtable;
 
-public interface AppleEventHandler {
-
+interface AppleEventHandler {
   @SuppressWarnings("unchecked")
   public Object handleEvent(Object directObject, Hashtable parameters);
 }

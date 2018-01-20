@@ -20,7 +20,7 @@ import java.lang.reflect.Proxy;
  *
  * @author koller
  */
-public class Java9MacHandler implements SystemEventAdapter {
+class Java9MacHandler implements SystemEventAdapter {
 
     private static final ClassLoader CL = Java9MacHandler.class.getClassLoader();
     private RequiredEventHandler handler;

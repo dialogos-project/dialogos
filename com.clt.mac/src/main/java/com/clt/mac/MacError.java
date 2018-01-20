@@ -8,8 +8,7 @@
 
 package com.clt.mac;
 
-public class MacError
-    extends Exception {
+class MacError extends Exception {
 
   public MacError() {
 
