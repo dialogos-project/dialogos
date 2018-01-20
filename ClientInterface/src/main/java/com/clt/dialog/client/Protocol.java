@@ -1,16 +1,3 @@
-/*
- * @(#)Protocol.java
- * Created on Mon Aug 16 2005
- *
- * Copyright (c) 2003 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 
 package com.clt.dialog.client;
 
@@ -25,12 +12,9 @@ import java.io.IOException;
 
 interface Protocol {
 
-  public static final int XML =
-    ('X' << 24) | ('M' << 16) | ('L' << 8) | (' ' << 0);
-  public static final int RAW_XML =
-    ('<' << 24) | ('?' << 16) | ('x' << 8) | ('m' << 0);
-  public static final int BINARY =
-    ('B' << 24) | ('I' << 16) | ('N' << 8) | (' ' << 0);
+  public static final int XML = ('X' << 24) | ('M' << 16) | ('L' << 8) | (' ' << 0);
+  public static final int RAW_XML = ('<' << 24) | ('?' << 16) | ('x' << 8) | ('m' << 0);
+  public static final int BINARY = ('B' << 24) | ('I' << 16) | ('N' << 8) | (' ' << 0);
 
   public static final String XML_MAIN = "messages";
   public static final String XML_NAME = "name";
@@ -63,8 +47,7 @@ interface Protocol {
   public static final byte BIN_RPC_RES = 12;
   public static final byte BIN_TIMEOUT_SIGNAL = 13;
 
-  public static class Exception
-        extends IOException {
+  public static class Exception extends IOException {
 
     public Exception(String message) {
 

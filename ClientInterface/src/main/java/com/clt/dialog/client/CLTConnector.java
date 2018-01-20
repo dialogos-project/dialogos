@@ -1,16 +1,3 @@
-/*
- * @(#)CLTConnector.java
- * Created on Tue Jun 08 2004
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.dialog.client;
 
 import java.io.BufferedInputStream;
@@ -39,8 +26,7 @@ import com.clt.xml.XMLWriter;
  * @author Daniel Bobbert
  * @version 6.5
  */
-abstract class CLTConnector
-        extends AbstractConnector {
+abstract class CLTConnector extends AbstractConnector {
 
     private DeviceDelegate device;
 
@@ -363,7 +349,7 @@ abstract class CLTConnector
                     });
                 } else {
                     System.err.println("WARNING: Unexpected XML protocol element \"" + name + "\"");
-                    
+
                     // r.skipElement(name);
                     // AK 01/18: Don't skip unexpected elements. DialogOS and the client
                     // are sending at least "version", "messages", and "ping" messages

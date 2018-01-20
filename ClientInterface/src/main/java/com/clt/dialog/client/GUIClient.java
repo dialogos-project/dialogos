@@ -1,17 +1,3 @@
-/*
- * @(#)GUIClient.java
- * Created on Thu Dec 12 2002
- *
- * Copyright (c) 2002 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.dialog.client;
 
 import java.awt.Component;
@@ -60,14 +46,10 @@ import com.clt.util.DefaultLongAction;
  * @version 7.0
  */
 
-public abstract class GUIClient
-    extends Client
-    implements MenuCommander {
+public abstract class GUIClient extends Client implements MenuCommander {
 
-  private static final Collection<GUIClient> activeClients =
-    new HashSet<GUIClient>();
-  private static final Collection<GUIClient> allClients =
-    new HashSet<GUIClient>();
+  private static final Collection<GUIClient> activeClients = new HashSet<GUIClient>();
+  private static final Collection<GUIClient> allClients = new HashSet<GUIClient>();
 
   public static final String PROPERTY_PORT = "PORT";
   public static final String PROPERTY_STATE = "STATE";
@@ -85,11 +67,9 @@ public abstract class GUIClient
   private boolean testRunning = false;
 
   private FileChooser fileChooser = null;
-  private Collection<InternalConnection> internalConnections =
-    new LinkedList<InternalConnection>();
+  private Collection<InternalConnection> internalConnections = new LinkedList<InternalConnection>();
 
-  private Collection<ErrorHandler> errorHandlers =
-    new LinkedList<ErrorHandler>();
+  private Collection<ErrorHandler> errorHandlers = new LinkedList<ErrorHandler>();
 
   private ClassLoader classLoader = null;
 

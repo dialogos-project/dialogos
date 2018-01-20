@@ -1,17 +1,3 @@
-/*
- * @(#)Connector.java
- * Created on Tue Jun 08 2004
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.dialog.client;
 
 import java.io.IOException;
@@ -45,12 +31,10 @@ public interface Connector {
   public String getDescription();
 
 
-  public String open(long timeout, TargetSelector selector)
-      throws IOException;
+  public String open(long timeout, TargetSelector selector) throws IOException;
 
 
-  public void close()
-      throws IOException;
+  public void close() throws IOException;
 
 
   public InetAddress getTargetAddress();
@@ -71,39 +55,31 @@ public interface Connector {
   public void removeDeviceListener(DeviceListener l);
 
 
-  public void start()
-      throws IOException;
+  public void start() throws IOException;
 
 
-  public void reset()
-      throws IOException;
+  public void reset() throws IOException;
 
 
-  public void allowTimeout(boolean allow)
-      throws IOException;
+  public void allowTimeout(boolean allow) throws IOException;
 
 
-  public void signalTimeout()
-      throws IOException;
+  public void signalTimeout() throws IOException;
 
 
-  public void send(Value value)
-      throws IOException;
+  public void send(Value value) throws IOException;
 
 
-  public Value rpc(String procedure, Value[] arguments)
-      throws IOException;
+  public Value rpc(String procedure, Value[] arguments) throws IOException;
 
 
   public void pushInput(Value value);
 
 
-  public void echo()
-      throws IOException;
+  public void echo() throws IOException;
 
 
-  public Value receive()
-      throws IOException, InterruptedException;
+  public Value receive() throws IOException, InterruptedException;
 
 
   public Connector copy();

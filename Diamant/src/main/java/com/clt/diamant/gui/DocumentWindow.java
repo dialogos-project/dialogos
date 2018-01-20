@@ -31,7 +31,6 @@ import com.clt.diamant.Document;
 import com.clt.diamant.FileSaveException;
 import com.clt.diamant.Main;
 import com.clt.diamant.Resources;
-import com.clt.diamant.Version;
 import com.clt.diamant.graph.search.SearchResultsDialog;
 import com.clt.event.ProgressListener;
 import com.clt.gui.FileChooser;
