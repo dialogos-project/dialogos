@@ -53,6 +53,8 @@ public class PocketSphinx extends AbstractRecognizer {
             } else if (Platform.isLinux()) {
                 // dynamic lib is 64-bit
                 NativeLibraryLoader.loadLibraryFromJar("/native/linux/libpocketsphinx_jni.so");
+                NativeLibraryLoader.loadLibraryFromJar("/native/linux/libpocketsphinx.so");
+                NativeLibraryLoader.loadLibraryFromJar("/native/linux/libsphinxbase.so");
             } else if (Platform.isWindows()) {
                 if (Platform.is64Bit()) {
                     NativeLibraryLoader.loadLibraryFromJar("/native/windows64/sphinxbase.dll");
