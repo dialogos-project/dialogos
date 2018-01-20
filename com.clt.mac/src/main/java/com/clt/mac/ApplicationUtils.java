@@ -9,7 +9,7 @@ package com.clt.mac;
 
 public class ApplicationUtils {
 
-    public static boolean DEBUG = true; // AKAKAK
+    public static boolean DEBUG = false;
 
     public static boolean registerEventHandler(RequiredEventHandler handler) {
 
@@ -18,10 +18,10 @@ public class ApplicationUtils {
             System.out.flush();
         }
 
-        // first try the "new" EAWT (as of 2005 - AK)
+        // first try the "new" EAWT (as of 2004 - AK)
         try {
             if (ApplicationUtils.DEBUG) {
-                System.out.println("Trying Java9");
+                System.out.println("Trying EAWT");
             }
             Class<?> cls = Class.forName("com.clt.mac.EAWTHandler");
             SystemEventAdapter sea = (SystemEventAdapter) cls.newInstance();
@@ -36,11 +36,11 @@ public class ApplicationUtils {
                 exn.printStackTrace();
             }
         }
-        
-        // now try the Java9 integration
+
+        // now try the Java 9 integration
         try {
             if (ApplicationUtils.DEBUG) {
-                System.out.println("Trying Modern EAWT");
+                System.out.println("Trying Java 9");
             }
             Class<?> cls = Class.forName("com.clt.mac.Java9MacHandler");
             SystemEventAdapter sea = (SystemEventAdapter) cls.newInstance();
@@ -55,8 +55,6 @@ public class ApplicationUtils {
                 exn.printStackTrace();
             }
         }
-        
-        
 
         // if we get here, EAWT failed, so try MRJ
         try {

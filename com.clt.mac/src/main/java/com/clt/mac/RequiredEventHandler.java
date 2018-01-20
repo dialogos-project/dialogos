@@ -25,9 +25,6 @@ public class RequiredEventHandler {
     }
 
     public boolean handleAbout() {
-        System.err.println("*** REH ABOUT ***"); /// AKAKAK
-        new RuntimeException().printStackTrace();
-        
         return false;
     }
 

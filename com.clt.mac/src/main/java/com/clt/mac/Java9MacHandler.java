@@ -10,8 +10,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A class that registers handlers for menu events such as "About" and
@@ -27,7 +25,8 @@ public class Java9MacHandler implements SystemEventAdapter {
     private static final ClassLoader CL = Java9MacHandler.class.getClassLoader();
     private RequiredEventHandler handler;
 
-    public void register(RequiredEventHandler handler) {
+    @Override
+    public void register(RequiredEventHandler handler) throws ClassNotFoundException, NoSuchMethodException, NoSuchMethodException, IllegalAccessException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         this.handler = handler;
         
         if (handler.insertAboutItem) {
@@ -36,48 +35,36 @@ public class Java9MacHandler implements SystemEventAdapter {
 
         if (handler.insertPreferencesItem) {
             setDesktopHandler("setPreferencesHandler", "java.awt.desktop.PreferencesHandler");
-//            app.addPreferencesMenuItem();
-//            app.setEnabledPreferencesMenu(true);
         }
-
-//        app.addApplicationListener(new EAWTApplicationListener(handler));
     }
 
     /**
      * Registers an instance of ProxyListener (see below) with the AWT Desktop,
      * using the given method name for setting the handler (e.g.
      * "setAboutHandler") and interface name for the handler (e.g.
-     * "java.awt.desktop.AboutHandler"). Returns true if this worked correctly,
-     * and false if an exception occurred.
+     * "java.awt.desktop.AboutHandler").
      *
      * @param handlerSettingMethodName
      * @param interfaceName
      * @return
      */
-    private boolean setDesktopHandler(String handlerSettingMethodName, String interfaceName) {
-        try {
-            Desktop desktop = Desktop.getDesktop();
-            Class aboutHandlerClass = CL.loadClass(interfaceName);
-            System.err.println("ah class: " + aboutHandlerClass);
-            Method m = Desktop.class.getMethod(handlerSettingMethodName, aboutHandlerClass);
-            System.err.println("meth: " + m);
-            Object aboutHandler = Proxy.newProxyInstance(CL, new Class[]{aboutHandlerClass}, new ProxyListener(handler));
-            m.invoke(desktop, aboutHandler);
-            return true;
-        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
-            Logger.getLogger(Java9MacHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    private void setDesktopHandler(String handlerSettingMethodName, String interfaceName) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Desktop desktop = Desktop.getDesktop();
+        Class aboutHandlerClass = CL.loadClass(interfaceName);
+        Method m = Desktop.class.getMethod(handlerSettingMethodName, aboutHandlerClass);
+        Object aboutHandler = Proxy.newProxyInstance(CL, new Class[]{aboutHandlerClass}, new ProxyListener(handler));
+        m.invoke(desktop, aboutHandler);
     }
 
     private static class ProxyListener implements InvocationHandler {
+
         private Class aboutEventClass;
         private Class preferencesEventClass;
         private RequiredEventHandler handler;
 
         public ProxyListener(RequiredEventHandler handler) {
             this.handler = handler;
-            
+
             try {
                 aboutEventClass = Java9MacHandler.class.getClassLoader().loadClass("java.awt.desktop.AboutEvent");
                 preferencesEventClass = Java9MacHandler.class.getClassLoader().loadClass("java.awt.desktop.PreferencesEvent");
@@ -104,7 +91,7 @@ public class Java9MacHandler implements SystemEventAdapter {
         public void handleAbout() {
             handler.handleAbout();
         }
-        
+
         public void handlePreferences() {
             handler.handlePreferences();
         }

@@ -22,6 +22,5 @@ package com.clt.mac;
  */
 
 interface SystemEventAdapter {
-
-  public void register(RequiredEventHandler handler);
+  public void register(RequiredEventHandler handler) throws Exception;
 }

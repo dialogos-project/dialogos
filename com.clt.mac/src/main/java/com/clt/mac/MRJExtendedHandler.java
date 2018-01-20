@@ -33,7 +33,6 @@ class MRJExtendedHandler implements SystemEventAdapter {
         MRJApplicationUtils.registerAboutHandler(new MRJAboutHandler() {
             @Override
             public void handleAbout() {
-                System.err.println("*** MRJE ABOUT ***"); // AKAKAK
             }
         });
     }
