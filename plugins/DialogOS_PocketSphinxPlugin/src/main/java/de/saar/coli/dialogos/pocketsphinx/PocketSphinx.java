@@ -20,6 +20,7 @@ import com.clt.speech.recognition.simpleresult.SimpleRecognizerResult;
 import com.clt.srgf.Grammar;
 import com.clt.util.Platform;
 import de.saar.coli.dialogos.pocketsphinx.plugin.Model;
+import de.saar.coli.dialogos.pocketsphinx.plugin.Resources;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -30,9 +31,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
@@ -281,6 +279,10 @@ public class PocketSphinx extends AbstractRecognizer {
 
     @Override
     public RecognitionContext createTemporaryContext(Grammar g, Domain domain) throws SpeechException {
+        if( model == null ) {
+            throw new SpeechException(Resources.getString("NoModelActive"));
+        }
+        
         return new RecognitionContext("tmpcontext", domain, model.getLanguage(), g);
     }
 

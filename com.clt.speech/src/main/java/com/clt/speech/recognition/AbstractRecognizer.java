@@ -712,14 +712,11 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
     /**
      * @param contexts A collection of {@link RecognitionContext}s
      */
-    protected abstract void saveContextCache(Collection<RecognitionContext> contexts, File grammarDirectory)
-            throws SpeechException, IOException;
+    protected abstract void saveContextCache(Collection<RecognitionContext> contexts, File grammarDirectory) throws SpeechException, IOException;
 
-    protected abstract RecognitionContext createContext(String name, Grammar g, Domain domain, long timestamp)
-            throws SpeechException;
+    protected abstract RecognitionContext createContext(String name, Grammar g, Domain domain, long timestamp) throws SpeechException;
 
-    public abstract RecognitionContext createTemporaryContext(Grammar g, Domain domain)
-            throws SpeechException;
+    public abstract RecognitionContext createTemporaryContext(Grammar g, Domain domain) throws SpeechException;
 
     public final void setContext(Grammar grammar) throws SpeechException {
         if (grammar == null) {
