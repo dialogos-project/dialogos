@@ -1,17 +1,3 @@
-/*
- * @(#)AttributeExpression.java
- * Created on Mon Oct 06 2003
- *
- * Copyright (c) 2003 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.exp.expressions;
 
 import java.io.PrintWriter;
@@ -25,65 +11,57 @@ import com.clt.script.exp.types.TypeVariable;
 import com.clt.script.exp.values.Undefined;
 
 /**
- * 
- * 
+ *
+ *
  * @author Daniel Bobbert
  * @version 1.0
  */
-
 public class AttributeExpression extends Expression {
 
-  private Expression e;
-  private String attribute;
+    private Expression e;
+    private String attribute;
 
+    public AttributeExpression(Expression e, String attribute) {
 
-  public AttributeExpression(Expression e, String attribute) {
-
-    this.e = e;
-    this.attribute = attribute;
-  }
-
-
-  @Override
-  public Expression copy(Map<?, ?> mapping) {
-
-    return new AttributeExpression(this.e.copy(mapping), this.attribute);
-  }
-
-
-  @Override
-  protected Value eval(Debugger dbg) {
-
-    Value v = this.e.evaluate(dbg);
-    Value att = v.getAttribute(this.attribute);
-    if (att == null) {
-      return new Undefined();
+        this.e = e;
+        this.attribute = attribute;
     }
-    else {
-      return att;
+
+    @Override
+    public Expression copy(Map<?, ?> mapping) {
+
+        return new AttributeExpression(this.e.copy(mapping), this.attribute);
     }
-  }
 
+    @Override
+    protected Value eval(Debugger dbg) {
 
-  @Override
-  public Type getType() {
+        Value v = this.e.evaluate(dbg);
+        Value att = v.getAttribute(this.attribute);
+        if (att == null) {
+            return new Undefined();
+        } else {
+            return att;
+        }
+    }
 
-    return new TypeVariable();
-  }
+    @Override
+    public Type getType() {
 
+        return new TypeVariable();
+    }
 
-  @Override
-  public int getPriority() {
+    @Override
+    public int getPriority() {
 
-    return 17;
-  }
+        return 17;
+    }
 
+    @Override
+    public void write(PrintWriter w) {
 
-  @Override
-  public void write(PrintWriter w) {
-
-    this.e.write(w, this.e.getPriority() < this.getPriority());
-    w.print('#');
-    w.print(this.attribute);
-  }
+        this.e.write(w, this.e.getPriority() < this.getPriority());
+        w.print('#');
+        w.print(this.attribute);
+    }
 }

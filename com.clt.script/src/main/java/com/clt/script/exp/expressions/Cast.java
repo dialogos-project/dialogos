@@ -1,17 +1,3 @@
-/*
- * @(#)Cast.java
- * Created on 14.01.05
- *
- * Copyright (c) 2005 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.exp.expressions;
 
 import java.io.PrintWriter;
@@ -34,8 +20,7 @@ import com.clt.script.exp.values.RealValue;
  * @version 1.0
  */
 
-public class Cast
-    extends Expression {
+public class Cast extends Expression {
 
   private Expression exp;
   private Type type;

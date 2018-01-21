@@ -1,17 +1,3 @@
-/*
- * @(#)Conditional.java
- * Created on Wed Oct 09 2002
- *
- * Copyright (c) 2002 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.exp.expressions;
 
 import java.io.PrintWriter;
@@ -51,8 +37,7 @@ public class Conditional extends Expression {
   @Override
   public Expression copy(Map<?, ?> mapping) {
 
-    return new Conditional(this.condition.copy(mapping), this.consequence
-      .copy(mapping), this.alternative.copy(mapping));
+    return new Conditional(this.condition.copy(mapping), this.consequence.copy(mapping), this.alternative.copy(mapping));
   }
 
 

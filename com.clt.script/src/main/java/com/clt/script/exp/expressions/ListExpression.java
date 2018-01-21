@@ -1,17 +1,3 @@
-/*
- * @(#)ListExpression.java
- * Created on Fri Oct 25 2002
- *
- * Copyright (c) 2002 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.exp.expressions;
 
 import java.io.PrintWriter;
@@ -30,83 +16,73 @@ import com.clt.script.exp.types.TypeVariable;
 import com.clt.script.exp.values.ListValue;
 
 /**
- * 
- * 
+ *
+ *
  * @author Daniel Bobbert
  * @version 2.0
  */
+public class ListExpression extends Expression {
 
-public class ListExpression
-    extends Expression {
+    private List<Expression> expressions;
 
-  private List<Expression> expressions;
+    public ListExpression(Expression[] expressions) {
 
-
-  public ListExpression(Expression[] expressions) {
-
-    this(Arrays.asList(expressions));
-  }
-
-
-  public ListExpression(List<Expression> expressions) {
-
-    this.expressions = expressions;
-  }
-
-
-  @Override
-  public Expression copy(Map<?, ?> mapping) {
-
-    List<Expression> elems = new ArrayList<Expression>(this.expressions.size());
-    for (Iterator<Expression> it = this.expressions.iterator(); it.hasNext();) {
-      elems.add(it.next().copy(mapping));
+        this(Arrays.asList(expressions));
     }
-    return new ListExpression(elems);
-  }
 
+    public ListExpression(List<Expression> expressions) {
 
-  @Override
-  protected Value eval(Debugger dbg) {
-
-    Value[] l = new Value[this.expressions.size()];
-    for (int i = 0; i < this.expressions.size(); i++) {
-      l[i] = (this.expressions.get(i).evaluate(dbg));
+        this.expressions = expressions;
     }
-    return new ListValue(l);
-  }
 
+    @Override
+    public Expression copy(Map<?, ?> mapping) {
 
-  @Override
-  public Type getType() {
-
-    Type elementType = new TypeVariable();
-    for (Iterator<Expression> it = this.expressions.iterator(); it.hasNext();) {
-      elementType = Type.unify(elementType, it.next().getType());
+        List<Expression> elems = new ArrayList<Expression>(this.expressions.size());
+        for (Iterator<Expression> it = this.expressions.iterator(); it.hasNext();) {
+            elems.add(it.next().copy(mapping));
+        }
+        return new ListExpression(elems);
     }
-    return new ListType(elementType);
-  }
 
+    @Override
+    protected Value eval(Debugger dbg) {
 
-  @Override
-  public int getPriority() {
-
-    return Integer.MAX_VALUE;
-  }
-
-
-  @Override
-  public void write(PrintWriter w) {
-
-    w.print("[ ");
-    for (Iterator<Expression> it = this.expressions.iterator(); it.hasNext();) {
-      it.next().write(w);
-      if (it.hasNext()) {
-        w.print(", ");
-      }
-      else {
-        w.print(' ');
-      }
+        Value[] l = new Value[this.expressions.size()];
+        for (int i = 0; i < this.expressions.size(); i++) {
+            l[i] = (this.expressions.get(i).evaluate(dbg));
+        }
+        return new ListValue(l);
     }
-    w.print("]");
-  }
+
+    @Override
+    public Type getType() {
+
+        Type elementType = new TypeVariable();
+        for (Iterator<Expression> it = this.expressions.iterator(); it.hasNext();) {
+            elementType = Type.unify(elementType, it.next().getType());
+        }
+        return new ListType(elementType);
+    }
+
+    @Override
+    public int getPriority() {
+
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public void write(PrintWriter w) {
+
+        w.print("[ ");
+        for (Iterator<Expression> it = this.expressions.iterator(); it.hasNext();) {
+            it.next().write(w);
+            if (it.hasNext()) {
+                w.print(", ");
+            } else {
+                w.print(' ');
+            }
+        }
+        w.print("]");
+    }
 }

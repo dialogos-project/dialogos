@@ -1,17 +1,3 @@
-/*
- * @(#)Match.java
- * Created on Fri Oct 17 2003
- *
- * Copyright (c) 2003 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.exp;
 
 import java.util.HashMap;
@@ -19,43 +5,37 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * 
- * 
+ *
+ *
  * @author Daniel Bobbert
  * @version 1.0
  */
-
 public class Match {
 
-  Map<String, Value> match;
+    private Map<String, Value> match;
 
+    public Match() {
 
-  public Match() {
+        this.match = new HashMap<String, Value>();
+    }
 
-    this.match = new HashMap<String, Value>();
-  }
+    public void put(String variable, Value value) {
 
+        this.match.put(variable, value);
+    }
 
-  public void put(String variable, Value value) {
+    public Value get(String variable) {
 
-    this.match.put(variable, value);
-  }
+        return this.match.get(variable);
+    }
 
+    public void merge(Match m) {
 
-  public Value get(String variable) {
+        this.match.putAll(m.match);
+    }
 
-    return this.match.get(variable);
-  }
+    public Iterator<String> variables() {
 
-
-  public void merge(Match m) {
-
-    this.match.putAll(m.match);
-  }
-
-
-  public Iterator<String> variables() {
-
-    return this.match.keySet().iterator();
-  }
+        return this.match.keySet().iterator();
+    }
 }

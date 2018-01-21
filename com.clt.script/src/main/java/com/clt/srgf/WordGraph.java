@@ -1,17 +1,3 @@
-/*
- * @(#)WordGraph.java
- * Created on Tue Oct 08 2002
- *
- * Copyright (c) 2002 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.srgf;
 
 import java.io.PrintWriter;
@@ -25,253 +11,230 @@ import java.util.Map;
 
 class WordGraph {
 
-  private StartNode start;
-  private EndNode end;
-  private boolean isRoot;
+    private StartNode start;
+    private EndNode end;
+    private boolean isRoot;
 
+    public WordGraph(Expansion e, boolean mergePrivateRules, Tokenizer tokenizer) {
 
-  public WordGraph(Expansion e, boolean mergePrivateRules, Tokenizer tokenizer) {
-
-    this(e, mergePrivateRules, tokenizer, false);
-  }
-
-
-  public WordGraph(Expansion e, boolean mergePrivateRules, Tokenizer tokenizer,
-      boolean isRoot) {
-
-    this.start = new StartNode();
-    this.end = new EndNode();
-    this.isRoot = isRoot;
-
-    Node start = this.start;
-    Node end = this.end;
-    if (isRoot) {
-      start = new WordNode("!ENTER");
-      this.start.addEdge(start);
-
-      end = new WordNode("!EXIT");
-      end.addEdge(this.end);
+        this(e, mergePrivateRules, tokenizer, false);
     }
 
-    Node[] nodes =
-      e.createWordGraph(new Node[] { start }, mergePrivateRules, tokenizer);
-    for (int i = 0; i < nodes.length; i++) {
-      nodes[i].addEdge(end);
-    }
-  }
+    public WordGraph(Expansion e, boolean mergePrivateRules, Tokenizer tokenizer, boolean isRoot) {
 
+        this.start = new StartNode();
+        this.end = new EndNode();
+        this.isRoot = isRoot;
 
-  public StartNode getStart() {
+        Node start = this.start;
+        Node end = this.end;
+        if (isRoot) {
+            start = new WordNode("!ENTER");
+            this.start.addEdge(start);
 
-    return this.start;
-  }
-
-
-  private int collectNodes(Collection<Node> nodes) {
-
-    return this.collectNodes(this.getStart(), nodes);
-  }
-
-
-  private int collectNodes(Node n, Collection<Node> nodes) {
-
-    int edges = 0;
-    if (!nodes.contains(n)) {
-      nodes.add(n);
-      for (Edge e : n.edges()) {
-        edges++;
-        if (e.getTarget() != null) {
-          edges += this.collectNodes(e.getTarget(), nodes);
+            end = new WordNode("!EXIT");
+            end.addEdge(this.end);
         }
-      }
-    }
-    return edges;
-  }
 
-
-  void print(PrintWriter w) {
-
-    final Collection<Node> nodes = new HashSet<Node>();
-
-    int numEdges = this.collectNodes(nodes);
-
-    if (!this.isRoot) {
-      boolean onlyWords = true;
-      for (Iterator<Node> it = nodes.iterator(); it.hasNext() && onlyWords;) {
-        Node n = it.next();
-        if (!(n instanceof WordNode) && (n != this.start) && (n != this.end)) {
-          onlyWords = false;
+        Node[] nodes  = e.createWordGraph(new Node[]{start}, mergePrivateRules, tokenizer);
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i].addEdge(end);
         }
-      }
-
-      w.println("SUBLATTYPE=" + (onlyWords ? "VP_WordClass" : "VP_Concept"));
-    }
-    else {
-      w.println("SUBLATTYPE=Root");
     }
 
-    w.println("# number of nodes and links");
-    w.println("N=" + nodes.size() + " L=" + numEdges);
-    w.println("# nodes");
-    final Map<Node, Integer> nodeIndex = new HashMap<Node, Integer>();
-    int i = 0;
-    for (Node n : nodes) {
-      w.println("I=" + i + " " + n.toExtLat());
-      nodeIndex.put(n, i);
-      i++;
+    public StartNode getStart() {
+
+        return this.start;
     }
 
-    w.println("# links");
-    int j = 0;
-    for (Node n : nodes) {
-      for (Edge e : n.edges()) {
-        w.print("J=" + j);
-        w.print(" S=" + nodeIndex.get(e.getSource()));
-        w.print(" E=" + nodeIndex.get(e.getTarget()));
-        w.println(" l=0.00 C=0.00");
-      }
-      j++;
-    }
-  }
+    private int collectNodes(Collection<Node> nodes) {
 
-  static abstract class Node {
-
-    Collection<Edge> edges;
-
-
-    public Node() {
-
-      this.edges = new ArrayList<Edge>();
+        return this.collectNodes(this.getStart(), nodes);
     }
 
+    private int collectNodes(Node n, Collection<Node> nodes) {
 
-    public Edge addEdge(Node target) {
-
-      if (target == this) {
-        throw new IllegalArgumentException("Empty loop");
-      }
-      Edge e = new Edge(this, target);
-      this.edges.add(e);
-      return e;
+        int edges = 0;
+        if (!nodes.contains(n)) {
+            nodes.add(n);
+            for (Edge e : n.edges()) {
+                edges++;
+                if (e.getTarget() != null) {
+                    edges += this.collectNodes(e.getTarget(), nodes);
+                }
+            }
+        }
+        return edges;
     }
 
+    void print(PrintWriter w) {
 
-    Collection<Edge> edges() {
+        final Collection<Node> nodes = new HashSet<Node>();
 
-      return Collections.unmodifiableCollection(this.edges);
+        int numEdges = this.collectNodes(nodes);
+
+        if (!this.isRoot) {
+            boolean onlyWords = true;
+            for (Iterator<Node> it = nodes.iterator(); it.hasNext() && onlyWords;) {
+                Node n = it.next();
+                if (!(n instanceof WordNode) && (n != this.start) && (n != this.end)) {
+                    onlyWords = false;
+                }
+            }
+
+            w.println("SUBLATTYPE=" + (onlyWords ? "VP_WordClass" : "VP_Concept"));
+        } else {
+            w.println("SUBLATTYPE=Root");
+        }
+
+        w.println("# number of nodes and links");
+        w.println("N=" + nodes.size() + " L=" + numEdges);
+        w.println("# nodes");
+        final Map<Node, Integer> nodeIndex = new HashMap<Node, Integer>();
+        int i = 0;
+        for (Node n : nodes) {
+            w.println("I=" + i + " " + n.toExtLat());
+            nodeIndex.put(n, i);
+            i++;
+        }
+
+        w.println("# links");
+        int j = 0;
+        for (Node n : nodes) {
+            for (Edge e : n.edges()) {
+                w.print("J=" + j);
+                w.print(" S=" + nodeIndex.get(e.getSource()));
+                w.print(" E=" + nodeIndex.get(e.getTarget()));
+                w.println(" l=0.00 C=0.00");
+            }
+            j++;
+        }
     }
 
+    static abstract class Node {
 
-    public abstract String toExtLat();
-  }
+        Collection<Edge> edges;
 
-  static class StartNode
-        extends Node {
+        public Node() {
 
-    public StartNode() {
+            this.edges = new ArrayList<Edge>();
+        }
 
-      super();
+        public Edge addEdge(Node target) {
+
+            if (target == this) {
+                throw new IllegalArgumentException("Empty loop");
+            }
+            Edge e = new Edge(this, target);
+            this.edges.add(e);
+            return e;
+        }
+
+        Collection<Edge> edges() {
+
+            return Collections.unmodifiableCollection(this.edges);
+        }
+
+        public abstract String toExtLat();
     }
 
+    static class StartNode
+            extends Node {
 
-    @Override
-    public String toExtLat() {
+        public StartNode() {
 
-      return "W=!NULL";
-    }
-  }
+            super();
+        }
 
-  static class EndNode
-        extends Node {
+        @Override
+        public String toExtLat() {
 
-    public EndNode() {
-
-      super();
-    }
-
-
-    @Override
-    public String toExtLat() {
-
-      return "W=!NULL";
-    }
-  }
-
-  static class WordNode
-        extends Node {
-
-    String word;
-
-
-    public WordNode(String word) {
-
-      super();
-
-      if (word == null) {
-        throw new IllegalArgumentException();
-      }
-      this.word = word;
+            return "W=!NULL";
+        }
     }
 
+    static class EndNode
+            extends Node {
 
-    public String getWord() {
+        public EndNode() {
 
-      return this.word;
+            super();
+        }
+
+        @Override
+        public String toExtLat() {
+
+            return "W=!NULL";
+        }
     }
 
+    static class WordNode
+            extends Node {
 
-    @Override
-    public String toExtLat() {
+        String word;
 
-      return "W=" + this.getWord();
-    }
-  }
+        public WordNode(String word) {
 
-  static class RuleNode
-        extends Node {
+            super();
 
-    Rule rule;
+            if (word == null) {
+                throw new IllegalArgumentException();
+            }
+            this.word = word;
+        }
 
+        public String getWord() {
 
-    public RuleNode(Rule rule) {
+            return this.word;
+        }
 
-      super();
+        @Override
+        public String toExtLat() {
 
-      if (rule == null) {
-        throw new IllegalArgumentException();
-      }
-      this.rule = rule;
-    }
-
-
-    @Override
-    public String toExtLat() {
-
-      return "L=" + this.rule.getName();
-    }
-  }
-
-  private static class Edge {
-
-    Node source, target;
-
-
-    public Edge(Node source, Node target) {
-
-      this.source = source;
-      this.target = target;
+            return "W=" + this.getWord();
+        }
     }
 
+    static class RuleNode
+            extends Node {
 
-    public Node getSource() {
+        Rule rule;
 
-      return this.source;
+        public RuleNode(Rule rule) {
+
+            super();
+
+            if (rule == null) {
+                throw new IllegalArgumentException();
+            }
+            this.rule = rule;
+        }
+
+        @Override
+        public String toExtLat() {
+
+            return "L=" + this.rule.getName();
+        }
     }
 
+    private static class Edge {
 
-    public Node getTarget() {
+        Node source, target;
 
-      return this.target;
+        public Edge(Node source, Node target) {
+
+            this.source = source;
+            this.target = target;
+        }
+
+        public Node getSource() {
+
+            return this.source;
+        }
+
+        public Node getTarget() {
+
+            return this.target;
+        }
     }
-  }
 }

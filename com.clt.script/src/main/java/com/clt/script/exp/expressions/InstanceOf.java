@@ -1,17 +1,3 @@
-/*
- * @(#)InstanceOf.java
- * Created on 14.01.05
- *
- * Copyright (c) 2005 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.exp.expressions;
 
 import java.io.PrintWriter;
@@ -24,64 +10,57 @@ import com.clt.script.exp.Value;
 import com.clt.script.exp.values.BoolValue;
 
 /**
- * 
- * 
+ *
+ *
  * @author Daniel Bobbert
  * @version 1.0
  */
-
 public class InstanceOf extends Expression {
 
-  Expression exp;
-  String type;
+    private Expression exp;
+    private String type;
 
+    public InstanceOf(Expression exp, String type) {
 
-  public InstanceOf(Expression exp, String type) {
+        this.exp = exp;
+        this.type = type;
+    }
 
-    this.exp = exp;
-    this.type = type;
-  }
+    @Override
+    public Expression copy(Map<?, ?> mapping) {
 
+        return new InstanceOf(this.exp.copy(mapping), this.type);
+    }
 
-  @Override
-  public Expression copy(Map<?, ?> mapping) {
+    @Override
+    public Type getType() {
 
-    return new InstanceOf(this.exp.copy(mapping), this.type);
-  }
+        this.exp.getType();
+        Type.getTypeForName(this.type);
+        return Type.Bool;
+    }
 
+    @Override
+    protected Value eval(Debugger dbg) {
 
-  @Override
-  public Type getType() {
+        Type vt = this.exp.evaluate(dbg).getType();
+        Type t = Type.getTypeForName(this.type);
 
-    this.exp.getType();
-    Type.getTypeForName(this.type);
-    return Type.Bool;
-  }
+        return new BoolValue(vt.getObjectClass() == t.getObjectClass());
+    }
 
+    @Override
+    public int getPriority() {
 
-  @Override
-  protected Value eval(Debugger dbg) {
+        return 9;
+    }
 
-    Type vt = this.exp.evaluate(dbg).getType();
-    Type t = Type.getTypeForName(this.type);
+    @Override
+    public void write(PrintWriter w) {
 
-    return new BoolValue(vt.getObjectClass() == t.getObjectClass());
-  }
-
-
-  @Override
-  public int getPriority() {
-
-    return 9;
-  }
-
-
-  @Override
-  public void write(PrintWriter w) {
-
-    this.exp.write(w, this.exp.getPriority() < this.getPriority());
-    w.print(" instanceof ");
-    w.print(this.type);
-  }
+        this.exp.write(w, this.exp.getPriority() < this.getPriority());
+        w.print(" instanceof ");
+        w.print(this.type);
+    }
 
 }

@@ -1,11 +1,3 @@
-//
-//  Return.java
-//  DialogManager
-//
-//  Created by Daniel Bobbert on Tue Jul 30 2002.
-//  Copyright (c) 2002 CLT Sprachtechnologie GmbH. All rights reserved.
-//
-
 package com.clt.script.cmd;
 
 import java.util.Collection;
@@ -18,50 +10,43 @@ import com.clt.script.exp.Value;
 /**
  * Commands of the form <code>return;</code> and <code>return <i>exp</i>;</code>
  */
+public class Return implements Command {
 
-public class Return
-    implements Command {
+    Expression returnValue;
 
-  Expression returnValue;
+    public Return(Expression returnValue) {
 
-
-  public Return(Expression returnValue) {
-
-    this.returnValue = returnValue;
-  }
-
-
-  public void execute(Debugger dbg) {
-
-    Value v = null;
-    dbg.preExecute(this);
-
-    if (this.returnValue != null) {
-      v = this.returnValue.evaluate(dbg);
+        this.returnValue = returnValue;
     }
 
-    throw new ReturnMessage(v);
-  }
+    public void execute(Debugger dbg) {
 
+        Value v = null;
+        dbg.preExecute(this);
 
-  public ReturnInfo check(Collection<String> warnings) {
+        if (this.returnValue != null) {
+            v = this.returnValue.evaluate(dbg);
+        }
 
-    Type t = null;
-
-    if (this.returnValue != null) {
-      t = this.returnValue.getType();
-    }
-    else {
-      t = Type.Void;
+        throw new ReturnMessage(v);
     }
 
-    return new ReturnInfo(ReturnInfo.ON_ALL_PATHS, t);
-  }
+    public ReturnInfo check(Collection<String> warnings) {
 
+        Type t = null;
 
-  @Override
-  public String toString() {
+        if (this.returnValue != null) {
+            t = this.returnValue.getType();
+        } else {
+            t = Type.Void;
+        }
 
-    return "return " + this.returnValue;
-  }
+        return new ReturnInfo(ReturnInfo.ON_ALL_PATHS, t);
+    }
+
+    @Override
+    public String toString() {
+
+        return "return " + this.returnValue;
+    }
 }

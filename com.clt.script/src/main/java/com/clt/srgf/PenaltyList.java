@@ -1,17 +1,3 @@
-/*
- * @(#)PenaltyList.java
- * Created on 09.03.2007 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.srgf;
 
 import java.util.LinkedList;
@@ -19,59 +5,53 @@ import java.util.ListIterator;
 
 class PenaltyList {
 
-  private LinkedList<LinkedList<Parse>> lists;
+    private LinkedList<LinkedList<Parse>> lists;
 
+    public PenaltyList() {
 
-  public PenaltyList() {
+        this.lists = new LinkedList<LinkedList<Parse>>();
+    }
 
-    this.lists = new LinkedList<LinkedList<Parse>>();
-  }
+    public void add(Parse p) {
 
+        int inputSize = p.getInputSize();
+        for (ListIterator<LinkedList<Parse>> it = this.lists.listIterator(); it
+                .hasNext();) {
+            LinkedList<Parse> l = it.next();
+            int size = l.getFirst().getInputSize();
+            if (inputSize > size) {
+                l = new LinkedList<Parse>();
+                l.add(p);
+                if (it.hasPrevious()) {
+                    it.previous();
+                    it.add(l);
+                } else {
+                    this.lists.addFirst(l);
+                }
+                return;
+            } else if (inputSize == size) {
+                l.addFirst(p);
+                return;
+            }
+        }
 
-  public void add(Parse p) {
-
-    int inputSize = p.getInputSize();
-    for (ListIterator<LinkedList<Parse>> it = this.lists.listIterator(); it
-      .hasNext();) {
-      LinkedList<Parse> l = it.next();
-      int size = l.getFirst().getInputSize();
-      if (inputSize > size) {
-        l = new LinkedList<Parse>();
+        LinkedList<Parse> l = new LinkedList<Parse>();
         l.add(p);
-        if (it.hasPrevious()) {
-          it.previous();
-          it.add(l);
-        }
-        else {
-          this.lists.addFirst(l);
-        }
-        return;
-      }
-      else if (inputSize == size) {
-        l.addFirst(p);
-        return;
-      }
+        this.lists.add(l);
     }
 
-    LinkedList<Parse> l = new LinkedList<Parse>();
-    l.add(p);
-    this.lists.add(l);
-  }
+    public Parse removeFirst() {
 
-
-  public Parse removeFirst() {
-
-    LinkedList<Parse> firstList = this.lists.getFirst();
-    Parse result = firstList.removeFirst();
-    if (firstList.isEmpty()) {
-      this.lists.removeFirst();
+        LinkedList<Parse> firstList = this.lists.getFirst();
+        Parse result = firstList.removeFirst();
+        if (firstList.isEmpty()) {
+            this.lists.removeFirst();
+        }
+        return result;
     }
-    return result;
-  }
 
+    public boolean isEmpty() {
 
-  public boolean isEmpty() {
-
-    return this.lists.isEmpty();
-  }
+        return this.lists.isEmpty();
+    }
 }

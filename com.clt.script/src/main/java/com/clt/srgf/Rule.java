@@ -1,10 +1,3 @@
-//
-//  Rule.java
-//  DialogManager
-//
-//  Created by Daniel Bobbert on Tue Jul 30 2002.
-//  Copyright (c) 2002 CLT Sprachtechnologie GmbH. All rights reserved.
-//
 package com.clt.srgf;
 
 import java.io.PrintWriter;
@@ -31,8 +24,7 @@ import com.clt.util.NamedEntity;
  * @author Daniel Bobbert
  * @version 1.0
  */
-public class Rule
-        implements Comparable<Rule>, NamedEntity {
+public class Rule implements Comparable<Rule>, NamedEntity {
 
     private Grammar grammar;
     private boolean isPublic;
@@ -40,7 +32,7 @@ public class Rule
     private String name;
     private Expansion expansion;
 
-    boolean compilationStable = false;
+    private boolean compilationStable = false;
 
     /**
      * Create a new rule
@@ -441,7 +433,7 @@ public class Rule
                 this.expansion.export(w, format);
                 w.println(";");
                 break;
-                
+
             case GRXML:
                 com.clt.xml.XMLWriter xml = (com.clt.xml.XMLWriter) w;
                 xml.openElement("rule", new String[]{"id", "scope"}, new String[]{
@@ -450,21 +442,21 @@ public class Rule
                 this.expansion.export(xml, format);
                 xml.closeElement("rule");
                 break;
-                
+
             case JSGF:
                 if (this.isPublic()) {
                     w.print("public ");
                 }
-                // fall through
-                
+            // fall through
+
             case TEMIC:
             case LH:
             case VOCON:
             case VOCON_G:
                 w.print("<" + this.getNormalizedRuleName(format) + ">");
                 w.print(((format == Grammar.Format.LH) || (format == Grammar.Format.VOCON) || (format == Grammar.Format.VOCON_G))
-                                        ? " : "
-                                        : " = ");
+                        ? " : "
+                        : " = ");
                 this.expansion.export(w, format);
                 w.println(";");
                 break;

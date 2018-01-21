@@ -1,17 +1,3 @@
-/*
- * @(#)AliasPattern.java
- * Created on Tue Jan 28 2003
- *
- * Copyright (c) 2003 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.exp.patterns;
 
 import java.util.Map;
@@ -25,51 +11,43 @@ import com.clt.script.exp.Value;
  * @author Daniel Bobbert
  * @version 1.0
  */
+public class AliasPattern implements Pattern {
 
-public class AliasPattern
-    implements Pattern {
+    private String name;
+    private Pattern pattern;
 
-  String name;
-  Pattern pattern;
+    public AliasPattern(Pattern pattern, String name) {
 
-
-  public AliasPattern(Pattern pattern, String name) {
-
-    this.name = name;
-    this.pattern = pattern;
-  }
-
-
-  public Match match(Value v) {
-
-    Match m = this.pattern.match(v);
-    if (m == null) {
-      return null;
+        this.name = name;
+        this.pattern = pattern;
     }
-    else {
-      m.put(this.name, v);
-      return m;
+
+    public Match match(Value v) {
+
+        Match m = this.pattern.match(v);
+        if (m == null) {
+            return null;
+        } else {
+            m.put(this.name, v);
+            return m;
+        }
     }
-  }
 
+    public Type getType(Map<String, Type> variableTypes) {
 
-  public Type getType(Map<String, Type> variableTypes) {
+        return this.pattern.getType(variableTypes);
+    }
 
-    return this.pattern.getType(variableTypes);
-  }
+    public Pattern.VarSet getFreeVars() {
 
+        Pattern.VarSet freeVars = this.pattern.getFreeVars();
+        freeVars.add(this.name);
+        return freeVars;
+    }
 
-  public Pattern.VarSet getFreeVars() {
+    @Override
+    public String toString() {
 
-    Pattern.VarSet freeVars = this.pattern.getFreeVars();
-    freeVars.add(this.name);
-    return freeVars;
-  }
-
-
-  @Override
-  public String toString() {
-
-    return (this.name + " as " + this.pattern);
-  }
+        return (this.name + " as " + this.pattern);
+    }
 }

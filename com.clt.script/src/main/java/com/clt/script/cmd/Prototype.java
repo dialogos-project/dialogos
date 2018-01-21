@@ -1,17 +1,3 @@
-/*
- * @(#)Prototype.java
- * Created on Mon Oct 27 2003
- *
- * Copyright (c) 2003 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.script.cmd;
 
 import java.util.Collection;
@@ -20,122 +6,109 @@ import com.clt.script.exp.Type;
 import com.clt.script.exp.TypeException;
 
 /**
- * 
- * 
+ *
+ *
  * @author Daniel Bobbert
  * @version 1.0
  */
-
 public class Prototype {
 
-  String name;
-  Type returnType;
-  Type parameterTypes[];
+    String name;
+    Type returnType;
+    Type parameterTypes[];
 
-  Proc procedure;
+    Proc procedure;
 
+    public Prototype(String name, Type returnType, Type[] parameterTypes) {
 
-  public Prototype(String name, Type returnType, Type[] parameterTypes) {
-
-    this.name = name;
-    this.returnType = returnType;
-    this.parameterTypes = parameterTypes;
-  }
-
-
-  public String getName() {
-
-    return this.name;
-  }
-
-
-  public Type getReturnType() {
-
-    return this.returnType;
-  }
-
-
-  public int numParameters() {
-
-    return this.parameterTypes.length;
-  }
-
-
-  public Type getParameterType(int index) {
-
-    return this.parameterTypes[index];
-  }
-
-
-  public Type[] getParameterTypes() {
-
-    return this.parameterTypes;
-  }
-
-
-  public Proc getProcedure() {
-
-    return this.procedure;
-  }
-
-
-  public void setProcedure(Proc procedure) {
-
-    if (!this.name.equals(procedure.getName())) {
-      this.throwImplementationException(procedure);
+        this.name = name;
+        this.returnType = returnType;
+        this.parameterTypes = parameterTypes;
     }
-    if (!Type.equals(this.returnType, procedure.getReturnType())) {
-      this.throwImplementationException(procedure);
+
+    public String getName() {
+
+        return this.name;
     }
-    Type[] parameterTypes = procedure.getParameterTypes();
-    if (parameterTypes.length != this.parameterTypes.length) {
-      this.throwImplementationException(procedure);
+
+    public Type getReturnType() {
+
+        return this.returnType;
     }
-    for (int i = 0; i < parameterTypes.length; i++) {
-      if (!Type.equals(parameterTypes[i], this.parameterTypes[i])) {
-        this.throwImplementationException(procedure);
-      }
+
+    public int numParameters() {
+
+        return this.parameterTypes.length;
     }
-    this.procedure = procedure;
-  }
 
+    public Type getParameterType(int index) {
 
-  public void check(Collection<String> warnings) {
-
-    if (this.procedure == null) {
-      throw new TypeException("Procedure " + this
-        + " defined but not implemented.");
+        return this.parameterTypes[index];
     }
-    else {
-      this.procedure.check(warnings);
+
+    public Type[] getParameterTypes() {
+
+        return this.parameterTypes;
     }
-  }
 
+    public Proc getProcedure() {
 
-  @Override
-  public String toString() {
-
-    Type[] ptypes = this.getParameterTypes();
-    StringBuilder b = new StringBuilder();
-    b.append(this.getReturnType());
-    b.append(' ');
-    b.append(this.getName());
-    b.append("(");
-    for (int i = 0; i < ptypes.length; i++) {
-      if (i > 0) {
-        b.append(", ");
-      }
-      b.append(ptypes[i]);
+        return this.procedure;
     }
-    b.append(')');
-    return b.toString();
-  }
 
+    public void setProcedure(Proc procedure) {
 
-  private void throwImplementationException(Proc proc) {
+        if (!this.name.equals(procedure.getName())) {
+            this.throwImplementationException(procedure);
+        }
+        if (!Type.equals(this.returnType, procedure.getReturnType())) {
+            this.throwImplementationException(procedure);
+        }
+        Type[] parameterTypes = procedure.getParameterTypes();
+        if (parameterTypes.length != this.parameterTypes.length) {
+            this.throwImplementationException(procedure);
+        }
+        for (int i = 0; i < parameterTypes.length; i++) {
+            if (!Type.equals(parameterTypes[i], this.parameterTypes[i])) {
+                this.throwImplementationException(procedure);
+            }
+        }
+        this.procedure = procedure;
+    }
 
-    throw new TypeException(
-      "Implementation of function does not match definition: " + proc
+    public void check(Collection<String> warnings) {
+
+        if (this.procedure == null) {
+            throw new TypeException("Procedure " + this
+                    + " defined but not implemented.");
+        } else {
+            this.procedure.check(warnings);
+        }
+    }
+
+    @Override
+    public String toString() {
+
+        Type[] ptypes = this.getParameterTypes();
+        StringBuilder b = new StringBuilder();
+        b.append(this.getReturnType());
+        b.append(' ');
+        b.append(this.getName());
+        b.append("(");
+        for (int i = 0; i < ptypes.length; i++) {
+            if (i > 0) {
+                b.append(", ");
+            }
+            b.append(ptypes[i]);
+        }
+        b.append(')');
+        return b.toString();
+    }
+
+    private void throwImplementationException(Proc proc) {
+
+        throw new TypeException(
+                "Implementation of function does not match definition: " + proc
                 + "\nWas defined before as: " + this);
-  }
+    }
 }

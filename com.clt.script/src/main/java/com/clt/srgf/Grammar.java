@@ -1,16 +1,3 @@
-/*
- * @(#)Grammar.java
- * Created on Tue Oct 08 2002
- *
- * Copyright (c) 2002 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.srgf;
 
 import java.io.BufferedWriter;
@@ -1779,44 +1766,43 @@ public class Grammar implements NamedEntity {
     public static Grammar create(Reader r, com.clt.script.Environment env) throws Exception {
         return com.clt.script.parser.Parser.parseSRGF(r, env);
     }
-    
+
     public static void main(String[] args) throws Exception, Exception {
-        String gr = "#ABNF 1.0 ISO-8859-1;\n" +
-"\n" +
-"// Default grammar language is US English\n" +
-"language en-US;\n" +
-                "root <request>;\n"+
-"\n" +
-"// Single language attachment to tokens\n" +
-"// Note that \"fr-CA\" (Canadian French) is applied to only\n" +
-"//  the word \"oui\" because of precedence rules\n" +
-"$yes = yes ;\n" +
-"\n" +
-"// Single language attachment to an expansion\n" +
-"$people1 = (Michel Tremblay | André Roy);\n" +
-"\n" +
-"// Handling language-specific pronunciations of the same word\n" +
-"// A capable speech recognizer will listen for Mexican Spanish and\n" +
-"//   US English pronunciations.\n" +
-"$people2 = John {name=\"john\"};\n" +
-"\n" +
-"/**\n" +
-" * Multi-lingual input possible\n" +
-" * @example may I speak to André Roy\n" +
-" * @example may I speak to Jose\n" +
-" */\n" +
-"public $request = may I speak to ($people1 | $people2) {name=people1.name};";
+        String gr = "#ABNF 1.0 ISO-8859-1;\n"
+                + "\n"
+                + "// Default grammar language is US English\n"
+                + "language en-US;\n"
+                + "root <request>;\n"
+                + "\n"
+                + "// Single language attachment to tokens\n"
+                + "// Note that \"fr-CA\" (Canadian French) is applied to only\n"
+                + "//  the word \"oui\" because of precedence rules\n"
+                + "$yes = yes ;\n"
+                + "\n"
+                + "// Single language attachment to an expansion\n"
+                + "$people1 = (Michel Tremblay | André Roy);\n"
+                + "\n"
+                + "// Handling language-specific pronunciations of the same word\n"
+                + "// A capable speech recognizer will listen for Mexican Spanish and\n"
+                + "//   US English pronunciations.\n"
+                + "$people2 = John {name=\"john\"};\n"
+                + "\n"
+                + "/**\n"
+                + " * Multi-lingual input possible\n"
+                + " * @example may I speak to André Roy\n"
+                + " * @example may I speak to Jose\n"
+                + " */\n"
+                + "public $request = may I speak to ($people1 | $people2) {name=people1.name};";
 
         Grammar g = Grammar.create(gr);
         g.setName("foo");
         System.out.println(g);
         g.export(System.out, Grammar.Format.JSGF);
-        
+
         Value v = g.match("May I speak to John", "request"); //May I speak to 
         System.out.println(v);
         System.out.println(v.getClass());
-        
-        
+
 //        ParseNode tree_root = g.getBestParseTree("May I speak to John", "request");
 //        System.out.println(tree_root);
     }

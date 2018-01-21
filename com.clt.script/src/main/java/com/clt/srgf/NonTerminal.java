@@ -1,15 +1,6 @@
-//
-//  NonTerminal.java
-//  DialogManager
-//
-//  Created by Daniel Bobbert on Tue Jul 30 2002.
-//  Copyright (c) 2002 CLT Sprachtechnologie GmbH. All rights reserved.
-//
-
 package com.clt.srgf;
 
-public abstract class NonTerminal
-    extends Expansion {
+public abstract class NonTerminal extends Expansion {
 
   public abstract int size();
 
