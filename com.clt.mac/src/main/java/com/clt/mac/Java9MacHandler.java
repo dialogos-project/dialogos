@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.clt.mac;
 
 import java.awt.Desktop;
@@ -28,7 +23,7 @@ class Java9MacHandler implements SystemEventAdapter {
     @Override
     public void register(RequiredEventHandler handler) throws ClassNotFoundException, NoSuchMethodException, NoSuchMethodException, IllegalAccessException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         this.handler = handler;
-        
+
         if (handler.insertAboutItem) {
             setDesktopHandler("setAboutHandler", "java.awt.desktop.AboutHandler");
         }

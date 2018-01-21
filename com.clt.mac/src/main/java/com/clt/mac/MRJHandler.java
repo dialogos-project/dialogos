@@ -1,10 +1,3 @@
-//
-//  MRJHandler.java
-//  AppleScript
-//
-//  Created by Daniel Bobbert on Sat Mar 20 2004.
-//  Copyright (c) 2004 CLT Sprachtechnologie GmbH. All rights reserved.
-//
 package com.clt.mac;
 
 import java.io.File;

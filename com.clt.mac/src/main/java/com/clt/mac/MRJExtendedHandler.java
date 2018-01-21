@@ -1,10 +1,3 @@
-//
-//  MRJHandler.java
-//  AppleScript
-//
-//  Created by Daniel Bobbert on Sat Mar 20 2004.
-//  Copyright (c) 2004 CLT Sprachtechnologie GmbH. All rights reserved.
-//
 package com.clt.mac;
 
 import com.apple.mrj.MRJAboutHandler;
@@ -17,10 +10,10 @@ class MRJExtendedHandler implements SystemEventAdapter {
     @SuppressWarnings("deprecation")
     public void register(final RequiredEventHandler handler) {
         MRJApplicationUtils.registerOpenApplicationHandler(new MRJOpenApplicationHandler() {
-                    public void handleOpenApplication() {
-                        handler.handleOpenApplication();
-                    }
-                });
+            public void handleOpenApplication() {
+                handler.handleOpenApplication();
+            }
+        });
 
         if (handler.insertPreferencesItem) {
             MRJApplicationUtils.registerPrefsHandler(new MRJPrefsHandler() {
@@ -29,7 +22,7 @@ class MRJExtendedHandler implements SystemEventAdapter {
                 }
             });
         }
-        
+
         MRJApplicationUtils.registerAboutHandler(new MRJAboutHandler() {
             @Override
             public void handleAbout() {
