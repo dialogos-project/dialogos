@@ -12,46 +12,41 @@ import javax.swing.table.TableCellRenderer;
 
 import com.clt.gui.Images;
 
-public class IconHeaderRenderer
-    extends JLabel
-    implements TableCellRenderer {
+public class IconHeaderRenderer extends JLabel implements TableCellRenderer {
 
-  ImageIcon icon;
+    ImageIcon icon;
 
-  TableCellRenderer defaultRenderer;
+    TableCellRenderer defaultRenderer;
 
-  String tooltip;
+    String tooltip;
 
+    public IconHeaderRenderer(String icon, String tooltip) {
 
-  public IconHeaderRenderer(String icon, String tooltip) {
+        super(null, Images.load(icon), SwingConstants.CENTER);
+        this.setToolTipText(tooltip);
 
-    super(null, Images.load(icon), SwingConstants.CENTER);
-    this.setToolTipText(tooltip);
+        this.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+    }
 
-    this.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
-  }
-
-
-  public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected,
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected,
             boolean hasFocus, int row, int column) {
 
-    if (table != null) {
-      JTableHeader header = table.getTableHeader();
-      if (header != null) {
-        this.setForeground(header.getForeground());
-        this.setBackground(header.getBackground());
-      }
+        if (table != null) {
+            JTableHeader header = table.getTableHeader();
+            if (header != null) {
+                this.setForeground(header.getForeground());
+                this.setBackground(header.getBackground());
+            }
+        }
+
+        return this;
     }
 
-    return this;
-  }
+    public void dispose() {
 
-
-  public void dispose() {
-
-    if (this.icon != null) {
-      this.icon.getImage().flush();
+        if (this.icon != null) {
+            this.icon.getImage().flush();
+        }
     }
-  }
 }

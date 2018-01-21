@@ -10,11 +10,12 @@ import java.util.*;
 public class StringTools {
 
     /**
-     * Joins a list of strings into a larger string. This is similar
-     * to Perl's <code>join()</code> function.
+     * Joins a list of strings into a larger string. This is similar to Perl's
+     * <code>join()</code> function.
      *
      * @param strings a list of strings
-     * @param separator a string that is inserted between any two members of the list
+     * @param separator a string that is inserted between any two members of the
+     * list
      * @return the joined string
      */
     public static <E> String join(Collection<E> strings, String separator) {
@@ -36,15 +37,14 @@ public class StringTools {
     }
 
     /**
-     * Splits a string around the given character. The resulting sub strings will
-     * not contain the split character. Two consecutive split charaters will
-     * create an empty string in the resulting array.
+     * Splits a string around the given character. The resulting sub strings
+     * will not contain the split character. Two consecutive split charaters
+     * will create an empty string in the resulting array.
      */
     public static final String[] split(String s, char splitChar) {
 
         return StringTools.split(s, new char[]{splitChar});
     }
-
 
     private static int indexOf(String s, char[] delimiters, int offset) {
 
@@ -59,7 +59,6 @@ public class StringTools {
 
         return -1;
     }
-
 
     /**
      * Splits a string around matches of any of the given characters. The
@@ -91,7 +90,6 @@ public class StringTools {
         return words;
     }
 
-
     /**
      * Splits a string around matches of the given substring. The resulting sub
      * strings will not contain the split string. Two consecutive split strings
@@ -101,7 +99,6 @@ public class StringTools {
 
         return StringTools.split(s, delimiter, false);
     }
-
 
     public static final String[] split(String s, String delimiter, boolean trim) {
 
@@ -132,7 +129,6 @@ public class StringTools {
 
         return words;
     }
-
 
     /**
      * Normalize white space in a string. This method will trim leading and
@@ -178,7 +174,6 @@ public class StringTools {
         return new String(buf, start, j - start);
     }
 
-
     /**
      * Check whether a string is <code>null</code> or empty.
      *
@@ -190,7 +185,6 @@ public class StringTools {
         return s != null ? s.length() == 0 : true;
     }
 
-
     /**
      * Convert a unicode charater to its UTF8 presentation. The resulting string
      * may have one to three 8bit characters as defined in the UTF8 standard.
@@ -200,15 +194,14 @@ public class StringTools {
         if (c >= 0x0800) {
             return new String(
                     new char[]{(char) ((c >>> 12) | 0xE0),
-                            (char) (((c >>> 6) & 0x3F) | 0x80), (char) ((c & 0x3F) | 0x80)});
+                        (char) (((c >>> 6) & 0x3F) | 0x80), (char) ((c & 0x3F) | 0x80)});
         } else if (c >= 0x0080) {
             return new String(new char[]{(char) ((c >>> 6) | 0xC0),
-                    (char) ((c & 0x3F) | 0x80)});
+                (char) ((c & 0x3F) | 0x80)});
         } else {
             return new String(new char[]{c});
         }
     }
-
 
     /**
      * Convert a unicode string to its UTF8 presentation. The resulting string
@@ -223,7 +216,6 @@ public class StringTools {
         return b.toString();
     }
 
-
     /**
      * Encode a string to HTML using named entities whereever possible. This
      * method method will also convert &lt;, &gt; and linebreaks to their
@@ -236,14 +228,13 @@ public class StringTools {
         return StringTools.toHTML(s, true);
     }
 
-
     /**
      * Encode a string to HTML using named entities whereever possible.
      * <p>
      * If <code>encodeTagsAndLinebreaks</code> is true, this method method will
-     * also convert &lt;, &gt; and linebreaks to their according entities. If your
-     * source string already contains HTML tags and you just want to make sure
-     * that umlaut charaters are encoded correctly, set
+     * also convert &lt;, &gt; and linebreaks to their according entities. If
+     * your source string already contains HTML tags and you just want to make
+     * sure that umlaut charaters are encoded correctly, set
      * <code>encodeTagsAndLinebreaks</code> to false.
      * </p>
      *
@@ -276,7 +267,6 @@ public class StringTools {
         return b.toString();
     }
 
-
     /**
      * Decode all known HTML entities in <code>s</code> and return the decoded
      * string. This method will not interpret or alter HTML tags. It will only
@@ -290,7 +280,7 @@ public class StringTools {
             if (s.charAt(pos) == '&') {
                 boolean found = false;
                 for (Iterator<Character> it = StringTools.entities.keySet().iterator(); !found
-                        && it.hasNext(); ) {
+                        && it.hasNext();) {
                     Character c = it.next();
                     String entity = StringTools.entities.get(c);
                     if (s.startsWith(entity, pos)) {
@@ -338,10 +328,9 @@ public class StringTools {
         return b.toString();
     }
 
-
     /**
-     * Return a new string resulting from replacing all unprintable characters in
-     * <code>s</code> by apropriate escape sequences.
+     * Return a new string resulting from replacing all unprintable characters
+     * in <code>s</code> by apropriate escape sequences.
      */
     public static String toSourceString(String s) {
 
@@ -389,7 +378,6 @@ public class StringTools {
         return b.toString();
     }
 
-
     /**
      * Create a hexadecimal string representation of a color.
      * <p>
@@ -407,7 +395,6 @@ public class StringTools {
                 + Integer.toHexString(c.getBlue() / 16)
                 + Integer.toHexString(c.getBlue() % 16);
     }
-
 
     public static String toHexString(long number, int digits) {
 
@@ -429,11 +416,10 @@ public class StringTools {
         return b.toString();
     }
 
-
     public static String toHexString(byte[] bytes, String delimiter) {
 
-        StringBuilder b =
-                new StringBuilder(bytes.length * (2 + delimiter.length()));
+        StringBuilder b
+                = new StringBuilder(bytes.length * (2 + delimiter.length()));
 
         for (int i = 0; i < bytes.length; i++) {
             if (i > 0) {
@@ -444,7 +430,6 @@ public class StringTools {
 
         return b.toString();
     }
-
 
     /**
      * Construct a map by splitting <code>s</code> and mapping each substring to
@@ -474,7 +459,6 @@ public class StringTools {
         return h;
     }
 
-
     /**
      * Return the number of occurences of character <code>c</code> in
      * <code>s</code>. If <code>s</code> is <code>null</code>, this method will
@@ -494,7 +478,6 @@ public class StringTools {
         return n;
     }
 
-
     /**
      * Check whether the given array contains the string <code>s</code>. *
      * <code>s</code> may not be <code>null</code>.
@@ -503,7 +486,6 @@ public class StringTools {
 
         return StringTools.indexOf(array, s) != -1;
     }
-
 
     /**
      * Return the position of <code>s</code> in the given array. <code>s</code>
@@ -522,7 +504,6 @@ public class StringTools {
         return -1;
     }
 
-
     /**
      * Check whether <code>s</code> contains at least one of the strings in
      * <code>substrings</code>.
@@ -536,7 +517,6 @@ public class StringTools {
         }
         return false;
     }
-
 
     /**
      * Compare two string arrays for equality.
@@ -562,7 +542,6 @@ public class StringTools {
         return true;
     }
 
-
     /**
      * Return a new string resulting from deleting all occurences of
      * <code>c</code> from <code>s</code>.
@@ -571,7 +550,6 @@ public class StringTools {
 
         return StringTools.delete(s, c, 0);
     }
-
 
     /**
      * Return a new string resulting from deleting all occurences of
@@ -594,7 +572,6 @@ public class StringTools {
         return b.toString();
     }
 
-
     /**
      * Returns a new string resulting from replacing all occurrences of
      * <code>oldChar</code> in <code>s</code> with <code>newChar</code>.
@@ -604,14 +581,13 @@ public class StringTools {
         return StringTools.replace(s, oldChar, newChar, 0);
     }
 
-
     /**
      * Returns a new string resulting from replacing all occurrences of
      * <code>oldChar</code> in <code>s</code> starting at position
      * <code>pos</code> with <code>newChar</code>.
      */
     public static final String replace(String s, char oldChar, char newChar,
-                                       int pos) {
+            int pos) {
 
         if ((s.indexOf(oldChar, pos) < 0) || (oldChar == newChar)) {
             return s;
@@ -625,17 +601,15 @@ public class StringTools {
         return b.toString();
     }
 
-
     /**
      * Returns a new string resulting from replacing all occurrences of
      * <code>oldString</code> in <code>s</code> with <code>newString</code>.
      */
     public static final String replace(String s, String oldString,
-                                       String newString) {
+            String newString) {
 
         return StringTools.replace(s, oldString, newString, 0);
     }
-
 
     /**
      * Returns a new string resulting from replacing all occurrences of
@@ -643,7 +617,7 @@ public class StringTools {
      * <code>pos</code> with <code>newString</code>.
      */
     public static final String replace(String s, String oldString,
-                                       String newString, int pos) {
+            String newString, int pos) {
 
         if (!newString.equals(oldString)) {
             StringBuilder b = new StringBuilder(s.length());
@@ -663,7 +637,6 @@ public class StringTools {
         }
     }
 
-
     /**
      * Construct a message from the given format string and the arguments.
      *
@@ -674,7 +647,6 @@ public class StringTools {
 
         return MessageFormat.format(formatString, args);
     }
-
 
     /**
      * Construct a message from the given format string and the argument.
@@ -688,7 +660,6 @@ public class StringTools {
                 : Misc.getString("false"));
     }
 
-
     /**
      * Construct a message from the given format string and the argument.
      *
@@ -700,7 +671,6 @@ public class StringTools {
         return MessageFormat.format(formatString, new Character(arg));
     }
 
-
     /**
      * Construct a message from the given format string and the argument.
      *
@@ -711,7 +681,6 @@ public class StringTools {
 
         return MessageFormat.format(formatString, new Long(arg));
     }
-
 
     /**
      * Construct a message from the given format string and the argument.
@@ -731,37 +700,37 @@ public class StringTools {
     static {
         String rules = null;
         try {
-            rules =
-                    "= '\u200b' = \u200c = \u200d = \u200e = \u200f"
-                            + "= '\u0000' = '\u0001' = '\u0002' = '\u0003' = '\u0004' = '\u0005' = '\u0006' = '\u0007' = '\u0008' = '\u000e' = '\u000f'"
-                            + "= '\u0011' = '\u0012' = '\u0014' = '\u0015' = '\u0016' = '\u0017' = '\u0018' = '\u0019' = '\u001a' = '\u001b' = '\u001c' = '\u001d' = '\u001e' = '\u001f'"
-                            + "= \u0080 = \u0081 = \u0082 = \u0083 = \u0084 = \u0085 = \u0086 = \u0087 = \u0088 = \u0089 = \u008a = \u008b = \u008c = \u008d = \u008e = \u008f"
-                            + "= \u0090 = \u0091 = \u0092 = \u0093 = \u0094 = \u0095 = \u0096 = \u0097 = \u0098 = \u0099 = \u009a = \u009b = \u009c = \u009d = \u009e = \u009f"
-                            + "; '\u00a0' ; '\u3000' ; \ufeff ; '\u0009' ; '\u000c' ; \u000b"
-                            + "; \u0301 ; \u0300 ; \u0306 ; \u0302 ; \u030c ; \u030a ; \u030d ; \u0308 ; \u030b ; \u0303 ; \u0307 ; \u0304 ; \u0337 ; \u0327 ; \u0328 ; \u0323"
-                            + "; \u0332 ; \u0305 ; \u0309 ; \u030e ; \u030f ; \u0306\u0307"
-                            + "; \u0311 ; \u0312 ; \u0313 ; \u0314 ; \u0315 ; \u0316 ; \u0317 ; \u0318 ; \u0319 ; \u031a ; \u031b ; \u031c ; \u031d ; \u031e ; \u031f ; \u0320"
-                            + "; \u0321 ; \u0322 ; \u0324 ; \u0325 ; \u0326 ; \u0329 ; \u032a ; \u032b ; \u032c ; \u032d ; \u032e ; \u032f ; \u0330 ; \u0331 ; \u0333 ; \u0334"
-                            + "; \u0335 ; \u0336 ; \u0338 ; \u0339 ; \u033a ; \u033b ; \u033c ; \u033d ; \u033e ; \u033f ; \u0340 ; \u0341 ; \u0342 ; \u0343 ; \u0308\u030d"
-                            + "; \u0345 ; \u0360 ; \u0361 ; \u0483 ; \u0484 ; \u0485 ; \u0486 ; \u20d0 ; \u20d1 ; \u20d2 ; \u20d3 ; \u20d4 ; \u20d5 ; \u20d6 ; \u20d7 ; \u20d8"
-                            + "; \u20d9 ; \u20da ; \u20db ; \u20dc ; \u20dd ; \u20de ; \u20df ; \u20e0 ; \u20e1 ; \u00ad ; \u2010 ; \u2011 ; \u2012 ; \u2013 ; \u2014 ; \u2015 ; \u2212"
-                            + "< '\n' = '\r'"
-                            + "< ' ' ; \u00A0 ; '\u2000' ; '\u2001' ; '\u2002' ; '\u2003' ; '\u2004' ; '\u2005' ; '\u2006' ; '\u2007' ; '\u2008' ; '\u2009' ; '\u200a'"
-                            + "< '-' < '_' < '\u00af'"
-                            + "< ',' < ';' < ':' < '!' < \u00a1 < '?' < '\u00bf' < '/' < '.' < '\u00b4' < '`' < '^' < '\u00a8' < '~' < '\u00b7' < '\u00b8'"
-                            + "< ''' < \u2018, \u201a, \u201b < \u2019 < \u2039 < \u203a"
-                            + "< '\"' < \u201c, \u201e, \u201f < \u201d < \u2033, \u02ba < \u00ab < \u00bb"
-                            + "< '(' < ')' < '[' < ']' < '{' < '}'"
-                            + "< \u00a7 < \u00b6 < \u00a9 < \u00ae < '@' < \u00a4 < \u0e3f < \u00a2 < \u20a1 < \u20a2"
-                            + "< '$' < \u20ab < \u20ac < \u20a3 < \u20a4 < \u20a5 < \u20a6 < \u20a7 < \u00a3 < \u20a8 < \u20aa < \u20a9 < \u00a5"
-                            + "< '*' < '\\' < '&' < '#' < '%' < '+' < '\u00b1' < '\u00f7' < '\u00d7' < '<' < '=' < '>' < \u00ac < '|' < \u00a6 < \u00b0 < \u00b5"
-                            + "< 0 < 1 < 2 < 3 < 4 < 5 < 6 < 7 < 8 < 9"
-                            + "< \u00bc < \u00bd < \u00be"
-                            + "< a , A , \u00e6/E , \u00c6/E, \u00e4, \u00c4"
-                            + "< b , B < c , C < d , D < \u00f0 , \u00d0 < e , E < f , F < g , G"
-                            + "< h , H < i , I < j , J < k , K < l , L < m , M < n , N < o , O , \u0153/E , \u0152/E, \u00f6, \u00d6"
-                            + "< p , P < q , Q < r , R < s , S , \u00df/S < t , T , \u00fe/H , \u00de/H < u , U, \u00fc, \u00dc"
-                            + "< v , V < w , W < x , X < y , Y < z , Z";
+            rules
+                    = "= '\u200b' = \u200c = \u200d = \u200e = \u200f"
+                    + "= '\u0000' = '\u0001' = '\u0002' = '\u0003' = '\u0004' = '\u0005' = '\u0006' = '\u0007' = '\u0008' = '\u000e' = '\u000f'"
+                    + "= '\u0011' = '\u0012' = '\u0014' = '\u0015' = '\u0016' = '\u0017' = '\u0018' = '\u0019' = '\u001a' = '\u001b' = '\u001c' = '\u001d' = '\u001e' = '\u001f'"
+                    + "= \u0080 = \u0081 = \u0082 = \u0083 = \u0084 = \u0085 = \u0086 = \u0087 = \u0088 = \u0089 = \u008a = \u008b = \u008c = \u008d = \u008e = \u008f"
+                    + "= \u0090 = \u0091 = \u0092 = \u0093 = \u0094 = \u0095 = \u0096 = \u0097 = \u0098 = \u0099 = \u009a = \u009b = \u009c = \u009d = \u009e = \u009f"
+                    + "; '\u00a0' ; '\u3000' ; \ufeff ; '\u0009' ; '\u000c' ; \u000b"
+                    + "; \u0301 ; \u0300 ; \u0306 ; \u0302 ; \u030c ; \u030a ; \u030d ; \u0308 ; \u030b ; \u0303 ; \u0307 ; \u0304 ; \u0337 ; \u0327 ; \u0328 ; \u0323"
+                    + "; \u0332 ; \u0305 ; \u0309 ; \u030e ; \u030f ; \u0306\u0307"
+                    + "; \u0311 ; \u0312 ; \u0313 ; \u0314 ; \u0315 ; \u0316 ; \u0317 ; \u0318 ; \u0319 ; \u031a ; \u031b ; \u031c ; \u031d ; \u031e ; \u031f ; \u0320"
+                    + "; \u0321 ; \u0322 ; \u0324 ; \u0325 ; \u0326 ; \u0329 ; \u032a ; \u032b ; \u032c ; \u032d ; \u032e ; \u032f ; \u0330 ; \u0331 ; \u0333 ; \u0334"
+                    + "; \u0335 ; \u0336 ; \u0338 ; \u0339 ; \u033a ; \u033b ; \u033c ; \u033d ; \u033e ; \u033f ; \u0340 ; \u0341 ; \u0342 ; \u0343 ; \u0308\u030d"
+                    + "; \u0345 ; \u0360 ; \u0361 ; \u0483 ; \u0484 ; \u0485 ; \u0486 ; \u20d0 ; \u20d1 ; \u20d2 ; \u20d3 ; \u20d4 ; \u20d5 ; \u20d6 ; \u20d7 ; \u20d8"
+                    + "; \u20d9 ; \u20da ; \u20db ; \u20dc ; \u20dd ; \u20de ; \u20df ; \u20e0 ; \u20e1 ; \u00ad ; \u2010 ; \u2011 ; \u2012 ; \u2013 ; \u2014 ; \u2015 ; \u2212"
+                    + "< '\n' = '\r'"
+                    + "< ' ' ; \u00A0 ; '\u2000' ; '\u2001' ; '\u2002' ; '\u2003' ; '\u2004' ; '\u2005' ; '\u2006' ; '\u2007' ; '\u2008' ; '\u2009' ; '\u200a'"
+                    + "< '-' < '_' < '\u00af'"
+                    + "< ',' < ';' < ':' < '!' < \u00a1 < '?' < '\u00bf' < '/' < '.' < '\u00b4' < '`' < '^' < '\u00a8' < '~' < '\u00b7' < '\u00b8'"
+                    + "< ''' < \u2018, \u201a, \u201b < \u2019 < \u2039 < \u203a"
+                    + "< '\"' < \u201c, \u201e, \u201f < \u201d < \u2033, \u02ba < \u00ab < \u00bb"
+                    + "< '(' < ')' < '[' < ']' < '{' < '}'"
+                    + "< \u00a7 < \u00b6 < \u00a9 < \u00ae < '@' < \u00a4 < \u0e3f < \u00a2 < \u20a1 < \u20a2"
+                    + "< '$' < \u20ab < \u20ac < \u20a3 < \u20a4 < \u20a5 < \u20a6 < \u20a7 < \u00a3 < \u20a8 < \u20aa < \u20a9 < \u00a5"
+                    + "< '*' < '\\' < '&' < '#' < '%' < '+' < '\u00b1' < '\u00f7' < '\u00d7' < '<' < '=' < '>' < \u00ac < '|' < \u00a6 < \u00b0 < \u00b5"
+                    + "< 0 < 1 < 2 < 3 < 4 < 5 < 6 < 7 < 8 < 9"
+                    + "< \u00bc < \u00bd < \u00be"
+                    + "< a , A , \u00e6/E , \u00c6/E, \u00e4, \u00c4"
+                    + "< b , B < c , C < d , D < \u00f0 , \u00d0 < e , E < f , F < g , G"
+                    + "< h , H < i , I < j , J < k , K < l , L < m , M < n , N < o , O , \u0153/E , \u0152/E, \u00f6, \u00d6"
+                    + "< p , P < q , Q < r , R < s , S , \u00df/S < t , T , \u00fe/H , \u00de/H < u , U, \u00fc, \u00dc"
+                    + "< v , V < w , W < x , X < y , Y < z , Z";
 
             StringTools.Deutsch = new RuleBasedCollator(rules);
         } catch (ParseException e) {
@@ -769,7 +738,7 @@ public class StringTools {
                     + e.getLocalizedMessage());
             System.err.println("rules at pos = "
                     + rules.substring(e.getErrorOffset() - 5, e
-                    .getErrorOffset() + 5));
+                            .getErrorOffset() + 5));
 
             StringTools.Deutsch = Collator.getInstance(Locale.GERMAN);
         }
@@ -885,7 +854,6 @@ public class StringTools {
         StringTools.entities.put(new Character('\u00FF'), "&yuml;");
     }
 
-
     /**
      * Compare two strings according to German collation rules.
      */
@@ -893,7 +861,6 @@ public class StringTools {
 
         return StringTools.Deutsch.compare(s1, s2);
     }
-
 
     /**
      * Parse a double precision floating point number from a string.
@@ -927,7 +894,6 @@ public class StringTools {
 
         return d;
     }
-
 
     public static Locale parseLocale(String name) {
 
@@ -975,6 +941,6 @@ public class StringTools {
 
         throw new IllegalArgumentException(
                 "Could not determine locale for identifier \"" + name
-                        + "\"");
+                + "\"");
     }
 }

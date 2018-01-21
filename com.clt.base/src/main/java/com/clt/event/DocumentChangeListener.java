@@ -1,17 +1,3 @@
-/*
- * @(#)DocumentChangeListener.java
- * Created on 07.04.05
- *
- * Copyright (c) 2005 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.event;
 
 import javax.swing.event.DocumentEvent;
@@ -28,8 +14,7 @@ import javax.swing.event.DocumentListener;
  * @version 1.0
  */
 
-public abstract class DocumentChangeListener
-    implements DocumentListener {
+public abstract class DocumentChangeListener implements DocumentListener {
 
   /**
    * Simply forward the event to {@link #documentChanged}

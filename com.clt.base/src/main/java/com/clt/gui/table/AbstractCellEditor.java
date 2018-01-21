@@ -7,92 +7,84 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.EventListenerList;
 
-public class AbstractCellEditor
-    implements CellEditor {
+public class AbstractCellEditor implements CellEditor {
 
-  protected EventListenerList listenerList = new EventListenerList();
+    protected EventListenerList listenerList = new EventListenerList();
 
+    public Object getCellEditorValue() {
 
-  public Object getCellEditorValue() {
+        return null;
+    }
 
-    return null;
-  }
+    public boolean isCellEditable(EventObject e) {
 
+        return true;
+    }
 
-  public boolean isCellEditable(EventObject e) {
+    public boolean shouldSelectCell(EventObject anEvent) {
 
-    return true;
-  }
+        return false;
+    }
 
+    public boolean stopCellEditing() {
 
-  public boolean shouldSelectCell(EventObject anEvent) {
+        return true;
+    }
 
-    return false;
-  }
+    public void cancelCellEditing() {
 
+        // per default, don't do anything
+    }
 
-  public boolean stopCellEditing() {
+    public void addCellEditorListener(CellEditorListener l) {
 
-    return true;
-  }
+        this.listenerList.add(CellEditorListener.class, l);
+    }
 
+    public void removeCellEditorListener(CellEditorListener l) {
 
-  public void cancelCellEditing() {
-
-    // per default, don't do anything
-  }
-
-
-  public void addCellEditorListener(CellEditorListener l) {
-
-    this.listenerList.add(CellEditorListener.class, l);
-  }
+        this.listenerList.remove(CellEditorListener.class, l);
+    }
 
 
-  public void removeCellEditorListener(CellEditorListener l) {
-
-    this.listenerList.remove(CellEditorListener.class, l);
-  }
-
-
-  /*
+    /*
    * Notify all listeners that have registered interest for notification on this
    * event type.
    * 
    * @see EventListenerList
-   */
-  protected void fireEditingStopped() {
+     */
+    protected void fireEditingStopped() {
 
-    // Guaranteed to return a non-null array
-    Object[] listeners = this.listenerList.getListenerList();
-    // Process the listeners last to first, notifying
-    // those that are interested in this event
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == CellEditorListener.class) {
-        ((CellEditorListener)listeners[i + 1]).editingStopped(new ChangeEvent(
-          this));
-      }
+        // Guaranteed to return a non-null array
+        Object[] listeners = this.listenerList.getListenerList();
+        // Process the listeners last to first, notifying
+        // those that are interested in this event
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == CellEditorListener.class) {
+                ((CellEditorListener) listeners[i + 1]).editingStopped(new ChangeEvent(
+                        this));
+            }
+        }
     }
-  }
 
 
-  /*
+    /*
    * Notify all listeners that have registered interest for notification on this
    * event type.
    * 
    * @see EventListenerList
-   */
-  protected void fireEditingCanceled() {
+     */
+    protected void fireEditingCanceled() {
 
-    // Guaranteed to return a non-null array
-    Object[] listeners = this.listenerList.getListenerList();
-    // Process the listeners last to first, notifying
-    // those that are interested in this event
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == CellEditorListener.class) {
-        ((CellEditorListener)listeners[i + 1]).editingCanceled(new ChangeEvent(
-          this));
-      }
+        // Guaranteed to return a non-null array
+        Object[] listeners = this.listenerList.getListenerList();
+        // Process the listeners last to first, notifying
+        // those that are interested in this event
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == CellEditorListener.class) {
+                ((CellEditorListener) listeners[i + 1]).editingCanceled(new ChangeEvent(
+                        this));
+            }
+        }
     }
-  }
 }

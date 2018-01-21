@@ -1,22 +1,18 @@
 package com.clt.gui.menus;
 
-public class AbstractMenuCommander
-    implements MenuCommander {
+public class AbstractMenuCommander implements MenuCommander {
+    @Override
+    public String menuItemName(int cmd, String oldName) {
+        return oldName;
+    }
 
-  public String menuItemName(int cmd, String oldName) {
+    @Override
+    public boolean menuItemState(int cmd) {
+        return true;
+    }
 
-    return oldName;
-  }
-
-
-  public boolean menuItemState(int cmd) {
-
-    return true;
-  }
-
-
-  public boolean doCommand(int cmd) {
-
-    return false;
-  }
+    @Override
+    public boolean doCommand(int cmd) {
+        return false;
+    }
 }

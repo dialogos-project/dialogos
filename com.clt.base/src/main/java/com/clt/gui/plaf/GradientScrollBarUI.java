@@ -1,17 +1,3 @@
-/*
- * @(#)GradientScrollBarUI.java
- * Created on 26.05.2006 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.gui.plaf;
 
 import java.awt.Adjustable;
@@ -70,8 +56,7 @@ public class GradientScrollBarUI
   @Override
   protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
 
-    this.paintGradient(g, thumbBounds, -this.scrollBarInset,
-      -this.scrollBarInset,
+    this.paintGradient(g, thumbBounds, -this.scrollBarInset, -this.scrollBarInset,
             this.scrollbar.getOrientation() == Adjustable.HORIZONTAL, false);
   }
 
@@ -138,8 +123,7 @@ public class GradientScrollBarUI
       return (int)Math.round(Math.sin(Math.PI * i / (max - 1)) * shift);
     }
     else {
-      return -shift
-        - (int)Math.round(Math.sin(Math.PI * i / (max - 1)) * -shift);
+      return -shift - (int)Math.round(Math.sin(Math.PI * i / (max - 1)) * -shift);
     }
   }
 
@@ -158,9 +142,7 @@ public class GradientScrollBarUI
   }
 
 
-  private void paintGradient(Graphics g, Rectangle r, int left_shift,
-      int right_shift,
-            boolean horizontal, boolean reverse) {
+  private void paintGradient(Graphics g, Rectangle r, int left_shift, int right_shift, boolean horizontal, boolean reverse) {
 
     g.translate(r.x, r.y);
 

@@ -1,59 +1,49 @@
 package com.clt.io;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 
-public class FileExtensionFilter
-    extends javax.swing.filechooser.FileFilter
-    implements java.io.FileFilter, java.io.FilenameFilter {
+public class FileExtensionFilter extends javax.swing.filechooser.FileFilter implements FileFilter, FilenameFilter {
 
-  private String extension;
+    private String extension;
+    private String description;
 
-  private String description;
-
-
-  public FileExtensionFilter(String extension) {
-
-    this(extension, null);
-  }
-
-
-  public FileExtensionFilter(String extension, String description) {
-
-    if (extension.startsWith(".")) {
-      this.extension = extension;
-    }
-    else {
-      this.extension = "." + extension;
+    public FileExtensionFilter(String extension) {
+        this(extension, null);
     }
 
-    if (description != null) {
-      this.description = description;
+    public FileExtensionFilter(String extension, String description) {
+        if (extension.startsWith(".")) {
+            this.extension = extension;
+        } else {
+            this.extension = "." + extension;
+        }
+
+        if (description != null) {
+            this.description = description;
+        } else {
+            this.description = this.extension + " files";
+        }
     }
-    else {
-      this.description = this.extension + " files";
+
+    @Override
+    public boolean accept(File file) {
+
+        String fileName = file.getName();
+
+        return file.isDirectory() || fileName.endsWith(this.description);
     }
-  }
 
+    public boolean accept(File dir, String name) {
 
-  @Override
-  public boolean accept(File file) {
+        return this.accept(new File(dir, name));
+    }
 
-    String fileName = file.getName();
+    @Override
+    public String getDescription() {
 
-    return file.isDirectory() || fileName.endsWith(this.description);
-  }
-
-
-  public boolean accept(File dir, String name) {
-
-    return this.accept(new File(dir, name));
-  }
-
-
-  @Override
-  public String getDescription() {
-
-    return "*" + this.extension + " (" + this.description + ")";
-  }
+        return "*" + this.extension + " (" + this.description + ")";
+    }
 
 }

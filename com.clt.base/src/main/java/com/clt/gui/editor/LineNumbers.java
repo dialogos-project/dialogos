@@ -1,17 +1,3 @@
-/*
- * @(#)LineNumbers.java
- * Created on 04.04.2007 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.gui.editor;
 
 import java.awt.Dimension;
@@ -30,105 +16,96 @@ import com.clt.gui.GUI;
 
 /**
  * @author dabo
- * 
+ *
  */
-public class LineNumbers
-    extends JComponent {
+public class LineNumbers extends JComponent {
 
-  private JTextComponent text;
-  private DocumentChangeListener repainter = new DocumentChangeListener() {
+    private JTextComponent text;
+    private DocumentChangeListener repainter = new DocumentChangeListener() {
+
+        @Override
+        public void documentChanged(DocumentEvent evt) {
+
+            LineNumbers.this.repaint();
+        }
+    };
+
+    public LineNumbers(JTextComponent text) {
+
+        this.text = text;
+
+        this.setOpaque(false);
+    }
 
     @Override
-    public void documentChanged(DocumentEvent evt)
-        {
+    public void addNotify() {
 
-          LineNumbers.this.repaint();
-        }
-  };
+        super.addNotify();
 
-
-  public LineNumbers(JTextComponent text) {
-
-    this.text = text;
-
-    this.setOpaque(false);
-  }
-
-
-  @Override
-  public void addNotify() {
-
-    super.addNotify();
-
-    GUI.addDocumentChangeListener(this.text, this.repainter);
-  }
-
-
-  @Override
-  public void removeNotify() {
-
-    this.text.getDocument().removeDocumentListener(this.repainter);
-
-    super.removeNotify();
-  }
-
-
-  @Override
-  protected void paintComponent(Graphics g) {
-
-    int width = this.getWidth();
-    Font font = this.text.getFont();
-    FontMetrics metrics = g.getFontMetrics(font);
-    g.setFont(font);
-    g.setColor(this.getForeground());
-
-    String text = this.text.getText();
-    boolean draw = true;
-    int line = 1;
-    for (int i = 0; i <= text.length(); i++) {
-      if (draw) {
-        try {
-          Rectangle r = this.text.modelToView(i);
-          String lineNumber = String.valueOf(line);
-          g.drawString(lineNumber, width - metrics.stringWidth(lineNumber) - 6,
-            r.y
-                            + metrics.getHeight() - metrics.getDescent());
-        } catch (BadLocationException exn) {
-          System.err.println("Error for pos " + i + ": "
-            + exn.getLocalizedMessage());
-          System.err.println("  Character at "
-            + i
-            + ": "
-            +
-                            (i < text.length() ? "0x"
-                              + (text.charAt(i) < 0x10 ? "0" : "")
-                                    + Integer.toHexString(text.charAt(i))
-                              : "EOF"));
-        }
-        draw = false;
-      }
-
-      if (i < text.length()) {
-        if (text.charAt(i) == '\r') {
-          if ((i < text.length() - 1) && (text.charAt(i + 1) == '\n')) {
-            i++;
-          }
-          line++;
-          draw = true;
-        }
-        else if (text.charAt(i) == '\n') {
-          line++;
-          draw = true;
-        }
-      }
+        GUI.addDocumentChangeListener(this.text, this.repainter);
     }
-  }
 
+    @Override
+    public void removeNotify() {
 
-  @Override
-  public Dimension getPreferredSize() {
+        this.text.getDocument().removeDocumentListener(this.repainter);
 
-    Dimension d = this.text.getPreferredSize();
-    return new Dimension(40, d.height);
-  }
+        super.removeNotify();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+
+        int width = this.getWidth();
+        Font font = this.text.getFont();
+        FontMetrics metrics = g.getFontMetrics(font);
+        g.setFont(font);
+        g.setColor(this.getForeground());
+
+        String text = this.text.getText();
+        boolean draw = true;
+        int line = 1;
+        for (int i = 0; i <= text.length(); i++) {
+            if (draw) {
+                try {
+                    Rectangle r = this.text.modelToView(i);
+                    String lineNumber = String.valueOf(line);
+                    g.drawString(lineNumber, width - metrics.stringWidth(lineNumber) - 6,
+                            r.y
+                            + metrics.getHeight() - metrics.getDescent());
+                } catch (BadLocationException exn) {
+                    System.err.println("Error for pos " + i + ": "
+                            + exn.getLocalizedMessage());
+                    System.err.println("  Character at "
+                            + i
+                            + ": "
+                            + (i < text.length() ? "0x"
+                            + (text.charAt(i) < 0x10 ? "0" : "")
+                            + Integer.toHexString(text.charAt(i))
+                            : "EOF"));
+                }
+                draw = false;
+            }
+
+            if (i < text.length()) {
+                if (text.charAt(i) == '\r') {
+                    if ((i < text.length() - 1) && (text.charAt(i + 1) == '\n')) {
+                        i++;
+                    }
+                    line++;
+                    draw = true;
+                } else if (text.charAt(i) == '\n') {
+                    line++;
+                    draw = true;
+                }
+            }
+        }
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+
+        Dimension d = this.text.getPreferredSize();
+        return new Dimension(40, d.height);
+    }
 }

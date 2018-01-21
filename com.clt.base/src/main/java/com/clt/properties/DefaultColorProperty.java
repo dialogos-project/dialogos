@@ -1,17 +1,3 @@
-/*
- * @(#)DefaultBooleanProperty.java
- * Created on 08.06.05
- *
- * Copyright (c) 2005 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.properties;
 
 import java.awt.Color;
@@ -20,55 +6,46 @@ import java.awt.Color;
  * @author Daniel Bobbert
  * @version 1.0
  */
+public class DefaultColorProperty extends ColorProperty {
 
-public class DefaultColorProperty
-    extends ColorProperty {
+    private Color value;
+    private String name;
+    private String description;
 
-  private Color value;
-  private String name;
-  private String description;
+    public DefaultColorProperty(String id, String name, String description) {
 
+        this(id, name, description, Color.black);
+    }
 
-  public DefaultColorProperty(String id, String name, String description) {
+    public DefaultColorProperty(String id, String name, String description, Color value) {
 
-    this(id, name, description, Color.black);
-  }
+        super(id);
+        this.value = value;
+        this.name = name;
+        this.description = description;
+    }
 
+    @Override
+    public String getName() {
 
-  public DefaultColorProperty(String id, String name, String description,
-      Color value) {
+        return this.name != null ? this.name : super.getName();
+    }
 
-    super(id);
-    this.value = value;
-    this.name = name;
-    this.description = description;
-  }
+    @Override
+    public String getDescription() {
 
+        return this.description;
+    }
 
-  @Override
-  public String getName() {
+    @Override
+    public Color getValue() {
 
-    return this.name != null ? this.name : super.getName();
-  }
+        return this.value;
+    }
 
+    @Override
+    protected void setValueImpl(Color value) {
 
-  @Override
-  public String getDescription() {
-
-    return this.description;
-  }
-
-
-  @Override
-  public Color getValue() {
-
-    return this.value;
-  }
-
-
-  @Override
-  protected void setValueImpl(Color value) {
-
-    this.value = value;
-  }
+        this.value = value;
+    }
 }

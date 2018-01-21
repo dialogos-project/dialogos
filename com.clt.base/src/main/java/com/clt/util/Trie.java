@@ -1,17 +1,3 @@
-/*
- * @(#)Trie.java
- * Created on 04.11.04
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.util;
 
 import java.util.AbstractCollection;
@@ -22,96 +8,83 @@ import java.util.Iterator;
  * support <code>null</code> elements. The elements will always be ordered
  * according to POSIX rules (i.e. by comparing the unicode values of individual
  * characters). So 'a' &lt; 'z' &lt; 'A' &lt; 'Z'
- * 
+ *
  * @author dabo
  */
-public class Trie
-    extends AbstractCollection<String> {
+public class Trie extends AbstractCollection<String> {
 
-  private static final Object VALUE = new Object();
+    private static final Object VALUE = new Object();
 
-  private TrieMap<Object> map;
+    private TrieMap<Object> map;
 
+    public Trie() {
 
-  public Trie() {
+        this.map = new TrieMap<Object>();
+    }
 
-    this.map = new TrieMap<Object>();
-  }
+    @Override
+    public Iterator<String> iterator() {
 
+        return this.map.keySet().iterator();
+    }
 
-  @Override
-  public Iterator<String> iterator() {
+    public Iterator<String> iterator(String prefix) {
 
-    return this.map.keySet().iterator();
-  }
+        return this.map.keySet(prefix).iterator();
+    }
 
+    @Override
+    public int size() {
 
-  public Iterator<String> iterator(String prefix) {
+        return this.map.size();
+    }
 
-    return this.map.keySet(prefix).iterator();
-  }
+    @Override
+    public boolean isEmpty() {
 
+        return this.map.isEmpty();
+    }
 
-  @Override
-  public int size() {
+    @Override
+    public boolean contains(Object o) {
 
-    return this.map.size();
-  }
+        return this.map.containsKey(o);
+    }
 
+    public boolean containsPrefix(String prefix) {
 
-  @Override
-  public boolean isEmpty() {
+        return this.map.containsPrefix(prefix);
+    }
 
-    return this.map.isEmpty();
-  }
+    @Override
+    public Object[] toArray() {
 
+        return this.map.keySet().toArray();
+    }
 
-  @Override
-  public boolean contains(Object o) {
+    @Override
+    public <T> T[] toArray(T[] a) {
 
-    return this.map.containsKey(o);
-  }
+        return this.map.keySet().toArray(a);
+    }
 
+    @Override
+    public boolean add(String o) {
 
-  public boolean containsPrefix(String prefix) {
+        // return true if there was no old entry
+        return this.map.put(o, Trie.VALUE) == null;
+    }
 
-    return this.map.containsPrefix(prefix);
-  }
+    @Override
+    public boolean remove(Object o) {
 
+        return this.map.remove(o) != null;
+    }
 
-  @Override
-  public Object[] toArray() {
+    @Override
+    public void clear() {
 
-    return this.map.keySet().toArray();
-  }
-
-
-  @Override
-  public <T> T[] toArray(T[] a) {
-
-    return this.map.keySet().toArray(a);
-  }
-
-
-  @Override
-  public boolean add(String o) {
-
-    // return true if there was no old entry
-    return this.map.put(o, Trie.VALUE) == null;
-  }
-
-
-  @Override
-  public boolean remove(Object o) {
-
-    return this.map.remove(o) != null;
-  }
-
-
-  @Override
-  public void clear() {
-
-    this.map.clear();
-  }
+        this.map.clear();
+    }
 
 }

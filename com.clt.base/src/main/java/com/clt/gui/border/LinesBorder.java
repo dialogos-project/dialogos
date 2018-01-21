@@ -1,11 +1,3 @@
-//
-//  LinesBorder.java
-//  Wizard
-//
-//  Created by Daniel Bobbert on Mon Jun 03 2002.
-//  Copyright (c) 2002 CLT Sprachtechnologie GmbH. All rights reserved.
-//
-
 package com.clt.gui.border;
 
 import java.awt.Color;
@@ -29,89 +21,85 @@ import javax.swing.border.Border;
  * <li>B = Draw a bold line on the bottom
  * </ul>
  * Per default, "thin" means a one pixel line and "bold" means a two pixel line.
- * 
+ *
  * @author dabo
  */
-public class LinesBorder
-    implements Border {
+public class LinesBorder implements Border {
 
-  private Color color;
+    private Color color;
 
-  private int left, right, top, bottom;
+    private int left, right, top, bottom;
 
+    /**
+     * Construct a black border using the given line encoding.
+     */
+    public LinesBorder(String lines) {
 
-  /** Construct a black border using the given line encoding. */
-  public LinesBorder(String lines) {
+        this(lines, Color.black);
+    }
 
-    this(lines, Color.black);
-  }
+    /**
+     * Construct a border using the given line encoding and color.
+     */
+    public LinesBorder(String lines, Color c) {
 
+        this(lines, c, 1, 3);
+    }
 
-  /** Construct a border using the given line encoding and color. */
-  public LinesBorder(String lines, Color c) {
+    /**
+     * Construct a black border using the given line encoding. Thin and bold
+     * lines will be drawn using the respective number of pixels.
+     */
+    public LinesBorder(String lines, int thinLine, int boldLine) {
 
-    this(lines, c, 1, 3);
-  }
+        this(lines, Color.black, thinLine, boldLine);
+    }
 
+    /**
+     * Construct a border using the given line encoding and color. Thin and bold
+     * lines will be drawn using the respective number of pixels.
+     */
+    public LinesBorder(String lines, Color c, int thinLine, int boldLine) {
 
-  /**
-   * Construct a black border using the given line encoding. Thin and bold lines
-   * will be drawn using the respective number of pixels.
-   */
-  public LinesBorder(String lines, int thinLine, int boldLine) {
+        this.color = c;
+        this.left
+                = lines.indexOf('L') >= 0 ? boldLine : (lines.indexOf('l') >= 0 ? thinLine
+                : 0);
+        this.right
+                = lines.indexOf('R') >= 0 ? boldLine : (lines.indexOf('r') >= 0 ? thinLine
+                : 0);
+        this.top
+                = lines.indexOf('T') >= 0 ? boldLine : (lines.indexOf('t') >= 0 ? thinLine
+                : 0);
+        this.bottom
+                = lines.indexOf('B') >= 0 ? boldLine : (lines.indexOf('b') >= 0 ? thinLine
+                : 0);
+    }
 
-    this(lines, Color.black, thinLine, boldLine);
-  }
+    public boolean isBorderOpaque() {
 
+        // opaque only if the color isn't transparent
+        return this.color.getAlpha() == 255;
+    }
 
-  /**
-   * Construct a border using the given line encoding and color. Thin and bold
-   * lines will be drawn using the respective number of pixels.
-   */
-  public LinesBorder(String lines, Color c, int thinLine, int boldLine) {
+    public Insets getBorderInsets(Component c) {
 
-    this.color = c;
-    this.left =
-      lines.indexOf('L') >= 0 ? boldLine : (lines.indexOf('l') >= 0 ? thinLine
-        : 0);
-    this.right =
-      lines.indexOf('R') >= 0 ? boldLine : (lines.indexOf('r') >= 0 ? thinLine
-        : 0);
-    this.top =
-      lines.indexOf('T') >= 0 ? boldLine : (lines.indexOf('t') >= 0 ? thinLine
-        : 0);
-    this.bottom =
-      lines.indexOf('B') >= 0 ? boldLine : (lines.indexOf('b') >= 0 ? thinLine
-        : 0);
-  }
+        return new Insets(this.top, this.left, this.bottom, this.right);
+    }
 
+    public void paintBorder(Component c, Graphics g, int x, int y, int width,
+            int height) {
 
-  public boolean isBorderOpaque() {
+        g.setColor(this.color);
 
-    // opaque only if the color isn't transparent
-    return this.color.getAlpha() == 255;
-  }
+        // draw left and right border
+        g.fillRect(x, y, this.left, height);
+        g.fillRect(x + width - this.right, y, this.right, height);
 
-
-  public Insets getBorderInsets(Component c) {
-
-    return new Insets(this.top, this.left, this.bottom, this.right);
-  }
-
-
-  public void paintBorder(Component c, Graphics g, int x, int y, int width,
-      int height) {
-
-    g.setColor(this.color);
-
-    // draw left and right border
-    g.fillRect(x, y, this.left, height);
-    g.fillRect(x + width - this.right, y, this.right, height);
-
-    // draw top and bottom border
-    // since the color might be transparent, avoid drawing a pixel twice
-    g.fillRect(x + this.left, y, width - this.left - this.right, this.top);
-    g.fillRect(x + this.left, y + height - this.bottom, width - this.left
-      - this.right, this.bottom);
-  }
+        // draw top and bottom border
+        // since the color might be transparent, avoid drawing a pixel twice
+        g.fillRect(x + this.left, y, width - this.left - this.right, this.top);
+        g.fillRect(x + this.left, y + height - this.bottom, width - this.left
+                - this.right, this.bottom);
+    }
 }

@@ -1,17 +1,3 @@
-/*
- * @(#)LoggingPane.java
- * Created on Sun Sep 26 2004
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.gui;
 
 import java.awt.Color;
@@ -31,162 +17,145 @@ import javax.swing.text.StyleConstants;
  * @author Daniel Bobbert
  * @version 1.0
  */
+public class LoggingPane extends JTextPane {
 
-public class LoggingPane
-    extends JTextPane {
+    private int bufferSize;
 
-  private int bufferSize;
+    private LinkedList<Position> lines;
 
-  private LinkedList<Position> lines;
+    private MutableAttributeSet style = new SimpleAttributeSet();
 
-  private MutableAttributeSet style = new SimpleAttributeSet();
+    public LoggingPane() {
 
-
-  public LoggingPane() {
-
-    this(200);
-  }
-
-
-  public LoggingPane(int bufferSize) {
-
-    super(new DefaultStyledDocument());
-    this.setEditable(false);
-
-    this.lines = new LinkedList<Position>();
-    this.bufferSize = bufferSize;
-    // setFont(new Font("Serif", Font.PLAIN, 12));
-  }
-
-
-  public void setFont(String name, int size) {
-
-    StyleConstants.setFontFamily(this.style, name);
-    StyleConstants.setFontSize(this.style, size);
-  }
-
-
-  private void newline() {
-
-    try {
-      Document d = this.getDocument();
-
-      while ((this.bufferSize > 0) && (this.lines.size() >= this.bufferSize)) {
-        Position pos = this.lines.removeFirst();
-
-        d.remove(0, pos.getOffset() + 1);
-      }
-
-      int end = d.getLength();
-      d.insertString(end, "\n", null);
-      this.lines.add(d.createPosition(end));
-    } catch (BadLocationException ignore) {
-      // shouldn't happen
+        this(200);
     }
-  }
 
+    public LoggingPane(int bufferSize) {
 
-  public synchronized void setBold(boolean bold) {
+        super(new DefaultStyledDocument());
+        this.setEditable(false);
 
-    StyleConstants.setBold(this.style, bold);
-  }
+        this.lines = new LinkedList<Position>();
+        this.bufferSize = bufferSize;
+        // setFont(new Font("Serif", Font.PLAIN, 12));
+    }
 
+    public void setFont(String name, int size) {
 
-  public synchronized void print(String s) {
+        StyleConstants.setFontFamily(this.style, name);
+        StyleConstants.setFontSize(this.style, size);
+    }
 
-    this.print(s, Color.black);
-  }
+    private void newline() {
 
+        try {
+            Document d = this.getDocument();
 
-  public synchronized void print(String s, Color c) {
+            while ((this.bufferSize > 0) && (this.lines.size() >= this.bufferSize)) {
+                Position pos = this.lines.removeFirst();
 
-    try {
-      Document d = this.getDocument();
+                d.remove(0, pos.getOffset() + 1);
+            }
 
-      MutableAttributeSet attr = new SimpleAttributeSet();
-      attr.addAttributes(this.style);
-      StyleConstants.setForeground(attr, c);
+            int end = d.getLength();
+            d.insertString(end, "\n", null);
+            this.lines.add(d.createPosition(end));
+        } catch (BadLocationException ignore) {
+            // shouldn't happen
+        }
+    }
 
-      int nl = s.indexOf('\n');
-      while (nl != -1) {
-        d.insertString(d.getLength(), s.substring(0, nl), attr);
+    public synchronized void setBold(boolean bold) {
+
+        StyleConstants.setBold(this.style, bold);
+    }
+
+    public synchronized void print(String s) {
+
+        this.print(s, Color.black);
+    }
+
+    public synchronized void print(String s, Color c) {
+
+        try {
+            Document d = this.getDocument();
+
+            MutableAttributeSet attr = new SimpleAttributeSet();
+            attr.addAttributes(this.style);
+            StyleConstants.setForeground(attr, c);
+
+            int nl = s.indexOf('\n');
+            while (nl != -1) {
+                d.insertString(d.getLength(), s.substring(0, nl), attr);
+                this.newline();
+                s = s.substring(nl + 1);
+                nl = s.indexOf('\n');
+            }
+            d.insertString(d.getLength(), s, attr);
+
+            this.setCaretPosition(d.getLength());
+        } catch (BadLocationException ignore) {
+            // shouldn't happen
+        }
+    }
+
+    public synchronized void println() {
+
         this.newline();
-        s = s.substring(nl + 1);
-        nl = s.indexOf('\n');
-      }
-      d.insertString(d.getLength(), s, attr);
-
-      this.setCaretPosition(d.getLength());
-    } catch (BadLocationException ignore) {
-      // shouldn't happen
     }
-  }
 
+    public synchronized void println(String s) {
 
-  public synchronized void println() {
-
-    this.newline();
-  }
-
-
-  public synchronized void println(String s) {
-
-    this.print(s);
-    this.newline();
-  }
-
-
-  public synchronized void println(String s, Color c) {
-
-    this.print(s, c);
-    this.newline();
-  }
-
-
-  public synchronized void clear() {
-
-    try {
-      Document d = this.getDocument();
-      d.remove(0, d.getLength());
-      this.lines.clear();
-
-      this.setBold(false);
-    } catch (BadLocationException ignore) {
-      // shouldn't happen
+        this.print(s);
+        this.newline();
     }
-  }
 
+    public synchronized void println(String s, Color c) {
 
-  public void flush() {
+        this.print(s, c);
+        this.newline();
+    }
 
-    this.paintImmediately(0, 0, this.getWidth(), this.getHeight());
-  }
+    public synchronized void clear() {
 
+        try {
+            Document d = this.getDocument();
+            d.remove(0, d.getLength());
+            this.lines.clear();
 
-  public Writer getWriter() {
+            this.setBold(false);
+        } catch (BadLocationException ignore) {
+            // shouldn't happen
+        }
+    }
 
-    return new Writer() {
+    public void flush() {
 
-      @Override
-      public void write(char[] data, int offset, int length) {
+        this.paintImmediately(0, 0, this.getWidth(), this.getHeight());
+    }
 
-        LoggingPane.this.print(new String(data, offset, length));
-      }
+    public Writer getWriter() {
 
+        return new Writer() {
 
-      @Override
-      public void close() {
+            @Override
+            public void write(char[] data, int offset, int length) {
 
-        // there is nothing to do
-      }
+                LoggingPane.this.print(new String(data, offset, length));
+            }
 
+            @Override
+            public void close() {
 
-      @Override
-      public void flush() {
+                // there is nothing to do
+            }
 
-        LoggingPane.this.flush();
-      }
-    };
-  }
+            @Override
+            public void flush() {
+
+                LoggingPane.this.flush();
+            }
+        };
+    }
 
 }

@@ -1,17 +1,3 @@
-/*
- * @(#)CmdCheckboxMenuItem.java
- * Created on Mon May 05 2003
- *
- * Copyright (c) 2003 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.gui.menus;
 
 import java.awt.event.ActionEvent;
@@ -28,101 +14,78 @@ import com.clt.gui.OptionPane;
  * @author Daniel Bobbert
  * @version 1.0
  */
+public class CmdCheckBoxMenuItem extends JCheckBoxMenuItem {
 
-public class CmdCheckBoxMenuItem
-    extends JCheckBoxMenuItem {
+    MenuCommander commander;
 
-  MenuCommander commander;
-
-
-  public CmdCheckBoxMenuItem(String cmdName, int cmdNum, KeyStroke cmdKey,
-      MenuCommander commander) {
-
-    this(cmdName, cmdNum, cmdKey, commander, false);
-  }
-
-
-  public CmdCheckBoxMenuItem(String cmdName, int cmdNum, int cmdKey,
-      MenuCommander commander) {
-
-    this(cmdName, cmdNum, cmdKey, commander, false);
-  }
-
-
-  public CmdCheckBoxMenuItem(String cmdName, int cmdNum, int cmdKey,
-      MenuCommander commander,
-                               boolean state) {
-
-    this(cmdName, cmdNum, null, commander, state);
-    if (cmdKey > 0) {
-      this.setAccelerator(KeyStroke.getKeyStroke(cmdKey, this.getToolkit()
-        .getMenuShortcutKeyMask()));
-    }
-  }
-
-
-  public CmdCheckBoxMenuItem(String cmdName, int cmdNum, KeyStroke cmdKey,
-                               final MenuCommander commander, boolean state) {
-
-    super(cmdName);
-
-    this.commander = commander;
-
-    if (cmdKey != null) {
-      this.setAccelerator(cmdKey);
+    public CmdCheckBoxMenuItem(String cmdName, int cmdNum, KeyStroke cmdKey, MenuCommander commander) {
+        this(cmdName, cmdNum, cmdKey, commander, false);
     }
 
-    this.setActionCommand(Integer.toString(cmdNum));
-    this.addActionListener(new ActionListener() {
+    public CmdCheckBoxMenuItem(String cmdName, int cmdNum, int cmdKey, MenuCommander commander) {
+        this(cmdName, cmdNum, cmdKey, commander, false);
+    }
 
-      public void actionPerformed(ActionEvent evt) {
-
-        try {
-          if (CmdCheckBoxMenuItem.this.getCommandNumber() != Commands.noCmd) {
-            if (!commander.doCommand(CmdCheckBoxMenuItem.this
-              .getCommandNumber())) {
-              CmdCheckBoxMenuItem.this.getToolkit().beep();
-            }
-          }
+    public CmdCheckBoxMenuItem(String cmdName, int cmdNum, int cmdKey, MenuCommander commander, boolean state) {
+        this(cmdName, cmdNum, null, commander, state);
+        if (cmdKey > 0) {
+            this.setAccelerator(KeyStroke.getKeyStroke(cmdKey, this.getToolkit().getMenuShortcutKeyMask()));
         }
-                catch (ThreadDeath d) {
-                  throw d;
+    }
+
+    public CmdCheckBoxMenuItem(String cmdName, int cmdNum, KeyStroke cmdKey, final MenuCommander commander, boolean state) {
+        super(cmdName);
+
+        this.commander = commander;
+
+        if (cmdKey != null) {
+            this.setAccelerator(cmdKey);
+        }
+
+        this.setActionCommand(Integer.toString(cmdNum));
+        this.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+
+                try {
+                    if (CmdCheckBoxMenuItem.this.getCommandNumber() != Commands.noCmd) {
+                        if (!commander.doCommand(CmdCheckBoxMenuItem.this
+                                .getCommandNumber())) {
+                            CmdCheckBoxMenuItem.this.getToolkit().beep();
+                        }
+                    }
+                } catch (ThreadDeath d) {
+                    throw d;
+                } catch (Throwable t) {
+                    OptionPane.error(CmdCheckBoxMenuItem.this, new String[]{
+                        GUI.getString("CouldNotComplete"), t.toString()});
                 }
-                catch (Throwable t) {
-                  OptionPane.error(CmdCheckBoxMenuItem.this, new String[] {
-                            GUI.getString("CouldNotComplete"), t.toString() });
-                }
-              }
-    });
-    this.setEnabled(true);
-    this.setSelected(state);
-  }
-
-
-  public int getCommandNumber() {
-
-    try {
-      return Integer.parseInt(this.getActionCommand());
-    } catch (NumberFormatException exn) {
-      return Commands.noCmd;
+            }
+        });
+        this.setEnabled(true);
+        this.setSelected(state);
     }
-  }
 
-
-  public void update() {
-
-    int cmdNum = this.getCommandNumber();
-    this.setSelected(this.commander.menuItemState(cmdNum));
-    String oldLabel = this.getText();
-    String newLabel = this.commander.menuItemName(cmdNum, oldLabel);
-    if (newLabel == null) {
-      this.setEnabled(false);
+    public int getCommandNumber() {
+        try {
+            return Integer.parseInt(this.getActionCommand());
+        } catch (NumberFormatException exn) {
+            return Commands.noCmd;
+        }
     }
-    else {
-      this.setEnabled(true);
-      if (newLabel != oldLabel) {
-        this.setText(newLabel);
-      }
+
+    public void update() {
+        int cmdNum = this.getCommandNumber();
+        this.setSelected(this.commander.menuItemState(cmdNum));
+        String oldLabel = this.getText();
+        String newLabel = this.commander.menuItemName(cmdNum, oldLabel);
+        if (newLabel == null) {
+            this.setEnabled(false);
+        } else {
+            this.setEnabled(true);
+            if (newLabel != oldLabel) {
+                this.setText(newLabel);
+            }
+        }
     }
-  }
 }

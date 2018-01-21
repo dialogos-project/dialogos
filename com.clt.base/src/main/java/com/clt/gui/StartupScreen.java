@@ -1,17 +1,3 @@
-/*
- * @(#)StartupScreen.java
- * Created on 30.01.2006 by dabo
- *
- * Copyright (c) 2006 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.gui;
 
 import java.awt.BorderLayout;
@@ -35,112 +21,105 @@ import com.clt.event.ProgressListener;
 /**
  * @author dabo
  */
-public class StartupScreen
-    extends JDialog {
+public class StartupScreen extends JDialog {
 
-  private ProgressListener progressListener;
+    private ProgressListener progressListener;
 
+    public StartupScreen(String title) {
 
-  public StartupScreen(String title) {
+        this(title, null);
+    }
 
-    this(title, null);
-  }
+    public StartupScreen(String title, String version) {
 
+        super((Frame) null, title, false);
 
-  public StartupScreen(String title, String version) {
+        JPanel p = new JPanel(new GridBagLayout());
 
-    super((Frame)null, title, false);
+        final int steps = 300;
+        final JLabel status = new JLabel("Starting up...");
+        final JProgressBar progress = new JProgressBar(SwingConstants.HORIZONTAL, 0, steps);
+        progress.setIndeterminate(true);
 
-    JPanel p = new JPanel(new GridBagLayout());
+        JComponent header = AboutDialog.createHeader(title, version);
 
-    final int steps = 300;
-    final JLabel status = new JLabel("Starting up...");
-    final JProgressBar progress =
-      new JProgressBar(SwingConstants.HORIZONTAL, 0, steps);
-    progress.setIndeterminate(true);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 10, 5, 10);
 
-    JComponent header = AboutDialog.createHeader(title, version);
+        p.add(status, gbc);
+        gbc.gridy++;
+        p.add(progress, gbc);
+        gbc.gridy++;
 
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.weightx = 1;
-    gbc.weighty = 0;
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = new Insets(5, 10, 5, 10);
+        p.add(Box.createVerticalStrut(header.getPreferredSize().height / 2), gbc);
+        p.setOpaque(false);
+        p.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-    p.add(status, gbc);
-    gbc.gridy++;
-    p.add(progress, gbc);
-    gbc.gridy++;
+        this.progressListener = new ProgressListener() {
 
-    p.add(Box.createVerticalStrut(header.getPreferredSize().height / 2), gbc);
-    p.setOpaque(false);
-    p.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            public void progressChanged(final ProgressEvent evt) {
 
-    this.progressListener = new ProgressListener() {
+                final int value;
+                final boolean indeterminate;
+                if (evt.getEnd() - evt.getStart() > 0) {
+                    long current = evt.getCurrent();
+                    if (current < evt.getStart()) {
+                        current = evt.getStart();
+                    } else if (current > evt.getEnd()) {
+                        current = evt.getEnd();
+                    }
 
-      public void progressChanged(final ProgressEvent evt) {
+                    value
+                            = (int) (((current - evt.getStart()) * steps) / (evt.getEnd() - evt
+                            .getStart()));
+                    indeterminate = false;
+                } else {
+                    value = 0;
+                    indeterminate = true;
+                }
 
-        final int value;
-        final boolean indeterminate;
-        if (evt.getEnd() - evt.getStart() > 0) {
-          long current = evt.getCurrent();
-          if (current < evt.getStart()) {
-            current = evt.getStart();
-          }
-          else if (current > evt.getEnd()) {
-            current = evt.getEnd();
-          }
+                if ((indeterminate != progress.isIndeterminate())
+                        || (value != progress.getValue())) {
+                    GUI.invokeAndWait(new Runnable() {
 
-          value =
-            (int)(((current - evt.getStart()) * steps) / (evt.getEnd() - evt
-              .getStart()));
-          indeterminate = false;
-        }
-        else {
-          value = 0;
-          indeterminate = true;
-        }
+                        public void run() {
 
-        if ((indeterminate != progress.isIndeterminate())
-          || (value != progress.getValue())) {
-          GUI.invokeAndWait(new Runnable() {
+                            progress.setIndeterminate(indeterminate);
+                            progress.setValue(value);
+                        }
+                    });
+                }
+                if (evt.getMessage() != status.getText()) {
+                    GUI.invokeAndWait(new Runnable() {
 
-            public void run() {
+                        public void run() {
 
-              progress.setIndeterminate(indeterminate);
-              progress.setValue(value);
+                            status.setText(evt.getMessage());
+                        }
+                    });
+                }
             }
-          });
-        }
-        if (evt.getMessage() != status.getText()) {
-          GUI.invokeAndWait(new Runnable() {
+        };
 
-            public void run() {
+        JPanel content = new JPanel(new BorderLayout());
+        content.add(header, BorderLayout.NORTH);
+        content.add(AboutDialog.createStripes("left"), BorderLayout.WEST);
+        content.add(AboutDialog.createStripes("right"), BorderLayout.EAST);
+        content.add(p, BorderLayout.CENTER);
 
-              status.setText(evt.getMessage());
-            }
-          });
-        }
-      }
-    };
+        this.setContentPane(content);
+        this.pack();
+        WindowUtils.setLocation(this, WindowUtils.CENTER_ON_SCREEN);
+    }
 
-    JPanel content = new JPanel(new BorderLayout());
-    content.add(header, BorderLayout.NORTH);
-    content.add(AboutDialog.createStripes("left"), BorderLayout.WEST);
-    content.add(AboutDialog.createStripes("right"), BorderLayout.EAST);
-    content.add(p, BorderLayout.CENTER);
+    public ProgressListener getProgressListener() {
 
-    this.setContentPane(content);
-    this.pack();
-    WindowUtils.setLocation(this, WindowUtils.CENTER_ON_SCREEN);
-  }
-
-
-  public ProgressListener getProgressListener() {
-
-    return this.progressListener;
-  }
+        return this.progressListener;
+    }
 }

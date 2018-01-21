@@ -1,17 +1,3 @@
-/*
- * @(#)ComponentRenderer.java
- * Created on Tue Sep 16 2003
- *
- * Copyright (c) 2003 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.gui;
 
 import java.awt.Component;
@@ -29,93 +15,75 @@ import javax.swing.table.TableCellRenderer;
 
 /**
  * @author dabo
- * 
+ *
  */
-public class ComponentRenderer
-    implements ListCellRenderer, TableCellRenderer {
+public class ComponentRenderer implements ListCellRenderer, TableCellRenderer {
 
-  private ListCellRenderer defaultListRenderer;
-  private TableCellRenderer defaultTableCellRenderer;
+    private ListCellRenderer defaultListRenderer;
+    private TableCellRenderer defaultTableCellRenderer;
 
+    public ComponentRenderer() {
 
-  public ComponentRenderer() {
-
-    this(new DefaultListCellRenderer(), new DefaultTableCellRenderer());
-  }
-
-
-  public ComponentRenderer(ListCellRenderer defaultRenderer) {
-
-    this.defaultListRenderer = defaultRenderer;
-  }
-
-
-  public ComponentRenderer(TableCellRenderer defaultRenderer) {
-
-    this.defaultTableCellRenderer = defaultRenderer;
-  }
-
-
-  public ComponentRenderer(ListCellRenderer defaultListRenderer,
-                             TableCellRenderer defaultTableCellRenderer) {
-
-    this.defaultListRenderer = defaultListRenderer;
-    this.defaultTableCellRenderer = defaultTableCellRenderer;
-  }
-
-
-  public Component getListCellRendererComponent(JList list, Object value,
-      int index,
-            boolean isSelected, boolean cellHasFocus) {
-
-    if (value instanceof JSeparator) {
-      JComponent c = (JComponent)value;
-      c.setEnabled(false);
-      return c;
+        this(new DefaultListCellRenderer(), new DefaultTableCellRenderer());
     }
-    else if (value instanceof JMenuItem) {
-      JMenuItem item = (JMenuItem)value;
-      item.setArmed(isSelected);
-      item.setForeground(list.getForeground());
-      item.setBackground(list.getBackground());
-      return item;
-    }
-    else if ((value instanceof Component) && !(value instanceof Window)) {
-      Component c = (Component)value;
-      return c;
-    }
-    else {
-      return this.defaultListRenderer.getListCellRendererComponent(list, value,
-        index, isSelected,
-              cellHasFocus);
-    }
-  }
 
+    public ComponentRenderer(ListCellRenderer defaultRenderer) {
 
-  public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected,
-            boolean hasFocus, int row, int column) {
+        this.defaultListRenderer = defaultRenderer;
+    }
 
-    if (value instanceof JSeparator) {
-      JComponent c = (JComponent)value;
-      c.setEnabled(false);
-      return c;
+    public ComponentRenderer(TableCellRenderer defaultRenderer) {
+
+        this.defaultTableCellRenderer = defaultRenderer;
     }
-    else if (value instanceof JMenuItem) {
-      JMenuItem item = (JMenuItem)value;
-      item.setArmed(isSelected);
-      item.setForeground(table.getForeground());
-      item.setBackground(table.getBackground());
-      return item;
+
+    public ComponentRenderer(ListCellRenderer defaultListRenderer, TableCellRenderer defaultTableCellRenderer) {
+
+        this.defaultListRenderer = defaultListRenderer;
+        this.defaultTableCellRenderer = defaultTableCellRenderer;
     }
-    else if ((value instanceof Component) && !(value instanceof Window)) {
-      Component c = (Component)value;
-      return c;
+
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        if (value instanceof JSeparator) {
+            JComponent c = (JComponent) value;
+            c.setEnabled(false);
+            return c;
+        } else if (value instanceof JMenuItem) {
+            JMenuItem item = (JMenuItem) value;
+            item.setArmed(isSelected);
+            item.setForeground(list.getForeground());
+            item.setBackground(list.getBackground());
+            return item;
+        } else if ((value instanceof Component) && !(value instanceof Window)) {
+            Component c = (Component) value;
+            return c;
+        } else {
+            return this.defaultListRenderer.getListCellRendererComponent(list, value,
+                    index, isSelected,
+                    cellHasFocus);
+        }
     }
-    else {
-      return this.defaultTableCellRenderer.getTableCellRendererComponent(table,
-        value, isSelected,
-              hasFocus, row, column);
+
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+
+        if (value instanceof JSeparator) {
+            JComponent c = (JComponent) value;
+            c.setEnabled(false);
+            return c;
+        } else if (value instanceof JMenuItem) {
+            JMenuItem item = (JMenuItem) value;
+            item.setArmed(isSelected);
+            item.setForeground(table.getForeground());
+            item.setBackground(table.getBackground());
+            return item;
+        } else if ((value instanceof Component) && !(value instanceof Window)) {
+            Component c = (Component) value;
+            return c;
+        } else {
+            return this.defaultTableCellRenderer.getTableCellRendererComponent(table,
+                    value, isSelected,
+                    hasFocus, row, column);
+        }
     }
-  }
 }

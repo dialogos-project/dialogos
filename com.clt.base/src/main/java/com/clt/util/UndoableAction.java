@@ -1,7 +1,3 @@
-/**
- * 
- */
-
 package com.clt.util;
 
 import java.awt.event.ActionEvent;
@@ -12,53 +8,45 @@ import com.clt.undo.Undo;
 /**
  * @author dabo
  */
-public abstract class UndoableAction
-    extends AbstractAction {
+public abstract class UndoableAction extends AbstractAction {
 
-  private Undo undoManager = null;
+    private Undo undoManager = null;
 
+    public UndoableAction() {
 
-  public UndoableAction() {
-
-    this(null);
-  }
-
-
-  public UndoableAction(Undo undoManager) {
-
-    this.undoManager = undoManager;
-  }
-
-
-  @Override
-  public void actionPerformed(ActionEvent e) {
-
-    if (this.undoManager != null) {
-      this.undoManager.addEdit(new AbstractEdit(this.getName()) {
-
-        @Override
-        public void run() {
-
-          UndoableAction.this.run();
-        }
-
-
-        @Override
-        public void unrun() {
-
-          UndoableAction.this.unrun();
-        }
-      });
+        this(null);
     }
-    else {
-      this.run();
+
+    public UndoableAction(Undo undoManager) {
+
+        this.undoManager = undoManager;
     }
-  }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
 
-  @Override
-  public abstract void run();
+        if (this.undoManager != null) {
+            this.undoManager.addEdit(new AbstractEdit(this.getName()) {
 
+                @Override
+                public void run() {
 
-  public abstract void unrun();
+                    UndoableAction.this.run();
+                }
+
+                @Override
+                public void unrun() {
+
+                    UndoableAction.this.unrun();
+                }
+            });
+        } else {
+            this.run();
+        }
+    }
+
+    @Override
+    public abstract void run();
+
+    public abstract void unrun();
 }
