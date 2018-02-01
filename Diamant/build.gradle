@@ -9,6 +9,7 @@ dependencies {
   compile project(':com.clt.base')
   compile project(':com.clt.xml')
   compile project(':com.clt.audio')
+  compile project(':com.clt.speech')
   compile project(':ClientInterface')
   
   runtime fileTree(dir: "${projectDir}/../plugins", include: '*/build/libs/*.jar')

@@ -13,6 +13,8 @@
 /plugins/build/
 /TTSClient/build/
 /plugins/DialogOS_MaryTTSPlugin/build/
+/plugins/SphinxClient/build/
+/plugins/DialogOS_SphinxPlugin/build/
 /plugins/exampleplugin/build/
 /com.clt.script/src/main/java/com/clt/script/parser/Lexer.java
 /com.clt.script/src/main/java/com/clt/script/parser/Parser.java

@@ -7,6 +7,7 @@ include 'ClientInterface'
 include 'Diamant'
 include 'com.clt.speech'
 include 'SpeechClient'
+include 'SphinxClient'
 include 'TTSClient'
 include 'RecognizerClient'
 

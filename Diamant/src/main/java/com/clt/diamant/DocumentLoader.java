@@ -73,7 +73,7 @@ class DocumentLoader {
       }
       else {
         throw new IOException(exn.toString());
-      }SSW
+      }
     }
 
         System.out.println("End Of: DocumentLoader::load");
