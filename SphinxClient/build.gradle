@@ -1,0 +1,8 @@
+dependencies {
+  compile project(':RecognizerClient')
+  compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+  compile group: 'commons-io', name: 'commons-io', version: '2.5'
+
+  compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version: '5prealpha-SNAPSHOT' // recognizer
+  compile group: 'edu.cmu.sphinx', name: 'sphinx4-data', version: '5prealpha-SNAPSHOT' // default US English model
+}
