@@ -13,9 +13,10 @@
 /plugins/build/
 /TTSClient/build/
 /plugins/DialogOS_MaryTTSPlugin/build/
-/plugins/SphinxClient/build/
+/SphinxClient/build/
 /plugins/DialogOS_SphinxPlugin/build/
 /plugins/exampleplugin/build/
+/plugins/DialogOS_MinimalInputOutput/build/
 /com.clt.script/src/main/java/com/clt/script/parser/Lexer.java
 /com.clt.script/src/main/java/com/clt/script/parser/Parser.java
 /com.clt.script/src/main/java/com/clt/script/parser/Sym.java
@@ -25,3 +26,5 @@
 /build/
 Diamant/src/main/resources/VERSION
 /log/
+/.gradle/
+/.idea/
