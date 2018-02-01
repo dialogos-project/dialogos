@@ -10,9 +10,11 @@ include 'SpeechClient'
 include 'SphinxClient'
 include 'TTSClient'
 include 'RecognizerClient'
+include 'SphinxClient'
 
 //include 'plugins:exampleplugin'
 include 'plugins:DialogOS_MaryTTSPlugin'
 include 'plugins:DialogOS_PocketSphinxPlugin'
-
+include 'plugins:DialogOS_SphinxPlugin'
+include 'plugins:DialogOS_MinimalInputOutput'
 include 'plugins:DialogOS_NxtPlugin'
