@@ -1656,12 +1656,12 @@ public abstract class RecognizerClient<RecognizerType extends AbstractRecognizer
                 });
             }
 
-            try {
-                if (this.recognizer.getContext() == null) {
-                    Domain domain = null;
+      try {
+        if (this.recognizer.getContext() == null) {
+          Domain domain = null;
 
-                    boolean showContextChooser
-                            = properties.getProperty("ContextChooser", "false").equalsIgnoreCase(
+          boolean showContextChooser =
+            properties.getProperty("ContextChooser", "false").equalsIgnoreCase(
                                     "true");
 
                     property = properties.getProperty("Domain");
