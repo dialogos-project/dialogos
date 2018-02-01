@@ -444,9 +444,10 @@ public class Rule implements Comparable<Rule>, NamedEntity {
                 break;
 
             case JSGF:
-                if (this.isPublic()) {
+// TIMO: maybe better handled in Grammar.exportImpl and with slightly different if-expression (this.getRoot().equals(r.getName())); or maybe not.
+/*                if (this.isPublic()) {
                     w.print("public ");
-                }
+                } */
             // fall through
 
             case TEMIC:
