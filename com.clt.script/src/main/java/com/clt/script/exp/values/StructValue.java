@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import com.clt.script.exp.EvaluationException;
 import com.clt.script.exp.Type;
@@ -203,23 +204,32 @@ public class StructValue extends Value implements Reference {
 
     @Override
     public String toString() {
+        return toString("{ ", " }", "", " = ", ", ", (Value v) -> v.toString());
+    }
 
+    public String toString(String open, String close, String nameDelim, String equals, String next, Function<Value, String> op) {
         Set<String> labels = new TreeSet<String>(this.slots.keySet());
 
         StringBuilder b = new StringBuilder();
-        b.append("{ ");
+        b.append(open);
         for (Iterator<String> it = labels.iterator(); it.hasNext();) {
             String label = it.next();
             Value value = this.getValue(label);
+            b.append(nameDelim);
             b.append(label);
-            b.append(" = ");
-            b.append(value.toString());
+            b.append(nameDelim);
+            b.append(equals);
+            b.append(op.apply(value));
             if (it.hasNext()) {
-                b.append(", ");
+                b.append(next);
             }
         }
-        b.append(" }");
+        b.append(close);
         return b.toString();
+    }
+
+    @Override public String toJson() {
+        return toString("{ ", " }", "\"", " : ", ", ", (Value v) -> v.toJson());
     }
 
     /**
