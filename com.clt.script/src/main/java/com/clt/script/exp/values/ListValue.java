@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 import com.clt.script.exp.Type;
 import com.clt.script.exp.Value;
@@ -20,7 +21,7 @@ public class ListValue extends Value implements Iterable<Value> {
 
     private Value[] elements;
 
-    public ListValue(Value[] elements) {
+    public ListValue(Value... elements) {
 
         if (elements == null) {
             throw new IllegalArgumentException();
@@ -154,6 +155,10 @@ public class ListValue extends Value implements Iterable<Value> {
 
     @Override
     public String toString() {
+        return toString((Value v) -> v.toString());
+    }
+
+    public String toString(Function<Value, String> op) {
 
         StringBuilder b = new StringBuilder();
         b.append("[ ");
@@ -161,10 +166,14 @@ public class ListValue extends Value implements Iterable<Value> {
             if (i > 0) {
                 b.append(", ");
             }
-            b.append(this.get(i).toString());
+            b.append(op.apply(this.get(i)));
         }
         b.append(" ]");
         return b.toString();
+    }
+
+    @Override public String toJson() {
+        return toString((Value v) -> v.toJson());
     }
 
     @Override
