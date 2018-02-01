@@ -13,7 +13,7 @@ import javax.swing.JComponent;
 
 /**
  * Wraps a JComponent an puts it in the middle of this JComponent (Note that
- * Passpartout extends JComponent). The wrapped JComponent is redrawed
+ * Passpartout extends JComponent). The wrapped JComponent is redrawn
  * automatically then the passpartout object is resized. Supplementary, a
  * background-color can be specified and whether a border should be drawn around
  * the wrapped component.

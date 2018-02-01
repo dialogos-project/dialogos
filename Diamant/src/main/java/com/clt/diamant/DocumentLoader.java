@@ -66,7 +66,7 @@ class DocumentLoader {
         throw (RuntimeException)exn.getTargetException();
       }
       else {
-        throw new IOException(exn.getTargetException().toString());
+        throw new IOException(exn.getTargetException().toString(), exn.getTargetException());
       }
     } catch (Exception exn) {
       if (exn instanceof IOException) {
