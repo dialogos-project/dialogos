@@ -133,8 +133,8 @@ extends Toolbox {
 		if (commander != null) {
 			this.addActionButtons(new Tool[] { 
 					new Tool("Run", SingleDocumentWindow.cmdRun,"toolbar/T_Run.png"),
-					new Tool("Run", SingleDocumentWindow.cmdDebug,"toolbar/T_Debug.png"),
-					new Tool("Run", SingleDocumentWindow.cmdWoz,"toolbar/T_Woz.png") });
+					new Tool("Debug", SingleDocumentWindow.cmdDebug,"toolbar/T_Debug.png"),
+					new Tool("Woz", SingleDocumentWindow.cmdWoz,"toolbar/T_Woz.png") });
 		}
 
 		this.addSeparator();
@@ -270,7 +270,7 @@ extends Toolbox {
 					}
 					if (Preferences.getPrefs().getShowToolboxIcons())
 					{
-						setIcons(buttons[i], i, tools[i].getIcon(), buttons[i].getIcon().getIconWidth(), buttons[i].getIcon().getIconHeight());
+						setIcons(buttons[i], i, buttons.length, tools[i].getIcon(), buttons[i].getIcon().getIconWidth(), buttons[i].getIcon().getIconHeight());
 					}
 				}
 			}
@@ -282,13 +282,13 @@ extends Toolbox {
 	}
 
 
-	private void setIcons(AbstractButton button, int i, ImageIcon icon, int width, int height) 
+	private void setIcons(AbstractButton button, int i, int maxI, ImageIcon icon, int width, int height) 
 	{
 
 		Image tb_left[] = (i == 0) ? this.toolbarIcons[0] : this.toolbarIcons[1];
 		Image tb_middle[] = this.toolbarIcons[2];
 		//Image tb_right[] = (i == n - 1) ? this.toolbarIcons[4] : this.toolbarIcons[3];
-		Image tb_right[] =  this.toolbarIcons[4] ;
+		Image tb_right[] = (i == maxI - 1) ? this.toolbarIcons[4] : this.toolbarIcons[3];
 
 		button.setSelectedIcon(null);
 		Buttons.setIcons(button,
@@ -393,7 +393,7 @@ extends Toolbox {
 
 			final Tool tool = tools[i];
 			final AbstractButton b = groupButtons[i];
-			this.setIcons(b, i, tool.getIcon(), width, height);
+			this.setIcons(b, i, groupButtons.length, tool.getIcon(), width, height);
 
 			b.addActionListener(new ActionListener() 
 					{

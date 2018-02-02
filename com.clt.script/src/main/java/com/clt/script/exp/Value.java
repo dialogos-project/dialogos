@@ -9,14 +9,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.clt.script.exp.values.BoolValue;
-import com.clt.script.exp.values.IntValue;
-import com.clt.script.exp.values.ListValue;
-import com.clt.script.exp.values.PrimitiveValue;
-import com.clt.script.exp.values.RealValue;
-import com.clt.script.exp.values.StringValue;
-import com.clt.script.exp.values.StructValue;
-import com.clt.script.exp.values.Undefined;
+import com.clt.script.exp.values.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * The base class for all values that the script engine works on.
@@ -123,6 +118,55 @@ public abstract class Value {
      */
     @Override
     public abstract String toString();
+
+    /**
+     * Produce a JSON-conforming string representation of this value.
+     * @return the string representation of the value in JSON format
+     */
+    public String toJson() { 
+        return toString(); 
+    }
+
+    public static Value fromJson(String s) {
+        JSONObject fileJson = new JSONObject(s);
+        return parse(fileJson);
+    }
+
+    private static Value parse(Object obj) {
+        if (obj instanceof JSONObject) {
+            JSONObject jsonObj = (JSONObject) obj;
+            Object[] keys = jsonObj.keySet().toArray();
+            String[] stringKeys = new String[keys.length];
+            Value[] values = new Value[jsonObj.length()];
+            for (int i = 0; i < jsonObj.length(); i++) {
+                values[i] = parse(jsonObj.get(keys[i].toString()));
+                stringKeys[i] = keys[i].toString();
+            }
+            return new StructValue(stringKeys, values);
+        } else if (obj instanceof JSONArray) {
+            JSONArray jsonArr = (JSONArray) obj;
+            Value[] values = new Value[jsonArr.length()];
+            for (int i = 0; i < jsonArr.length(); i++) {
+                values[i] = parse(jsonArr.get(i));
+            }
+            return new ListValue(values);
+        } else if (obj instanceof String) {
+            return new StringValue((String) obj);
+        } else if (obj instanceof Boolean) {
+            return new BoolValue((Boolean) obj);
+        } else if (obj instanceof Integer) {
+            return new IntValue((Integer) obj);
+        } else if (obj instanceof Long) {
+            return new IntValue((Long) obj);
+        } else if (obj instanceof Double) {
+            return new RealValue((Double) obj);
+        } else if (obj == JSONObject.NULL) {
+            return new Undefined();
+        } else {
+            System.err.println("Unknown type passed to parse: " + obj);
+            return null;
+        }
+    }
 
     public final void prettyPrint(PrintWriter w) {
 

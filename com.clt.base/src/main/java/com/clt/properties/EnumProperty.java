@@ -1,5 +1,6 @@
 package com.clt.properties;
 
+import java.util.Arrays;
 /**
  * @author Daniel Bobbert
  * @version 1.0
@@ -84,7 +85,7 @@ public abstract class EnumProperty<E> extends Property<E> {
                         return;
                     }
                 }
-                throw new IllegalArgumentException("value out of range");
+                throw new IllegalArgumentException("value out of range, you gave me " + value.toString() + " and I only accept one of the following: [" + Arrays.toString(this.getPossibleValues()) + "]");
             }
         }
     }

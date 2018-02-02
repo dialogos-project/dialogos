@@ -15,6 +15,7 @@
 package com.clt.dialogos.plugin;
 
 import java.awt.Component;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,16 +83,27 @@ public abstract class PluginSettings {
             PluginSettings.this.readAttribute(r, n, atts
                 .getValue("value"), uid_map);
           }
+        } else {
+          readOtherXML(r, name, atts, uid_map);
         }
       }
     });
   }
 
 
+  /**
+   * use this operation to read previously stored name-value pairs
+   */
   protected abstract void readAttribute(XMLReader r, String name,
       String value, IdMap uid_map)
       throws SAXException;
 
+  /**
+   * override this operation if you need to deal with more than just name-value pairs
+   */
+  protected void readOtherXML(XMLReader r, String name, Attributes atts, IdMap uid_map) throws SAXException {
+    throw new RuntimeException(new IOException("weird xml, did not expect " + name + " here."));
+  }
 
   /**
    * Creates an editor component to configure the plug-in.

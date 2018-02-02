@@ -1,0 +1,128 @@
+nohup: ignoriere Eingabe
+MODULE: 000 Computing feature from audio files
+Feature extraction is done
+MODULE: 00 verify training files
+    Phase 1: Checking to see if the dict and filler dict agrees with the phonelist file.
+        Found 331089 words using 42 phones
+    Phase 2: Checking to make sure there are not duplicate entries in the dictionary
+    Phase 3: Check general format for the fileids file; utterance length (must be positive); files exist
+    Phase 4: Checking number of lines in the transcript file should match lines in fileids file
+    Phase 5: Determine amount of training data, see if n_tied_states seems reasonable.
+        Estimated Total Hours Training: 113.5655
+        100+ hours of training data is goodly amount of data.
+        Rule of thumb suggests 8000 for 100 hours, you can adjust accordingly.
+    Phase 6: Checking that all the words in the transcript are in the dictionary
+        Words in dictionary: 331086
+        Words in filler dictionary: 3
+    Phase 7: Checking that all the phones in the transcript are in the phonelist, and all phones in the phonelist appear at least once
+MODULE: 0000 train grapheme-to-phoneme model
+Skipped (set $CFG_G2P_MODEL = 'yes' to enable)
+MODULE: 01 Train LDA transformation
+    Phase 1: Cleaning up directories:
+	accumulator...logs...qmanager...
+    Phase 2: Flat initialize
+    Phase 3: Forward-Backward
+        LDA Training completed
+MODULE: 02 Train MLLT transformation
+    Phase 1: Cleaning up directories:
+	accumulator...logs...qmanager...
+    Phase 2: Flat initialize
+    Phase 3: Forward-Backward
+        MLLT Training completed
+MODULE: 05 Vector Quantization
+Skipped for continuous models
+MODULE: 10 Training Context Independent models for forced alignment and VTLN
+Skipped:  $ST::CFG_FORCEDALIGN set to 'no' in sphinx_train.cfg
+Skipped:  $ST::CFG_VTLN set to 'no' in sphinx_train.cfg
+MODULE: 11 Force-aligning transcripts
+Skipped:  $ST::CFG_FORCEDALIGN set to 'no' in sphinx_train.cfg
+MODULE: 12 Force-aligning data for VTLN
+Skipped:  $ST::CFG_VTLN set to 'no' in sphinx_train.cfg
+MODULE: 20 Training Context Independent models
+    Phase 1: Cleaning up directories:
+	accumulator...logs...qmanager...models...
+    Phase 2: Flat initialize
+    Phase 3: Forward-Backward
+Baum-Welch iteration 1 Average log-likelihood -157.411843581213
+Baum-Welch iteration 2 Average log-likelihood -152.626653536701
+Baum-Welch iteration 3 Average log-likelihood -150.234389526893
+Baum-Welch iteration 4 Average log-likelihood -149.248800552514
+Baum-Welch iteration 5 Average log-likelihood -149.09217123492
+        Training completed after 6 iterations
+MODULE: 30 Training Context Dependent models
+    Phase 1: Cleaning up directories:
+	accumulator...logs...qmanager...
+    Phase 2: Initialization
+    Phase 3: Forward-Backward
+Baum-Welch iteration 1 Average log-likelihood -149.048379888457
+Baum-Welch iteration 2 Average log-likelihood -149.048379888457
+Baum-Welch iteration 3 Average log-likelihood -146.394997014283
+Baum-Welch iteration 4 Average log-likelihood -146.310518518402
+        Training completed after 5 iterations
+MODULE: 40 Build Trees
+    Phase 1: Cleaning up old log files...
+    Phase 2: Make Questions
+    Phase 3: Tree building
+        Processing each phone with each state
+        Skipping SIL
+MODULE: 45 Prune Trees
+    Phase 1: Tree Pruning
+    Phase 2: State Tying
+MODULE: 50 Training Context dependent models
+    Phase 1: Cleaning up directories:
+	accumulator...logs...qmanager...
+    Phase 2: Copy CI to CD initialize
+    Phase 3: Forward-Backward
+Baum-Welch gaussians 1 iteration 1 Average log-likelihood -149.048379888457
+Baum-Welch gaussians 1 iteration 2 Average log-likelihood -147.33142286942
+Baum-Welch gaussians 1 iteration 3 Average log-likelihood -147.198538647185
+Baum-Welch gaussians 1 iteration 4 Average log-likelihood -147.157930363741
+Baum-Welch gaussians 1 iteration 5 Average log-likelihood -147.138701431247
+Baum-Welch gaussians 2 iteration 1 Average log-likelihood -147.323180472419
+Baum-Welch gaussians 2 iteration 2 Average log-likelihood -147.032327797793
+Baum-Welch gaussians 2 iteration 3 Average log-likelihood -146.853653790685
+Baum-Welch gaussians 2 iteration 4 Average log-likelihood -146.69040024401
+Baum-Welch gaussians 2 iteration 5 Average log-likelihood -146.589515794212
+Baum-Welch gaussians 2 iteration 6 Average log-likelihood -146.531479696311
+Baum-Welch gaussians 2 iteration 7 Average log-likelihood -146.495539798439
+Baum-Welch gaussians 4 iteration 1 Average log-likelihood -146.672137859144
+Baum-Welch gaussians 4 iteration 2 Average log-likelihood -146.408731718903
+Baum-Welch gaussians 4 iteration 3 Average log-likelihood -146.290981672502
+Baum-Welch gaussians 4 iteration 4 Average log-likelihood -146.168783297406
+Baum-Welch gaussians 4 iteration 5 Average log-likelihood -146.069967922411
+Baum-Welch gaussians 4 iteration 6 Average log-likelihood -146.005234893636
+Baum-Welch gaussians 4 iteration 7 Average log-likelihood -145.963931676858
+Baum-Welch gaussians 4 iteration 8 Average log-likelihood -145.963931676858
+Baum-Welch gaussians 8 iteration 1 Average log-likelihood -146.11439556478
+Baum-Welch gaussians 8 iteration 2 Average log-likelihood -145.86196632526
+Baum-Welch gaussians 8 iteration 3 Average log-likelihood -145.763395386618
+Baum-Welch gaussians 8 iteration 4 Average log-likelihood -145.666241002907
+Baum-Welch gaussians 8 iteration 5 Average log-likelihood -145.666241002907
+Baum-Welch gaussians 8 iteration 6 Average log-likelihood -145.525608735571
+Baum-Welch gaussians 8 iteration 7 Average log-likelihood -145.484241160315
+Baum-Welch gaussians 8 iteration 8 Average log-likelihood -145.454909415291
+Baum-Welch gaussians 16 iteration 1 Average log-likelihood -145.630322997986
+Baum-Welch gaussians 16 iteration 2 Average log-likelihood -145.380057790271
+Baum-Welch gaussians 16 iteration 3 Average log-likelihood -145.290198919852
+Baum-Welch gaussians 16 iteration 4 Average log-likelihood -145.290198919852
+Baum-Welch gaussians 16 iteration 5 Average log-likelihood -145.129742911591
+Baum-Welch gaussians 16 iteration 6 Average log-likelihood -145.073061637544
+Baum-Welch gaussians 16 iteration 7 Average log-likelihood -145.031726252306
+Baum-Welch gaussians 16 iteration 8 Average log-likelihood -145.031726252306
+Training for 16 Gaussian(s) completed after 8 iterations
+MODULE: 60 Lattice Generation
+Skipped:  $ST::CFG_MMIE set to 'no' in sphinx_train.cfg
+MODULE: 61 Lattice Pruning
+Skipped:  $ST::CFG_MMIE set to 'no' in sphinx_train.cfg
+MODULE: 62 Lattice Format Conversion
+Skipped:  $ST::CFG_MMIE set to 'no' in sphinx_train.cfg
+MODULE: 65 MMIE Training
+Skipped:  $ST::CFG_MMIE set to 'no' in sphinx_train.cfg
+MODULE: 90 deleted interpolation
+Skipped for continuous models
+MODULE: DECODE Decoding using models previously trained
+        Aligning results to find error rate
+        SENTENCE ERROR: 79.9% (6066/7592)   WORD ERROR RATE: 41.8% (29796/71352)
+Sphinxtrain path: /informatik2/students/home/1stegen/local/lib/sphinxtrain
+Sphinxtrain binaries path: /informatik2/students/home/1stegen/local/libexec/sphinxtrain
+Running the training

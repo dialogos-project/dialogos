@@ -49,6 +49,10 @@ public class Undefined extends PrimitiveValue {
         return "undefined";
     }
 
+    @Override public String toJson() { 
+        return "null"; 
+    }
+
     @Override
     public Object getReadableValue() {
         return null;

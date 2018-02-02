@@ -27,6 +27,7 @@ import javax.swing.tree.TreeNode;
 
 import com.clt.script.Script;
 import com.clt.script.exp.Value;
+import com.clt.script.parser.ParseException;
 import com.clt.util.NamedEntity;
 
 /**
@@ -1478,6 +1479,9 @@ public class Grammar implements NamedEntity {
                 w.println("grammar " + this.getName() + ";");
                 w.println();
                 for (Rule r : allRules) {
+                    if (this.getRoot().equals(r.getName())) {
+                        w.print("public ");
+                    }
                     r.export(w, format);
                     w.println();
                 }
@@ -1739,8 +1743,8 @@ public class Grammar implements NamedEntity {
     /**
      * Create a grammar from a string using the default environment.
      */
-    public static Grammar create(String s) throws Exception {
-        return Grammar.create(s, new com.clt.script.DefaultEnvironment());
+    public static Grammar create(String s) throws ParseException {
+        return create(s, new com.clt.script.DefaultEnvironment());
     }
 
     /**
@@ -1748,25 +1752,33 @@ public class Grammar implements NamedEntity {
      * environment is used to resolve variables and function calls in semantic
      * tags
      */
-    public static Grammar create(String s, com.clt.script.Environment env) throws Exception {
-        return com.clt.script.parser.Parser.parseSRGF(s, env);
+    public static Grammar create(String s, com.clt.script.Environment env) throws ParseException {
+        try {
+            return com.clt.script.parser.Parser.parseSRGF(s, env);
+        } catch (Exception e) {
+            throw new ParseException(e.toString());
+        }
     }
 
     /**
      * Create a grammar from a Reader source using the default environment.
      */
-    public static Grammar create(Reader r) throws Exception {
-        return com.clt.script.parser.Parser.parseSRGF(r,
-                new com.clt.script.DefaultEnvironment());
+    public static Grammar create(Reader r) throws ParseException {
+        return create(r, new com.clt.script.DefaultEnvironment());
     }
 
     /**
      * Create a grammar from a Reader source using the given environment.
      */
-    public static Grammar create(Reader r, com.clt.script.Environment env) throws Exception {
-        return com.clt.script.parser.Parser.parseSRGF(r, env);
+    public static Grammar create(Reader r, com.clt.script.Environment env) throws ParseException {
+        try {
+            return com.clt.script.parser.Parser.parseSRGF(r, env);
+        } catch (Exception e) {
+            throw new ParseException(e.toString());
+        }
     }
 
+    // TIMO: FIXME: turn this into a unit test.
     public static void main(String[] args) throws Exception, Exception {
         String gr = "#ABNF 1.0 ISO-8859-1;\n"
                 + "\n"
