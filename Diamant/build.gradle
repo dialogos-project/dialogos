@@ -30,7 +30,7 @@ buildscript {
 
 ext {
     // Open the Git repository in the current directory.
-    git = org.ajoberstar.grgit.Grgit.open()
+    git = org.ajoberstar.grgit.Grgit.open(dir: file('..'))
  
     // Get commit id of HEAD.
     longGitRevision = git.head().id
