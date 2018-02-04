@@ -2,19 +2,17 @@ package com.clt.diamant.log;
 
 class InputLogEvent extends LogEvent<String> {
 
-  private boolean logOnly = false;
+    private boolean logOnly = false;
 
+    public InputLogEvent(int time, String device, String value, boolean logOnly) {
 
-  public InputLogEvent(int time, String device, String value, boolean logOnly) {
+        super(device, time, new String[]{value});
 
-    super(device, time, new String[] { value });
+        this.logOnly = logOnly;
+    }
 
-    this.logOnly = logOnly;
-  }
+    public boolean logOnly() {
 
-
-  public boolean logOnly() {
-
-    return this.logOnly;
-  }
+        return this.logOnly;
+    }
 }

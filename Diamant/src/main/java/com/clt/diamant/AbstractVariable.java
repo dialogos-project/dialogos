@@ -9,112 +9,104 @@ import com.clt.xml.XMLWriter;
 
 /**
  * Abstract variable class to combine Slots and Groovy-only variables
- * 
+ *
  * @author Till Kollenda
  */
-public abstract class AbstractVariable implements IdentityObject
-{
-	protected String _id;
-	protected String _name;
-	public boolean _export;
+public abstract class AbstractVariable implements IdentityObject {
 
-	protected List<ChangeListener> _listeners;
+    protected String _id;
+    protected String _name;
+    public boolean _export;
 
-	protected AbstractVariable(String name, boolean export)
-	{
-		_name = name;
-		_export = export;
-		_listeners = new ArrayList<ChangeListener>();
-	}
+    protected List<ChangeListener> _listeners;
 
-	/**
-	 * Adds a ChangeListener to the variable, that gets notified if the variable
-	 * changes.
-	 * 
-	 * @param c the ChangeLister to be added
-	 */
-	public void addChangeListener(ChangeListener c)
-	{
-		_listeners.add(c);
-	}
+    protected AbstractVariable(String name, boolean export) {
+        _name = name;
+        _export = export;
+        _listeners = new ArrayList<ChangeListener>();
+    }
 
-	/**
-	 * Removes the ChangeListener from the variable
-	 * 
-	 * @param c the ChangeListener to be removed
-	 */
-	public void removeChangeListener(ChangeListener c)
-	{
-		_listeners.remove(c);
-	}
+    /**
+     * Adds a ChangeListener to the variable, that gets notified if the variable
+     * changes.
+     *
+     * @param c the ChangeLister to be added
+     */
+    public void addChangeListener(ChangeListener c) {
+        _listeners.add(c);
+    }
 
-	/**
-	 * Returns the name of the variable.
-	 * 
-	 * @return name of the variable
-	 */
-	public String getName()
-	{
-		return _name;
-	}
+    /**
+     * Removes the ChangeListener from the variable
+     *
+     * @param c the ChangeListener to be removed
+     */
+    public void removeChangeListener(ChangeListener c) {
+        _listeners.remove(c);
+    }
 
-	/**
-	 * Sets the name of the variable.
-	 * 
-	 * @param name of the variable
-	 */
-	public void setName(String name)
-	{
-		_name = name;
-	}
+    /**
+     * Returns the name of the variable.
+     *
+     * @return name of the variable
+     */
+    public String getName() {
+        return _name;
+    }
 
-	@Override
-	public String toString()
-	{
-		return getName();
-	}
+    /**
+     * Sets the name of the variable.
+     *
+     * @param name of the variable
+     */
+    public void setName(String name) {
+        _name = name;
+    }
 
-	@Override
-	public String getId()
-	{
-		return _id;
-	}
+    @Override
+    public String toString() {
+        return getName();
+    }
 
-	@Override
-	public void setId(String id)
-	{
-		_id = id;
-	}
+    @Override
+    public String getId() {
+        return _id;
+    }
 
-	public abstract AbstractVariable clone();
+    @Override
+    public void setId(String id) {
+        _id = id;
+    }
 
-	/**
-	 * Writes the content of the Variable to the projects XML file
-	 * 
-	 * @param out
-	 * @param uid_map
-	 * @param tag
-	 */
-	public abstract void write(XMLWriter out, IdMap uid_map, String tag);
+    public abstract AbstractVariable clone();
 
-	/**
-	 * Sets the value of the Variable.
-	 * 
-	 * @param v new value of the variable
-	 */
-	public abstract void setValue(Object v);
-	
-	/**
-	 * Gets the Value of the Variable.
-	 * 
-	 * @return value of the variable
-	 */
-	public abstract Object getValue();
+    /**
+     * Writes the content of the Variable to the projects XML file
+     *
+     * @param out
+     * @param uid_map
+     * @param tag
+     */
+    public abstract void write(XMLWriter out, IdMap uid_map, String tag);
 
-	/**
-	 * Gets the type of the variable.
-	 * 
-	 * @return Type of the variable
-	 */
-	public abstract Object getType();
+    /**
+     * Sets the value of the Variable.
+     *
+     * @param v new value of the variable
+     */
+    public abstract void setValue(Object v);
+
+    /**
+     * Gets the Value of the Variable.
+     *
+     * @return value of the variable
+     */
+    public abstract Object getValue();
+
+    /**
+     * Gets the type of the variable.
+     *
+     * @return Type of the variable
+     */
+    public abstract Object getType();
 }

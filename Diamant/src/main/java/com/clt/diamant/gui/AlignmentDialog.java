@@ -31,138 +31,134 @@ import com.clt.gui.WindowUtils;
 
 public class AlignmentDialog extends JDialog implements Commander, Commands {
 
-  private int result = -1;
-  private ButtonGroup bg = new ButtonGroup();
+    private int result = -1;
+    private ButtonGroup bg = new ButtonGroup();
 
+    public static int chooseAlignment(Component parent) {
 
-  public static int chooseAlignment(Component parent) {
+        AlignmentDialog d = new AlignmentDialog(parent);
+        d.setVisible(true);
+        return d.result;
+    }
 
-    AlignmentDialog d = new AlignmentDialog(parent);
-    d.setVisible(true);
-    return d.result;
-  }
+    private AlignmentDialog(Component parent) {
 
+        super(GUI.getFrameForComponent(parent), Resources.getString("Alignment"),
+                true);
+        this.setResizable(false);
 
-  private AlignmentDialog(Component parent) {
+        Container content = this.getContentPane();
+        content.setLayout(new GridBagLayout());
 
-    super(GUI.getFrameForComponent(parent), Resources.getString("Alignment"),
-      true);
-    this.setResizable(false);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-    Container content = this.getContentPane();
-    content.setLayout(new GridBagLayout());
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = gbc.gridy = 0;
+        gbc.gridwidth = 2;
 
-    GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 12, 6, 12);
+        content.add(new JLabel(Resources.getString("ChooseAlignment")), gbc);
 
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.gridx = gbc.gridy = 0;
-    gbc.gridwidth = 2;
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(6, 24, 0, 0);
 
-    gbc.insets = new Insets(6, 12, 6, 12);
-    content.add(new JLabel(Resources.getString("ChooseAlignment")), gbc);
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        content.add(this.createRadio(Resources.getString("Left"),
+                "align/HoriLeft.gif", 0), gbc);
+        gbc.gridy++;
+        content.add(this.createRadio(Resources.getString("Center"),
+                "align/HoriMid.gif", 1), gbc);
+        gbc.gridy++;
+        content.add(this.createRadio(Resources.getString("Right"),
+                "align/HoriRight.gif", 2), gbc);
 
-    gbc.gridwidth = 1;
-    gbc.insets = new Insets(6, 24, 0, 0);
+        gbc.insets = new Insets(6, 24, 0, 24);
+        gbc.gridy = 1;
+        gbc.gridx = 1;
+        content.add(this.createRadio(Resources.getString("Top"),
+                "align/VertTop.gif", 4), gbc);
+        gbc.gridy++;
+        content.add(this.createRadio(Resources.getString("Center"),
+                "align/VertMid.gif", 5), gbc);
+        gbc.gridy++;
+        content.add(this.createRadio(Resources.getString("Bottom"),
+                "align/VertBot.gif", 6), gbc);
 
-    gbc.gridy = 1;
-    gbc.gridx = 0;
-    content.add(this.createRadio(Resources.getString("Left"),
-      "align/HoriLeft.gif", 0), gbc);
-    gbc.gridy++;
-    content.add(this.createRadio(Resources.getString("Center"),
-      "align/HoriMid.gif", 1), gbc);
-    gbc.gridy++;
-    content.add(this.createRadio(Resources.getString("Right"),
-      "align/HoriRight.gif", 2), gbc);
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.EAST;
+        JPanel buttons = new JPanel(new GridLayout(1, 2, 10, 0));
 
-    gbc.insets = new Insets(6, 24, 0, 24);
-    gbc.gridy = 1;
-    gbc.gridx = 1;
-    content.add(this.createRadio(Resources.getString("Top"),
-      "align/VertTop.gif", 4), gbc);
-    gbc.gridy++;
-    content.add(this.createRadio(Resources.getString("Center"),
-      "align/VertMid.gif", 5), gbc);
-    gbc.gridy++;
-    content.add(this.createRadio(Resources.getString("Bottom"),
-      "align/VertBot.gif", 6), gbc);
+        JButton ok = new CmdButton(this, Commands.cmdOK, Resources.getString("OK")), cancel
+                = new CmdButton(this, Commands.cmdCancel, Resources.getString("Cancel"));
+        buttons.add(cancel);
+        buttons.add(ok);
 
-    gbc.gridy++;
-    gbc.gridx = 0;
-    gbc.gridwidth = 2;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.anchor = GridBagConstraints.EAST;
-    JPanel buttons = new JPanel(new GridLayout(1, 2, 10, 0));
+        this.getRootPane().setDefaultButton(ok);
 
-    JButton ok = new CmdButton(this, Commands.cmdOK, Resources.getString("OK")), cancel =
-      new CmdButton(this, Commands.cmdCancel, Resources.getString("Cancel"));
-    buttons.add(cancel);
-    buttons.add(ok);
+        gbc.insets = new Insets(24, 12, 12, 12);
+        content.add(buttons, gbc);
 
-    this.getRootPane().setDefaultButton(ok);
+        this.pack();
+        WindowUtils.setLocationRelativeTo(this, GUI.getWindowForComponent(parent));
+    }
 
-    gbc.insets = new Insets(24, 12, 12, 12);
-    content.add(buttons, gbc);
+    private JPanel createRadio(String title, String icon, final int cmd) {
 
-    this.pack();
-    WindowUtils.setLocationRelativeTo(this, GUI.getWindowForComponent(parent));
-  }
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
+        final JRadioButton b = new JRadioButton();
+        this.bg.add(b);
+        b.addItemListener(new ItemListener() {
 
-  private JPanel createRadio(String title, String icon, final int cmd) {
+            public void itemStateChanged(ItemEvent e) {
 
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+                if (b.isSelected()) {
+                    AlignmentDialog.this.result = cmd;
+                }
+            }
+        });
 
-    final JRadioButton b = new JRadioButton();
-    this.bg.add(b);
-    b.addItemListener(new ItemListener() {
+        p.add(b);
 
-      public void itemStateChanged(ItemEvent e) {
-
-        if (b.isSelected()) {
-          AlignmentDialog.this.result = cmd;
+        ImageIcon im = null;
+        try {
+            im = Images.load(icon);
+        } catch (Exception ignore) {
         }
-      }
-    });
 
-    p.add(b);
+        JLabel l = new JLabel(title, im, SwingConstants.LEFT);
+        l.addMouseListener(new MouseAdapter() {
 
-    ImageIcon im = null;
-    try {
-      im = Images.load(icon);
-    } catch (Exception ignore) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                b.setSelected(true);
+            }
+        });
+        p.add(l);
+
+        return p;
     }
 
-    JLabel l = new JLabel(title, im, SwingConstants.LEFT);
-    l.addMouseListener(new MouseAdapter() {
+    public boolean doCommand(int cmd) {
 
-      @Override
-      public void mouseClicked(MouseEvent e) {
+        switch (cmd) {
+            case cmdOK:
+                this.dispose();
+                break;
 
-        b.setSelected(true);
-      }
-    });
-    p.add(l);
+            case cmdCancel:
+                this.result = -1;
+                this.dispose();
+                break;
 
-    return p;
-  }
-
-
-  public boolean doCommand(int cmd) {
-
-    switch (cmd) {
-      case cmdOK:
-        this.dispose();
-        break;
-
-      case cmdCancel:
-        this.result = -1;
-        this.dispose();
-        break;
-
-      default:
-        return false;
+            default:
+                return false;
+        }
+        return true;
     }
-    return true;
-  }
 }

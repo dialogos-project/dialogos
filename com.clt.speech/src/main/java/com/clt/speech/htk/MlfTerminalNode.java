@@ -4,50 +4,44 @@ import com.clt.srgf.Word;
 
 public class MlfTerminalNode extends MlfNode implements Word {
 
-  long start;
-  long end;
+    long start;
+    long end;
 
+    public MlfTerminalNode(MlfNonterminalNode parent, String label) {
 
-  public MlfTerminalNode(MlfNonterminalNode parent, String label) {
+        super(parent, label);
+        this.start = 0;
+        this.end = 0;
+    }
 
-    super(parent, label);
-    this.start = 0;
-    this.end = 0;
-  }
+    public MlfTerminalNode(MlfNonterminalNode parent, long start, long end,
+            String label, double confidence) {
 
+        super(parent, label, confidence);
+        this.start = start;
+        this.end = end;
+    }
 
-  public MlfTerminalNode(MlfNonterminalNode parent, long start, long end,
-      String label, double confidence) {
+    @Override
+    public long getStart() {
 
-    super(parent, label, confidence);
-    this.start = start;
-    this.end = end;
-  }
+        return this.start;
+    }
 
+    @Override
+    public long getEnd() {
 
-  @Override
-  public long getStart() {
+        return this.end;
+    }
 
-    return this.start;
-  }
+    @Override
+    public boolean getAllowsChildren() {
 
+        return false;
+    }
 
-  @Override
-  public long getEnd() {
+    public String getWord() {
 
-    return this.end;
-  }
-
-
-  @Override
-  public boolean getAllowsChildren() {
-
-    return false;
-  }
-
-
-  public String getWord() {
-
-    return this.getLabel();
-  }
+        return this.getLabel();
+    }
 }

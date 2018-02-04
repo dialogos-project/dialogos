@@ -1,17 +1,3 @@
-/*
- * @(#)InputHandler.java
- * Created on Mon Aug 23 2004
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.diamant.graph;
 
 import java.util.ArrayList;
@@ -40,234 +26,209 @@ import com.clt.xml.XMLWriter;
  * @author Daniel Bobbert
  * @version 1.0
  */
+public class InputHandler extends OwnerNode {
 
-public class InputHandler
-    extends OwnerNode {
+    public static final int BEFORE_LOCAL = 0;
+    public static final int AFTER_LOCAL = 1;
+    public static final int BEFORE_ALL = 2;
+    public static final int AFTER_ALL = 3;
 
-  public static final int BEFORE_LOCAL = 0;
-  public static final int AFTER_LOCAL = 1;
-  public static final int BEFORE_ALL = 2;
-  public static final int AFTER_ALL = 3;
+    public static final String[] TYPENAMES
+            = {Resources.getString("BeforeLocal"),
+                Resources.getString("AfterLocal"),
+                Resources.getString("BeforeAll"),
+                Resources.getString("AfterAll")};
 
-  public static final String[] TYPENAMES =
-    { Resources.getString("BeforeLocal"),
-            Resources.getString("AfterLocal"),
-      Resources.getString("BeforeAll"),
-            Resources.getString("AfterAll") };
+    private String pattern;
+    private int type;
 
-  private String pattern;
-  private int type;
+    public InputHandler(Graph supergraph) {
 
-
-  public InputHandler(Graph supergraph) {
-
-    this(supergraph, "Input handler", "", InputHandler.BEFORE_LOCAL);
-  }
-
-
-  public InputHandler(final Graph supergraph, String name, String pattern,
-      int type) {
-
-    super(new Graph(null) {
-
-      @Override
-      @SuppressWarnings("unchecked")
-      public Class<Node>[] supportedEndNodes() {
-
-        return new Class[] { ContinueNode.class, LoopNode.class };
-      }
-
-
-      @Override
-      public boolean supportsHandlers() {
-
-        return false;
-      }
-
-
-      @Override
-      public List<InputHandler> getPrefixHandlers() {
-
-        List<InputHandler> v = new ArrayList<InputHandler>();
-        for (InputHandler h : supergraph.getPrefixHandlers()) {
-          if (h != this.getOwner()) {
-            v.add(h);
-          }
-        }
-        return v;
-      }
-
-
-      @Override
-      public List<InputHandler> getPostfixHandlers() {
-
-        List<InputHandler> v = new ArrayList<InputHandler>();
-        for (InputHandler h : supergraph.getPostfixHandlers()) {
-          if (h != this.getOwner()) {
-            v.add(h);
-          }
-        }
-        return v;
-      }
-    });
-    System.out.println("inputhandler");
-    this.setGraph(supergraph);
-    this.setTitle(name);
-
-    this.pattern = pattern;
-    this.type = type;
-
-    // initGraph();
-  }
-
-
-  @Override
-  protected void determineEndNodes() {
-
-    super.determineEndNodes();
-
-    if (this.getGraph() != null) {
-      this.getGraph().updateEdges();
+        this(supergraph, "Input handler", "", InputHandler.BEFORE_LOCAL);
     }
-  }
 
+    public InputHandler(final Graph supergraph, String name, String pattern,
+            int type) {
 
-  public InputHandler clone(Graph newSupergraph, Mapping map) {
+        super(new Graph(null) {
 
-    InputHandler h =
-      new InputHandler(newSupergraph, this.getTitle(), this.getPattern(), this
-        .getType());
-    map.addHandler(this, h);
-    h.getOwnedGraph().copy(this.getOwnedGraph(), map);
-    return h;
-  }
+            @Override
+            @SuppressWarnings("unchecked")
+            public Class<Node>[] supportedEndNodes() {
 
+                return new Class[]{ContinueNode.class, LoopNode.class};
+            }
 
-  public String getPattern() {
+            @Override
+            public boolean supportsHandlers() {
 
-    return this.pattern;
-  }
+                return false;
+            }
 
+            @Override
+            public List<InputHandler> getPrefixHandlers() {
 
-  public void setPattern(String pattern) {
+                List<InputHandler> v = new ArrayList<InputHandler>();
+                for (InputHandler h : supergraph.getPrefixHandlers()) {
+                    if (h != this.getOwner()) {
+                        v.add(h);
+                    }
+                }
+                return v;
+            }
 
-    this.pattern = pattern;
-  }
+            @Override
+            public List<InputHandler> getPostfixHandlers() {
 
+                List<InputHandler> v = new ArrayList<InputHandler>();
+                for (InputHandler h : supergraph.getPostfixHandlers()) {
+                    if (h != this.getOwner()) {
+                        v.add(h);
+                    }
+                }
+                return v;
+            }
+        });
+        System.out.println("inputhandler");
+        this.setGraph(supergraph);
+        this.setTitle(name);
 
-  public int getType() {
+        this.pattern = pattern;
+        this.type = type;
 
-    return this.type;
-  }
+        // initGraph();
+    }
 
+    @Override
+    protected void determineEndNodes() {
 
-  public void setType(int type) {
+        super.determineEndNodes();
 
-    this.type = type;
-  }
+        if (this.getGraph() != null) {
+            this.getGraph().updateEdges();
+        }
+    }
 
+    public InputHandler clone(Graph newSupergraph, Mapping map) {
 
-  @Override
-  public String toString() {
+        InputHandler h
+                = new InputHandler(newSupergraph, this.getTitle(), this.getPattern(), this
+                        .getType());
+        map.addHandler(this, h);
+        h.getOwnedGraph().copy(this.getOwnedGraph(), map);
+        return h;
+    }
 
-    return this.getTitle() + ": " + this.getPattern();
-  }
+    public String getPattern() {
 
+        return this.pattern;
+    }
 
-  public boolean hasContinuation() {
+    public void setPattern(String pattern) {
 
-    return this.getOwnedGraph().getNodes(ContinueNode.class, true).size() > 0;
-  }
+        this.pattern = pattern;
+    }
 
+    public int getType() {
 
-  public Collection<ContinueNode> getContinuations() {
+        return this.type;
+    }
 
-    return this.getOwnedGraph().getNodes(ContinueNode.class, true);
-  }
+    public void setType(int type) {
 
+        this.type = type;
+    }
 
-  public boolean hasLoop() {
+    @Override
+    public String toString() {
 
-    return this.getOwnedGraph().getNodes(LoopNode.class, true).size() > 0;
-  }
+        return this.getTitle() + ": " + this.getPattern();
+    }
 
+    public boolean hasContinuation() {
 
-  @Override
-  public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger) {
+        return this.getOwnedGraph().getNodes(ContinueNode.class, true).size() > 0;
+    }
 
-    comm.subgraph(this, true);
-    Node result = this.getOwnedGraph().execute(comm, input, logger);
-    comm.subgraph(this, false);
-    return result;
-  }
+    public Collection<ContinueNode> getContinuations() {
 
+        return this.getOwnedGraph().getNodes(ContinueNode.class, true);
+    }
 
-  @Override
-  public void validate(Collection<SearchResult> errors) {
+    public boolean hasLoop() {
 
-    try {
-      // TODO. Check types of bound variables
-      Expression.parsePattern(this.getPattern()).getType(null);
-    } catch (Exception exn) {
-      errors.add(new GraphSearchResult(this.getGraph(), Resources.format(
-        "InputHandlerX",
-                this.getTitle()), this.getTitle()
+        return this.getOwnedGraph().getNodes(LoopNode.class, true).size() > 0;
+    }
+
+    @Override
+    public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger) {
+
+        comm.subgraph(this, true);
+        Node result = this.getOwnedGraph().execute(comm, input, logger);
+        comm.subgraph(this, false);
+        return result;
+    }
+
+    @Override
+    public void validate(Collection<SearchResult> errors) {
+
+        try {
+            // TODO. Check types of bound variables
+            Expression.parsePattern(this.getPattern()).getType(null);
+        } catch (Exception exn) {
+            errors.add(new GraphSearchResult(this.getGraph(), Resources.format(
+                    "InputHandlerX",
+                    this.getTitle()), this.getTitle()
                     + Resources.format("containsIllegalInputPattern", exn
-                      .getLocalizedMessage()),
-                SearchResult.Type.WARNING));
+                            .getLocalizedMessage()),
+                    SearchResult.Type.WARNING));
+        }
+        super.validate(errors);
     }
-    super.validate(errors);
-  }
 
+    public void save(XMLWriter out, IdMap uid_map) {
 
-  public void save(XMLWriter out, IdMap uid_map) {
+        out.openElement("handler", new String[]{"uid"},
+                new Object[]{uid_map.inputHandlers.put(this)});
+        out.printElement("name", this.getTitle());
+        out.printElement("pattern", this.getPattern());
+        out.printElement("type", String.valueOf(this.getType()));
+        this.getOwnedGraph().save(out, uid_map);
+        out.closeElement("handler");
+    }
 
-    out.openElement("handler", new String[] { "uid" },
-            new Object[] { uid_map.inputHandlers.put(this) });
-    out.printElement("name", this.getTitle());
-    out.printElement("pattern", this.getPattern());
-    out.printElement("type", String.valueOf(this.getType()));
-    this.getOwnedGraph().save(out, uid_map);
-    out.closeElement("handler");
-  }
+    public static InputHandler read(Graph supergraph, final XMLReader r,
+            final IdMap uid_map) {
 
+        final InputHandler h = new InputHandler(supergraph);
+        r.setHandler(new AbstractHandler("handler") {
 
-  public static InputHandler read(Graph supergraph, final XMLReader r,
-      final IdMap uid_map) {
+            @Override
+            public void start(String name, Attributes atts) {
 
-    final InputHandler h = new InputHandler(supergraph);
-    r.setHandler(new AbstractHandler("handler") {
+                if (name.equals("graph")) {
+                    h.getOwnedGraph().read(r, null, uid_map);
+                }
+            }
 
-      @Override
-      public void start(String name, Attributes atts) {
+            @Override
+            public void end(String name) {
 
-        if (name.equals("graph")) {
-          h.getOwnedGraph().read(r, null, uid_map);
-        }
-      }
+                if (name.equals("name")) {
+                    h.setTitle(this.getValue());
+                } else if (name.equals("pattern")) {
+                    h.setPattern(this.getValue());
+                } else if (name.equals("type")) {
+                    h.setType(Integer.parseInt(this.getValue()));
+                }
+            }
+        });
+        return h;
+    }
 
+    @Override
+    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
-      @Override
-      public void end(String name) {
-
-        if (name.equals("name")) {
-          h.setTitle(this.getValue());
-        }
-        else if (name.equals("pattern")) {
-          h.setPattern(this.getValue());
-        }
-        else if (name.equals("type")) {
-          h.setType(Integer.parseInt(this.getValue()));
-        }
-      }
-    });
-    return h;
-  }
-
-
-  @Override
-  protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-  }
+    }
 
 }

@@ -1,16 +1,3 @@
-/*
- * @(#)Version.java
- * Created on Wed Jul 21 2004
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.diamant.gui;
 
 import java.awt.Dimension;
@@ -45,9 +32,7 @@ import com.clt.gui.menus.MenuOwner;
 import com.clt.util.DefaultLongAction;
 import com.clt.util.UserCanceledException;
 
-public class DocumentWindow<DocType extends Document>
-        extends ManagedFrame
-        implements MenuCommander, MenuOwner {
+public class DocumentWindow<DocType extends Document> extends ManagedFrame implements MenuCommander, MenuOwner {
 
     /**
      *
@@ -221,9 +206,9 @@ public class DocumentWindow<DocType extends Document>
     public boolean saveAs() {
 
         File f = new FileChooser(this.document.getFile() != null ? this.document.getFile()
-                        .getParent() : null).standardPutFile(
-                        this, this.document.getFile() != null ? this.document.getFile()
-                        .getName() : (this.getTitle() + ".xml"));
+                .getParent() : null).standardPutFile(
+                this, this.document.getFile() != null ? this.document.getFile()
+                .getName() : (this.getTitle() + ".xml"));
         if (f != null) {
             return this.save(f);
         } else {

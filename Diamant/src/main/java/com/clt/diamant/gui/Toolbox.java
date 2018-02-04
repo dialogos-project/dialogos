@@ -3,23 +3,19 @@ package com.clt.diamant.gui;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-public abstract class Toolbox
-    extends JToolBar {
+public abstract class Toolbox extends JToolBar {
 
-  public Toolbox() {
+    public Toolbox() {
 
-    this(SwingConstants.HORIZONTAL);
-  }
+        this(SwingConstants.HORIZONTAL);
+    }
 
+    public Toolbox(int orientation) {
 
-  public Toolbox(int orientation) {
+        super(orientation);
+    }
 
-    super(orientation);
-  }
+    public abstract void notifyState();
 
-
-  public abstract void notifyState();
-
-
-  public abstract void update();
+    public abstract void update();
 }

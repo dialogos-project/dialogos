@@ -1,17 +1,3 @@
-/*
- * @(#)PluginSettings.java
- * Created on 30.03.2007 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.dialogos.plugin;
 
 import java.awt.Component;
@@ -31,104 +17,95 @@ import com.clt.xml.XMLWriter;
 
 /**
  * @author dabo
- * 
+ *
  */
 public abstract class PluginSettings {
 
-  private Map<WozInterface, PluginRuntime> runtimes =
-    new HashMap<WozInterface, PluginRuntime>();
+    private Map<WozInterface, PluginRuntime> runtimes = new HashMap<WozInterface, PluginRuntime>();
 
+    /**
+     * Write these settings to XML
+     */
+    public abstract void writeAttributes(XMLWriter out, IdMap uidMap);
 
-  /** Write these settings to XML */
-  public abstract void writeAttributes(XMLWriter out, IdMap uidMap);
+    /**
+     * Read these settings from XML
+     */
+    public final void read(final XMLReader r, final IdMap uid_map) {
 
+        r.setHandler(new AbstractHandler("plugin") {
 
-  /** Read these settings from XML */
-  public final void read(final XMLReader r, final IdMap uid_map) {
+            @Override
+            protected void start(String name, Attributes atts) throws SAXException {
 
-    r.setHandler(new AbstractHandler("plugin") {
+                if (name.equals("att")) {
+                    final String n = atts.getValue("name");
 
-      @Override
-      protected void start(String name, Attributes atts)
-          throws SAXException {
+                    if (atts.getValue("type").equals("text")) {
+                        r.setHandler(new AbstractHandler("att") {
 
-        if (name.equals("att")) {
-          final String n = atts.getValue("name");
+                            String value;
 
-          if (atts.getValue("type").equals("text")) {
-            r.setHandler(new AbstractHandler("att") {
+                            @Override
+                            protected void end(String name)
+                                    throws SAXException {
 
-              String value;
-
-
-              @Override
-              protected void end(String name)
-                  throws SAXException {
-
-                if (name.equals("value")) {
-                  this.value = this.getValue();
+                                if (name.equals("value")) {
+                                    this.value = this.getValue();
+                                } else if (name.equals("att")) {
+                                    if (this.value == null) {
+                                        this.value = this.getValue();
+                                    }
+                                    PluginSettings.this.readAttribute(r, n,
+                                            this.value, uid_map);
+                                }
+                            }
+                        });
+                    } else {
+                        PluginSettings.this.readAttribute(r, n, atts
+                                .getValue("value"), uid_map);
+                    }
                 }
-                else if (name.equals("att")) {
-                  if (this.value == null) {
-                    this.value = this.getValue();
-                  }
-                  PluginSettings.this.readAttribute(r, n,
-                      this.value, uid_map);
-                }
-              }
-            });
-          }
-          else {
-            PluginSettings.this.readAttribute(r, n, atts
-                .getValue("value"), uid_map);
-          }
-        }
-      }
-    });
-  }
-
-
-  protected abstract void readAttribute(XMLReader r, String name,
-      String value, IdMap uid_map)
-      throws SAXException;
-
-
-  /**
-   * Creates an editor component to configure the plug-in.
-   * 
-   * @return A Reference on the created editor.
-   */
-  public abstract JComponent createEditor();
-
-
-  public final PluginRuntime initializeRuntime(Component parent,
-      WozInterface comm)
-      throws Exception {
-
-    PluginRuntime runtime = this.createRuntime(parent);
-
-    this.runtimes.put(comm, runtime);
-
-    return runtime;
-  }
-
-
-  public PluginRuntime getRuntime(WozInterface comm) {
-
-    return this.runtimes.get(comm);
-  }
-
-
-  public void disposeRuntime(WozInterface comm) {
-
-    PluginRuntime runtime = this.runtimes.get(comm);
-    if (runtime != null) {
-      runtime.dispose();
-      this.runtimes.remove(comm);
+            }
+        });
     }
-  }
 
+    protected abstract void readAttribute(XMLReader r, String name,
+            String value, IdMap uid_map)
+            throws SAXException;
 
-  protected abstract PluginRuntime createRuntime(Component parent)
-      throws Exception;
+    /**
+     * Creates an editor component to configure the plug-in.
+     *
+     * @return A Reference on the created editor.
+     */
+    public abstract JComponent createEditor();
+
+    public final PluginRuntime initializeRuntime(Component parent,
+            WozInterface comm)
+            throws Exception {
+
+        PluginRuntime runtime = this.createRuntime(parent);
+
+        this.runtimes.put(comm, runtime);
+
+        return runtime;
+    }
+
+    public PluginRuntime getRuntime(WozInterface comm) {
+
+        return this.runtimes.get(comm);
+    }
+
+    public void disposeRuntime(WozInterface comm) {
+
+        PluginRuntime runtime = this.runtimes.get(comm);
+        if (runtime != null) {
+            runtime.dispose();
+            this.runtimes.remove(comm);
+        }
+    }
+
+    protected abstract PluginRuntime createRuntime(Component parent)
+            throws Exception;
 }

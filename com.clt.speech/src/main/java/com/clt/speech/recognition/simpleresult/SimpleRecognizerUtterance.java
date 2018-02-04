@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.clt.speech.recognition.simpleresult;
 
 import com.clt.speech.htk.MlfNode;
@@ -13,21 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.clt.util.StringTools;
-//import edu.cmu.sphinx.result.WordResult;
 
 /**
  *
  * @author koller
  */
 public class SimpleRecognizerUtterance implements Utterance {
+
     private List<SimpleRecognizerWord> words;
     private float logConfidence;
 
     public SimpleRecognizerUtterance(String[] rawWords) {
         words = new ArrayList<>();
         logConfidence = 0;
-        
-        for( int i = 0; i < rawWords.length; i++ ) {
+
+        for (int i = 0; i < rawWords.length; i++) {
             words.add(new SimpleRecognizerWord(rawWords[i]));
         }
     }
@@ -59,10 +54,10 @@ public class SimpleRecognizerUtterance implements Utterance {
 
     @Override
     public String toString() {
-        return "DummyRecognizerUtterance{" +
-                "words=" + words +
-                ", logConfidence=" + logConfidence +
-                ", confidence=" + getConfidence() +
-                '}';
+        return "DummyRecognizerUtterance{"
+                + "words=" + words
+                + ", logConfidence=" + logConfidence
+                + ", confidence=" + getConfidence()
+                + '}';
     }
 }

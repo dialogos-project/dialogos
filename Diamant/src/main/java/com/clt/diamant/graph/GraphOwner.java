@@ -13,50 +13,41 @@ import com.clt.script.Environment;
 
 public interface GraphOwner {
 
-  public Graph getSuperGraph();
+    public Graph getSuperGraph();
 
+    public Graph getOwnedGraph();
 
-  public Graph getOwnedGraph();
+    /**
+     * Returns the devices configured for this graph.
+     *
+     * @return a collection of devices.
+     */
+    public Collection<Device> getDevices();
 
+    /**
+     * Returns the plug-in settings for a given plug-in.
+     *
+     * @param pluginClass Plugin for which the plugin-settings should be
+     * returned.
+     * @return a PlugingSettings object corresponding to the plug-in.
+     */
+    public PluginSettings getPluginSettings(Class<? extends Plugin> pluginClass);
 
-  /**
-   * Returns the devices configured for this graph.
-   * 
-   * @return a collection of devices.
-   */
-  public Collection<Device> getDevices();
+    /**
+     * Returns the list of grammars of the graph.
+     *
+     * @return A list of grammars.
+     */
+    public List<Grammar> getGrammars();
 
+    public Environment getEnvironment(boolean local);
 
-  /**
-   * Returns the plug-in settings for a given plug-in.
-   * 
-   * @param pluginClass
-   *          Plugin for which the plugin-settings should be returned.
-   * @return a PlugingSettings object corresponding to the plug-in.
-   */
-  public PluginSettings getPluginSettings(Class<? extends Plugin> pluginClass);
+    public void setDirty(boolean dirty);
 
+    public void export(Graph g, File f)
+            throws IOException;
 
-  /**
-   * Returns the list of grammars of the graph.
-   * 
-   * @return A list of grammars.
-   */
-  public List<Grammar> getGrammars();
+    public String getGraphName();
 
-
-  public Environment getEnvironment(boolean local);
-
-
-  public void setDirty(boolean dirty);
-
-
-  public void export(Graph g, File f)
-      throws IOException;
-
-
-  public String getGraphName();
-
-
-  public void setGraphName(String name);
+    public void setGraphName(String name);
 }

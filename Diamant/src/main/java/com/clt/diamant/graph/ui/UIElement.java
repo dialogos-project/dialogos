@@ -6,8 +6,7 @@ import javax.swing.JPanel;
 
 public abstract class UIElement extends JPanel {
 
-  public abstract void dispose();
+    public abstract void dispose();
 
-
-  public abstract Rectangle getVisibleBounds();
+    public abstract Rectangle getVisibleBounds();
 }

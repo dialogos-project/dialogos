@@ -20,170 +20,154 @@ import com.clt.script.exp.Variable;
 import com.clt.script.exp.expressions.Function;
 import com.clt.script.exp.values.StringValue;
 
-class GraphEnvironment
-    implements Environment {
+class GraphEnvironment implements Environment {
 
-  private Graph graph;
-  private boolean scope;
+    private Graph graph;
+    private boolean scope;
 
+    public GraphEnvironment(Graph graph, boolean scope) {
 
-  public GraphEnvironment(Graph graph, boolean scope) {
-
-    this.graph = graph;
-    this.scope = scope;
-  }
-
-
-  private Slot getSlot(String name) {
-
-    List<Slot> l = this.graph.getAllVariables(this.scope);
-    for (int i = l.size() - 1; i >= 0; i--) {
-      Slot v = l.get(i);
-      if (name.equals(v.getName())) {
-        return v;
-      }
+        this.graph = graph;
+        this.scope = scope;
     }
-    return null;
-  }
 
+    private Slot getSlot(String name) {
 
-  public Variable createVariableReference(final String name) {
-
-    final Slot s = this.getSlot(name);
-    if (s != null) {
-      return new Variable() {
-
-        public Type getType() {
-
-          return s.getType();
+        List<Slot> l = this.graph.getAllVariables(this.scope);
+        for (int i = l.size() - 1; i >= 0; i--) {
+            Slot v = l.get(i);
+            if (name.equals(v.getName())) {
+                return v;
+            }
         }
-
-
-        public Value getValue() {
-
-          return s.getValue();
-        }
-
-
-        public void setValue(Value value) {
-
-          s.setValue(value);
-        }
-
-
-        public String getName() {
-
-          return name;
-        }
-
-
-        @Override
-        public String toString() {
-
-          return GraphEnvironment.this.graph.graphPath(false).toString() + ":"
-            + this.getName();
-        }
-      };
+        return null;
     }
-    else {
-      return this.graph.getOwner().getEnvironment(Graph.GLOBAL)
-        .createVariableReference(name);
-    }
-  }
 
+    public Variable createVariableReference(final String name) {
 
-  public Expression createFunctionCall(final String name,
-      final Expression[] arguments) {
+        final Slot s = this.getSlot(name);
+        if (s != null) {
+            return new Variable() {
 
-    if (name.equals("getGrammar") && (arguments.length == 1)) {
-      return new Function(name, arguments) {
+                public Type getType() {
 
-        @Override
-        protected Value eval(Debugger dbg, Value[] args) {
-
-          if (args[0] instanceof StringValue) {
-            String grammar = ((StringValue)args[0]).getString();
-            if (GraphEnvironment.this.graph.getOwner() != null) {
-              for (Grammar g : GraphEnvironment.this.graph.getLocalGrammars()) {
-                if (g.getName().equals(grammar)) {
-                  return new StringValue(g.getGrammar());
+                    return s.getType();
                 }
-              }
-            }
-            throw new EvaluationException("Unknown grammar '" + grammar + "'");
-          }
-          else {
-            throw new EvaluationException(
-              "Argument to getGrammar() must be a string.");
-          }
+
+                public Value getValue() {
+
+                    return s.getValue();
+                }
+
+                public void setValue(Value value) {
+
+                    s.setValue(value);
+                }
+
+                public String getName() {
+
+                    return name;
+                }
+
+                @Override
+                public String toString() {
+
+                    return GraphEnvironment.this.graph.graphPath(false).toString() + ":"
+                            + this.getName();
+                }
+            };
+        } else {
+            return this.graph.getOwner().getEnvironment(Graph.GLOBAL)
+                    .createVariableReference(name);
         }
-
-
-        @Override
-        public Type getType() {
-
-          return Type.String;
-        }
-      };
     }
-    else {
-      try {
-        Script s = this.graph.getCompiledScript();
-        final Prototype pt = s.getProcedure(name, arguments.length);
-        boolean matches = (pt != null);
-        for (int i = 0; matches && (i < pt.numParameters()); i++) {
-          try {
-            Type.unify(pt.getParameterType(i), arguments[i].getType());
-          } catch (Exception exn) {
-            matches = false;
-          }
-        }
-        if ((pt != null) && matches) {
-          final Proc p = pt.getProcedure();
-          if (p == null) {
-            throw new TypeException("Function " + name
-              + "() is defined in graph \""
-                              + this.graph.getName()
-              + "\" but not implemented.");
-          }
-          return new Function(p.getName(), arguments) {
 
-            @Override
-            protected Value eval(Debugger dbg, Value[] args) {
+    public Expression createFunctionCall(final String name,
+            final Expression[] arguments) {
 
-              return p.call(dbg, args);
+        if (name.equals("getGrammar") && (arguments.length == 1)) {
+            return new Function(name, arguments) {
+
+                @Override
+                protected Value eval(Debugger dbg, Value[] args) {
+
+                    if (args[0] instanceof StringValue) {
+                        String grammar = ((StringValue) args[0]).getString();
+                        if (GraphEnvironment.this.graph.getOwner() != null) {
+                            for (Grammar g : GraphEnvironment.this.graph.getLocalGrammars()) {
+                                if (g.getName().equals(grammar)) {
+                                    return new StringValue(g.getGrammar());
+                                }
+                            }
+                        }
+                        throw new EvaluationException("Unknown grammar '" + grammar + "'");
+                    } else {
+                        throw new EvaluationException(
+                                "Argument to getGrammar() must be a string.");
+                    }
+                }
+
+                @Override
+                public Type getType() {
+
+                    return Type.String;
+                }
+            };
+        } else {
+            try {
+                Script s = this.graph.getCompiledScript();
+                final Prototype pt = s.getProcedure(name, arguments.length);
+                boolean matches = (pt != null);
+                for (int i = 0; matches && (i < pt.numParameters()); i++) {
+                    try {
+                        Type.unify(pt.getParameterType(i), arguments[i].getType());
+                    } catch (Exception exn) {
+                        matches = false;
+                    }
+                }
+                if ((pt != null) && matches) {
+                    final Proc p = pt.getProcedure();
+                    if (p == null) {
+                        throw new TypeException("Function " + name
+                                + "() is defined in graph \""
+                                + this.graph.getName()
+                                + "\" but not implemented.");
+                    }
+                    return new Function(p.getName(), arguments) {
+
+                        @Override
+                        protected Value eval(Debugger dbg, Value[] args) {
+
+                            return p.call(dbg, args);
+                        }
+
+                        @Override
+                        public Type getType() {
+
+                            for (int i = 0; (pt != null) && (i < pt.numParameters()); i++) {
+                                Type.unify(pt.getParameterType(i), arguments[i].getType());
+                            }
+
+                            return p.getReturnType();
+                        }
+                    };
+                }
+            } catch (Exception exn) {
             }
 
-
-            @Override
-            public Type getType() {
-
-              for (int i = 0; (pt != null) && (i < pt.numParameters()); i++) {
-                Type.unify(pt.getParameterType(i), arguments[i].getType());
-              }
-
-              return p.getReturnType();
-            }
-          };
+            return this.graph.getOwner().getEnvironment(Graph.GLOBAL)
+                    .createFunctionCall(name, arguments);
         }
-      } catch (Exception exn) {
-      }
-
-      return this.graph.getOwner().getEnvironment(Graph.GLOBAL)
-        .createFunctionCall(name, arguments);
     }
-  }
 
+    public Type getType(String typeName) {
 
-  public Type getType(String typeName) {
+        return this.graph.getOwner().getEnvironment(Graph.GLOBAL).getType(typeName);
+    }
 
-    return this.graph.getOwner().getEnvironment(Graph.GLOBAL).getType(typeName);
-  }
+    public Reader include(String id)
+            throws IOException {
 
-
-  public Reader include(String id)
-      throws IOException {
-
-    return this.graph.getOwner().getEnvironment(Graph.GLOBAL).include(id);
-  }
+        return this.graph.getOwner().getEnvironment(Graph.GLOBAL).include(id);
+    }
 }

@@ -1,16 +1,3 @@
-/*
- * @(#)Preferences.java
- * Created on Wed Jul 21 2004
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.diamant;
 
 import java.awt.Color;
@@ -55,12 +42,10 @@ import com.clt.properties.Property;
 import com.clt.properties.PropertySet;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class Preferences {
 
@@ -528,7 +513,7 @@ public class Preferences {
             while (iterator.hasNext()) {
                 ret.add(iterator.next());
             }
-            
+
             return ret;
 
         } catch (Exception ex) {

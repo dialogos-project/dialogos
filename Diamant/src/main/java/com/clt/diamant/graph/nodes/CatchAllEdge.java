@@ -1,17 +1,3 @@
-/*
- * @(#)CatchAllEdge.java
- * Created on 28.11.2006 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.diamant.graph.nodes;
 
 import com.clt.diamant.Resources;
@@ -20,50 +6,43 @@ import com.clt.diamant.graph.SpecialEdge;
 
 /**
  * @author dabo
- * 
+ *
  */
-public class CatchAllEdge
-    extends SpecialEdge {
+public class CatchAllEdge extends SpecialEdge {
 
-  // do not modifiy!
-  public static final String TYPE = "catch all";
+    // do not modifiy!
+    public static final String TYPE = "catch all";
 
+    public CatchAllEdge(Node source) {
 
-  public CatchAllEdge(Node source) {
+        super(source);
+    }
 
-    super(source);
-  }
+    public CatchAllEdge(Node source, Node target) {
 
+        super(source, target);
+    }
 
-  public CatchAllEdge(Node source, Node target) {
+    @Override
+    public CatchAllEdge clone(Node newSource) {
 
-    super(source, target);
-  }
+        return new CatchAllEdge(newSource, this.getTarget());
+    }
 
+    @Override
+    public String getCondition() {
 
-  @Override
-  public CatchAllEdge clone(Node newSource) {
+        return Resources.getString("OtherValues");
+    }
 
-    return new CatchAllEdge(newSource, this.getTarget());
-  }
+    @Override
+    public void setCondition(String c) {
 
+    }
 
-  @Override
-  public String getCondition() {
+    @Override
+    public String getType() {
 
-    return Resources.getString("OtherValues");
-  }
-
-
-  @Override
-  public void setCondition(String c) {
-
-  }
-
-
-  @Override
-  public String getType() {
-
-    return CatchAllEdge.TYPE;
-  }
+        return CatchAllEdge.TYPE;
+    }
 }

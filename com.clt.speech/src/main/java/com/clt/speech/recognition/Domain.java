@@ -4,6 +4,7 @@ import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
 
 public abstract class Domain {
+
     private String name;
 
     public Domain(String name) {

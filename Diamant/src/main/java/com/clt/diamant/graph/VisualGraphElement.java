@@ -1,7 +1,3 @@
-/**
- * 
- */
-
 package com.clt.diamant.graph;
 
 import java.awt.Color;
@@ -13,112 +9,96 @@ import com.clt.util.DefaultPropertyContainer;
 
 /**
  * @author dabo
- * 
+ *
  */
 public abstract class VisualGraphElement
-    extends DefaultPropertyContainer<Object>
-    implements GraphElement, GroupElement, MoveableElement, ColorizableElement {
+        extends DefaultPropertyContainer<Object>
+        implements GraphElement, GroupElement, MoveableElement, ColorizableElement {
 
-  // do not change!! These are persistent property names that are written to
-  // XML.
-  public static final String COMMENT = "comment";
-  public static final String LOCATION = "location";
-  public static final String SIZE = "size";
-  public static final String COLOR = "color";
+    // do not change!! These are persistent property names that are written to
+    // XML.
+    public static final String COMMENT = "comment";
+    public static final String LOCATION = "location";
+    public static final String SIZE = "size";
+    public static final String COLOR = "color";
 
-  private Group group = null;
+    private Group group = null;
 
 
-  /*
+    /*
    * public VisualGraphElement() { super(false); }
-   */
+     */
+    public void setGroup(Group g) {
 
-  public void setGroup(Group g) {
+        this.group = g;
+    }
 
-    this.group = g;
-  }
+    public Group getGroup() {
 
+        return this.group;
+    }
 
-  public Group getGroup() {
+    public void setLocation(int x, int y) {
 
-    return this.group;
-  }
+        this.setProperty(VisualGraphElement.LOCATION, new Point(x, y));
+    }
 
+    public Point getLocation() {
 
-  public void setLocation(int x, int y) {
+        return (Point) this.getProperty(VisualGraphElement.LOCATION);
+    }
 
-    this.setProperty(VisualGraphElement.LOCATION, new Point(x, y));
-  }
+    public int getX() {
 
+        return this.getLocation().x;
+    }
 
-  public Point getLocation() {
+    public int getY() {
 
-    return (Point)this.getProperty(VisualGraphElement.LOCATION);
-  }
+        return this.getLocation().y;
+    }
 
+    public void setSize(int width, int height) {
 
-  public int getX() {
+        this.setProperty(VisualGraphElement.SIZE, new Dimension(width, height));
+    }
 
-    return this.getLocation().x;
-  }
+    public Dimension getSize() {
 
+        return (Dimension) this.getProperty(VisualGraphElement.SIZE);
+    }
 
-  public int getY() {
+    public int getWidth() {
 
-    return this.getLocation().y;
-  }
+        return this.getSize().width;
+    }
 
+    public int getHeight() {
 
-  public void setSize(int width, int height) {
+        return this.getSize().height;
+    }
 
-    this.setProperty(VisualGraphElement.SIZE, new Dimension(width, height));
-  }
+    public void setColor(Color c) {
 
+        this.setProperty(VisualGraphElement.COLOR, c);
+    }
 
-  public Dimension getSize() {
+    public Color getColor() {
 
-    return (Dimension)this.getProperty(VisualGraphElement.SIZE);
-  }
+        return (Color) this.getProperty(VisualGraphElement.COLOR);
+    }
 
+    public void setComment(String comment) {
 
-  public int getWidth() {
+        this.setProperty(VisualGraphElement.COMMENT, comment);
+    }
 
-    return this.getSize().width;
-  }
+    public String getComment() {
 
+        return (String) this.getProperty(VisualGraphElement.COMMENT);
+    }
 
-  public int getHeight() {
+    public abstract VisualGraphElement clone(Mapping map);
 
-    return this.getSize().height;
-  }
-
-
-  public void setColor(Color c) {
-
-    this.setProperty(VisualGraphElement.COLOR, c);
-  }
-
-
-  public Color getColor() {
-
-    return (Color)this.getProperty(VisualGraphElement.COLOR);
-  }
-
-
-  public void setComment(String comment) {
-
-    this.setProperty(VisualGraphElement.COMMENT, comment);
-  }
-
-
-  public String getComment() {
-
-    return (String)this.getProperty(VisualGraphElement.COMMENT);
-  }
-
-
-  public abstract VisualGraphElement clone(Mapping map);
-
-
-  public abstract void update(Mapping map);
+    public abstract void update(Mapping map);
 }

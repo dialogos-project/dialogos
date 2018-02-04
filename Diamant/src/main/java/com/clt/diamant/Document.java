@@ -1,10 +1,3 @@
-//
-//  Document.java
-//
-//  Created by Daniel Bobbert on Wed Jun 12 2002.
-//  Copyright (c) 2002 CLT Sprachtechnologie GmbH. All rights reserved.
-//
-
 package com.clt.diamant;
 
 import java.awt.Component;
@@ -25,202 +18,179 @@ import com.clt.xml.XMLWriter;
 
 public abstract class Document {
 
-  public final static boolean validateXML = false;
+    public final static boolean validateXML = false;
 
-  static int gUntitledDocuments = 0;
+    private static int gUntitledDocuments = 0;
 
-  private boolean dirty = false;
-  private boolean readOnly = false;
-  private File file = null;
-  private String title = null;
-  private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private boolean dirty = false;
+    private boolean readOnly = false;
+    private File file = null;
+    private String title = null;
+    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+    public Document() {
 
-  public Document() {
+        this(Resources.getString("Untitled") + ' ' + (++Document.gUntitledDocuments));
+    }
 
-    this(Resources.getString("Untitled") + ' '
-      + (++Document.gUntitledDocuments));
-  }
+    public Document(String title) {
 
+        this.title = title;
+    }
 
-  public Document(String title) {
+    public File getFile() {
 
-    this.title = title;
-  }
+        return this.file;
+    }
 
+    public void setFile(File file) {
 
-  public File getFile() {
+        this.file = file;
+        this.setTitle(file.getName());
+    }
 
-    return this.file;
-  }
+    public boolean isDirty() {
 
+        return this.dirty;
+    }
 
-  public void setFile(File file) {
+    public void setDirty(boolean dirty) {
 
-    this.file = file;
-    this.setTitle(file.getName());
-  }
+        this.dirty = dirty;
+    }
 
+    public String getTitle() {
 
-  public boolean isDirty() {
+        return this.title;
+    }
 
-    return this.dirty;
-  }
+    public void setTitle(String title) {
 
+        String oldTitle = this.title;
+        this.title = title;
 
-  public void setDirty(boolean dirty) {
+        this.firePropertyChange("title", oldTitle, title);
+    }
 
-    this.dirty = dirty;
-  }
+    protected void writeHeader(XMLWriter out) {
 
-
-  public String getTitle() {
-
-    return this.title;
-  }
-
-
-  public void setTitle(String title) {
-
-    String oldTitle = this.title;
-    this.title = title;
-
-    this.firePropertyChange("title", oldTitle, title);
-  }
-
-
-  protected void writeHeader(XMLWriter out) {
-
-    out.println("<!DOCTYPE " + this.getDocumentType().toLowerCase()
-      + " SYSTEM \""
+        out.println("<!DOCTYPE " + this.getDocumentType().toLowerCase()
+                + " SYSTEM \""
                 + this.getDocumentType() + ".dtd\">");
-    out.println();
-  }
-
-
-  public void save(Component parent, File f, ProgressListener l)
-      throws Exception {
-
-    l.progressChanged(new ProgressEvent(this, Resources.getString("Validating")
-      + "...", 0, 0,
-            0));
-
-    Collection<SearchResult> errors = new LinkedList<SearchResult>();
-
-    this.validate(errors, l);
-
-    boolean error = false;
-    for (Iterator<SearchResult> it = errors.iterator(); it.hasNext() && !error;) {
-      if (it.next().getType() == SearchResult.Type.ERROR) {
-        error = true;
-      }
+        out.println();
     }
 
-    if (error) {
-      throw new FileSaveException(f, errors);
-    }
+    public void save(Component parent, File f, ProgressListener l) throws Exception {
 
-    l.progressChanged(new ProgressEvent(this, Resources.getString("Writing")
-      + "...", 0, 1, 0));
+        l.progressChanged(new ProgressEvent(this, Resources.getString("Validating")
+                + "...", 0, 0,
+                0));
 
-    XMLWriter out = null;
-    File tmpFile = File.createTempFile("Save", ".xml", f.getParentFile());
-    try {
-      out = new XMLWriter(tmpFile);
-      this.writeHeader(out);
+        Collection<SearchResult> errors = new LinkedList<SearchResult>();
 
-      IdMap uid_map = new IdMap(true);
-      this.write(out, uid_map);
+        this.validate(errors, l);
 
-      l.progressChanged(new ProgressEvent(this, Resources.getString("Writing")
-        + "...", 0, 1,
-                1));
-
-      out.close();
-      out = null;
-      this.setDirty(false);
-
-      boolean success = true;
-      try {
-        if (f.exists()) {
-          success = f.delete();
+        boolean error = false;
+        for (Iterator<SearchResult> it = errors.iterator(); it.hasNext() && !error;) {
+            if (it.next().getType() == SearchResult.Type.ERROR) {
+                error = true;
+            }
         }
-        if (success) {
-          success = tmpFile.renameTo(f);
+
+        if (error) {
+            throw new FileSaveException(f, errors);
         }
-      } catch (Exception exn) {
-        success = false;
-      }
 
-      if (success) {
-        this.file = f;
-      }
-      else {
-        this.file = tmpFile;
-        OptionPane.warning(parent, new String[] {
-                        Resources.format("CouldNotSaveFile", f.getName()),
-                        Resources.format("SavedFileAs", this.file.getName()) });
-      }
-      this.setTitle(this.file.getName());
-      // DiskTools.setFileCreator(file, "WOzS");
-      // DiskTools.setFileType(file, "TEXT");
-    } finally {
-      if (out != null) {
-        out.close();
-      }
+        l.progressChanged(new ProgressEvent(this, Resources.getString("Writing")
+                + "...", 0, 1, 0));
+
+        XMLWriter out = null;
+        File tmpFile = File.createTempFile("Save", ".xml", f.getParentFile());
+        try {
+            out = new XMLWriter(tmpFile);
+            this.writeHeader(out);
+
+            IdMap uid_map = new IdMap(true);
+            this.write(out, uid_map);
+
+            l.progressChanged(new ProgressEvent(this, Resources.getString("Writing")
+                    + "...", 0, 1,
+                    1));
+
+            out.close();
+            out = null;
+            this.setDirty(false);
+
+            boolean success = true;
+            try {
+                if (f.exists()) {
+                    success = f.delete();
+                }
+                if (success) {
+                    success = tmpFile.renameTo(f);
+                }
+            } catch (Exception exn) {
+                success = false;
+            }
+
+            if (success) {
+                this.file = f;
+            } else {
+                this.file = tmpFile;
+                OptionPane.warning(parent, new String[]{
+                    Resources.format("CouldNotSaveFile", f.getName()),
+                    Resources.format("SavedFileAs", this.file.getName())});
+            }
+            this.setTitle(this.file.getName());
+            // DiskTools.setFileCreator(file, "WOzS");
+            // DiskTools.setFileType(file, "TEXT");
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
     }
-  }
 
+    public void validate(Collection<SearchResult> errors, ProgressListener l) {
 
-  public void validate(Collection<SearchResult> errors, ProgressListener l) {
+        // nothing (yet)
+    }
 
-    // nothing (yet)
-  }
+    abstract protected String getDocumentType();
 
+    abstract public void load(File f, XMLReader r);
 
-  abstract protected String getDocumentType();
+    abstract public void write(XMLWriter out, IdMap uidmap);
 
+    public void addPropertyChangeListener(PropertyChangeListener l) {
 
-  abstract public void load(File f, XMLReader r);
+        this.pcs.addPropertyChangeListener(l);
+    }
 
+    public void removePropertyChangeListener(PropertyChangeListener l) {
 
-  abstract public void write(XMLWriter out, IdMap uidmap);
+        this.pcs.removePropertyChangeListener(l);
+    }
 
+    protected void firePropertyChange(String property, Object oldValue,
+            Object newValue) {
 
-  public void addPropertyChangeListener(PropertyChangeListener l) {
+        this.pcs.firePropertyChange(property, oldValue, newValue);
+    }
 
-    this.pcs.addPropertyChangeListener(l);
-  }
+    public static Document load(File f)
+            throws IOException {
 
+        return new DocumentLoader(null).load(f, null);
+    }
 
-  public void removePropertyChangeListener(PropertyChangeListener l) {
+    public boolean isReadOnly() {
 
-    this.pcs.removePropertyChangeListener(l);
-  }
+        return this.readOnly;
+    }
 
+    public void setReadOnly(boolean readOnly) {
 
-  protected void firePropertyChange(String property, Object oldValue,
-      Object newValue) {
-
-    this.pcs.firePropertyChange(property, oldValue, newValue);
-  }
-
-
-  public static Document load(File f)
-      throws IOException {
-
-    return new DocumentLoader(null).load(f, null);
-  }
-
-
-  public boolean isReadOnly() {
-
-    return this.readOnly;
-  }
-
-
-  public void setReadOnly(boolean readOnly) {
-
-    this.readOnly = readOnly;
-  }
+        this.readOnly = readOnly;
+    }
 }

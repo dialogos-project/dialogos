@@ -3,6 +3,7 @@ package com.clt.speech.recognition.simpleresult;
 import com.clt.speech.recognition.Word;
 
 public class SimpleRecognizerWord extends Word {
+
     private String word;
 
     public SimpleRecognizerWord(String word) {

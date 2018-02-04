@@ -5,17 +5,13 @@ import com.clt.diamant.graph.ui.GraphUI;
 
 public interface GraphEditor {
 
-  public void showEditor();
+    public void showEditor();
 
+    public void closeEditor();
 
-  public void closeEditor();
+    public boolean isShowing();
 
+    public GraphOwner getGraphOwner();
 
-  public boolean isShowing();
-
-
-  public GraphOwner getGraphOwner();
-
-
-  public GraphUI getGraphUI();
+    public GraphUI getGraphUI();
 }

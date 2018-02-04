@@ -1,16 +1,3 @@
-/*
- * @(#)DocumentAssistant.java
- * Created on Mon Aug 08 2005
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.diamant;
 
 import java.awt.BorderLayout;
@@ -43,6 +30,7 @@ import com.clt.gui.border.GroupBorder;
  * @version 1.0
  */
 public class DocumentAssistant extends Assistant {
+
     private JList devices;
 
     public DocumentAssistant(final SingleDocument doc) {
@@ -80,29 +68,29 @@ public class DocumentAssistant extends Assistant {
 
             JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER));
             final JButton add = new CmdButton(Resources.getString("Add"), new Runnable() {
-                        public void run() {
+                public void run() {
 
-                            ServiceInfoDescription si = (ServiceInfoDescription) deviceList.getSelectedValue();
-                            if (si != null) {
-                                Device d = new Device(si.getServiceName());
-                                d.setConnector(new RendezvousCLTConnector(si.getServiceName(), si.getHostname()));
-                                doc.getDevices().add(d);
-                                DocumentAssistant.this.devices.setListData(new Vector<Device>(doc.getDevices()));
-                            }
-                        }
-                    });
-            
+                    ServiceInfoDescription si = (ServiceInfoDescription) deviceList.getSelectedValue();
+                    if (si != null) {
+                        Device d = new Device(si.getServiceName());
+                        d.setConnector(new RendezvousCLTConnector(si.getServiceName(), si.getHostname()));
+                        doc.getDevices().add(d);
+                        DocumentAssistant.this.devices.setListData(new Vector<Device>(doc.getDevices()));
+                    }
+                }
+            });
+
             final JButton remove = new CmdButton(Resources.getString("Remove"), new Runnable() {
-                        public void run() {
-                            Object[] devs = DocumentAssistant.this.devices.getSelectedValues();
-                            if (devs != null) {
-                                for (int i = 0; i < devs.length; i++) {
-                                    doc.getDevices().remove(devs[i]);
-                                }
-                            }
-                            DocumentAssistant.this.devices.setListData(new Vector<Device>(doc.getDevices()));
+                public void run() {
+                    Object[] devs = DocumentAssistant.this.devices.getSelectedValues();
+                    if (devs != null) {
+                        for (int i = 0; i < devs.length; i++) {
+                            doc.getDevices().remove(devs[i]);
                         }
-                    });
+                    }
+                    DocumentAssistant.this.devices.setListData(new Vector<Device>(doc.getDevices()));
+                }
+            });
 
             final Runnable updateButtons = new Runnable() {
 

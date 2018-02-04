@@ -1,17 +1,3 @@
-/*
- * @(#)NodeSearchResult.java
- * Created on Tue Jul 19 2005
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.diamant.graph.search;
 
 import javax.swing.JComponent;
@@ -29,90 +15,79 @@ import com.clt.diamant.gui.GraphEditorFactory;
  * @author Daniel Bobbert
  * @version 1.0
  */
+public class NodeSearchResult extends SearchResult {
 
-public class NodeSearchResult
-    extends SearchResult {
+    private Node node;
 
-  private Node node;
+    public NodeSearchResult(Node node) {
 
-
-  public NodeSearchResult(Node node) {
-
-    this(node, null);
-  }
-
-
-  public NodeSearchResult(Node node, String message) {
-
-    this(node, message, Type.INFO);
-  }
-
-
-  public NodeSearchResult(Node node, String message, Type type) {
-
-    super(NodeComponent.getNodeIcon(node), message, type);
-
-    if (node == null) {
-      throw new IllegalArgumentException();
+        this(node, null);
     }
-    this.node = node;
-  }
 
+    public NodeSearchResult(Node node, String message) {
 
-  @Override
-  public GraphUI showResult(final JComponent parent) {
-
-    Node n = this.getNode();
-    Graph g = n.getGraph();
-
-    GraphUI gui;
-    if (parent != null) {
-      gui = new GraphUI(g);
-      parent.removeAll();
-      parent.add(gui.getScrollPane());
-      parent.validate();
+        this(node, message, Type.INFO);
     }
-    else {
-      GraphEditor e = GraphEditorFactory.show(g.getOwner());
-      gui = e.getGraphUI();
+
+    public NodeSearchResult(Node node, String message, Type type) {
+
+        super(NodeComponent.getNodeIcon(node), message, type);
+
+        if (node == null) {
+            throw new IllegalArgumentException();
+        }
+        this.node = node;
     }
-    gui.selectAndShowNode(n);
-    return parent != null ? gui : null;
-  }
 
+    @Override
+    public GraphUI showResult(final JComponent parent) {
 
-  @Override
-  public boolean isRelevant() {
+        Node n = this.getNode();
+        Graph g = n.getGraph();
 
-    Node n = this.getNode();
-    GraphOwner doc = n.getMainOwner();
-    return (doc instanceof SingleDocument ? GraphEditorFactory.isShowing(doc)
-      : false);
-  }
-
-
-  @Override
-  public String getDocumentName() {
-
-    Graph g = this.getNode().getGraph();
-    GraphOwner owner = g.getOwner();
-    while (owner.getSuperGraph() != null) {
-      owner = owner.getSuperGraph().getOwner();
+        GraphUI gui;
+        if (parent != null) {
+            gui = new GraphUI(g);
+            parent.removeAll();
+            parent.add(gui.getScrollPane());
+            parent.validate();
+        } else {
+            GraphEditor e = GraphEditorFactory.show(g.getOwner());
+            gui = e.getGraphUI();
+        }
+        gui.selectAndShowNode(n);
+        return parent != null ? gui : null;
     }
-    return owner.getGraphName();
-  }
 
+    @Override
+    public boolean isRelevant() {
 
-  @Override
-  public String getSource() {
+        Node n = this.getNode();
+        GraphOwner doc = n.getMainOwner();
+        return (doc instanceof SingleDocument ? GraphEditorFactory.isShowing(doc)
+                : false);
+    }
 
-    return this.getNode().nodePath(false).toString();
-  }
+    @Override
+    public String getDocumentName() {
 
+        Graph g = this.getNode().getGraph();
+        GraphOwner owner = g.getOwner();
+        while (owner.getSuperGraph() != null) {
+            owner = owner.getSuperGraph().getOwner();
+        }
+        return owner.getGraphName();
+    }
 
-  public Node getNode() {
+    @Override
+    public String getSource() {
 
-    return this.node;
-  }
+        return this.getNode().nodePath(false).toString();
+    }
+
+    public Node getNode() {
+
+        return this.node;
+    }
 
 }

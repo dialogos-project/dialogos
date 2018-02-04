@@ -81,8 +81,7 @@ public class SingleDocument extends Document implements GraphOwner {
         private final IdMap uid_map;
         private final XMLReader r;
 
-        private DeviceXMLHandler(String elementName, Graph graph, IdMap uid_map,
-                XMLReader r) {
+        private DeviceXMLHandler(String elementName, Graph graph, IdMap uid_map, XMLReader r) {
 
             super(elementName);
             this.graph = graph;
@@ -328,14 +327,14 @@ public class SingleDocument extends Document implements GraphOwner {
         Collection<Device> devices = this.getDevices();
         if (devices.size() > 0) {
             boolean ok = ServerDevice.connect(devices.toArray(new Device[devices.size()]),
-                            timeout,
-                            Resources.getString("ConnectingDevices"), 
-                            chooser);
-            
+                    timeout,
+                    Resources.getString("ConnectingDevices"),
+                    chooser);
+
             if (!ok) {
                 this.closeDevices();
             }
-            
+
             return ok;
         } else {
             return true;

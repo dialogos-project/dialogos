@@ -3,6 +3,7 @@ package com.clt.diamant;
 import com.clt.dialog.client.ServerDevice;
 
 public class Device extends ServerDevice implements IdentityObject {
+
     private String id;
 
     public Device() {

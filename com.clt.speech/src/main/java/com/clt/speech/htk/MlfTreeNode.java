@@ -1,17 +1,3 @@
-/*
- * @(#)MlfTreeNode.java
- * Created on 15.11.2006 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.speech.htk;
 
 import java.util.Enumeration;
@@ -20,104 +6,90 @@ import javax.swing.tree.TreeNode;
 
 /**
  * @author dabo
- * 
+ *
  */
-public class MlfTreeNode
-    implements TreeNode {
+public class MlfTreeNode implements TreeNode {
 
-  private MlfTreeNode parent;
-  private MlfNode n;
-  private MlfTreeNode[] children;
+    private MlfTreeNode parent;
+    private MlfNode n;
+    private MlfTreeNode[] children;
 
+    public MlfTreeNode(MlfNode n) {
 
-  public MlfTreeNode(MlfNode n) {
-
-    this(null, n);
-  }
-
-
-  public MlfTreeNode(MlfTreeNode parent, MlfNode n) {
-
-    this.parent = parent;
-    this.n = n;
-    if (n instanceof MlfNonterminalNode) {
-      MlfNonterminalNode nt = (MlfNonterminalNode)n;
-      this.children = new MlfTreeNode[nt.numChildren()];
-      for (int i = 0; i < nt.numChildren(); i++) {
-        this.children[i] = new MlfTreeNode(this, nt.getChild(i));
-      }
+        this(null, n);
     }
-    else {
-      this.children = new MlfTreeNode[0];
+
+    public MlfTreeNode(MlfTreeNode parent, MlfNode n) {
+
+        this.parent = parent;
+        this.n = n;
+        if (n instanceof MlfNonterminalNode) {
+            MlfNonterminalNode nt = (MlfNonterminalNode) n;
+            this.children = new MlfTreeNode[nt.numChildren()];
+            for (int i = 0; i < nt.numChildren(); i++) {
+                this.children[i] = new MlfTreeNode(this, nt.getChild(i));
+            }
+        } else {
+            this.children = new MlfTreeNode[0];
+        }
     }
-  }
 
+    public TreeNode getChildAt(int childIndex) {
 
-  public TreeNode getChildAt(int childIndex) {
-
-    return this.children[childIndex];
-  }
-
-
-  public int getChildCount() {
-
-    return this.children.length;
-  }
-
-
-  public TreeNode getParent() {
-
-    return this.parent;
-  }
-
-
-  public int getIndex(TreeNode node) {
-
-    for (int i = 0; i < this.children.length; i++) {
-      if (node == this.children[i]) {
-        return i;
-      }
+        return this.children[childIndex];
     }
-    return -1;
-  }
 
+    public int getChildCount() {
 
-  public boolean getAllowsChildren() {
+        return this.children.length;
+    }
 
-    return this.n instanceof MlfNonterminalNode;
-  }
+    public TreeNode getParent() {
 
+        return this.parent;
+    }
 
-  public boolean isLeaf() {
+    public int getIndex(TreeNode node) {
 
-    return this.n instanceof MlfTerminalNode;
-  }
+        for (int i = 0; i < this.children.length; i++) {
+            if (node == this.children[i]) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
+    public boolean getAllowsChildren() {
 
-  public Enumeration<MlfTreeNode> children() {
+        return this.n instanceof MlfNonterminalNode;
+    }
 
-    return new Enumeration<MlfTreeNode>() {
+    public boolean isLeaf() {
 
-      int i = 0;
+        return this.n instanceof MlfTerminalNode;
+    }
 
+    public Enumeration<MlfTreeNode> children() {
 
-      public boolean hasMoreElements() {
+        return new Enumeration<MlfTreeNode>() {
 
-        return this.i < MlfTreeNode.this.children.length;
-      }
+            int i = 0;
 
+            public boolean hasMoreElements() {
 
-      public MlfTreeNode nextElement() {
+                return this.i < MlfTreeNode.this.children.length;
+            }
 
-        return MlfTreeNode.this.children[this.i++];
-      }
-    };
-  }
+            public MlfTreeNode nextElement() {
 
+                return MlfTreeNode.this.children[this.i++];
+            }
+        };
+    }
 
-  @Override
-  public String toString() {
+    @Override
+    public String toString() {
 
-    return this.n.toString();
-  }
+        return this.n.toString();
+    }
 }

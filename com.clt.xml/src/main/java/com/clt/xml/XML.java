@@ -1,17 +1,3 @@
-/*
- * @(#)XML.java
- * Created on 20.06.2002
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.xml;
 
 import java.util.Enumeration;
@@ -22,100 +8,90 @@ import java.util.ResourceBundle;
 
 /**
  * A helper class that provides localization for the XML package.
- * 
+ *
  * @author Daniel Bobbert
  */
 class XML {
 
-  private static ResourceBundle resources = new ResourceBundle() {
+    private static ResourceBundle resources = new ResourceBundle() {
 
-    private String basename = "com.clt.xml.Resources";
+        private String basename = "com.clt.xml.Resources";
 
-    ResourceBundle resources = null;
-    Locale locale = Locale.getDefault();
+        ResourceBundle resources = null;
+        Locale locale = Locale.getDefault();
 
+        private void loadResources() {
 
-    private void loadResources() {
-
-      try {
-        this.locale = Locale.getDefault();
-        this.resources = ResourceBundle.getBundle(this.basename, this.locale);
-        if (this.resources == null) {
-          throw new MissingResourceException(this.basename, this.getClass()
-            .getName(),
-                      this.locale.toString());
-        }
-      }
-            catch (Exception exn) {
-              this.resources = this.emptyResourceBundle;
+            try {
+                this.locale = Locale.getDefault();
+                this.resources = ResourceBundle.getBundle(this.basename, this.locale);
+                if (this.resources == null) {
+                    throw new MissingResourceException(this.basename, this.getClass().getName(),
+                            this.locale.toString());
+                }
+            } catch (Exception exn) {
+                this.resources = this.emptyResourceBundle;
             }
-          }
+        }
 
+        @Override
+        public Enumeration<String> getKeys() {
 
-    @Override
-    public Enumeration<String> getKeys() {
-
-      if ((this.resources == null) || !this.locale.equals(Locale.getDefault())) {
-        this.loadResources();
-      }
-
-      return this.resources.getKeys();
-    }
-
-
-    @Override
-    protected Object handleGetObject(String key) {
-
-      if ((this.resources == null) || !this.locale.equals(Locale.getDefault())) {
-        this.loadResources();
-      }
-
-      try {
-        Object o = this.resources.getObject(key);
-        return o != null ? o : key;
-      }
-            catch (Exception exn) {
-              return key;
+            if ((this.resources == null) || !this.locale.equals(Locale.getDefault())) {
+                this.loadResources();
             }
-          }
 
-    private ResourceBundle emptyResourceBundle = new ResourceBundle() {
-
-      Enumeration<String> emptyEnumeration = new Enumeration<String>() {
-
-        public boolean hasMoreElements() {
-
-          return false;
+            return this.resources.getKeys();
         }
 
+        @Override
+        protected Object handleGetObject(String key) {
 
-        public String nextElement() {
+            if ((this.resources == null) || !this.locale.equals(Locale.getDefault())) {
+                this.loadResources();
+            }
 
-          throw new NoSuchElementException();
+            try {
+                Object o = this.resources.getObject(key);
+                return o != null ? o : key;
+            } catch (Exception exn) {
+                return key;
+            }
         }
-      };
 
+        private ResourceBundle emptyResourceBundle = new ResourceBundle() {
 
-      @Override
-      protected Object handleGetObject(String key) {
+            Enumeration<String> emptyEnumeration = new Enumeration<String>() {
 
-        return key;
-      }
+                public boolean hasMoreElements() {
 
+                    return false;
+                }
 
-      @Override
-      public Enumeration<String> getKeys() {
+                public String nextElement() {
 
-        return this.emptyEnumeration;
-      }
+                    throw new NoSuchElementException();
+                }
+            };
+
+            @Override
+            protected Object handleGetObject(String key) {
+
+                return key;
+            }
+
+            @Override
+            public Enumeration<String> getKeys() {
+
+                return this.emptyEnumeration;
+            }
+        };
+
     };
 
-  };
+    static String getString(String key) {
 
-
-  static String getString(String key) {
-
-    return XML.resources.getString(key);
-  }
+        return XML.resources.getString(key);
+    }
 
 }

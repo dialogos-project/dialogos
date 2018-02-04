@@ -1,17 +1,3 @@
-/*
- * @(#)GrammarsEditor.java
- * Created on 01.12.2006 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.diamant.gui;
 
 import java.awt.Component;
@@ -24,93 +10,82 @@ import com.clt.gui.ListEditorDialog;
 
 /**
  * @author dabo
- * 
+ *
  */
-public class GrammarsEditor
-    extends ListEditor {
+public class GrammarsEditor extends ListEditor {
 
-  public GrammarsEditor(List<Grammar> grammars) {
+    public GrammarsEditor(List<Grammar> grammars) {
 
-    super(GrammarsEditor.createModel(grammars), true);
-  }
+        super(GrammarsEditor.createModel(grammars), true);
+    }
 
+    public static void showDialog(Component parent, List<Grammar> grammars) {
 
-  public static void showDialog(Component parent, List<Grammar> grammars) {
+        new ListEditorDialog(parent, Resources.getString("Grammars"),
+                GrammarsEditor.createModel(grammars)).setVisible(true);
+    }
 
-    new ListEditorDialog(parent, Resources.getString("Grammars"),
-      GrammarsEditor.createModel(grammars)).setVisible(true);
-  }
+    private static ListEditor.Model createModel(final List<Grammar> grammars) {
 
+        return new ListEditor.Model() {
 
-  private static ListEditor.Model createModel(final List<Grammar> grammars) {
+            private boolean edit(Grammar g, Component parent) {
 
-    return new ListEditor.Model() {
+                return ScriptEditorDialog.editGrammar(parent, g);
+            }
 
-      private boolean edit(Grammar g, Component parent) {
+            public int getSize() {
 
-        return ScriptEditorDialog.editGrammar(parent, g);
-      }
+                return grammars.size();
+            }
 
+            public Object getElementAt(int index) {
 
-      public int getSize() {
+                return grammars.get(index);
+            }
 
-        return grammars.size();
-      }
+            @Override
+            public void editItemAt(Component parent, int index) {
 
+                this.edit(grammars.get(index), parent);
+            }
 
-      public Object getElementAt(int index) {
+            @Override
+            public int addElement(Component parent) {
 
-        return grammars.get(index);
-      }
+                Grammar g = new Grammar(Resources.getString("Untitled"));
+                if (this.edit(g, parent)) {
+                    grammars.add(g);
+                    return grammars.indexOf(g);
+                } else {
+                    return -1;
+                }
+            }
 
+            @Override
+            public boolean removeElement(Component parent, int index) {
 
-      @Override
-      public void editItemAt(Component parent, int index) {
+                grammars.remove(index);
+                return true;
+            }
 
-        this.edit(grammars.get(index), parent);
-      }
+            @Override
+            public boolean moveElement(int from, int to) {
 
-
-      @Override
-      public int addElement(Component parent) {
-
-        Grammar g = new Grammar(Resources.getString("Untitled"));
-        if (this.edit(g, parent)) {
-          grammars.add(g);
-          return grammars.indexOf(g);
-        }
-        else {
-          return -1;
-        }
-      }
-
-
-      @Override
-      public boolean removeElement(Component parent, int index) {
-
-        grammars.remove(index);
-        return true;
-      }
-
-
-      @Override
-      public boolean moveElement(int from, int to) {
-
-        Grammar o = grammars.get(from);
-        if (from < to) {
-          for (int i = from; i < to; i++) {
-            grammars.set(i, grammars.get(i + 1));
-          }
-        }
-        else {
-          for (int i = from; i > to; i--) {
-            grammars.set(i, grammars.get(i - 1));
-          }
-        }
-        grammars.set(to, o);
-        this.fireContentsChanged(this, Math.min(from, to), Math.max(from, to));
-        return true;
-      }
-    };
-  }
+                Grammar o = grammars.get(from);
+                if (from < to) {
+                    for (int i = from; i < to; i++) {
+                        grammars.set(i, grammars.get(i + 1));
+                    }
+                } else {
+                    for (int i = from; i > to; i--) {
+                        grammars.set(i, grammars.get(i - 1));
+                    }
+                }
+                grammars.set(to, o);
+                this.fireContentsChanged(this, Math.min(from, to), Math.max(from, to));
+                return true;
+            }
+        };
+    }
 }

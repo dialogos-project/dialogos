@@ -1,11 +1,3 @@
-//
-//  LogDocument.java
-//  Wizard
-//
-//  Created by Daniel Bobbert on Mon Jun 17 2002.
-//  Copyright (c) 2002 CLT Sprachtechnologie GmbH. All rights reserved.
-//
-
 package com.clt.diamant;
 
 import java.io.File;
@@ -16,55 +8,48 @@ import com.clt.diamant.log.LogPlayer;
 import com.clt.xml.AbstractHandler;
 import com.clt.xml.XMLReader;
 
-public class LogDocument
-    extends SingleDocument {
+public class LogDocument extends SingleDocument {
 
-  private LogPlayer player;
+    private LogPlayer player;
 
+    public LogDocument() {
 
-  public LogDocument() {
+        super();
 
-    super();
+        this.player = new LogPlayer(this);
 
-    this.player = new LogPlayer(this);
+        this.setReadOnly(true);
+    }
 
-    this.setReadOnly(true);
-  }
+    public LogPlayer getLogPlayer() {
 
+        return this.player;
+    }
 
-  public LogPlayer getLogPlayer() {
+    @Override
+    public void load(final File f, final XMLReader r) {
 
-    return this.player;
-  }
+        final IdMap uid_map = new IdMap();
 
+        r.setHandler(new AbstractHandler("log") {
 
-  @Override
-  public void load(final File f, final XMLReader r) {
+            @Override
+            public void start(String name, Attributes atts) {
 
-    final IdMap uid_map = new IdMap();
+                if (name.equals("setup")) {
+                    LogDocument.this.player.readSetup(r);
+                } else if (name.equals("wizard")) {
+                    LogDocument.this.load(f, r, uid_map);
+                } else if (name.equals("execution")) {
+                    LogDocument.this.player.readExecution(r, uid_map);
+                }
+            }
+        });
+    }
 
-    r.setHandler(new AbstractHandler("log") {
+    @Override
+    public boolean isDirty() {
 
-      @Override
-      public void start(String name, Attributes atts) {
-
-        if (name.equals("setup")) {
-          LogDocument.this.player.readSetup(r);
-        }
-        else if (name.equals("wizard")) {
-          LogDocument.this.load(f, r, uid_map);
-        }
-        else if (name.equals("execution")) {
-          LogDocument.this.player.readExecution(r, uid_map);
-        }
-      }
-    });
-  }
-
-
-  @Override
-  public boolean isDirty() {
-
-    return false;
-  }
+        return false;
+    }
 }

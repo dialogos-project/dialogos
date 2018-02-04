@@ -1,36 +1,32 @@
 package com.clt.xml;
 
-public class LUID_Map<VALUE>
-    extends UID_Map<VALUE> {
+public class LUID_Map<VALUE> extends UID_Map<VALUE> {
 
-  private int id;
+    private int id;
 
+    public LUID_Map() {
 
-  public LUID_Map() {
-
-    super();
-    this.id = 1;
-  }
-
-
-  @Override
-  public synchronized String add(VALUE o, String uid) {
-
-    uid = super.add(o, uid);
-    try {
-      int id = Integer.parseInt(uid);
-      if (id >= this.id) {
-        this.id = id + 1;
-      }
-    } catch (Exception ignore) {
+        super();
+        this.id = 1;
     }
-    return uid;
-  }
 
+    @Override
+    public synchronized String add(VALUE o, String uid) {
 
-  @Override
-  protected String createUID() {
+        uid = super.add(o, uid);
+        try {
+            int id = Integer.parseInt(uid);
+            if (id >= this.id) {
+                this.id = id + 1;
+            }
+        } catch (Exception ignore) {
+        }
+        return uid;
+    }
 
-    return String.valueOf(this.id++);
-  }
+    @Override
+    protected String createUID() {
+
+        return String.valueOf(this.id++);
+    }
 }

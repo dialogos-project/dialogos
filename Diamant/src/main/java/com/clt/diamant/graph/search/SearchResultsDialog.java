@@ -1,17 +1,3 @@
-/*
- * @(#)NodeSearchResult.java
- * Created on Tue Jul 19 2005
- *
- * Copyright (c) 2004 CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.diamant.graph.search;
 
 import java.awt.BorderLayout;
@@ -56,283 +42,264 @@ import com.clt.gui.menus.MenuCommander;
 
 /**
  * Dialog displaying the result of a node search.
- * 
+ *
  * @author Daniel Bobbert
  * @version 1.0
  */
-
 public class SearchResultsDialog extends JPanel {
 
-  /**
-   * Serial Version Id.
-   */
-  private static final long serialVersionUID = 1L;
-  private DefaultListModel resultListModel;
-  private JLabel resultHeader;
-  private final JList resultList;
+    /**
+     * Serial Version Id.
+     */
+    private static final long serialVersionUID = 1L;
+    private DefaultListModel resultListModel;
+    private JLabel resultHeader;
+    private final JList resultList;
 
-  private GraphUI currentGraphView = null;
+    private GraphUI currentGraphView = null;
 
+    public static void show(Component parent, String title, Collection<? extends SearchResult> searchResults) {
 
-  public static void show(Component parent, String title,
-      Collection<? extends SearchResult> searchResults) {
-
-    SearchResultsDialog.show(parent, title, searchResults
-      .toArray(new SearchResult[searchResults.size()]));
-  }
-
-
-  public static void show(Component parent, String title,
-      SearchResult searchResults[]) {
-
-    final Window w;
-
-    if (parent != null) {
-      JDialog window =
-        new JDialog(GUI.getFrameForComponent(parent), title, true);
-      window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-      w = window;
-    }
-    else {
-      JFrame window = new JFrame(title);
-      window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-      w = window;
+        SearchResultsDialog.show(parent, title, searchResults.toArray(new SearchResult[searchResults.size()]));
     }
 
-    RootPaneContainer rpc = (RootPaneContainer)w;
-    final SearchResultsDialog d =
-      new SearchResultsDialog(searchResults, parent != null);
-    rpc.setContentPane(d);
+    public static void show(Component parent, String title, SearchResult searchResults[]) {
 
-    CmdMenuBar mbar = new CmdMenuBar(new MenuCommander() {
+        final Window w;
 
-      public String menuItemName(int cmd, String oldName) {
+        if (parent != null) {
+            JDialog window
+                    = new JDialog(GUI.getFrameForComponent(parent), title, true);
+            window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        if (d.currentGraphView != null) {
-          return d.currentGraphView.menuItemName(cmd, oldName);
+            w = window;
+        } else {
+            JFrame window = new JFrame(title);
+            window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+            w = window;
         }
-        else {
-          return oldName;
-        }
-      }
 
+        RootPaneContainer rpc = (RootPaneContainer) w;
+        final SearchResultsDialog d
+                = new SearchResultsDialog(searchResults, parent != null);
+        rpc.setContentPane(d);
 
-      public boolean menuItemState(int cmd) {
+        CmdMenuBar mbar = new CmdMenuBar(new MenuCommander() {
 
-        if (d.currentGraphView != null) {
-          return d.currentGraphView.menuItemState(cmd);
-        }
-        else {
-          return false;
-        }
-      }
+            public String menuItemName(int cmd, String oldName) {
 
+                if (d.currentGraphView != null) {
+                    return d.currentGraphView.menuItemName(cmd, oldName);
+                } else {
+                    return oldName;
+                }
+            }
 
-      public boolean doCommand(int cmd) {
+            public boolean menuItemState(int cmd) {
 
-        if (d.currentGraphView != null) {
-          return d.currentGraphView.doCommand(cmd);
-        }
-        else {
-          return false;
-        }
-      }
-    });
-    CmdMenu menu = mbar.addMenu(Resources.getString("FileMenu"));
-    menu.add(new CmdMenuItem(Resources.getString("Close"), KeyEvent.VK_W,
-      new Runnable() {
+                if (d.currentGraphView != null) {
+                    return d.currentGraphView.menuItemState(cmd);
+                } else {
+                    return false;
+                }
+            }
 
-        public void run() {
+            public boolean doCommand(int cmd) {
 
-          w.dispose();
-          // w.dispatchEvent(new WindowEvent(w,
-          // WindowEvent.WINDOW_CLOSING));
-        }
-      }));
-    GraphUI.initMenu(menu);
-
-    rpc.getLayeredPane().add(mbar);
-
-    w.pack();
-    w.setSize(600, 400);
-    w.setLocation(30, 30);
-
-    w.addWindowListener(new WindowAdapter() {
-
-      @Override
-      public void windowActivated(WindowEvent evt) {
-
-        SwingUtilities.invokeLater(new Runnable() {
-
-          public void run() {
-
-            d.updateResults();
-          }
+                if (d.currentGraphView != null) {
+                    return d.currentGraphView.doCommand(cmd);
+                } else {
+                    return false;
+                }
+            }
         });
-      }
+        CmdMenu menu = mbar.addMenu(Resources.getString("FileMenu"));
+        menu.add(new CmdMenuItem(Resources.getString("Close"), KeyEvent.VK_W,
+                new Runnable() {
 
+            public void run() {
 
-      @Override
-      public void windowOpened(WindowEvent e) {
+                w.dispose();
+                // w.dispatchEvent(new WindowEvent(w,
+                // WindowEvent.WINDOW_CLOSING));
+            }
+        }));
+        GraphUI.initMenu(menu);
 
-        d.selectFirst();
-      }
-    });
+        rpc.getLayeredPane().add(mbar);
 
-    w.setVisible(true);
-  }
+        w.pack();
+        w.setSize(600, 400);
+        w.setLocation(30, 30);
 
+        w.addWindowListener(new WindowAdapter() {
 
-  public SearchResultsDialog(SearchResult searchResults[], boolean modal) {
+            @Override
+            public void windowActivated(WindowEvent evt) {
 
-    this(searchResults, modal, true);
-  }
+                SwingUtilities.invokeLater(new Runnable() {
 
+                    public void run() {
 
-  public SearchResultsDialog(SearchResult searchResults[], boolean modal,
-      boolean showGraphInline) {
+                        d.updateResults();
+                    }
+                });
+            }
 
-    this.setLayout(new BorderLayout());
+            @Override
+            public void windowOpened(WindowEvent e) {
 
-    this.resultListModel = new DefaultListModel();
-    for (int i = 0; i < searchResults.length; i++) {
-      searchResults[i].addNotify();
-      this.resultListModel.addElement(searchResults[i]);
+                d.selectFirst();
+            }
+        });
+
+        w.setVisible(true);
     }
 
-    this.resultList = new JList(this.resultListModel);
-    this.resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    this.resultList.setCellRenderer(new ListCellRenderer() {
+    public SearchResultsDialog(SearchResult searchResults[], boolean modal) {
 
-      public Component getListCellRendererComponent(JList list, Object value,
-          int index,
-          boolean isSelected, boolean cellHasFocus) {
+        this(searchResults, modal, true);
+    }
 
-        SearchResult c = (SearchResult)value;
-        c.setSelected(isSelected, index % 2 == 0);
-        return c;
-      }
-    });
+    public SearchResultsDialog(SearchResult searchResults[], boolean modal,
+            boolean showGraphInline) {
 
-    JScrollPane jsp =
-      new JScrollPane(this.resultList,
-        ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.setLayout(new BorderLayout());
 
-    JPanel results = new JPanel(new BorderLayout(6, 6));
-    results.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-
-    this.resultHeader = new JLabel();
-    results.add(this.resultHeader, BorderLayout.NORTH);
-
-    results.add(jsp, BorderLayout.CENTER);
-
-    if (showGraphInline || modal) {
-      if (this.resultListModel.size() > 0) {
-        int width = this.resultList.getMinimumSize().width;
-        int height =
-          ((SearchResult)this.resultListModel.firstElement())
-            .getPreferredSize().height * 2;
-        int borderHeight = 0;
-        Border border = this.resultList.getBorder();
-        if (border != null) {
-          Insets insets = border.getBorderInsets(this.resultList);
-          borderHeight += insets.top + insets.bottom;
+        this.resultListModel = new DefaultListModel();
+        for (int i = 0; i < searchResults.length; i++) {
+            searchResults[i].addNotify();
+            this.resultListModel.addElement(searchResults[i]);
         }
-        border = jsp.getBorder();
-        if (border != null) {
-          Insets insets = border.getBorderInsets(this.resultList);
-          borderHeight += insets.top + insets.bottom;
-        }
-        jsp.setMinimumSize(new Dimension(width, height + borderHeight));
-        jsp.setPreferredSize(new Dimension(width, height + borderHeight));
-      }
 
-      final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-      split.setTopComponent(results);
+        this.resultList = new JList(this.resultListModel);
+        this.resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.resultList.setCellRenderer(new ListCellRenderer() {
 
-      final JPanel graphView = new JPanel(new GridLayout(1, 1));
-      // graphView.setPreferredSize(new
-      // Dimension(jsp.getPreferredSize().width, 300));
-      split.setBottomComponent(graphView);
-      /*
+            public Component getListCellRendererComponent(JList list, Object value,
+                    int index,
+                    boolean isSelected, boolean cellHasFocus) {
+
+                SearchResult c = (SearchResult) value;
+                c.setSelected(isSelected, index % 2 == 0);
+                return c;
+            }
+        });
+
+        JScrollPane jsp
+                = new JScrollPane(this.resultList,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        JPanel results = new JPanel(new BorderLayout(6, 6));
+        results.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+
+        this.resultHeader = new JLabel();
+        results.add(this.resultHeader, BorderLayout.NORTH);
+
+        results.add(jsp, BorderLayout.CENTER);
+
+        if (showGraphInline || modal) {
+            if (this.resultListModel.size() > 0) {
+                int width = this.resultList.getMinimumSize().width;
+                int height
+                        = ((SearchResult) this.resultListModel.firstElement())
+                                .getPreferredSize().height * 2;
+                int borderHeight = 0;
+                Border border = this.resultList.getBorder();
+                if (border != null) {
+                    Insets insets = border.getBorderInsets(this.resultList);
+                    borderHeight += insets.top + insets.bottom;
+                }
+                border = jsp.getBorder();
+                if (border != null) {
+                    Insets insets = border.getBorderInsets(this.resultList);
+                    borderHeight += insets.top + insets.bottom;
+                }
+                jsp.setMinimumSize(new Dimension(width, height + borderHeight));
+                jsp.setPreferredSize(new Dimension(width, height + borderHeight));
+            }
+
+            final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+            split.setTopComponent(results);
+
+            final JPanel graphView = new JPanel(new GridLayout(1, 1));
+            // graphView.setPreferredSize(new
+            // Dimension(jsp.getPreferredSize().width, 300));
+            split.setBottomComponent(graphView);
+            /*
        * JPanel p = new JPanel(new BorderLayout()); p.add(new
        * WindowHeader("akshkjakda", WindowHeader.LEFT), BorderLayout.NORTH);
        * p.add(graphView, BorderLayout.CENTER); split.setBottomComponent(p);
-       */
-      this.resultList.addListSelectionListener(new ListSelectionListener() {
+             */
+            this.resultList.addListSelectionListener(new ListSelectionListener() {
 
-        public void valueChanged(ListSelectionEvent evt) {
+                public void valueChanged(ListSelectionEvent evt) {
 
-          if (!evt.getValueIsAdjusting()) {
-            SearchResult info =
-              (SearchResult)SearchResultsDialog.this.resultList
-                .getSelectedValue();
-            if (info != null) {
-              SearchResultsDialog.this.currentGraphView =
-                info.showResult(graphView);
-            }
-            else {
-              graphView.removeAll();
-              graphView.revalidate();
-              graphView.repaint();
-              SearchResultsDialog.this.currentGraphView = null;
-            }
-          }
+                    if (!evt.getValueIsAdjusting()) {
+                        SearchResult info
+                                = (SearchResult) SearchResultsDialog.this.resultList
+                                        .getSelectedValue();
+                        if (info != null) {
+                            SearchResultsDialog.this.currentGraphView
+                                    = info.showResult(graphView);
+                        } else {
+                            graphView.removeAll();
+                            graphView.revalidate();
+                            graphView.repaint();
+                            SearchResultsDialog.this.currentGraphView = null;
+                        }
+                    }
+                }
+            });
+            this.add(split);
+        } else {
+            this.add(results);
         }
-      });
-      this.add(split);
-    }
-    else {
-      this.add(results);
-    }
 
-    if (!modal) {
-      this.resultList.addMouseListener(new MouseAdapter() {
+        if (!modal) {
+            this.resultList.addMouseListener(new MouseAdapter() {
 
-        @Override
-        public void mouseClicked(MouseEvent evt) {
+                @Override
+                public void mouseClicked(MouseEvent evt) {
 
-          if (evt.getClickCount() == 2) {
-            int index =
-              SearchResultsDialog.this.resultList.locationToIndex(evt
-                .getPoint());
-            if ((index >= 0)
-              || (index < SearchResultsDialog.this.resultList.getModel()
-                .getSize())) {
-              ((SearchResult)SearchResultsDialog.this.resultList.getModel()
-                .getElementAt(index))
-                  .showResult(null);
-            }
-          }
+                    if (evt.getClickCount() == 2) {
+                        int index
+                                = SearchResultsDialog.this.resultList.locationToIndex(evt
+                                        .getPoint());
+                        if ((index >= 0)
+                                || (index < SearchResultsDialog.this.resultList.getModel()
+                                        .getSize())) {
+                            ((SearchResult) SearchResultsDialog.this.resultList.getModel()
+                                    .getElementAt(index))
+                                    .showResult(null);
+                        }
+                    }
+                }
+            });
         }
-      });
+
+        this.updateResults();
     }
 
-    this.updateResults();
-  }
+    private void selectFirst() {
 
-
-  private void selectFirst() {
-
-    if (this.resultList.getModel().getSize() > 0) {
-      this.resultList.setSelectedIndex(0);
+        if (this.resultList.getModel().getSize() > 0) {
+            this.resultList.setSelectedIndex(0);
+        }
     }
-  }
 
+    public void updateResults() {
 
-  public void updateResults() {
-
-    for (int i = this.resultListModel.size() - 1; i >= 0; i--) {
-      SearchResult result = (SearchResult)this.resultListModel.get(i);
-      if (!result.isRelevant()) {
-        this.resultListModel.removeElementAt(i);
-      }
+        for (int i = this.resultListModel.size() - 1; i >= 0; i--) {
+            SearchResult result = (SearchResult) this.resultListModel.get(i);
+            if (!result.isRelevant()) {
+                this.resultListModel.removeElementAt(i);
+            }
+        }
+        this.resultHeader.setText(this.resultListModel.size() == 1 ? Resources
+                .getString("FoundOneNode")
+                : Resources.format("FoundNNodes", this.resultListModel.size()));
     }
-    this.resultHeader.setText(this.resultListModel.size() == 1 ? Resources
-      .getString("FoundOneNode")
-        : Resources.format("FoundNNodes", this.resultListModel.size()));
-  }
 }

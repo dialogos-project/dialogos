@@ -21,293 +21,263 @@ import com.clt.script.exp.Type;
 import com.clt.script.exp.Value;
 import com.clt.script.exp.Variable;
 
-class VarList
-    implements ChangeListener {
+class VarList implements ChangeListener {
 
-  private List<Slot> elems = new ArrayList<Slot>();
-  private Stack<GraphOwner> owners = new Stack<GraphOwner>();
-  private Stack<List<Slot>> history = new Stack<List<Slot>>();
-  private List<JTable> displays = new ArrayList<JTable>();
+    private List<Slot> elems = new ArrayList<Slot>();
+    private Stack<GraphOwner> owners = new Stack<GraphOwner>();
+    private Stack<List<Slot>> history = new Stack<List<Slot>>();
+    private List<JTable> displays = new ArrayList<JTable>();
 
+    private void addDisplay(JTable t) {
 
-  private void addDisplay(JTable t) {
-
-    this.displays.add(t);
-  }
-
-
-  private void add(Slot s) {
-
-    this.elems.add(s);
-    s.addChangeListener(this);
-  }
-
-
-  public synchronized void push(GraphOwner owner, List<Slot> vars) {
-
-    this.history.push(this.elems);
-    this.owners.push(owner);
-    this.elems = new ArrayList<Slot>();
-    for (int i = 0; i < vars.size(); i++) {
-      this.add(vars.get(i));
+        this.displays.add(t);
     }
-    this.stateChanged(new ChangeEvent(this));
-  }
 
+    private void add(Slot s) {
 
-  public synchronized void pop() {
-
-    for (int i = this.elems.size() - 1; i >= 0; i--) {
-      Slot s = this.elems.remove(i);
-      s.removeChangeListener(this);
+        this.elems.add(s);
+        s.addChangeListener(this);
     }
-    this.elems = this.history.pop();
-    this.owners.pop();
-    this.stateChanged(new ChangeEvent(this));
-  }
 
+    public synchronized void push(GraphOwner owner, List<Slot> vars) {
 
-  public synchronized void clear() {
-
-    while (!this.history.isEmpty()) {
-      this.pop();
+        this.history.push(this.elems);
+        this.owners.push(owner);
+        this.elems = new ArrayList<Slot>();
+        for (int i = 0; i < vars.size(); i++) {
+            this.add(vars.get(i));
+        }
+        this.stateChanged(new ChangeEvent(this));
     }
-  }
 
+    public synchronized void pop() {
 
-  public synchronized int size() {
-
-    return this.elems.size();
-  }
-
-
-  public synchronized Slot get(int index) {
-
-    return this.elems.get(index);
-  }
-
-
-  public synchronized GraphOwner getOwner() {
-
-    return this.owners.peek();
-  }
-
-
-  public synchronized void stateChanged(ChangeEvent evt) {
-
-    for (JTable t : this.displays) {
-      TableModelEvent tevt = new TableModelEvent(t.getModel());
-      t.tableChanged(tevt);
+        for (int i = this.elems.size() - 1; i >= 0; i--) {
+            Slot s = this.elems.remove(i);
+            s.removeChangeListener(this);
+        }
+        this.elems = this.history.pop();
+        this.owners.pop();
+        this.stateChanged(new ChangeEvent(this));
     }
-  }
 
+    public synchronized void clear() {
 
-  public JTable createVariableDisplay() {
+        while (!this.history.isEmpty()) {
+            this.pop();
+        }
+    }
 
-    final JTable table = new JTable();
-    table.setModel(new AbstractTableModel() {
+    public synchronized int size() {
 
-      public int getRowCount() {
+        return this.elems.size();
+    }
 
-        return VarList.this.size();
-      }
+    public synchronized Slot get(int index) {
 
+        return this.elems.get(index);
+    }
 
-      public int getColumnCount() {
+    public synchronized GraphOwner getOwner() {
 
-        return 2;
-      }
+        return this.owners.peek();
+    }
 
+    public synchronized void stateChanged(ChangeEvent evt) {
 
-      @Override
-      public String getColumnName(int column) {
+        for (JTable t : this.displays) {
+            TableModelEvent tevt = new TableModelEvent(t.getModel());
+            t.tableChanged(tevt);
+        }
+    }
 
-        switch (column) {
-          case 0:
+    public JTable createVariableDisplay() {
+
+        final JTable table = new JTable();
+        table.setModel(new AbstractTableModel() {
+
+            public int getRowCount() {
+
+                return VarList.this.size();
+            }
+
+            public int getColumnCount() {
+
+                return 2;
+            }
+
+            @Override
+            public String getColumnName(int column) {
+
+                switch (column) {
+                    case 0:
                         return Resources.getString("Name");
-                      case 1:
+                    case 1:
                         return Resources.getString("Value");
-                      default:
+                    default:
                         throw new IllegalArgumentException("invalid column");
-                    }
-                  }
+                }
+            }
 
+            @Override
+            public Class<?> getColumnClass(int column) {
 
-      @Override
-      public Class<?> getColumnClass(int column) {
-
-        switch (column) {
-          case 0:
+                switch (column) {
+                    case 0:
                         return String.class;
-                      case 1:
+                    case 1:
                         return String.class;
-                      default:
+                    default:
                         throw new IllegalArgumentException("invalid column");
-                    }
-                  }
+                }
+            }
 
+            @Override
+            public boolean isCellEditable(int row, int column) {
 
-      @Override
-      public boolean isCellEditable(int row, int column) {
+                return column == 1;
+            }
 
-        return column == 1;
-      }
+            public Object getValueAt(int row, int column) {
 
-
-      public Object getValueAt(int row, int column) {
-
-        Slot s = VarList.this.get(row);
-        switch (column) {
-          case 0:
+                Slot s = VarList.this.get(row);
+                switch (column) {
+                    case 0:
                         return s.getName();
-                      case 1:
+                    case 1:
                         return s.getValue().toString();
-                      default:
+                    default:
                         throw new IllegalArgumentException("invalid column");
-                    }
-                  }
+                }
+            }
 
+            @Override
+            public void setValueAt(Object aValue, int row, int column) {
 
-      @Override
-      public void setValueAt(Object aValue, int row, int column) {
-
-        Slot s = VarList.this.get(row);
-        switch (column) {
-          case 1:
+                Slot s = VarList.this.get(row);
+                switch (column) {
+                    case 1:
                         try {
-                          s.setValue(Expression.parseExpression(
-                            aValue.toString(),
-                                new DefaultEnvironment() {
+                            s.setValue(Expression.parseExpression(
+                                    aValue.toString(),
+                                    new DefaultEnvironment() {
 
-                                  @Override
-                                  public Variable createVariableReference(
-                                      final String id) {
+                                @Override
+                                public Variable createVariableReference(
+                                        final String id) {
 
                                     return new Variable() {
 
-                                      private Slot getSlot() {
+                                        private Slot getSlot() {
 
-                                        for (int i = VarList.this.size() - 1; i >= 0; i--) {
-                                          if (VarList.this.get(i).getName()
-                                            .equals(id)) {
-                                            return VarList.this.get(i);
-                                          }
+                                            for (int i = VarList.this.size() - 1; i >= 0; i--) {
+                                                if (VarList.this.get(i).getName()
+                                                        .equals(id)) {
+                                                    return VarList.this.get(i);
+                                                }
+                                            }
+                                            throw new EvaluationException(
+                                                    "Unknown variable "
+                                                    + id);
                                         }
-                                        throw new EvaluationException(
-                                          "Unknown variable "
-                                                        + id);
-                                      }
 
+                                        public Type getType() {
 
-                                      public Type getType() {
+                                            return this.getSlot().getType();
+                                        }
 
-                                        return this.getSlot().getType();
-                                      }
+                                        public Value getValue() {
 
+                                            return this.getSlot().getValue();
+                                        }
 
-                                      public Value getValue() {
+                                        public void setValue(Value value) {
 
-                                        return this.getSlot().getValue();
-                                      }
+                                            this.getSlot().setValue(value);
+                                        }
 
+                                        public String getName() {
 
-                                      public void setValue(Value value) {
-
-                                        this.getSlot().setValue(value);
-                                      }
-
-
-                                      public String getName() {
-
-                                        return id;
-                                      }
+                                            return id;
+                                        }
                                     };
-                                  }
-                                }).evaluate());
-                        }
-                        catch (Exception exn) {
-                          OptionPane.error(table, exn);
+                                }
+                            }).evaluate());
+                        } catch (Exception exn) {
+                            OptionPane.error(table, exn);
                         }
                         break;
-                      default:
+                    default:
                         throw new IllegalArgumentException("invalid column");
-                    }
-                  }
-    });
+                }
+            }
+        });
 
-    this.addDisplay(table);
-    return table;
-  }
+        this.addDisplay(table);
+        return table;
+    }
 
+    public JTable createCallstackDisplay() {
 
-  public JTable createCallstackDisplay() {
+        final JTable table = new JTable();
+        table.setModel(new AbstractTableModel() {
 
-    final JTable table = new JTable();
-    table.setModel(new AbstractTableModel() {
+            public int getRowCount() {
 
-      public int getRowCount() {
+                return VarList.this.owners.size();
+            }
 
-        return VarList.this.owners.size();
-      }
+            public int getColumnCount() {
 
+                return 1;
+            }
 
-      public int getColumnCount() {
+            @Override
+            public String getColumnName(int column) {
 
-        return 1;
-      }
-
-
-      @Override
-      public String getColumnName(int column) {
-
-        switch (column) {
-          case 0:
+                switch (column) {
+                    case 0:
                         return Resources.getString("Callstack");
-                      default:
+                    default:
                         throw new IllegalArgumentException("invalid column");
-                    }
-                  }
+                }
+            }
 
+            @Override
+            public Class<?> getColumnClass(int column) {
 
-      @Override
-      public Class<?> getColumnClass(int column) {
-
-        switch (column) {
-          case 0:
+                switch (column) {
+                    case 0:
                         return String.class;
-                      default:
+                    default:
                         throw new IllegalArgumentException("invalid column");
-                    }
-                  }
+                }
+            }
 
+            @Override
+            public boolean isCellEditable(int row, int column) {
 
-      @Override
-      public boolean isCellEditable(int row, int column) {
+                return false;
+            }
 
-        return false;
-      }
+            private GraphOwner getOwner(int row) {
 
+                return VarList.this.owners.get(VarList.this.owners.size() - 1 - row);
+            }
 
-      private GraphOwner getOwner(int row) {
+            public Object getValueAt(int row, int column) {
 
-        return VarList.this.owners.get(VarList.this.owners.size() - 1 - row);
-      }
+                return this.getOwner(row).getGraphName();
+            }
 
+            @Override
+            public void setValueAt(Object aValue, int row, int column) {
 
-      public Object getValueAt(int row, int column) {
+            }
+        });
 
-        return this.getOwner(row).getGraphName();
-      }
-
-
-      @Override
-      public void setValueAt(Object aValue, int row, int column) {
-
-      }
-    });
-
-    this.addDisplay(table);
-    return table;
-  }
+        this.addDisplay(table);
+        return table;
+    }
 
 }

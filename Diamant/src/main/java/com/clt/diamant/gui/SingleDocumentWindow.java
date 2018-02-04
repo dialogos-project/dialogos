@@ -93,8 +93,8 @@ import com.clt.util.DefaultLongAction;
 import com.clt.util.UserCanceledException;
 import com.clt.xml.XMLWriter;
 
-public class SingleDocumentWindow<DocType extends SingleDocument> extends
-        DocumentWindow<DocType>
+public class SingleDocumentWindow<DocType extends SingleDocument>
+        extends DocumentWindow<DocType>
         implements GraphEditor {
 
     public static final int cmdEditDevices = Commands.cmdDocument + 2;
@@ -730,7 +730,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument> extends
                         }
                     } else {
                         try {
-                            if (doc.connectDevices(new ConnectDialog(this), Preferences.getPrefs().getConnectionTimeout())) {                                
+                            if (doc.connectDevices(new ConnectDialog(this), Preferences.getPrefs().getConnectionTimeout())) {
                                 if (cmd == SingleDocumentWindow.cmdRun) {
                                     this.runtime = new Executer(this, false);
                                 } else if (cmd == SingleDocumentWindow.cmdRunWithLog) {
@@ -744,81 +744,81 @@ public class SingleDocumentWindow<DocType extends SingleDocument> extends
 
                                 if (this.runtime.showSubdialogsDuringExecution()) {
                                     this.runtime.addGraphExecutionListener(new GraphExecutionListener() {
-                                                Stack<GraphEditor> editors = new Stack<GraphEditor>();
+                                        Stack<GraphEditor> editors = new Stack<GraphEditor>();
 
-                                                public void graphExecutionStarted(Graph g) {
-                                                    if (SingleDocumentWindow.this.openSubWindows()) {
-                                                        GraphEditor d = GraphEditorFactory.show(g.getOwner());
-                                                        if (d instanceof Window) {
-                                                            ((Window) d).addWindowListener(new WindowAdapter() {
+                                        public void graphExecutionStarted(Graph g) {
+                                            if (SingleDocumentWindow.this.openSubWindows()) {
+                                                GraphEditor d = GraphEditorFactory.show(g.getOwner());
+                                                if (d instanceof Window) {
+                                                    ((Window) d).addWindowListener(new WindowAdapter() {
 
-                                                                @Override
-                                                                public void windowOpened(WindowEvent e) {
+                                                        @Override
+                                                        public void windowOpened(WindowEvent e) {
 
-                                                                    if (SingleDocumentWindow.this.runtime instanceof Window) {
-                                                                        ((Window) SingleDocumentWindow.this.runtime)
-                                                                                .toFront();
-                                                                        ((Window) SingleDocumentWindow.this.runtime)
-                                                                                .requestFocus();
-                                                                    }
-                                                                }
-
-                                                                @Override
-                                                                public void windowClosed(WindowEvent e) {
-
-                                                                    if (SingleDocumentWindow.this.runtime instanceof Window) {
-                                                                        ((Window) SingleDocumentWindow.this.runtime)
-                                                                                .toFront();
-                                                                        ((Window) SingleDocumentWindow.this.runtime)
-                                                                                .requestFocus();
-                                                                    }
-                                                                }
-                                                            });
+                                                            if (SingleDocumentWindow.this.runtime instanceof Window) {
+                                                                ((Window) SingleDocumentWindow.this.runtime)
+                                                                        .toFront();
+                                                                ((Window) SingleDocumentWindow.this.runtime)
+                                                                        .requestFocus();
+                                                            }
                                                         }
-                                                        this.editors.push(d);
-                                                    } else {
-                                                        final Graph origGraph
-                                                                = SingleDocumentWindow.this.getMainView().getGraph();
-                                                        SingleDocumentWindow.this.setMainView(g);
-                                                        this.editors.push(new GraphEditor() {
 
-                                                            public void showEditor() {
+                                                        @Override
+                                                        public void windowClosed(WindowEvent e) {
 
-                                                                SingleDocumentWindow.this.showEditor();
+                                                            if (SingleDocumentWindow.this.runtime instanceof Window) {
+                                                                ((Window) SingleDocumentWindow.this.runtime)
+                                                                        .toFront();
+                                                                ((Window) SingleDocumentWindow.this.runtime)
+                                                                        .requestFocus();
                                                             }
-
-                                                            public void closeEditor() {
-
-                                                                SingleDocumentWindow.this.setMainView(origGraph);
-                                                            }
-
-                                                            public boolean isShowing() {
-
-                                                                return SingleDocumentWindow.this.getMainView() == this
-                                                                        .getGraphUI();
-                                                            }
-
-                                                            public GraphOwner getGraphOwner() {
-
-                                                                return SingleDocumentWindow.this
-                                                                        .getGraphOwner();
-                                                            }
-
-                                                            public GraphUI getGraphUI() {
-
-                                                                return SingleDocumentWindow.this.getGraphUI();
-                                                            }
-                                                        });
-                                                    }
+                                                        }
+                                                    });
                                                 }
+                                                this.editors.push(d);
+                                            } else {
+                                                final Graph origGraph
+                                                        = SingleDocumentWindow.this.getMainView().getGraph();
+                                                SingleDocumentWindow.this.setMainView(g);
+                                                this.editors.push(new GraphEditor() {
 
-                                                public void graphExecutionStopped(Graph g) {
+                                                    public void showEditor() {
 
-                                                    if (this.editors.size() > 0) {
-                                                        this.editors.pop().closeEditor();
+                                                        SingleDocumentWindow.this.showEditor();
                                                     }
-                                                }
-                                            });
+
+                                                    public void closeEditor() {
+
+                                                        SingleDocumentWindow.this.setMainView(origGraph);
+                                                    }
+
+                                                    public boolean isShowing() {
+
+                                                        return SingleDocumentWindow.this.getMainView() == this
+                                                                .getGraphUI();
+                                                    }
+
+                                                    public GraphOwner getGraphOwner() {
+
+                                                        return SingleDocumentWindow.this
+                                                                .getGraphOwner();
+                                                    }
+
+                                                    public GraphUI getGraphUI() {
+
+                                                        return SingleDocumentWindow.this.getGraphUI();
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        public void graphExecutionStopped(Graph g) {
+
+                                            if (this.editors.size() > 0) {
+                                                this.editors.pop().closeEditor();
+                                            }
+                                        }
+                                    });
                                 }
 
                                 this.executionThread = new Thread(new Runnable() {
