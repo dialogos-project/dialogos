@@ -32,53 +32,41 @@ import com.clt.gui.Images;
  * @author dabo
  * 
  */
-public class Plugin extends com.clt.dialogos.plugin.Plugin {
+public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
-  public Plugin(Component parent, File appDir, ClassLoader classLoader,
-      ProgressListener progress, int userData) {
-
-    super(classLoader);
-
-    com.clt.diamant.graph.Node.registerNodeTypes(this.getName(), Arrays
-        .asList(new Class<?>[] { ProgramNode.class,
-            StopProgramNode.class, ReadSensorNode.class,
-            MotorNode.class,
+  public Plugin(Component parent, File appDir, ClassLoader classLoader, ProgressListener progress, int userData) {
+    com.clt.diamant.graph.Node.registerNodeTypes(this.getName(), Arrays.asList(new Class<?>[] { ProgramNode.class, StopProgramNode.class, ReadSensorNode.class, MotorNode.class }));
         // SendMessageNode.class
-      }));
+//      }));
   }
 
 
   @Override
   public String getId() {
-
     return "dialogos.plugin.lego";
   }
 
 
   @Override
   public String getName() {
-
     return "Lego Mindstorms NXT";
   }
 
 
   @Override
   public Icon getIcon() {
-
     return Images.load(this, "Lego.png");
   }
 
 
   @Override
   public String getVersion() {
-
     return "1.2";
   }
 
 
   @Override
   public PluginSettings createDefaultSettings() {
-
     return new Settings();
   }
 }

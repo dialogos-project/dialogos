@@ -21,3 +21,5 @@
 /com.clt.speech/src/main/java/com/clt/speech/htk/Parser.java
 /com.clt.speech/src/main/java/com/clt/speech/htk/Sym.java
 /build/
+/com.clt.lego/build/
+/plugins/DialogOS_NxtPlugin/build/

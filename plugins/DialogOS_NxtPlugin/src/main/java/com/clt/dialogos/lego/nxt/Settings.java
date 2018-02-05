@@ -11,7 +11,6 @@
  * it only in accordance with the terms of the license agreement
  * you entered into with CLT Sprachtechnologie GmbH.
  */
-
 package com.clt.dialogos.lego.nxt;
 
 import java.awt.BorderLayout;
@@ -63,336 +62,301 @@ import com.clt.xml.XMLWriter;
  */
 public class Settings extends PluginSettings {
 
-  private static Collection<BrickDescription<? extends Nxt>> availablePorts =
-    new TreeSet<BrickDescription<? extends Nxt>>();
-  private DefaultEnumProperty<BrickDescription<? extends Nxt>> nxt;
-  private Map<Sensor.Port, DefaultEnumProperty<SensorType>> sensorTypes;
+    private static Collection<BrickDescription<? extends Nxt>> availablePorts = new TreeSet<BrickDescription<? extends Nxt>>();
+    private DefaultEnumProperty<BrickDescription<? extends Nxt>> nxt;
+    private Map<Sensor.Port, DefaultEnumProperty<SensorType>> sensorTypes;
 
-  static {
-    Settings.availablePorts
-      .add(new BrickDescription<Nxt>("-", null, null, null) {
-
-        @Override
-        protected Nxt createBrickImpl(Component parent) {
-
-          return null;
-        }
-      });
-  }
-
-
-  @SuppressWarnings("unchecked")
-  private BrickDescription<Nxt>[] getAvailablePorts() {
-
-    return Settings.availablePorts
-      .toArray(new BrickDescription[Settings.availablePorts.size()]);
-  }
-
-
-  public Settings() {
-
-    this.nxt =
-      new DefaultEnumProperty<BrickDescription<? extends Nxt>>("nxt", Resources
-        .getString("NxtBrick"), null, this.getAvailablePorts()) {
-
-        @Override
-        public String getName() {
-
-          return Resources.getString("NxtBrick");
-        }
-      };
-
-    if (!Settings.availablePorts.isEmpty()) {
-      this.nxt.setValue(Settings.availablePorts.iterator().next());
+    static {
+        Settings.availablePorts.add(new BrickDescription<Nxt>("-", null, null, null) {
+            @Override
+            protected Nxt createBrickImpl(Component parent) {
+                return null;
+            }
+        });
     }
 
-    this.sensorTypes =
-      new LinkedHashMap<Sensor.Port, DefaultEnumProperty<SensorType>>();
-    for (Sensor.Port port : Sensor.Port.values()) {
-      DefaultEnumProperty<SensorType> p =
-        new DefaultEnumProperty<SensorType>(port.name(),
-          port.toString(), null, SensorType.values(), SensorType.NONE);
-      this.sensorTypes.put(port, p);
+    @SuppressWarnings("unchecked")
+    private BrickDescription<Nxt>[] getAvailablePorts() {
+        return Settings.availablePorts.toArray(new BrickDescription[Settings.availablePorts.size()]);
     }
 
-    // updateBrickList(null, true);
-  }
+    public Settings() {
 
+        this.nxt = new DefaultEnumProperty<BrickDescription<? extends Nxt>>("nxt", Resources.getString("NxtBrick"), null, this.getAvailablePorts()) {
+            @Override
+            public String getName() {
+                return Resources.getString("NxtBrick");
+            }
+        };
 
-  private void addBrick(BrickDescription<Nxt> desc) {
+        if (!Settings.availablePorts.isEmpty()) {
+            this.nxt.setValue(Settings.availablePorts.iterator().next());
+        }
 
-    Settings.availablePorts.add(desc);
-    this.nxt.setPossibleValues(this.getAvailablePorts());
-    this.nxt.setValue(desc);
-  }
+        this.sensorTypes = new LinkedHashMap<Sensor.Port, DefaultEnumProperty<SensorType>>();
+        for (Sensor.Port port : Sensor.Port.values()) {
+            DefaultEnumProperty<SensorType> p = new DefaultEnumProperty<SensorType>(port.name(), port.toString(), null, SensorType.values(), SensorType.NONE);
+            this.sensorTypes.put(port, p);
+        }
 
+        // updateBrickList(null, true);
+    }
 
-  private void updateBrickList(Component parent, boolean search) {
+    private void addBrick(BrickDescription<Nxt> desc) {
 
-    try {
-      if (search) {
-        final ProgressDialog d = new ProgressDialog(parent);
+        Settings.availablePorts.add(desc);
+        this.nxt.setPossibleValues(this.getAvailablePorts());
+        this.nxt.setValue(desc);
+    }
+
+    private void updateBrickList(Component parent, boolean search) {
+
         try {
-          d.run(new AbstractLongAction() {
+            if (search) {
+                final ProgressDialog d = new ProgressDialog(parent);
+                try {
+                    d.run(new AbstractLongAction() {
 
-            private AtomicBoolean cancel = new AtomicBoolean(false);
+                        private AtomicBoolean cancel = new AtomicBoolean(false);
 
+                        @Override
+                        public void cancel() {
 
-            @Override
-            public void cancel() {
+                            this.cancel.set(true);
+                        }
 
-              this.cancel.set(true);
+                        @Override
+                        public boolean canCancel() {
+
+                            return true;
+                        }
+
+                        @Override
+                        protected void run(ProgressListener progress)
+                                throws Exception {
+
+                            StringWriter log = new StringWriter();
+                            PrintWriter pw = new PrintWriter(log, true);
+                            int oldSize = Settings.availablePorts.size();
+
+                            Collection<BrickDescription<? extends Nxt>> availableBricks
+                                    = AbstractNxt
+                                            .getAvailableBricks(d, progress, this.cancel, pw);
+                            Settings.availablePorts.addAll(availableBricks);
+                            if (Settings.availablePorts.size() == oldSize) {
+                                pw.println(Resources.getString("NoNewBrickFound"));
+                            }
+                            pw.close();
+                            if (log.getBuffer().length() > 0) {
+                                OptionPane.warning(d, log.toString());
+                            }
+                        }
+
+                        @Override
+                        public String getDescription() {
+
+                            return Resources.getString("SearchingForBricks");
+                        }
+                    });
+                } catch (InvocationTargetException exn) {
+                    exn.getTargetException().printStackTrace();
+                    OptionPane.error(parent, exn.getTargetException());
+                }
             }
-
-
-            @Override
-            public boolean canCancel() {
-
-              return true;
-            }
-
-
-            @Override
-            protected void run(ProgressListener progress)
-                throws Exception {
-
-              StringWriter log = new StringWriter();
-              PrintWriter pw = new PrintWriter(log, true);
-              int oldSize = Settings.availablePorts.size();
-
-              Collection<BrickDescription<? extends Nxt>> availableBricks =
-                AbstractNxt
-                  .getAvailableBricks(d, progress, this.cancel, pw);
-              Settings.availablePorts.addAll(availableBricks);
-              if (Settings.availablePorts.size() == oldSize) {
-                pw.println(Resources.getString("NoNewBrickFound"));
-              }
-              pw.close();
-              if (log.getBuffer().length() > 0) {
-                OptionPane.warning(d, log.toString());
-              }
-            }
-
-
-            @Override
-            public String getDescription() {
-
-              return Resources.getString("SearchingForBricks");
-            }
-          });
-        } catch (InvocationTargetException exn) {
-          exn.getTargetException().printStackTrace();
-          OptionPane.error(parent, exn.getTargetException());
-        }
-      }
-    } catch (Exception exn) {
-      System.err.println(exn);
-    }
-
-    this.nxt.setPossibleValues(this.getAvailablePorts());
-    // display the first of the newly found bricks in
-    // the Settings-UI
-    if (search && (this.nxt.getPossibleValues().length > 1)) {
-      this.nxt.setValue(this.nxt.getPossibleValues()[1]);
-    }
-  }
-
-
-  @Override
-  public JComponent createEditor() {
-
-    final JPanel p = new JPanel(new BorderLayout());
-
-    // update ports
-    this.updateBrickList(null, false);
-
-    PropertySet<Property<?>> ps = new PropertySet<Property<?>>();
-    ps.add(this.nxt);
-    for (DefaultEnumProperty<SensorType> sensorType : this.sensorTypes.values()) {
-      ps.add(sensorType);
-    }
-
-    p.add(ps.createPropertyPanel(false), BorderLayout.NORTH);
-
-    JButton update = new JButton(Resources.getString("FindBricks"));
-    update.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Settings.this.updateBrickList(null, true);
-      }
-    });
-
-    JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    bottom.add(update);
-    p.add(bottom, BorderLayout.SOUTH);
-
-    return p;
-  }
-
-
-  @Override
-  protected void readAttribute(final XMLReader r, String name, String value,
-      IdMap uid_map) {
-
-    if (name.equals("nxt")) {
-      r.setHandler(new AbstractHandler("att") {
-
-        private Class<?> factory = null;
-        private String brickName = null;
-        private String uri = null;
-        private InterfaceType type = null;
-        private String port = null;
-
-
-        @Override
-        protected void start(String name, Attributes atts) {
-
-          if (name.equals("att")) {
-            r.setHandler(new AbstractHandler("att"));
-
-            String att = atts.getValue("name");
-            String value = atts.getValue("value");
-            if (att.equals("factory")) {
-              try {
-                this.factory = Settings.class.getClassLoader().loadClass(value);
-              } catch (ClassNotFoundException exn) {
-                // ignore
-              }
-            }
-            else if (att.equals("name")) {
-              this.brickName = value;
-            }
-            else if (att.equals("type")) {
-              this.type = InterfaceType.valueOf(value);
-            }
-            else if (att.equals("port")) {
-              this.port = value;
-            }
-            else if (att.equals("uri")) {
-              this.uri = value;
-            }
-          }
+        } catch (Exception exn) {
+            System.err.println(exn);
         }
 
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected void end(String name)
-            throws SAXException {
-
-          try {
-            BrickDescription<Nxt> desc =
-              (BrickDescription)this.factory.getConstructor(
-                new Class[] { String.class, NxtDeviceInfo.class,
-                    InterfaceType.class, String.class }).newInstance(
-                new Object[] { this.uri,
-                    new NxtDeviceInfo(this.brickName, null, null, 0, 0, 0),
-                  this.type,
-                    this.port });
-            Settings.this.addBrick(desc);
-            Settings.this.nxt.setValue(desc);
-          } catch (Exception exn) {
-            r.raiseException(exn);
-          }
+        this.nxt.setPossibleValues(this.getAvailablePorts());
+        // display the first of the newly found bricks in
+        // the Settings-UI
+        if (search && (this.nxt.getPossibleValues().length > 1)) {
+            this.nxt.setValue(this.nxt.getPossibleValues()[1]);
         }
-      });
     }
-    else if (name.equals("sensor")) {
-      r.setHandler(new AbstractHandler("att") {
 
-        @Override
-        protected void start(String name, Attributes atts)
-            throws SAXException {
+    @Override
+    public JComponent createEditor() {
 
-          if (name.equals("att")) {
-            r.setHandler(new AbstractHandler("att"));
+        final JPanel p = new JPanel(new BorderLayout());
 
-            String sensor = atts.getValue("name");
-            String value = atts.getValue("value");
+        // update ports
+        this.updateBrickList(null, false);
 
-            int sensorID = -1;
-            try {
-              sensorID = Integer.parseInt(sensor);
-            } catch (Exception exn) {
-              r.raiseException(exn);
-            }
-
-            Sensor.Port port = null;
-            for (Sensor.Port p : Sensor.Port.values()) {
-              if (p.getID() == sensorID) {
-                port = p;
-              }
-            }
-            SensorType type = null;
-            for (SensorType t : SensorType.values()) {
-              if (t.name().equals(value)) {
-                type = t;
-              }
-            }
-            if ((port != null) && (type != null)) {
-              Settings.this.sensorTypes.get(port).setValue(type);
-            }
-          }
+        PropertySet<Property<?>> ps = new PropertySet<Property<?>>();
+        ps.add(this.nxt);
+        for (DefaultEnumProperty<SensorType> sensorType : this.sensorTypes.values()) {
+            ps.add(sensorType);
         }
-      });
+
+        p.add(ps.createPropertyPanel(false), BorderLayout.NORTH);
+
+        JButton update = new JButton(Resources.getString("FindBricks"));
+        update.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                Settings.this.updateBrickList(null, true);
+            }
+        });
+
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottom.add(update);
+        p.add(bottom, BorderLayout.SOUTH);
+
+        return p;
     }
-  }
 
+    @Override
+    protected void readAttribute(final XMLReader r, String name, String value,
+            IdMap uid_map) {
 
-  @Override
-  public void writeAttributes(XMLWriter out, IdMap uidMap) {
+        if (name.equals("nxt")) {
+            r.setHandler(new AbstractHandler("att") {
 
-    BrickDescription<?> nxt = this.nxt.getValue();
-    if ((nxt != null) && (nxt.getInterfaceType() != null)) {
-      Graph.printAtt(out, "nxt", "nxt", null);
-      Graph.printAtt(out, "factory", nxt.getClass().getName());
-      Graph.printAtt(out, "name", nxt.getBrickName());
-      Graph.printAtt(out, "type", nxt.getInterfaceType().name());
-      if (nxt.getPort() != null) {
-        Graph.printAtt(out, "port", nxt.getPort());
-      }
-      Graph.printAtt(out, "uri", nxt.getURI());
-      out.closeElement("att");
+                private Class<?> factory = null;
+                private String brickName = null;
+                private String uri = null;
+                private InterfaceType type = null;
+                private String port = null;
 
-      Graph.printAtt(out, "sensor", "sensor", null);
-      for (Sensor.Port port : this.sensorTypes.keySet()) {
-        Graph.printAtt(out, String.valueOf(port.getID()), this.sensorTypes.get(
-          port).getValue()
-            .name());
-      }
-      out.closeElement("att");
+                @Override
+                protected void start(String name, Attributes atts) {
+
+                    if (name.equals("att")) {
+                        r.setHandler(new AbstractHandler("att"));
+
+                        String att = atts.getValue("name");
+                        String value = atts.getValue("value");
+                        if (att.equals("factory")) {
+                            try {
+                                this.factory = Settings.class.getClassLoader().loadClass(value);
+                            } catch (ClassNotFoundException exn) {
+                                // ignore
+                            }
+                        } else if (att.equals("name")) {
+                            this.brickName = value;
+                        } else if (att.equals("type")) {
+                            this.type = InterfaceType.valueOf(value);
+                        } else if (att.equals("port")) {
+                            this.port = value;
+                        } else if (att.equals("uri")) {
+                            this.uri = value;
+                        }
+                    }
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void end(String name)
+                        throws SAXException {
+
+                    try {
+                        BrickDescription<Nxt> desc
+                                = (BrickDescription) this.factory.getConstructor(
+                                        new Class[]{String.class, NxtDeviceInfo.class,
+                                            InterfaceType.class, String.class}).newInstance(
+                                                new Object[]{this.uri,
+                                                    new NxtDeviceInfo(this.brickName, null, null, 0, 0, 0),
+                                                    this.type,
+                                                    this.port});
+                        Settings.this.addBrick(desc);
+                        Settings.this.nxt.setValue(desc);
+                    } catch (Exception exn) {
+                        r.raiseException(exn);
+                    }
+                }
+            });
+        } else if (name.equals("sensor")) {
+            r.setHandler(new AbstractHandler("att") {
+
+                @Override
+                protected void start(String name, Attributes atts)
+                        throws SAXException {
+
+                    if (name.equals("att")) {
+                        r.setHandler(new AbstractHandler("att"));
+
+                        String sensor = atts.getValue("name");
+                        String value = atts.getValue("value");
+
+                        int sensorID = -1;
+                        try {
+                            sensorID = Integer.parseInt(sensor);
+                        } catch (Exception exn) {
+                            r.raiseException(exn);
+                        }
+
+                        Sensor.Port port = null;
+                        for (Sensor.Port p : Sensor.Port.values()) {
+                            if (p.getID() == sensorID) {
+                                port = p;
+                            }
+                        }
+                        SensorType type = null;
+                        for (SensorType t : SensorType.values()) {
+                            if (t.name().equals(value)) {
+                                type = t;
+                            }
+                        }
+                        if ((port != null) && (type != null)) {
+                            Settings.this.sensorTypes.get(port).setValue(type);
+                        }
+                    }
+                }
+            });
+        }
     }
-  }
 
+    @Override
+    public void writeAttributes(XMLWriter out, IdMap uidMap) {
 
-  public SensorType getSensorType(Sensor.Port port) {
+        BrickDescription<?> nxt = this.nxt.getValue();
+        if ((nxt != null) && (nxt.getInterfaceType() != null)) {
+            Graph.printAtt(out, "nxt", "nxt", null);
+            Graph.printAtt(out, "factory", nxt.getClass().getName());
+            Graph.printAtt(out, "name", nxt.getBrickName());
+            Graph.printAtt(out, "type", nxt.getInterfaceType().name());
+            if (nxt.getPort() != null) {
+                Graph.printAtt(out, "port", nxt.getPort());
+            }
+            Graph.printAtt(out, "uri", nxt.getURI());
+            out.closeElement("att");
 
-    return this.sensorTypes.get(port).getValue();
-  }
-
-
-  public Nxt createBrick(Component parent)
-      throws IOException, UserCanceledException {
-
-    if (this.nxt.getValue() != null) {
-      return this.nxt.getValue().createBrick(parent);
+            Graph.printAtt(out, "sensor", "sensor", null);
+            for (Sensor.Port port : this.sensorTypes.keySet()) {
+                Graph.printAtt(out, String.valueOf(port.getID()), this.sensorTypes.get(
+                        port).getValue()
+                        .name());
+            }
+            out.closeElement("att");
+        }
     }
-    else {
-      return null;
+
+    public SensorType getSensorType(Sensor.Port port) {
+
+        return this.sensorTypes.get(port).getValue();
     }
-  }
 
+    public Nxt createBrick(Component parent)
+            throws IOException, UserCanceledException {
 
-  @Override
-  public NxtRuntime createRuntime(Component parent)
-      throws Exception {
-
-    Map<Sensor.Port, SensorType> sensorTypes =
-      new HashMap<Sensor.Port, SensorType>();
-    for (Sensor.Port port : this.sensorTypes.keySet()) {
-      sensorTypes.put(port, this.getSensorType(port));
+        if (this.nxt.getValue() != null) {
+            return this.nxt.getValue().createBrick(parent);
+        } else {
+            return null;
+        }
     }
-    return new NxtRuntime(this.createBrick(parent), sensorTypes);
-  }
+
+    @Override
+    public NxtRuntime createRuntime(Component parent)
+            throws Exception {
+
+        Map<Sensor.Port, SensorType> sensorTypes
+                = new HashMap<Sensor.Port, SensorType>();
+        for (Sensor.Port port : this.sensorTypes.keySet()) {
+            sensorTypes.put(port, this.getSensorType(port));
+        }
+        return new NxtRuntime(this.createBrick(parent), sensorTypes);
+    }
 }
