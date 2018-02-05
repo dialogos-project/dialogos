@@ -103,50 +103,44 @@ public class Settings extends PluginSettings {
     }
 
     private void addBrick(BrickDescription<Nxt> desc) {
-
         Settings.availablePorts.add(desc);
         this.nxt.setPossibleValues(this.getAvailablePorts());
         this.nxt.setValue(desc);
     }
 
     private void updateBrickList(Component parent, boolean search) {
-
         try {
             if (search) {
                 final ProgressDialog d = new ProgressDialog(parent);
                 try {
                     d.run(new AbstractLongAction() {
-
                         private AtomicBoolean cancel = new AtomicBoolean(false);
 
                         @Override
                         public void cancel() {
-
                             this.cancel.set(true);
                         }
 
                         @Override
                         public boolean canCancel() {
-
                             return true;
                         }
 
                         @Override
-                        protected void run(ProgressListener progress)
-                                throws Exception {
-
+                        protected void run(ProgressListener progress) throws Exception {
                             StringWriter log = new StringWriter();
                             PrintWriter pw = new PrintWriter(log, true);
                             int oldSize = Settings.availablePorts.size();
 
                             Collection<BrickDescription<? extends Nxt>> availableBricks
-                                    = AbstractNxt
-                                            .getAvailableBricks(d, progress, this.cancel, pw);
+                                    = AbstractNxt.getAvailableBricks(d, progress, this.cancel, pw);
                             Settings.availablePorts.addAll(availableBricks);
+                            
                             if (Settings.availablePorts.size() == oldSize) {
                                 pw.println(Resources.getString("NoNewBrickFound"));
                             }
                             pw.close();
+                            
                             if (log.getBuffer().length() > 0) {
                                 OptionPane.warning(d, log.toString());
                             }
@@ -154,7 +148,6 @@ public class Settings extends PluginSettings {
 
                         @Override
                         public String getDescription() {
-
                             return Resources.getString("SearchingForBricks");
                         }
                     });
