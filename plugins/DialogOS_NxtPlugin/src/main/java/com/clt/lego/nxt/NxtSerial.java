@@ -12,6 +12,9 @@ import com.clt.lego.BrickUtils;
 import com.clt.lego.SerialPort;
 
 /**
+ * Implementation of the communication with the Lego NXT brick
+ * using a serial port, such as USB or Bluetooth.
+ * 
  * @author dabo
  *
  */

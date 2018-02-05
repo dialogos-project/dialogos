@@ -1,107 +1,103 @@
-/*
- * @(#)Sensor.java
- * Created on 10.07.2007 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
-
 package com.clt.lego.nxt;
 
 import java.io.IOException;
 
 /**
  * @author dabo
- * 
+ *
  */
 public class Sensor {
 
-  public enum Port {
+    public enum Port {
         S1(0, "1"),
         S2(1, "2"),
         S3(2, "3"),
         S4(3, "4");
 
-    private int id;
-    private String name;
+        private int id;
+        private String name;
 
+        private Port(int id, String name) {
 
-    private Port(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
 
-      this.id = id;
-      this.name = name;
+        public int getID() {
+
+            return this.id;
+        }
+
+        @Override
+        public String toString() {
+
+            return Resources.getString("Sensor") + " " + this.name;
+        }
     }
 
-
-    public int getID() {
-
-      return this.id;
-    }
-
-
-    @Override
-    public String toString() {
-
-      return Resources.getString("Sensor") + " " + this.name;
-    }
-  }
-
-  public enum Mode {
-        /** Value in 0..1023. */
+    public enum Mode {
+        /**
+         * Value in 0..1023.
+         */
         RAW(0x00),
-
-        /** Either 0 or 1. */
+        
+        /**
+         * Either 0 or 1.
+         */
         BOOLEAN(0x20),
-
-        /** Number of boolean transitions. */
+        
+        /**
+         * Number of boolean transitions.
+         */
         EDGE(0x40),
-
-        /** Number of boolean transitions divided by two. */
+        
+        /**
+         * Number of boolean transitions divided by two.
+         */
         PULSE(0x60),
-
-        /** Raw value scaled to 0..100. */
+        
+        /**
+         * Raw value scaled to 0..100.
+         */
         PERCENTAGE(0x80),
-
-        /** 1/10ths of a degree, -19,8..69,5. */
+        
+        /**
+         * 1/10ths of a degree, -19,8..69,5.
+         */
         CELSIUS(0xA0),
-
-        /** 1/10ths of a degree, -3,6..157,1. */
+        
+        /**
+         * 1/10ths of a degree, -3,6..157,1.
+         */
         FAHRENHEIT(0xC0),
-
-        /** 1/16ths of a rotation, represented as a signed short. */
+        
+        /**
+         * 1/16ths of a rotation, represented as a signed short.
+         */
         ANGLE(0xE0);
 
-    public static final int MODE_MASK = 0xE0;
+        public static final int MODE_MASK = 0xE0;
 
-    private int value;
+        private int value;
 
+        private Mode(int value) {
 
-    private Mode(int value) {
+            this.value = value;
+        }
 
-      this.value = value;
+        public int getValue() {
+
+            return this.value;
+        }
+
+        @Override
+        public String toString() {
+
+            return Resources.getString("SENSORMODE_" + this.name());
+        }
     }
 
-
-    public int getValue() {
-
-      return this.value;
-    }
-
-
-    @Override
-    public String toString() {
-
-      return Resources.getString("SENSORMODE_" + this.name());
-    }
-  }
-
-  public enum Type {
+    public enum Type {
         NONE(0x00),
         SWITCH(0x01),
         RCX_TEMPERATURE(0x02),
@@ -115,128 +111,113 @@ public class Sensor {
         I2C(0x0A),
         I2C_9V(0x0B);
 
-    private int value;
+        private int value;
 
+        private Type(int value) {
 
-    private Type(int value) {
+            this.value = value;
+        }
 
-      this.value = value;
+        public int getValue() {
+
+            return this.value;
+        }
+
+        @Override
+        public String toString() {
+
+            return Resources.getString("SENSORTYPE_" + this.name());
+        }
     }
 
+    private Nxt brick;
+    private Port port;
+    private Type type;
+    private Mode mode;
 
-    public int getValue() {
+    public Sensor(Nxt brick, Port port) {
 
-      return this.value;
+        if (brick == null) {
+            throw new IllegalArgumentException();
+        }
+        if (port == null) {
+            throw new IllegalArgumentException();
+        }
+        this.brick = brick;
+        this.port = port;
+        this.type = null;
+        this.mode = null;
     }
 
+    public Port getPort() {
 
-    @Override
-    public String toString() {
-
-      return Resources.getString("SENSORTYPE_" + this.name());
+        return this.port;
     }
-  }
 
-  private Nxt brick;
-  private Port port;
-  private Type type;
-  private Mode mode;
+    public void setType(Type type, Mode mode)
+            throws IOException {
 
-
-  public Sensor(Nxt brick, Port port) {
-
-    if (brick == null) {
-      throw new IllegalArgumentException();
+        this.brick.setSensorType(this.port.id, type, mode, 0);
+        this.type = type;
+        this.mode = mode;
     }
-    if (port == null) {
-      throw new IllegalArgumentException();
+
+    public int getValue()
+            throws IOException {
+
+        Type type = this.getType();
+        if ((type == Type.I2C) || (type == Type.I2C_9V)) {
+            return this.getI2CValue();
+        } else {
+            return this.brick.getSensorValue(this.port.id);
+        }
     }
-    this.brick = brick;
-    this.port = port;
-    this.type = null;
-    this.mode = null;
-  }
 
+    public int getRawValue()
+            throws IOException {
 
-  public Port getPort() {
-
-    return this.port;
-  }
-
-
-  public void setType(Type type, Mode mode)
-      throws IOException {
-
-    this.brick.setSensorType(this.port.id, type, mode, 0);
-    this.type = type;
-    this.mode = mode;
-  }
-
-
-  public int getValue()
-      throws IOException {
-
-    Type type = this.getType();
-    if ((type == Type.I2C) || (type == Type.I2C_9V)) {
-      return this.getI2CValue();
+        Type type = this.getType();
+        if ((type == Type.I2C) || (type == Type.I2C_9V)) {
+            return this.getI2CValue();
+        } else {
+            return this.brick.getSensorRawValue(this.port.id);
+        }
     }
-    else {
-      return this.brick.getSensorValue(this.port.id);
+
+    private int getI2CValue()
+            throws IOException {
+
+        // initialize for one shot reading
+        this.brick.lsRead(this.port.id, new byte[]{0x02, 0x41, 0x01}, 0);
+
+        // this sleeping time is needed for the ultra-sonic sensor.
+        try {
+            Thread.sleep(40);
+        } catch (InterruptedException exn) {
+            exn.printStackTrace();
+        }
+        byte[] answer
+                = this.brick.lsRead(this.port.id, new byte[]{0x02, 0x42}, 1);
+        return answer[Math.min(4, answer.length - 1)] & 0xFF;
     }
-  }
 
+    public Type getType()
+            throws IOException {
 
-  public int getRawValue()
-      throws IOException {
-
-    Type type = this.getType();
-    if ((type == Type.I2C) || (type == Type.I2C_9V)) {
-      return this.getI2CValue();
+        if (this.type != null) {
+            return this.type;
+        } else {
+            return this.brick.getSensorType(this.port.id);
+        }
     }
-    else {
-      return this.brick.getSensorRawValue(this.port.id);
+
+    public Mode getMode()
+            throws IOException {
+
+        if (this.mode != null) {
+            return this.mode;
+        } else {
+            return this.brick.getSensorMode(this.port.id);
+        }
     }
-  }
-
-
-  private int getI2CValue()
-      throws IOException {
-
-    // initialize for one shot reading
-    this.brick.lsRead(this.port.id, new byte[] { 0x02, 0x41, 0x01 }, 0);
-
-    // this sleeping time is needed for the ultra-sonic sensor.
-    try {
-      Thread.sleep(40);
-    } catch (InterruptedException exn) {
-      exn.printStackTrace();
-    }
-    byte[] answer =
-      this.brick.lsRead(this.port.id, new byte[] { 0x02, 0x42 }, 1);
-    return answer[Math.min(4, answer.length - 1)] & 0xFF;
-  }
-
-
-  public Type getType()
-      throws IOException {
-
-    if (this.type != null) {
-      return this.type;
-    }
-    else {
-      return this.brick.getSensorType(this.port.id);
-    }
-  }
-
-
-  public Mode getMode()
-      throws IOException {
-
-    if (this.mode != null) {
-      return this.mode;
-    }
-    else {
-      return this.brick.getSensorMode(this.port.id);
-    }
-  }
 }

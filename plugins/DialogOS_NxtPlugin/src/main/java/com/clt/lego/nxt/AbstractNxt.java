@@ -17,6 +17,11 @@ import com.clt.lego.BrickUtils;
 import com.clt.util.Platform;
 
 /**
+ * Central class for communicating with the Lego Mindstorms NXT brick.
+ * This class implements a number of high-level methods. The low-level
+ * implementation of the communication with the brick are left to
+ * concrete subclasses, such as {@link NxtSerial}.
+ * 
  * @author dabo
  *
  */
