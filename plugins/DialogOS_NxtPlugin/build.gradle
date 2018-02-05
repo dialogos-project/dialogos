@@ -1,6 +1,5 @@
 dependencies {
   compile project(':Diamant')
   compile project(':com.clt.base')
-
-//  compile name: 'nxt'
+  compile project(':com.clt.lego')
 }

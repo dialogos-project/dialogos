@@ -11,9 +11,9 @@
  * it only in accordance with the terms of the license agreement
  * you entered into with CLT Sprachtechnologie GmbH.
  */
-
 package com.clt.dialogos.lego.nxt;
 
+import com.clt.diamant.ExecutionLogger;
 import java.awt.Color;
 import java.util.Map;
 
@@ -29,76 +29,56 @@ import com.clt.xml.XMLWriter;
 
 /**
  * @author Daniel Bobbert
- * 
+ *
  */
-public abstract class Node
-    extends com.clt.diamant.graph.Node {
+public abstract class Node extends com.clt.diamant.graph.Node {
+    private static final boolean LEGO_NODE_UI = false;
 
-  private static final boolean LEGO_NODE_UI = false;
-
-
-  public Node() {
-
-    super();
-  }
-
-
-  public static Color getDefaultColor() {
-
-    return new Color(64, 64, 64);
-  }
-
-
-  @Override
-  protected JComponent createEditorComponent(Map<String, Object> properties) {
-
-    return this.createEditorComponentImpl(properties);
-  }
-
-
-  protected abstract JComponent createEditorComponentImpl(
-      Map<String, Object> properties);
-
-
-  @Override
-  public com.clt.diamant.graph.Node execute(WozInterface comm, InputCenter input) {
-
-    int edge = this.executeNXT(comm);
-    return this.getEdge(edge).getTarget();
-  }
-
-
-  protected abstract int executeNXT(WozInterface comm);
-
-
-  @Override
-  public UIElement createUI(GraphUI graphUI, MouseInputListener viewScroller) {
-
-    if (Node.LEGO_NODE_UI) {
-      return new LegoNodeUI(graphUI, this, viewScroller);
+    public Node() {
+        super();
     }
-    else {
-      return super.createUI(graphUI, viewScroller);
+
+    public static Color getDefaultColor() {
+        return new Color(64, 64, 64);
     }
-  }
 
-
-  @Override
-  protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-    // no VoiceXML support
-  }
-
-
-  public static String getNodeTypeName(Class<?> c) {
-
-    String name = c.getName();
-    // cut off package name
-    name = name.substring(name.lastIndexOf('.') + 1);
-    if (name.endsWith("Node")) {
-      name = name.substring(0, name.length() - 4);
+    @Override
+    protected JComponent createEditorComponent(Map<String, Object> properties) {
+        return this.createEditorComponentImpl(properties);
     }
-    return Resources.getString(name);
-  }
+
+    protected abstract JComponent createEditorComponentImpl(Map<String, Object> properties);
+
+    @Override
+    public com.clt.diamant.graph.Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger) {
+        int edge = this.executeNXT(comm);
+        return this.getEdge(edge).getTarget();
+    }
+
+    protected abstract int executeNXT(WozInterface comm);
+
+    @Override
+    public UIElement createUI(GraphUI graphUI, MouseInputListener viewScroller) {
+        if (Node.LEGO_NODE_UI) {
+            return new LegoNodeUI(graphUI, this, viewScroller);
+        } else {
+            return super.createUI(graphUI, viewScroller);
+        }
+    }
+
+    @Override
+    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+        // no VoiceXML support
+    }
+
+    public static String getNodeTypeName(Class<?> c) {
+        String name = c.getName();
+        // cut off package name
+        name = name.substring(name.lastIndexOf('.') + 1);
+        if (name.endsWith("Node")) {
+            name = name.substring(0, name.length() - 4);
+        }
+        return Resources.getString(name);
+    }
 
 }
