@@ -1,1 +1,0 @@
-com.clt.dialogos.lego.nxt.Plugin

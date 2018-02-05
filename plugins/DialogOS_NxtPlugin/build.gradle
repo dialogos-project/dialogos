@@ -1,0 +1,6 @@
+dependencies {
+  compile project(':Diamant')
+  compile project(':com.clt.base')
+
+//  compile name: 'nxt'
+}

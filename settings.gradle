@@ -14,3 +14,6 @@ include 'plugins:exampleplugin'
 include 'plugins:DialogOS_MaryTTSPlugin'
 include 'plugins:DialogOS_PocketSphinxPlugin'
 
+
+include 'com.clt.lego'
+include 'plugins:DialogOS_NxtPlugin'
