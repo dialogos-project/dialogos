@@ -1,16 +1,3 @@
-/*
- * @(#)AbstractNxt.java
- * Created on 12.04.2007 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.lego.nxt;
 
 import java.awt.Component;
@@ -33,7 +20,10 @@ import com.clt.lego.BrickUtils;
  *
  */
 public abstract class AbstractNxt implements Nxt {
+
     private final Object programExecutionLock = new Object();
+
+    abstract protected byte[] sendDirectCommand(byte[] command, int expectedResponseSize) throws IOException;
 
     public static Collection<BrickDescription<? extends Nxt>> getAvailableBricks(Component parent, ProgressListener progress, AtomicBoolean cancel, PrintWriter log) {
         Collection<BrickDescription<? extends Nxt>> infos = new ArrayList<BrickDescription<? extends Nxt>>();
@@ -43,8 +33,7 @@ public abstract class AbstractNxt implements Nxt {
             progress.progressChanged(evt);
         }
 
-        Collection<BrickFactory<? extends Nxt>> factories
-                = new ArrayList<BrickFactory<? extends Nxt>>();
+        Collection<BrickFactory<? extends Nxt>> factories = new ArrayList<BrickFactory<? extends Nxt>>();
         try {
             factories.add(NxtFantom.getFactory());
         } catch (Exception exn) {
@@ -57,8 +46,7 @@ public abstract class AbstractNxt implements Nxt {
      * System.err.println(exn); }
          */
 
-        Map<BrickFactory<? extends Nxt>, String[]> ports
-                = new HashMap<BrickFactory<? extends Nxt>, String[]>();
+        Map<BrickFactory<? extends Nxt>, String[]> ports = new HashMap<BrickFactory<? extends Nxt>, String[]>();
         int numPorts = 0;
         for (BrickFactory<? extends Nxt> factory : factories) {
             if (cancel.get()) {
@@ -107,20 +95,13 @@ public abstract class AbstractNxt implements Nxt {
     }
 
     @Override
-    protected void finalize()
-            throws Throwable {
-
+    protected void finalize() throws Throwable {
         this.close();
         super.finalize();
     }
 
-    abstract protected byte[] sendDirectCommand(byte[] command,
-            int expectedResponseSize)
-            throws IOException;
-
-    public int getBatteryLevel()
-            throws IOException {
-
+    @Override
+    public int getBatteryLevel() throws IOException {
         byte[] answer = this.sendDirectCommand(new byte[]{0x0B}, 3);
         AbstractNxt.checkStatus(answer);
 
@@ -134,21 +115,21 @@ public abstract class AbstractNxt implements Nxt {
      * @param duration the duration in ms
      * @throws IOException
      */
-    public void playTone(int frequency, int duration)
-            throws IOException {
-
+    @Override
+    public void playTone(int frequency, int duration) throws IOException {
         this.playTone(frequency, duration, true);
     }
 
-    public void playTone(int frequency, int duration, boolean wait)
-            throws IOException {
-
+    @Override
+    public void playTone(int frequency, int duration, boolean wait) throws IOException {
         if (frequency > 0xFFFF) {
             throw new IllegalArgumentException("Frequency out of range: " + frequency);
         }
+        
         if (duration > 0xFFFF) {
             throw new IllegalArgumentException("Frequency out of range: " + frequency);
         }
+        
         this.sendDirectCommand(new byte[]{0x03, (byte) (frequency & 0xff),
             (byte) (frequency >> 8),
             (byte) (duration & 0xff), (byte) (duration >> 8)}, 0);
@@ -162,14 +143,12 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    public void playSoundFile(String filename, boolean loop)
-            throws IOException {
-
+    @Override
+    public void playSoundFile(String filename, boolean loop) throws IOException {
         int dot = filename.indexOf(".");
         if (dot > 0) {
             if (!filename.substring(dot).equals(Nxt.SOUND_EXTENSION)) {
-                throw new IllegalArgumentException("Illegal sound file name: "
-                        + filename);
+                throw new IllegalArgumentException("Illegal sound file name: " + filename);
             }
         } else {
             filename += Nxt.SOUND_EXTENSION;
@@ -193,15 +172,13 @@ public abstract class AbstractNxt implements Nxt {
         AbstractNxt.checkStatus(answer);
     }
 
-    public void stopSoundPlayback()
-            throws IOException {
-
+    @Override
+    public void stopSoundPlayback() throws IOException {
         this.sendDirectCommand(new byte[]{0x0C}, 0);
     }
 
-    public long keepAlive()
-            throws IOException {
-
+    @Override
+    public long keepAlive() throws IOException {
         if (true) {
             return -1;
         }
@@ -218,9 +195,8 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    public void startProgram(String filename)
-            throws IOException {
-
+    @Override
+    public void startProgram(String filename) throws IOException {
         int dot = filename.indexOf(".");
         if (dot > 0) {
             if (!filename.substring(dot).equals(Nxt.PROGRAM_EXTENSION)) {
@@ -249,9 +225,8 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    public boolean stopProgram()
-            throws IOException {
-
+    @Override
+    public boolean stopProgram() throws IOException {
         synchronized (this.programExecutionLock) {
             byte[] answer = this.sendDirectCommand(new byte[]{0x01}, 1);
             if (answer[0] == MessageStatusException.NO_ACTIVE_PROGRAM) {
@@ -263,9 +238,8 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    public String getCurrentProgram()
-            throws IOException {
-
+    @Override
+    public String getCurrentProgram() throws IOException {
         byte[] answer = this.sendDirectCommand(new byte[]{0x11}, 21);
         if (answer[0] == (byte) 0xEC) {
             // no active program
@@ -277,10 +251,9 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    public void runProgram(String filename)
-            throws IOException {
-
+    public void runProgram(String filename) throws IOException {
         this.startProgram(filename);
+        
         try {
             while (this.getCurrentProgram() != null) {
                 Thread.sleep(50);
@@ -290,13 +263,12 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    public void setSensorType(int sensor, Sensor.Type type, Sensor.Mode mode,
-            int slope)
-            throws IOException {
-
+    @Override
+    public void setSensorType(int sensor, Sensor.Type type, Sensor.Mode mode, int slope) throws IOException {
         if ((sensor < 0) || (sensor > 3)) {
             throw new IllegalArgumentException("Illegal RCX sensor");
         }
+        
         if ((slope < 0) || (slope > 31)) {
             throw new IllegalArgumentException("Illegal slope for RCX sensor mode");
         }
@@ -304,22 +276,19 @@ public abstract class AbstractNxt implements Nxt {
         int code = mode.getValue() + slope;
 
         // set type and mode
-        byte[] answer
-                = this.sendDirectCommand(new byte[]{0x05, (byte) sensor,
+        byte[] answer = this.sendDirectCommand(new byte[]{0x05, (byte) sensor,
             (byte) type.getValue(),
             (byte) code}, 1);
         AbstractNxt.checkStatus(answer);
     }
 
-    public Sensor.Type getSensorType(int sensor)
-            throws IOException {
-
+    @Override
+    public Sensor.Type getSensorType(int sensor) throws IOException {
         if ((sensor < 0) || (sensor > 3)) {
             throw new IllegalArgumentException("Illegal NXT sensor");
         }
 
-        byte[] answer
-                = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
+        byte[] answer = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
         AbstractNxt.checkStatus(answer);
 
         int type = (int) BrickUtils.readNum(answer, 4, 1, false);
@@ -331,19 +300,16 @@ public abstract class AbstractNxt implements Nxt {
         return null;
     }
 
-    public Sensor.Mode getSensorMode(int sensor)
-            throws IOException {
-
+    @Override
+    public Sensor.Mode getSensorMode(int sensor) throws IOException {
         if ((sensor < 0) || (sensor > 3)) {
             throw new IllegalArgumentException("Illegal NXT sensor");
         }
 
-        byte[] answer
-                = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
+        byte[] answer = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
         AbstractNxt.checkStatus(answer);
 
-        int mode
-                = (int) BrickUtils.readNum(answer, 5, 1, false) & Sensor.Mode.MODE_MASK;
+        int mode = (int) BrickUtils.readNum(answer, 5, 1, false) & Sensor.Mode.MODE_MASK;
         for (Sensor.Mode m : Sensor.Mode.values()) {
             if (m.getValue() == mode) {
                 return m;
@@ -352,37 +318,32 @@ public abstract class AbstractNxt implements Nxt {
         return null;
     }
 
-    public int getSensorValue(int sensor)
-            throws IOException {
-
+    @Override
+    public int getSensorValue(int sensor) throws IOException {
         if ((sensor < 0) || (sensor > 3)) {
             throw new IllegalArgumentException("Illegal RCX sensor");
         }
 
-        byte[] answer
-                = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
+        byte[] answer = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
         AbstractNxt.checkStatus(answer);
 
         return (int) BrickUtils.readNum(answer, 10, 2, false);
     }
 
-    public int getSensorRawValue(int sensor)
-            throws IOException {
-
+    @Override
+    public int getSensorRawValue(int sensor) throws IOException {
         if ((sensor < 0) || (sensor > 3)) {
             throw new IllegalArgumentException("Illegal RCX sensor");
         }
 
-        byte[] answer
-                = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
+        byte[] answer = this.sendDirectCommand(new byte[]{0x07, (byte) sensor}, 14);
         AbstractNxt.checkStatus(answer);
 
         return (int) BrickUtils.readNum(answer, 6, 2, false);
     }
 
-    public byte[] lsRead(int sensor, byte[] data, int expectedResultSize)
-            throws IOException {
-
+    @Override
+    public byte[] lsRead(int sensor, byte[] data, int expectedResultSize) throws IOException {
         if ((sensor < 0) || (sensor > 3)) {
             throw new IllegalArgumentException("Illegal RCX sensor");
         }
@@ -435,19 +396,18 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    public void resetMotorPosition(Motor.Port motor, boolean relative)
-            throws IOException {
-
+    @Override
+    public void resetMotorPosition(Motor.Port motor, boolean relative) throws IOException {
         if (motor == null) {
             throw new IllegalArgumentException();
         }
 
-        byte[] answer
-                = this.sendDirectCommand(new byte[]{0x0A, (byte) motor.getID(),
+        byte[] answer = this.sendDirectCommand(new byte[]{0x0A, (byte) motor.getID(),
             (byte) (relative ? 0x01 : 0x00)}, 1);
         AbstractNxt.checkStatus(answer);
     }
 
+    @Override
     public void setOutputState(Motor.Port motor, int power, int mode,
             Motor.Regulation regulation,
             int turnRatio, Motor.State state, long tachoLimit)
@@ -476,15 +436,13 @@ public abstract class AbstractNxt implements Nxt {
         AbstractNxt.checkStatus(answer);
     }
 
-    public MotorState getOutputState(Motor.Port motor)
-            throws IOException {
-
+    @Override
+    public MotorState getOutputState(Motor.Port motor) throws IOException {
         if (motor == null) {
             throw new IllegalArgumentException();
         }
 
-        byte[] answer
-                = this.sendDirectCommand(new byte[]{0x06, (byte) motor.getID()}, 23);
+        byte[] answer = this.sendDirectCommand(new byte[]{0x06, (byte) motor.getID()}, 23);
         AbstractNxt.checkStatus(answer);
 
         int power = (int) BrickUtils.readNum(answer, 2, 1, false);
@@ -502,9 +460,8 @@ public abstract class AbstractNxt implements Nxt {
                 blockTachoCount, rotationCount);
     }
 
-    public void sendMessage(int mailbox, String message)
-            throws IOException {
-
+    @Override
+    public void sendMessage(int mailbox, String message) throws IOException {
         if ((mailbox < 0) || (mailbox > 9)) {
             throw new IllegalArgumentException("Illegal mailbox id");
         }
@@ -538,9 +495,7 @@ public abstract class AbstractNxt implements Nxt {
         }
     }
 
-    protected static void checkStatus(byte[] answer)
-            throws IOException {
-
+    protected static void checkStatus(byte[] answer) throws IOException {
         byte result = answer[0];
         if (result != 0) {
             throw new MessageStatusException(result);

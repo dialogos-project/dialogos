@@ -1,5 +1,6 @@
 dependencies {
     compile project(':com.clt.base')
 
-    compile group: 'org.rxtx', name: 'rxtx', version: '2.1.7'
+//    compile group: 'org.rxtx', name: 'rxtx', version: '2.1.7'
+    compile "com.github.purejavacomm:purejavacomm:1.0.1.RELEASE"
 }
