@@ -359,7 +359,7 @@ public class NxtSerial extends AbstractNxt {
         };
     }
 
-    private static class Description extends BrickDescription<Nxt> {
+    public static class Description extends BrickDescription<Nxt> {
 
         public Description(String uri, NxtDeviceInfo brickInfo, InterfaceType type, String port) {
             super(uri, brickInfo, type, port);
