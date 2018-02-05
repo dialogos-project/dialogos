@@ -14,6 +14,8 @@
 package com.clt.lego;
 
 import com.clt.resources.DynamicResourceBundle;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author dabo
@@ -29,13 +31,17 @@ public class BrickUtils {
      * Return a localized version of the given string.
      */
     public static String getString(String key) {
-
         return BrickUtils.resources.getString(key);
     }
+    
+    public static long readNum(InputStream is, int length, boolean bigEndian) throws IOException {
+        byte[] data = new byte[length];
+        is.read(data);
+        
+        return readNum(data, 0, length, bigEndian);
+    }
 
-    public static long readNum(byte[] bytes, int offset, int length,
-            boolean bigEndian) {
-
+    public static long readNum(byte[] bytes, int offset, int length, boolean bigEndian) {
         long sum = 0;
         if (bigEndian) {
             for (int i = offset; i < offset + length; i++) {

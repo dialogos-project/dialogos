@@ -16,6 +16,7 @@ import com.clt.lego.SerialPort;
  *
  */
 public class NxtSerial extends AbstractNxt {
+
     private SerialPort port;
 
     private NxtSerial(String port) throws IOException {
@@ -52,105 +53,144 @@ public class NxtSerial extends AbstractNxt {
             cmd[0] = (byte) (msgSize & 0xFF);
             cmd[1] = (byte) (msgSize >>> 8);
         }
-        
+
         cmd[offset] = expectedResponseSize > 0 ? (byte) 0x00 : (byte) 0x80;
         System.arraycopy(command, 0, cmd, offset + 1, command.length);
 
         this.port.getOutputStream().write(cmd);
 
         if (expectedResponseSize > 0) {
-            byte[] response = new byte[expectedResponseSize];
-            int answer = this.port.getInputStream().read();
-            if (answer != 0x02) {
-                throw new IOException();
+            byte[] response = readResponse();
+            
+            if( response.length != expectedResponseSize + 2 ) {
+                throw new IOException("Received response of invalid length: expected " + (expectedResponseSize+2) + ", got " + response.length);
             }
-            answer = this.port.getInputStream().read();
-            if (answer != command[0]) {
-                throw new IOException("First byte of answer is not the command id");
+            
+            if( response[0] != 2 ) {
+                throw new IOException("Invalid first byte in response: expected 2, got " + response[0]);
             }
-            this.port.getInputStream().read(response);
-            return response;
+            
+            if( response[1] != command[0] ) {
+                throw new IOException("First byte of answer is not the command ID");
+            }
+            
+            byte[] ret = new byte[expectedResponseSize];
+            System.arraycopy(response, 2, ret, 0, expectedResponseSize);
+            
+            return ret;
         } else {
             return null;
         }
     }
-
-    public NxtDeviceInfo getDeviceInfo()
-            throws IOException {
-
+    
+    private byte[] send(int d1, int d2) throws IOException {
         if (this.getInterfaceType() == InterfaceType.Bluetooth) {
-            this.port.getOutputStream().write(
-                    new byte[]{0x02, 0x00, 0x01, (byte) 0x9B});
+            this.port.getOutputStream().write(new byte[]{0x02, 0x00, (byte) d1, (byte) d2});
         } else {
-            this.port.getOutputStream().write(new byte[]{0x01, (byte) 0x9B});
+            this.port.getOutputStream().write(new byte[]{(byte) d1, (byte) d2});
         }
+        
+        return readResponse();
+    }
+    
+    private byte[] readResponse() throws IOException {
+        int responseLength = (int) BrickUtils.readNum(port.getInputStream(), 2, false);
+        byte[] response = new byte[responseLength];
+        port.getInputStream().read(response);
+        
+        return response;
+    }
 
-        int answer = this.port.getInputStream().read();
-        if (answer != 0x02) {
-            throw new IOException();
+    /**
+     * Reads the device info from a connected NXT brick. If this fails,
+     * e.g. because the connected device is not an NXT brick or it does
+     * not use the current protocol version (1.124), the method returns null.
+     * 
+     * @return
+     * @throws IOException 
+     */
+    @Override
+    public NxtDeviceInfo getDeviceInfo() throws IOException {
+        byte[] infoResponse = send(0x01, NxtConstants.GET_DEVICE_INFO);
+        
+        if( infoResponse.length == 0 ) {
+            return null;
         }
-        answer = this.port.getInputStream().read();
-        if (answer != 0x9B) {
-            throw new IOException("First byte of answer is not the command id");
+        
+        if( infoResponse.length != 33 ) {
+            throw new IOException("Invalid response from NXT brick of length " + infoResponse.length);
         }
-
-        byte[] response = new byte[31];
-        this.port.getInputStream().read(response);
-        AbstractNxt.checkStatus(response);
-
-        String name = BrickUtils.readString(response, 1, 16);
+        
+        String name = BrickUtils.readString(infoResponse, 3, 16);  // name of device
+        
         byte[] bluetoothAddress = new byte[6];
-        System.arraycopy(response, 17, bluetoothAddress, 0, 6);
+        System.arraycopy(infoResponse, 18, bluetoothAddress, 0, 6);
+        
         int[] signalStrength = new int[4];
         for (int i = 0; i < 4; i++) {
-            signalStrength[i] = response[23 + i];
+            signalStrength[i] = infoResponse[25 + i];
             if (signalStrength[i] < 0) {
                 signalStrength[i] += 256;
             }
         }
-        int memory = (int) BrickUtils.readNum(response, 27, 4, false);
-
-        if (this.getInterfaceType() == InterfaceType.Bluetooth) {
-            this.port.getOutputStream().write(
-                    new byte[]{0x02, 0x00, 0x01, (byte) 0x88});
-        } else {
-            this.port.getOutputStream().write(new byte[]{0x01, (byte) 0x88});
+        
+        int memory = (int) BrickUtils.readNum(infoResponse, 29, 4, false);
+        
+        
+        byte[] firmwareResponse = send(0x01, NxtConstants.GET_FIRMWARE_VERSION);
+        int protocol = (int) BrickUtils.readNum(firmwareResponse, 3, 2, false);
+        int firmware = (int) BrickUtils.readNum(firmwareResponse, 5, 2, false);
+        
+        return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory, firmware, protocol);
+    }
+    
+    private void hexdump(byte[] data) {
+        for( int i = 0; i < data.length; i++ ) {
+            int val = data[i];
+            
+            if( val < 0 ) {
+                val += 256;
+            }
+            
+            System.err.printf("%d: %d\thex %s\tchar %c\n", i, val, Integer.toHexString(val), val);
         }
-
-        answer = this.port.getInputStream().read();
-        if (answer != 0x02) {
-            throw new IOException();
-        }
-        answer = this.port.getInputStream().read();
-        if (answer != 0x88) {
-            throw new IOException("First byte of answer is not the command id");
-        }
-
-        response = new byte[31];
-        this.port.getInputStream().read(response);
-        AbstractNxt.checkStatus(response);
-
-        int protocol = (int) BrickUtils.readNum(response, 1, 2, false);
-        int firmware = (int) BrickUtils.readNum(response, 3, 2, false);
-
-        return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory,
-                firmware, protocol);
     }
 
-    public String[] getPrograms()
-            throws IOException {
-
+    /**
+     * Returns the list of all programs that are installed on the NXT.
+     * This method is currently broken (see issue #33).
+     * 
+     * @return
+     * @throws IOException 
+     */
+    @Override
+    public String[] getPrograms() throws IOException {
         // find first
         byte[] findFirst = new byte[22];
         findFirst[0] = 0x01;
-        findFirst[1] = (byte) 0x86;
+        findFirst[1] = (byte) 86;
         findFirst[2] = (byte) '*';
+//        findFirst[3] = (byte) '.';
+//        findFirst[4] = (byte) '*';
+//        findFirst[5] = (byte) 0;
+
         for (int i = 0; i < Nxt.PROGRAM_EXTENSION.length(); i++) {
             findFirst[3 + i] = (byte) Nxt.PROGRAM_EXTENSION.charAt(i);
         }
         findFirst[3 + Nxt.PROGRAM_EXTENSION.length()] = 0;
+        
+        hexdump(findFirst);
+        
+        port.getOutputStream().write((byte) 2);
+        port.getOutputStream().write((byte) 0);
         this.port.getOutputStream().write(findFirst);
+        
+//        hexdump(readResponse());
+        
+        
+        return new String[0];
 
+        /*
         int answer = this.port.getInputStream().read();
         if (answer != 0x02) {
             throw new IOException();
@@ -193,10 +233,11 @@ public class NxtSerial extends AbstractNxt {
         }
 
         return files.toArray(new String[files.size()]);
+*/
     }
 
-    public String[] getModules()
-            throws IOException {
+    @Override
+    public String[] getModules() throws IOException {
 
         // find first
         byte[] findFirst = new byte[22];
@@ -276,11 +317,9 @@ public class NxtSerial extends AbstractNxt {
         throw new UnsupportedOperationException();
     }
 
-    private static void link()
-            throws IOException {
-
+    private static void link() throws IOException {
         try {
-            NxtSerial.class.getClassLoader().loadClass("gnu.io.CommPort");
+            NxtSerial.class.getClassLoader().loadClass("purejavacomm.CommPort");
         } catch (Throwable error) {
             String msg = error.getLocalizedMessage();
             if ((msg != null) && (msg.length() > 0)) {
@@ -291,33 +330,24 @@ public class NxtSerial extends AbstractNxt {
         }
     }
 
-    private static NxtSerial createBrick(Component parent, String uri)
-            throws IOException {
-
+    private static NxtSerial createBrick(Component parent, String uri) throws IOException {
         return new NxtSerial(uri);
     }
 
-    public static BrickFactory<Nxt> getFactory()
-            throws IOException {
-
+    public static BrickFactory<Nxt> getFactory() throws IOException {
         NxtSerial.link();
 
         return new BrickFactory<Nxt>() {
-
             public String[] getAvailablePorts() {
-
                 return SerialPort.getAvailablePorts();
             }
 
-            public BrickDescription<Nxt> getBrickInfo(Component parent, String port)
-                    throws IOException {
-
+            public BrickDescription<Nxt> getBrickInfo(Component parent, String port) throws IOException {
                 Nxt nxt = NxtSerial.createBrick(parent, port);
                 BrickDescription<Nxt> info;
                 try {
                     InterfaceType type = nxt.getInterfaceType();
-                    info
-                            = new Description(port, nxt.getDeviceInfo(), type, nxt.getPort());
+                    info = new Description(port, nxt.getDeviceInfo(), type, nxt.getPort());
                 } finally {
                     nxt.close();
                 }
@@ -326,20 +356,42 @@ public class NxtSerial extends AbstractNxt {
         };
     }
 
-    private static class Description
-            extends BrickDescription<Nxt> {
+    private static class Description extends BrickDescription<Nxt> {
 
-        public Description(String uri, NxtDeviceInfo brickInfo, InterfaceType type,
-                String port) {
-
+        public Description(String uri, NxtDeviceInfo brickInfo, InterfaceType type, String port) {
             super(uri, brickInfo, type, port);
         }
 
         @Override
-        protected NxtSerial createBrickImpl(Component parent)
-                throws IOException {
-
+        protected NxtSerial createBrickImpl(Component parent) throws IOException {
             return NxtSerial.createBrick(parent, this.getURI());
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        for (String port : SerialPort.getAvailablePorts()) {
+            NxtSerial nx = null;
+            if (port.contains("NXT") && port.startsWith("cu")) {
+                try {
+                    System.err.println("\n\n\n");
+                    System.err.println(port);
+                    nx = new NxtSerial(port);
+                    NxtDeviceInfo info = nx.getDeviceInfo();
+                    System.out.println(info);
+                    
+//                    nx.getPrograms();
+//                    nx.playTone(440, 1000);
+                    nx.startProgram("Unbenannt-1");
+                    
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                } finally {
+                    if (nx != null) {
+                        nx.close();
+                    }
+                }
+            }
         }
     }
 

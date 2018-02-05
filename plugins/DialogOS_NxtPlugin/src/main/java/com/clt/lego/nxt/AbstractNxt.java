@@ -14,6 +14,7 @@ import com.clt.event.ProgressListener;
 import com.clt.lego.BrickDescription;
 import com.clt.lego.BrickFactory;
 import com.clt.lego.BrickUtils;
+import com.clt.util.Platform;
 
 /**
  * @author dabo
@@ -35,16 +36,12 @@ public abstract class AbstractNxt implements Nxt {
 
         Collection<BrickFactory<? extends Nxt>> factories = new ArrayList<BrickFactory<? extends Nxt>>();
         try {
-            factories.add(NxtFantom.getFactory());
+            factories.add(NxtSerial.getFactory());
         } catch (Exception exn) {
             if (log != null) {
                 log.println(exn);
             }
         }
-        /*
-     * try { factories.add(NxtSerial.getFactory()); } catch (Exception exn) {
-     * System.err.println(exn); }
-         */
 
         Map<BrickFactory<? extends Nxt>, String[]> ports = new HashMap<BrickFactory<? extends Nxt>, String[]>();
         int numPorts = 0;
@@ -55,9 +52,11 @@ public abstract class AbstractNxt implements Nxt {
 
             try {
                 String[] p = factory.getAvailablePorts();
+
                 if (p != null) {
                     numPorts += p.length;
                     ports.put(factory, p);
+                } else {
                 }
             } catch (Exception exn) {
                 if (log != null) {
@@ -70,15 +69,28 @@ public abstract class AbstractNxt implements Nxt {
 
         for (BrickFactory<? extends Nxt> factory : ports.keySet()) {
             for (final String port : ports.get(factory)) {
+                // On MacOS, all serial ports that are meant for outgoing connections
+                // have a name starting with "cu." (as opposed to "tty.". Skip the
+                // others, to avoid duplicate copies of the NXT brick in the GUI.
+                if( Platform.isMac() && ! port.startsWith("cu.")) {
+                    continue;
+                }
+
                 if (cancel.get()) {
                     break;
                 }
+
                 evt.setMessage(port);
+
                 if (progress != null) {
                     progress.progressChanged(evt);
                 }
                 try {
-                    infos.add(factory.getBrickInfo(parent, port));
+                    BrickDescription<? extends Nxt> info = factory.getBrickInfo(parent, port);
+
+                    if (info != null) {
+                        infos.add(info);
+                    }
                 } catch (Exception exn) {
                     if (log != null) {
                         log.println(exn);
@@ -125,11 +137,11 @@ public abstract class AbstractNxt implements Nxt {
         if (frequency > 0xFFFF) {
             throw new IllegalArgumentException("Frequency out of range: " + frequency);
         }
-        
+
         if (duration > 0xFFFF) {
             throw new IllegalArgumentException("Frequency out of range: " + frequency);
         }
-        
+
         this.sendDirectCommand(new byte[]{0x03, (byte) (frequency & 0xff),
             (byte) (frequency >> 8),
             (byte) (duration & 0xff), (byte) (duration >> 8)}, 0);
@@ -253,7 +265,7 @@ public abstract class AbstractNxt implements Nxt {
 
     public void runProgram(String filename) throws IOException {
         this.startProgram(filename);
-        
+
         try {
             while (this.getCurrentProgram() != null) {
                 Thread.sleep(50);
@@ -268,7 +280,7 @@ public abstract class AbstractNxt implements Nxt {
         if ((sensor < 0) || (sensor > 3)) {
             throw new IllegalArgumentException("Illegal RCX sensor");
         }
-        
+
         if ((slope < 0) || (slope > 31)) {
             throw new IllegalArgumentException("Illegal slope for RCX sensor mode");
         }

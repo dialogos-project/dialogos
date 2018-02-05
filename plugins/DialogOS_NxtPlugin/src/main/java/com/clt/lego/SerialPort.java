@@ -1,11 +1,5 @@
 package com.clt.lego;
 
-//import gnu.io.CommPort;
-//import gnu.io.CommPortIdentifier;
-//import gnu.io.NoSuchPortException;
-//import gnu.io.PortInUseException;
-//import gnu.io.UnsupportedCommOperationException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +33,7 @@ public class SerialPort {
         } catch (NoSuchPortException exn) {
             throw new IOException("Unknown port " + portName);
         }
-        
+
         if (this.portIdentifier.getPortType() != CommPortIdentifier.PORT_SERIAL) {
             throw new IOException(portName + " is not a serial port");
         }
@@ -60,22 +54,19 @@ public class SerialPort {
     }
 
     public void open(int baudRate, int dataBits, int stopBits, int parity) throws IOException {
-
         if (this.portIdentifier.isCurrentlyOwned()) {
-            throw new IOException("Port is currently in use by "
-                    + this.portIdentifier.getCurrentOwner());
+            throw new IOException("Port is currently in use by " + this.portIdentifier.getCurrentOwner());
         } else {
             CommPort port;
             try {
-                port = this.portIdentifier.open(this.portIdentifier.getName(),
-                                SerialPort.CONNECTION_TIMEOUT);
+                port = this.portIdentifier.open(this.portIdentifier.getName(), SerialPort.CONNECTION_TIMEOUT);
             } catch (PortInUseException exn) {
-                throw new IOException("Port is already in use by "
-                        + this.portIdentifier.getCurrentOwner());
+                throw new IOException("Port is already in use by " + this.portIdentifier.getCurrentOwner());
             }
-            
+
             if (port instanceof purejavacomm.SerialPort) {
-                purejavacomm.SerialPort serialPort = (purejavacomm.SerialPort) port;
+                this.serialPort = (purejavacomm.SerialPort) port; // AKAKAK
+                
                 try {
                     serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);
                     serialPort.enableReceiveTimeout(SerialPort.CONNECTION_TIMEOUT);
@@ -83,7 +74,7 @@ public class SerialPort {
                     port.close();
                     throw new IOException("Unsupported port parameters");
                 }
-                
+
                 // This allows NXT programs to be run without resetting NXT each time.
                 serialPort.setRTS(true);
                 serialPort.setDTR(true);
@@ -107,13 +98,13 @@ public class SerialPort {
 
     public void close() {
         this.serialPort.close();
-        
+
         try {
             this.in.close();
         } catch (IOException exn) {
             // ignore
         }
-        
+
         try {
             this.out.close();
         } catch (IOException exn) {
@@ -129,13 +120,48 @@ public class SerialPort {
                 ports.add(info.getName());
             }
         }
-        
+
         return ports.toArray(new String[ports.size()]);
     }
-    
-    public static void main(String[] args) {
-        for( String x : getAvailablePorts()) {
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        for (String x : getAvailablePorts()) {
+            System.err.println("\n\n");
             System.err.println(x);
+
+            if (x.contains("NXT")) {
+                SerialPort sp = new SerialPort(x);
+
+                try {
+                    sp.openForNxt();
+                    System.err.println("opened");
+                    System.err.println(sp.in);
+                } catch (Exception e) {
+                    System.err.println(e);
+                } finally {
+                    if (sp.in != null) {
+                        sp.close();
+                    }
+                }
+
+                /*
+                System.err.println("  id: " + sp.portIdentifier);
+                System.err.println("  owned: " + sp.portIdentifier.isCurrentlyOwned());
+
+                CommPort port = null;
+
+                try {
+                    port = sp.portIdentifier.open(sp.portIdentifier.getName(), 1000);
+                } catch (PortInUseException ex) {
+                    Logger.getLogger(SerialPort.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    if (port != null) {
+                        port.close();
+                        Thread.sleep(500);
+                    }
+                }
+                 */
+            }
         }
     }
 }

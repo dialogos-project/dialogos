@@ -30,11 +30,7 @@ public class NxtDeviceInfo
   private int protocolVersion;
 
 
-  public NxtDeviceInfo(String name, byte[] bluetoothAddress,
-      int[] signalStrength,
-                         int availableMemory, int firmwareVersion,
-      int protocolVersion) {
-
+  public NxtDeviceInfo(String name, byte[] bluetoothAddress, int[] signalStrength, int availableMemory, int firmwareVersion, int protocolVersion) {
     super(name, firmwareVersion);
 
     this.bluetoothAddress = bluetoothAddress;

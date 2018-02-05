@@ -133,7 +133,7 @@ public class Settings extends PluginSettings {
                             int oldSize = Settings.availablePorts.size();
 
                             Collection<BrickDescription<? extends Nxt>> availableBricks
-                                    = AbstractNxt.getAvailableBricks(d, progress, this.cancel, pw);
+                                    = AbstractNxt.getAvailableBricks(d, progress, this.cancel, null);
                             Settings.availablePorts.addAll(availableBricks);
                             
                             if (Settings.availablePorts.size() == oldSize) {
