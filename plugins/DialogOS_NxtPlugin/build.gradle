@@ -1,5 +1,7 @@
 dependencies {
   compile project(':Diamant')
   compile project(':com.clt.base')
-  compile project(':com.clt.lego')
+
+  // https://github.com/nyholku/purejavacomm
+  compile group: "com.github.purejavacomm", name: "purejavacomm", version: "1.0.1.RELEASE"
 }
