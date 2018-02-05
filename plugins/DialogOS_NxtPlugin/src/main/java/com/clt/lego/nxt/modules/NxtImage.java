@@ -1,4 +1,4 @@
-package com.clt.lego.nxt;
+package com.clt.lego.nxt.modules;
 
 import java.awt.Color;
 import java.awt.Graphics;

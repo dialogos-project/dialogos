@@ -1,8 +1,9 @@
-package com.clt.lego.nxt;
+package com.clt.lego.nxt.modules;
 
 import java.io.IOException;
 
 import com.clt.lego.BrickUtils;
+import com.clt.lego.nxt.Nxt;
 
 /**
  * @author Daniel Bobbert

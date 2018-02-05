@@ -1,5 +1,7 @@
-package com.clt.lego.nxt;
+package com.clt.lego.nxt.modules;
 
+import com.clt.lego.nxt.Motor;
+import com.clt.lego.nxt.Nxt;
 import java.io.IOException;
 
 /**
