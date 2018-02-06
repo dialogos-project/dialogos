@@ -65,7 +65,7 @@ public class SerialPort {
             }
 
             if (port instanceof purejavacomm.SerialPort) {
-                this.serialPort = (purejavacomm.SerialPort) port; // AKAKAK
+                this.serialPort = (purejavacomm.SerialPort) port;
                 
                 try {
                     serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);

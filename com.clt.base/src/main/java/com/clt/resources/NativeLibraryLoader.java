@@ -106,10 +106,18 @@ public class NativeLibraryLoader {
             temp.delete();
             throw new FileNotFoundException("File " + path + " was not found inside JAR.");
         }
+        
+        System.err.println("[#26] lib file: " + temp.getAbsolutePath()); // AKAKAK
 
         try {
             System.load(temp.getAbsolutePath());
+            System.err.println("[#26] loaded: " + temp.getAbsolutePath()); // AKAKAK
         } finally {
+            System.err.println("[#26] POSIX compliance: " + FileSystems.getDefault().supportedFileAttributeViews()); // AKAKAK
+            
+            temp.deleteOnExit();
+            
+            /*
             if (isPosixCompliant()) {
                 // Assume POSIX compliant file system, can be deleted after loading
                 temp.delete();
@@ -117,20 +125,18 @@ public class NativeLibraryLoader {
                 // Assume non-POSIX, and don't delete until last file descriptor closed
                 temp.deleteOnExit();
             }
+            */
         }
     }
 
     private static boolean isPosixCompliant() {
         try {
-            if (FileSystems.getDefault()
-                    .supportedFileAttributeViews()
-                    .contains("posix")) {
+            if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
                 return true;
             }
+            
             return false;
-        } catch (FileSystemNotFoundException
-                | ProviderNotFoundException
-                | SecurityException e) {
+        } catch (FileSystemNotFoundException | ProviderNotFoundException | SecurityException e) {
             return false;
         }
     }
@@ -140,8 +146,11 @@ public class NativeLibraryLoader {
         String tempDir = System.getProperty("java.io.tmpdir");
         File generatedDir = new File(tempDir, prefix + System.nanoTime());
         
-        if (!generatedDir.mkdir())
+        if (!generatedDir.mkdir()) {
             throw new IOException("Failed to create temp directory " + generatedDir.getName());
+        }
+        
+        System.err.println("[#26] tempdir: " + generatedDir); // AKAKAK
         
         return generatedDir;
     }
