@@ -39,7 +39,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
     @Override
     public String getVersion() {
-        return "1.2";
+        return "2.0";
     }
 
     @Override

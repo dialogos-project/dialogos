@@ -15,13 +15,12 @@ import com.clt.io.InterfaceType;
 import com.clt.lego.BrickDescription;
 import com.clt.lego.BrickFactory;
 import com.clt.lego.BrickUtils;
-import com.clt.util.Platform;
 
 /**
  * Central class for communicating with the Lego Mindstorms NXT brick.
  * This class implements a number of high-level methods. The low-level
  * implementation of the communication with the brick are left to
- * concrete subclasses, such as {@link NxtSerial}.
+ * concrete subclasses, such as {@link NxtBluetooth}.
  * 
  * @author dabo
  *
@@ -82,7 +81,7 @@ public abstract class AbstractNxt implements Nxt {
         // add Bluetooth connectors
         Collection<BrickFactory<? extends Nxt>> factories = new ArrayList<BrickFactory<? extends Nxt>>();
         try {
-            factories.add(NxtSerial.getFactory());
+            factories.add(NxtBluetooth.getFactory());
         } catch (Exception exn) {
             if (log != null) {
                 log.println(exn);
@@ -124,15 +123,6 @@ public abstract class AbstractNxt implements Nxt {
 
         for (BrickFactory<? extends Nxt> factory : ports.keySet()) {
             for (final String port : ports.get(factory)) {
-                // TODO:
-                // On MacOS, all serial ports that are meant for outgoing connections
-                // have a name starting with "cu." (as opposed to "tty.". Skip the
-                // others, to avoid duplicate copies of the NXT brick in the GUI.
-                // -- but only for the Bluetooth connector! Maybe move this into NxtSerial.
-//                if( Platform.isMac() && ! port.startsWith("cu.")) {
-//                    continue;
-//                }
-
                 if (cancel.get()) {
                     break;
                 }

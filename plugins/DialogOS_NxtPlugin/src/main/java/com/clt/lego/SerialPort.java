@@ -14,6 +14,12 @@ import purejavacomm.NoSuchPortException;
 import purejavacomm.PortInUseException;
 import purejavacomm.UnsupportedCommOperationException;
 
+/**
+ * Communication with an external device over a serial connection,
+ * such as Bluetooth.
+ * 
+ * @author dabo, koller
+ */
 public class SerialPort {
 
     private static final int CONNECTION_TIMEOUT = 3000;

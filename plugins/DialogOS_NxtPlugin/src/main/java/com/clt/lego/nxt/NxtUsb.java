@@ -67,7 +67,7 @@ public class NxtUsb extends AbstractNxt {
             int id = 1;
 
             for (UsbDevice dev : nxtDev) {
-                String port = "USB" + id;
+                String port = dev.toString();
                 nxtDevices.put(port, dev);
                 id++;
             }
@@ -102,13 +102,25 @@ public class NxtUsb extends AbstractNxt {
         this.port = port;
 
         device = nxtDevices.get(port);
+        System.err.println("dev: " + device);
+        
+        if( device == null ) {
+            throw new IOException(Resources.getString("UsbNxtDisconnected"));
+        }
+        
         UsbConfiguration configuration = device.getUsbConfiguration((byte) 1);
+        if( configuration == null ) {
+            throw new IOException(Resources.getString("UsbNxtDisconnected"));
+        }
+        
+        System.err.println("active: " + configuration.isActive());
+        
         iface = configuration.getUsbInterface((byte) 0);
 
         try {
             iface.claim();
         } catch (UsbException | UsbNotActiveException | UsbDisconnectedException ex) {
-            throw new IOException("Error while claiming USB interface", ex);
+            throw new IOException(Resources.getString("UsbNxtDisconnected"));
         }
     }
 
@@ -132,7 +144,8 @@ public class NxtUsb extends AbstractNxt {
 
                 try {
                     InterfaceType type = nxt.getInterfaceType();
-                    info = new Description(port, nxt.getDeviceInfo(), type, nxt.getPort());
+                    NxtDeviceInfo di = nxt.getDeviceInfo();
+                    info = (di == null) ? null : new Description(port, di, type, nxt.getPort());
                 } finally {
                     nxt.close();
                 }
@@ -243,7 +256,7 @@ public class NxtUsb extends AbstractNxt {
             int bytesSent = send(cmd);
 
             if (bytesSent != cmd.length) {
-                throw new IOException("Error while sending direct command to NXT: Sent " + bytesSent + " instead of " + command.length + " bytes.");
+                throw new IOException("Error while sending direct command to NXT: Sent " + bytesSent + " instead of " + cmd.length + " bytes.");
             }
 
             byte[] response = read(64);
@@ -252,8 +265,8 @@ public class NxtUsb extends AbstractNxt {
             }
 
             if (response[1] != cmd[1]) {
-                NxtSerial.hexdump(cmd);
-                NxtSerial.hexdump(response);
+                NxtBluetooth.hexdump(cmd);
+                NxtBluetooth.hexdump(response);
                 throw new IOException("First byte of answer is not the command ID");
             }
 

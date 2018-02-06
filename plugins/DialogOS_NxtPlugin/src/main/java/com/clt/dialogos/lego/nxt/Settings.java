@@ -160,7 +160,11 @@ public class Settings extends PluginSettings {
             System.err.println(exn);
         }
 
-        this.nxt.setPossibleValues(this.getAvailablePorts());
+        BrickDescription<Nxt>[] available = getAvailablePorts();
+        for( BrickDescription<Nxt> a : available ) {
+            System.err.println(a);
+        }
+        this.nxt.setPossibleValues(available);
         // display the first of the newly found bricks in
         // the Settings-UI
         if (search && (this.nxt.getPossibleValues().length > 1)) {

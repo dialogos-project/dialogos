@@ -16,7 +16,6 @@ class Resources {
      * Return a localized version of the given string.
      */
     public static String getString(String key) {
-
         return Resources.resources.getString(key);
     }
 }
