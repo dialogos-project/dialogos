@@ -92,9 +92,7 @@ public abstract class BrickDescription<T extends Brick> implements Comparable<Br
         }
     }
 
-    public T createBrick(Component parent)
-            throws IOException, UserCanceledException {
-
+    public T createBrick(Component parent) throws IOException, UserCanceledException {
         T brick = this.createBrickImpl(parent);
         if (brick != null) {
             this.uri = brick.getResourceString();
@@ -103,6 +101,5 @@ public abstract class BrickDescription<T extends Brick> implements Comparable<Br
         return brick;
     }
 
-    protected abstract T createBrickImpl(Component parent)
-            throws IOException, UserCanceledException;
+    protected abstract T createBrickImpl(Component parent) throws IOException, UserCanceledException;
 }

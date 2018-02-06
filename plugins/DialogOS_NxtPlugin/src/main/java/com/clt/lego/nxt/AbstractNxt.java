@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.clt.event.ProgressEvent;
 import com.clt.event.ProgressListener;
+import com.clt.io.InterfaceType;
 import com.clt.lego.BrickDescription;
 import com.clt.lego.BrickFactory;
 import com.clt.lego.BrickUtils;
@@ -29,7 +30,46 @@ public abstract class AbstractNxt implements Nxt {
 
     private final Object programExecutionLock = new Object();
 
+    
+    /* abstract methods inherited from Nxt interface */
+    
+    @Override
+    abstract public NxtDeviceInfo getDeviceInfo() throws IOException;
+
+    @Override
+    abstract public String[] getPrograms() throws IOException;
+
+    @Override
+    abstract public String[] getModules() throws IOException;
+
+    @Override
+    abstract public int getModuleID(String name) throws IOException;
+
+    @Override
+    abstract public byte[] readIOMap(String module, int offset, int length) throws IOException;
+
+    @Override
+    abstract public void writeIOMap(String module, int offset, byte[] data) throws IOException;
+
+    @Override
+    abstract public InterfaceType getInterfaceType();
+
+    @Override
+    abstract public String getPort();
+
+    @Override
+    abstract public String getResourceString() throws IOException;
+
+    @Override
+    abstract public void close() throws IOException;
+    
+    
+    /* abstract methods introduced here */
+    
     abstract protected byte[] sendDirectCommand(byte[] command, int expectedResponseSize) throws IOException;
+    
+
+    
 
     public static Collection<BrickDescription<? extends Nxt>> getAvailableBricks(Component parent, ProgressListener progress, AtomicBoolean cancel, PrintWriter log) {
         Collection<BrickDescription<? extends Nxt>> infos = new ArrayList<BrickDescription<? extends Nxt>>();
@@ -39,9 +79,19 @@ public abstract class AbstractNxt implements Nxt {
             progress.progressChanged(evt);
         }
 
+        // add Bluetooth connectors
         Collection<BrickFactory<? extends Nxt>> factories = new ArrayList<BrickFactory<? extends Nxt>>();
         try {
             factories.add(NxtSerial.getFactory());
+        } catch (Exception exn) {
+            if (log != null) {
+                log.println(exn);
+            }
+        }
+        
+        // add USB connectors
+        try {
+            factories.add(NxtUsb.getFactory());
         } catch (Exception exn) {
             if (log != null) {
                 log.println(exn);
@@ -74,12 +124,14 @@ public abstract class AbstractNxt implements Nxt {
 
         for (BrickFactory<? extends Nxt> factory : ports.keySet()) {
             for (final String port : ports.get(factory)) {
+                // TODO:
                 // On MacOS, all serial ports that are meant for outgoing connections
                 // have a name starting with "cu." (as opposed to "tty.". Skip the
                 // others, to avoid duplicate copies of the NXT brick in the GUI.
-                if( Platform.isMac() && ! port.startsWith("cu.")) {
-                    continue;
-                }
+                // -- but only for the Bluetooth connector! Maybe move this into NxtSerial.
+//                if( Platform.isMac() && ! port.startsWith("cu.")) {
+//                    continue;
+//                }
 
                 if (cancel.get()) {
                     break;
