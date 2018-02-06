@@ -1,11 +1,26 @@
 package com.clt.lego;
 
+import com.clt.lego.nxt.NxtConstants;
+import com.clt.lego.nxt.NxtSerial;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
+import javax.usb.UsbConfiguration;
+import javax.usb.UsbConst;
+import javax.usb.UsbControlIrp;
+import javax.usb.UsbDevice;
+import javax.usb.UsbDeviceDescriptor;
+import javax.usb.UsbEndpoint;
+import javax.usb.UsbException;
+import javax.usb.UsbHostManager;
+import javax.usb.UsbHub;
+import javax.usb.UsbInterface;
+import javax.usb.UsbPipe;
+import javax.usb.UsbServices;
 
 import purejavacomm.CommPort;
 import purejavacomm.CommPortIdentifier;
@@ -66,7 +81,7 @@ public class SerialPort {
 
             if (port instanceof purejavacomm.SerialPort) {
                 this.serialPort = (purejavacomm.SerialPort) port;
-                
+
                 try {
                     serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);
                     serialPort.enableReceiveTimeout(SerialPort.CONNECTION_TIMEOUT);
@@ -123,28 +138,138 @@ public class SerialPort {
 
         return ports.toArray(new String[ports.size()]);
     }
+    
+    private static UsbEndpoint findEndpoint(UsbInterface iface, byte direction) {
+        for( UsbEndpoint ep : (List<UsbEndpoint>) iface.getUsbEndpoints() ) {
+            if( (ep.getDirection() & UsbConst.ENDPOINT_DIRECTION_MASK) == direction) {
+                return ep;
+            }
+        }
+        
+        return null;
+    }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        for (String x : getAvailablePorts()) {
+    private static void sendUsbMessage(UsbInterface iface, byte[] data) throws UsbException {
+        UsbEndpoint endpoint = findEndpoint(iface, UsbConst.ENDPOINT_DIRECTION_OUT);
+        
+        if( endpoint == null ) {
+            throw new RuntimeException("xx");
+        }
+        UsbPipe pipe = endpoint.getUsbPipe();
+        pipe.open();
+        try {
+            int sent = pipe.syncSubmit(data);
+            System.out.println(sent + " bytes sent");
+        } finally {
+            pipe.close();
+        }
+    }
+
+    private static byte[] readFromUsb(UsbInterface iface) throws UsbException {
+        UsbEndpoint endpoint = findEndpoint(iface, UsbConst.ENDPOINT_DIRECTION_IN);
+        
+        if( endpoint == null ) {
+            throw new RuntimeException("xx");
+        }
+        
+        UsbPipe pipe = endpoint.getUsbPipe();
+        pipe.open();
+
+        try {
+            byte[] data = new byte[8];
+            int received = pipe.syncSubmit(data);
+            System.out.println(received + " bytes received");
+            NxtSerial.hexdump(data);
+        } finally {
+            pipe.close();
+        }
+
+        return null;
+    }
+
+    private static List<UsbDevice> getUsbNxtDevices() throws UsbException {
+        List<UsbDevice> ret = new ArrayList<>();
+        UsbServices services = UsbHostManager.getUsbServices();
+        UsbHub hub = services.getRootUsbHub(); // TODO recurse into attached hubs
+
+        for (UsbDevice device : (List<UsbDevice>) hub.getAttachedUsbDevices()) {
+            UsbDeviceDescriptor desc = device.getUsbDeviceDescriptor();
+            if (desc.idVendor() == 0x0694 && desc.idProduct() == 0x0002) {
+                ret.add(device);
+            }
+
+            System.out.println(device);
+            System.out.println(desc.idVendor());
+            System.out.println(desc.idProduct());
+        }
+
+        return ret;
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException, UsbException {
+        List<UsbDevice> nxts = getUsbNxtDevices();
+        System.err.println(nxts);
+        
+        if( nxts.isEmpty() ) {
+            System.err.println("No NXT found.");
+            System.exit(0);
+        }
+        
+        UsbDevice nxt = nxts.get(0);
+        
+        System.err.println("device: " + nxt);
+        System.err.println("- " + nxt.getManufacturerString());
+        System.err.println("- " + nxt.getProductString());
+        
+        System.err.println("configs:" + nxt.getUsbConfigurations());
+
+        UsbConfiguration configuration = nxt.getUsbConfiguration((byte) 1);
+        System.err.println("config: " + configuration);
+        
+        System.err.println("intf: " + configuration.getUsbInterfaces());
+        
+        
+        UsbInterface iface = configuration.getUsbInterface((byte) 0);
+        iface.claim();
+
+        sendUsbMessage(iface, new byte[]{(byte) 0x01, (byte) NxtConstants.GET_DEVICE_INFO});
+        readFromUsb(iface);
+        
+        iface.release();
+
+//            if (desc.idVendor() == vendorId && desc.idProduct() == productId) {
+//                return device;
+//            }
+//            if (device.isUsbHub()) {
+//                device = findDevice((UsbHub) device, vendorId, productId);
+//                if (device != null) {
+//                    return device;
+//                }
+//            }
+//    }
+        System.exit(0);
+
+        for (String x
+                : getAvailablePorts()) {
             System.err.println("\n\n");
             System.err.println(x);
 
-            if (x.contains("NXT")) {
-                SerialPort sp = new SerialPort(x);
+//            if (x.contains("NXT")) {
+            SerialPort sp = new SerialPort(x);
 
-                try {
-                    sp.openForNxt();
-                    System.err.println("opened");
-                    System.err.println(sp.in);
-                } catch (Exception e) {
-                    System.err.println(e);
-                } finally {
-                    if (sp.in != null) {
-                        sp.close();
-                    }
+            try {
+                sp.openForNxt();
+                System.err.println("opened");
+                System.err.println(sp.in);
+            } catch (Exception e) {
+                System.err.println(e);
+            } finally {
+                if (sp.in != null) {
+                    sp.close();
                 }
+            }
 
-                /*
+            /*
                 System.err.println("  id: " + sp.portIdentifier);
                 System.err.println("  owned: " + sp.portIdentifier.isCurrentlyOwned());
 
@@ -160,8 +285,8 @@ public class SerialPort {
                         Thread.sleep(500);
                     }
                 }
-                 */
-            }
+             */
+//            }
         }
     }
 }

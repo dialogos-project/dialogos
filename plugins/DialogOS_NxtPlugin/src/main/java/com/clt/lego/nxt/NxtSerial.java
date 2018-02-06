@@ -147,7 +147,7 @@ public class NxtSerial extends AbstractNxt {
         return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory, firmware, protocol);
     }
     
-    private void hexdump(byte[] data) {
+    public static void hexdump(byte[] data) {
         for( int i = 0; i < data.length; i++ ) {
             int val = data[i];
             

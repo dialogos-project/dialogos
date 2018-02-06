@@ -4,4 +4,6 @@ dependencies {
 
   // https://github.com/nyholku/purejavacomm
   compile group: "com.github.purejavacomm", name: "purejavacomm", version: "1.0.1.RELEASE"
+  
+  compile group: "org.usb4java", name: "usb4java-javax", version: "1.2.0"
 }
