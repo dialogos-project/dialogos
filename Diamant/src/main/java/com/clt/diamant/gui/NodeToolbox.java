@@ -122,7 +122,7 @@ public class NodeToolbox extends Toolbox {
                 final JLabel button = 
                         new JLabel(Node.getLocalizedNodeTypeName(nodeType), 
                                 NodeComponent.getNodeIcon(nodeType), 
-                                SwingConstants.LEFT) {
+                                SwingConstants.CENTER) {
                     @Override
                     public String getText() {
                         return Node.getLocalizedNodeTypeName(nodeType);
