@@ -107,25 +107,10 @@ public class NativeLibraryLoader {
             throw new FileNotFoundException("File " + path + " was not found inside JAR.");
         }
         
-        System.err.println("[#26] lib file: " + temp.getAbsolutePath()); // AKAKAK
-
         try {
             System.load(temp.getAbsolutePath());
-            System.err.println("[#26] loaded: " + temp.getAbsolutePath()); // AKAKAK
         } finally {
-            System.err.println("[#26] POSIX compliance: " + FileSystems.getDefault().supportedFileAttributeViews()); // AKAKAK
-            
             temp.deleteOnExit();
-            
-            /*
-            if (isPosixCompliant()) {
-                // Assume POSIX compliant file system, can be deleted after loading
-                temp.delete();
-            } else {
-                // Assume non-POSIX, and don't delete until last file descriptor closed
-                temp.deleteOnExit();
-            }
-            */
         }
     }
 
@@ -149,8 +134,6 @@ public class NativeLibraryLoader {
         if (!generatedDir.mkdir()) {
             throw new IOException("Failed to create temp directory " + generatedDir.getName());
         }
-        
-        System.err.println("[#26] tempdir: " + generatedDir); // AKAKAK
         
         return generatedDir;
     }
