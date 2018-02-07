@@ -8,7 +8,6 @@ package com.clt.lego.nxt;
 import com.clt.io.InterfaceType;
 import com.clt.lego.BrickDescription;
 import com.clt.lego.BrickFactory;
-import com.clt.lego.BrickUtils;
 import com.clt.util.UserCanceledException;
 import java.awt.Component;
 import java.io.IOException;
