@@ -130,17 +130,33 @@ public class Settings extends PluginSettings {
                         protected void run(ProgressListener progress) throws Exception {
                             StringWriter log = new StringWriter();
                             PrintWriter pw = new PrintWriter(log, true);
-                            int oldSize = Settings.availablePorts.size();
 
+                            boolean foundNewBrick = false;
+                            
                             Collection<BrickDescription<? extends Nxt>> availableBricks
                                     = AbstractNxt.getAvailableBricks(d, progress, this.cancel, null);
-                            Settings.availablePorts.addAll(availableBricks);
+
+                            // remove bricks that are no longer connected
+                            for (BrickDescription x : Settings.availablePorts) {
+                                if (!availableBricks.contains(x)) {
+                                    Settings.availablePorts.remove(x);
+                                }
+                            }
                             
-                            if (Settings.availablePorts.size() == oldSize) {
+                            // add bricks that were newly connected
+                            for (BrickDescription x : availableBricks) {
+                                if (!Settings.availablePorts.contains(x)) {
+                                    foundNewBrick = true;
+                                    addBrick(x);
+                                }
+                            }
+
+                            if (! foundNewBrick ) {
                                 pw.println(Resources.getString("NoNewBrickFound"));
                             }
-                            pw.close();
                             
+                            pw.close();
+
                             if (log.getBuffer().length() > 0) {
                                 OptionPane.warning(d, log.toString());
                             }
@@ -161,10 +177,8 @@ public class Settings extends PluginSettings {
         }
 
         BrickDescription<Nxt>[] available = getAvailablePorts();
-        for( BrickDescription<Nxt> a : available ) {
-            System.err.println(a);
-        }
         this.nxt.setPossibleValues(available);
+        
         // display the first of the newly found bricks in
         // the Settings-UI
         if (search && (this.nxt.getPossibleValues().length > 1)) {

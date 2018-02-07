@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbConst;
 import javax.usb.UsbDevice;
@@ -42,6 +44,7 @@ public class NxtUsb extends AbstractNxt {
     private final String port;
     private final UsbDevice device;
     private final UsbInterface iface;
+    private static final Pattern USB_LOCATION_PATTERN = Pattern.compile(".*?(\\d+).*?(\\d+).*");
     
     static {
         // At program startup time, restore the USB devices. This makes it possible
@@ -67,12 +70,23 @@ public class NxtUsb extends AbstractNxt {
             int id = 1;
 
             for (UsbDevice dev : nxtDev) {
-                String port = dev.toString();
+                String port = makeUsbLocation(dev);
                 nxtDevices.put(port, dev);
                 id++;
             }
         } catch (UsbException ex) {
             Logger.getLogger(NxtUsb.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private static String makeUsbLocation(UsbDevice dev) {
+        String baseString = dev.toString();        
+        Matcher m = USB_LOCATION_PATTERN.matcher(baseString);
+        
+        if( m.matches() ) {
+            return String.format("Bus %s, Device %s", m.group(1), m.group(2));
+        } else {
+            return baseString;
         }
     }
 
@@ -102,7 +116,7 @@ public class NxtUsb extends AbstractNxt {
         this.port = port;
 
         device = nxtDevices.get(port);
-        System.err.println("dev: " + device);
+//        System.err.println("dev: " + device);
         
         if( device == null ) {
             throw new IOException(Resources.getString("UsbNxtDisconnected"));
@@ -113,7 +127,7 @@ public class NxtUsb extends AbstractNxt {
             throw new IOException(Resources.getString("UsbNxtDisconnected"));
         }
         
-        System.err.println("active: " + configuration.isActive());
+//        System.err.println("active: " + configuration.isActive());
         
         iface = configuration.getUsbInterface((byte) 0);
 
@@ -168,6 +182,9 @@ public class NxtUsb extends AbstractNxt {
 
     @Override
     public NxtDeviceInfo getDeviceInfo() throws IOException {
+        // TODO: Both this and getPrograms can probably be pulled up into AbstractNxt,
+        // if we implement an abstract method sendSystemCommand alongside sendDirectCommand.
+        
         try {
             send(0x01, NxtConstants.GET_DEVICE_INFO);
 
