@@ -21,7 +21,7 @@ public class FileChooser {
 
   static {
     FileChooser.awtparent = new Frame();
-    Dimension ScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension ScreenSize = WindowUtils.getScreenSize();
     FileChooser.awtparent.setLocation((ScreenSize.width - 350) / 2,
       (ScreenSize.height - 300) / 2);
   }

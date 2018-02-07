@@ -237,10 +237,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
         SwingUtilities.invokeLater(new Runnable() {
 
             private void openInitialWindow() {
-
-                // doCommand(cmdNew);
-                WindowUtils.setLocation(Main.this.getProjectStartupWindow(),
-                        WindowUtils.CENTER_ON_SCREEN);
+                WindowUtils.setLocation(Main.this.getProjectStartupWindow(), WindowUtils.CENTER_ON_SCREEN);
                 Main.this.getProjectStartupWindow().setVisible(true);
             }
 

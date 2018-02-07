@@ -37,6 +37,7 @@ import com.clt.event.ProgressListener;
 import com.clt.gui.CmdButton;
 import com.clt.gui.GUI;
 import com.clt.gui.OptionPane;
+import com.clt.gui.WindowUtils;
 import com.clt.util.Counter;
 import com.clt.util.IniFile;
 import com.clt.util.Misc;
@@ -486,7 +487,7 @@ public class GUIClientFactory {
 
         int base = 30;
         int n = base;
-        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+        int screenWidth = WindowUtils.getScreenSize().width;
         for (GUIClientWindow window : this.windows.values()) {
             window.pack();
             if (window.getPreferredLocation() != null) {

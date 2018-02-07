@@ -84,7 +84,7 @@ public class AWTOptionPane {
 
         dialog.pack();
 
-        Dimension screensize = dialog.getToolkit().getScreenSize();
+        Dimension screensize = WindowUtils.getScreenSize();
         Dimension size = dialog.getSize();
 
         dialog.setLocation((screensize.width - size.width) / 2, (screensize.height - size.height) / 2);

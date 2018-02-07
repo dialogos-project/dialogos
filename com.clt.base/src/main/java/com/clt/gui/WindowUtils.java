@@ -15,6 +15,7 @@ import com.clt.util.Platform;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 
 public class WindowUtils {
 
@@ -28,7 +29,8 @@ public class WindowUtils {
 
     public static void setLocation(Window w, int mode) {
 
-        Dimension screenSize = w.getToolkit().getScreenSize();
+        Dimension screenSize = getScreenSize();
+        
         switch (mode) {
             case CENTER_ON_PARENT:
                 WindowUtils.setLocationRelativeTo(w, w.getParent());
@@ -54,14 +56,14 @@ public class WindowUtils {
      * @param w
      * @return 
      */
-    public static Dimension getScreenSize(Window w) {
+    public static Dimension getScreenSize() {
         if( Platform.isLinux() ) {
             GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
             GraphicsDevice dev = env.getDefaultScreenDevice();
             Rectangle bounds = dev.getDefaultConfiguration().getBounds();
             return new Dimension(bounds.width, bounds.height);
         } else {
-            return w.getToolkit().getScreenSize();
+            return Toolkit.getDefaultToolkit().getScreenSize();
         }
     }
 
@@ -71,32 +73,21 @@ public class WindowUtils {
         Dimension parentSize;
         if ((parent == null) || !parent.isShowing()) {
             parentLocation = new Point(0, 0);
-            parentSize = getScreenSize(w);
-            System.err.println("screen size: " + parentSize); // AKAKAK
-            
-//            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//            GraphicsDevice dev = env.getDefaultScreenDevice();
-//            System.err.println(dev.getDefaultConfiguration().getBounds());
-            
-            
-            
-//            System.exit(0); // AKAKAK
+            parentSize = getScreenSize();
         } else {
             parentLocation = parent.getLocationOnScreen();
             parentSize = parent.getSize();
         }
 
         Dimension size = w.getSize();
-        Dimension screenSize = w.getToolkit().getScreenSize();
+        Dimension screenSize = getScreenSize();
 
         int x = parentLocation.x + parentSize.width / 2 - size.width / 2;
         // int y = parentLocation.y + parentSize.height/2 - size.height/2;
         int y = parentLocation.y + parentSize.height / 2 - size.height / 2;
         // use golden mean
         double phi = (Math.sqrt(5) + 1.0) / 2;
-        y
-                = parentLocation.y + (int) (parentSize.height * (1.0 - 1.0 / phi))
-                - size.height / 2;
+        y = parentLocation.y + (int) (parentSize.height * (1.0 - 1.0 / phi)) - size.height / 2;
 
         if (x < 0) {
             x = 0;

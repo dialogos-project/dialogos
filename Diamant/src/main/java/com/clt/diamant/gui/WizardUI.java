@@ -67,6 +67,7 @@ import com.clt.gui.GUI;
 import com.clt.gui.Images;
 import com.clt.gui.MouseClickAdapter;
 import com.clt.gui.OptionPane;
+import com.clt.gui.WindowUtils;
 import com.clt.gui.border.GroupBorder;
 import com.clt.gui.menus.CmdMenu;
 import com.clt.gui.menus.CmdMenuBar;
@@ -351,8 +352,7 @@ class WizardUI extends JDialog implements WozInterface {
         GUI.assignMnemonics(this.getContentPane());
         this.pack();
 
-        this.setLocation(this.getToolkit().getScreenSize().width
-                - this.getSize().width - 20, 20);
+        this.setLocation(WindowUtils.getScreenSize().width - this.getSize().width - 20, 20);
         // WindowUtils.setLocationRelativeTo(this, parent);
     }
 

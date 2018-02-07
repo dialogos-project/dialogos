@@ -43,6 +43,7 @@ import com.clt.gui.Commands;
 import com.clt.gui.GUI;
 import com.clt.gui.OptionPane;
 import com.clt.gui.StaticText;
+import com.clt.gui.WindowUtils;
 import com.clt.gui.menus.CmdCheckBoxMenuItem;
 import com.clt.gui.menus.CmdMenu;
 import com.clt.gui.menus.CmdMenuBar;
@@ -505,7 +506,7 @@ public class GUIClientWindow extends JFrame implements MenuCommander {
 
     Dimension d = super.getPreferredSize();
 
-    Dimension size = this.getToolkit().getScreenSize();
+    Dimension size = WindowUtils.getScreenSize();
     size.width = Math.min(size.width, d.width);
     size.height = Math.min(size.height - 30, d.height);
 

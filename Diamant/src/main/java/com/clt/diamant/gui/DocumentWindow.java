@@ -121,7 +121,7 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
         this.updateMenus();
         this.pack();
         Dimension size = this.getSize();
-        Dimension screenSize = this.getToolkit().getScreenSize();
+        Dimension screenSize = WindowUtils.getScreenSize();
         int min = Math.min(screenSize.width - size.width, screenSize.height - size.height);
         DocumentWindow.gStackedPosition = new Point(DocumentWindow.gStackedPosition.x + 30, DocumentWindow.gStackedPosition.y + 30);
         if ((DocumentWindow.gStackedPosition.x >= min - 30) || (DocumentWindow.gStackedPosition.y >= min - 30)) {

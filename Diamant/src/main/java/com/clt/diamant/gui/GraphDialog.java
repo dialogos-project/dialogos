@@ -154,7 +154,7 @@ public class GraphDialog extends ManagedFrame implements GraphEditor, MenuComman
 
         this.pack();
 
-        Dimension screen = this.getToolkit().getScreenSize();
+        Dimension screen = WindowUtils.getScreenSize();
         screen.width = Math.min(screen.width - 80, this.getWidth());
         screen.height = Math.min(screen.height - 80, this.getHeight());
         this.setSize(screen);
