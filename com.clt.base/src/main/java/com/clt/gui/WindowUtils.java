@@ -12,6 +12,9 @@ import java.util.Vector;
 import javax.swing.RootPaneContainer;
 
 import com.clt.util.Platform;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 
 public class WindowUtils {
 
@@ -41,6 +44,26 @@ public class WindowUtils {
                 break;
         }
     }
+    
+    /**
+     * Returns the screen size. On Linux, this works around a bug where
+     * sometimes the screen size would be reported as far too wide,
+     * leading to a placement of the DialogOS windows in an invisible
+     * location; it returns the size of the default monitor instead.
+     * 
+     * @param w
+     * @return 
+     */
+    public static Dimension getScreenSize(Window w) {
+        if( Platform.isLinux() ) {
+            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice dev = env.getDefaultScreenDevice();
+            Rectangle bounds = dev.getDefaultConfiguration().getBounds();
+            return new Dimension(bounds.width, bounds.height);
+        } else {
+            return w.getToolkit().getScreenSize();
+        }
+    }
 
     public static void setLocationRelativeTo(Window w, Component parent) {
 
@@ -48,7 +71,16 @@ public class WindowUtils {
         Dimension parentSize;
         if ((parent == null) || !parent.isShowing()) {
             parentLocation = new Point(0, 0);
-            parentSize = w.getToolkit().getScreenSize();
+            parentSize = getScreenSize(w);
+            System.err.println("screen size: " + parentSize); // AKAKAK
+            
+//            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//            GraphicsDevice dev = env.getDefaultScreenDevice();
+//            System.err.println(dev.getDefaultConfiguration().getBounds());
+            
+            
+            
+//            System.exit(0); // AKAKAK
         } else {
             parentLocation = parent.getLocationOnScreen();
             parentSize = parent.getSize();

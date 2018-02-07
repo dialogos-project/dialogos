@@ -94,8 +94,7 @@ public class GUIClientStartupScreen extends JFrame {
             JPanel main = new JPanel(new BorderLayout());
             main.setOpaque(false);
             main.add(this.progressPanel, BorderLayout.CENTER);
-            main.add(Box
-                    .createVerticalStrut(this.header.getPreferredSize().height / 2),
+            main.add(Box.createVerticalStrut(this.header.getPreferredSize().height / 2),
                     BorderLayout.SOUTH);
             content = main;
         }

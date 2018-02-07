@@ -17,6 +17,8 @@ import com.clt.util.Misc;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author dabo, 2mfriedr
@@ -30,17 +32,21 @@ public class DialogOS {
 
     private static File getDefaultModel(File appDir) {
         File file = new File(appDir, "Model.xml");
+        
         if (file.isFile()) {
             return file;
         } else {
             file = new File(appDir, "Model");
+            
             if (file.isDirectory()) {
                 file = new File(file, "Model.xml");
+                
                 if (file.isFile()) {
                     return file;
                 }
             }
         }
+
         return null;
     }
 
@@ -90,15 +96,18 @@ public class DialogOS {
         } else {
             initialModel = DialogOS.getDefaultModel(appDir);
         }
-
+        
         final GUIClientStartupScreen startupScreen;
 
         if (headless) {
             startupScreen = null;
         } else {
             startupScreen = new GUIClientStartupScreen(Version.PRODUCT_NAME, Version.getVersion());
+
             if (!startupScreen.isShowing()) {
-                GUI.invokeAndWait(() -> startupScreen.show(null));
+                GUI.invokeAndWait(() -> {
+                    startupScreen.show(null);
+                });
             }
         }
 
@@ -129,7 +138,7 @@ public class DialogOS {
 
         // initialize preferences
         Preferences.getPrefs();
-
+        
         // Start built-in clients.
         try {
             final Main app = new Main(appDir);
@@ -188,7 +197,9 @@ public class DialogOS {
                 } else {
                     if (initialModel != null) {
                         if (!startupScreen.isShowing()) {
-                            GUI.invokeAndWait(() -> startupScreen.show(null));
+                            GUI.invokeAndWait(() -> {
+                                startupScreen.show(null);
+                            });
                         }
                         startupScreen.setStatus(Resources.getString("InitializingDialogEngine"));
                         ProgressListener progress = (event) -> {
