@@ -79,12 +79,34 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     private static void registerBuiltinNodeTypes() {
         Node.NODE_TYPES = new LinkedHashMap<Object, List<Class<Node>>>();
 
-        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_DEFAULT"), new String[]{"OutputNode", "InputNode", "ConditionalNode", "SetVariableNode", "TestVariableNode", "SleepNode",
-            "ScriptNode", "GroovyNode", "EndNode"});
+        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_DEFAULT"), 
+                new String[]{ 
+                    "OutputNode", 
+                    "InputNode", 
+                    "ConditionalNode", 
+                    "SetVariableNode", 
+                    "TestVariableNode", 
+                    "SleepNode",
+                    "ScriptNode", 
+                    "GroovyNode", 
+                    "EndNode"
+                });
 
-        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_SUBGRAPH"), new String[]{"GraphNode", "ProcNode", "CallNode", "ReturnNode", "ContinueNode", "LoopNode"});
+        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_SUBGRAPH"), 
+                new String[] {
+                    "GraphNode", 
+                    "ProcNode", 
+                    "CallNode", 
+                    "ReturnNode", 
+                    "ContinueNode", 
+                    "LoopNode"
+                });
 
-        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_JUMP"), new String[]{"LabelNode", "GotoNode"});
+        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_JUMP"), 
+                new String[] {
+                    "LabelNode", 
+                    "GotoNode"
+                });
 
     }
 

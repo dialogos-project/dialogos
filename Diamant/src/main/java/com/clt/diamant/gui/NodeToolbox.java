@@ -37,6 +37,9 @@ import com.clt.gui.Images;
 import com.clt.properties.BooleanProperty;
 
 /**
+ * The toolbox shown on the right of the DialogOS main window,
+ * from which nodes can be dragged into the graph.
+ * 
  * @author Daniel Bobbert
  *
  */
@@ -88,13 +91,14 @@ public class NodeToolbox extends Toolbox {
     }
 
     private void initToolbox() {
-
         this.removeAll();
 
         Map<Object, List<Class<Node>>> allNodeTypes = Node.getAvailableNodeTypes();
+        
         for (Iterator<Object> keys = allNodeTypes.keySet().iterator(); keys.hasNext();) {
             final Object key = keys.next();
             final List<Class<Node>> nodeTypes = allNodeTypes.get(key);
+            
             if (this.structured.getValue()) {
                 final GroupHeader header = new GroupHeader(key, nodeTypes);
                 this.add(header);
@@ -115,15 +119,16 @@ public class NodeToolbox extends Toolbox {
             if (nodeType == null) {
                 this.addSeparator();
             } else {
-                final JLabel button = new JLabel(Node.getLocalizedNodeTypeName(nodeType), 
-                        NodeComponent.getNodeIcon(nodeType), SwingConstants.CENTER) {
-
+                final JLabel button = 
+                        new JLabel(Node.getLocalizedNodeTypeName(nodeType), 
+                                NodeComponent.getNodeIcon(nodeType), 
+                                SwingConstants.LEFT) {
                     @Override
                     public String getText() {
-
                         return Node.getLocalizedNodeTypeName(nodeType);
                     }
                 };
+                
                 button.setHorizontalAlignment(SwingConstants.LEFT);
                 button.setHorizontalTextPosition(SwingConstants.RIGHT);
                 button.setVerticalTextPosition(SwingConstants.CENTER);
@@ -133,12 +138,9 @@ public class NodeToolbox extends Toolbox {
 
                 // need to wrap into a panel in order to appease the toolbar's BoxLayout
                 JPanel p = new JPanel(new BorderLayout(0, 0)) {
-
                     @Override
                     public Dimension getMaximumSize() {
-
-                        return new Dimension(super.getMaximumSize().width,
-                                this.getPreferredSize().height);
+                        return new Dimension(super.getMaximumSize().width, this.getPreferredSize().height);
                     }
                 };
                 p.setOpaque(false);
@@ -185,13 +187,10 @@ public class NodeToolbox extends Toolbox {
         }
     }
 
-    private static final ImageIcon iconDisclosureOpened
-            = Images.loadBuiltin("DisclosureDown.png");
-    private static final ImageIcon iconDisclosureClosed
-            = Images.loadBuiltin("DisclosureRight.png");
+    private static final ImageIcon iconDisclosureOpened = Images.loadBuiltin("DisclosureDown.png");
+    private static final ImageIcon iconDisclosureClosed = Images.loadBuiltin("DisclosureRight.png");
 
-    private class GroupHeader
-            extends JComponent {
+    private class GroupHeader extends JComponent {
 
         private Color gradientStart = new Color(173, 187, 208);
         private Color gradientEnd = new Color(152, 170, 196);
@@ -284,7 +283,6 @@ public class NodeToolbox extends Toolbox {
 
         @Override
         protected void paintComponent(Graphics g) {
-
             if (this.isOpaque()) {
                 Graphics2D gfx = (Graphics2D) g;
                 boolean focused = true;
@@ -298,15 +296,12 @@ public class NodeToolbox extends Toolbox {
                 gfx.setClip(-this.getX(), 0, width, this.getHeight());
                 if (focused) {
                     Paint oldPaint = gfx.getPaint();
-                    gfx.setPaint(new GradientPaint(0, 0, this.gradientStart, 0, this
-                            .getHeight() - 1,
-                            this.gradientEnd));
+                    gfx.setPaint(new GradientPaint(0, 0, this.gradientStart, 0, this .getHeight() - 1, this.gradientEnd));
                     gfx.fillRect(-this.getX(), 0, width, this.getHeight() - 1);
                     gfx.setPaint(oldPaint);
 
                     gfx.setColor(this.gradientBorder);
-                    gfx.drawLine(-this.getX(), this.getHeight() - 1, -this.getX() + width
-                            - 1, this.getHeight() - 1);
+                    gfx.drawLine(-this.getX(), this.getHeight() - 1, -this.getX() + width - 1, this.getHeight() - 1);
                 }
             }
 
@@ -324,9 +319,7 @@ public class NodeToolbox extends Toolbox {
 
         @Override
         public Dimension getMaximumSize() {
-
-            return new Dimension(super.getMaximumSize().width, this
-                    .getPreferredSize().height);
+            return new Dimension(super.getMaximumSize().width, this.getPreferredSize().height);
         }
     }
 }
