@@ -15,7 +15,11 @@ public interface Nxt extends Brick {
     public static final String SOUND_EXTENSION = ".rso";
 
     /**
-     * Return device info about this brick
+     * Reads the device info from a connected NXT brick. If this fails, e.g.
+     * because the connected device is not an NXT brick, the method returns null.
+     *
+     * @return
+     * @throws IOException
      */
     public NxtDeviceInfo getDeviceInfo() throws IOException;
 
@@ -34,7 +38,7 @@ public interface Nxt extends Brick {
     public void stopSoundPlayback() throws IOException;
 
     /**
-     * Get a list of executable programs on the brick
+     * Get a list of executable programs on the brick.
      */
     public String[] getPrograms() throws IOException;
 

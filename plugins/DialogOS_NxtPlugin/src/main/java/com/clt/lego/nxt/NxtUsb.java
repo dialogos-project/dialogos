@@ -177,29 +177,6 @@ public class NxtUsb extends AbstractNxt {
     }
 
     @Override
-    public NxtDeviceInfo getDeviceInfo() throws IOException {
-        // TODO: Both this and getPrograms can probably be pulled up into AbstractNxt,
-        // if we implement an abstract method sendSystemCommand alongside sendDirectCommand.
-
-        byte[] infoResponse = sendSystemCommand(new byte[]{NxtConstants.GET_DEVICE_INFO}, 33);
-        String name = BrickUtils.readString(infoResponse, 3, 16);  // name of device
-        byte[] bluetoothAddress = new byte[6]; // leave blank
-        int[] signalStrength = new int[4];
-        for (int i = 0; i < 4; i++) {
-            signalStrength[i] = infoResponse[25 + i];
-            if (signalStrength[i] < 0) {
-                signalStrength[i] += 256;
-            }
-        }
-        int memory = (int) BrickUtils.readNum(infoResponse, 29, 4, false);
-
-        byte[] firmwareResponse = sendSystemCommand(new byte[]{NxtConstants.GET_FIRMWARE_VERSION}, 7);
-        int protocol = (int) BrickUtils.readNum(firmwareResponse, 3, 2, false);
-        int firmware = (int) BrickUtils.readNum(firmwareResponse, 5, 2, false);
-
-        return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory, firmware, protocol);
-    }
-
     protected byte[] sendSystemCommand(byte[] command, int expectedResponseLength) throws IOException {
         try {
             // prepend with 0x01 for system command
@@ -229,39 +206,6 @@ public class NxtUsb extends AbstractNxt {
         }
     }
 
-    @Override
-    public String[] getPrograms() throws IOException {
-        List<String> ret = new ArrayList<>();
-        
-        // find first
-        byte[] command = new byte[21];
-        command[0] = NxtConstants.FIND_FIRST;
-        BrickUtils.writeString("*" + Nxt.PROGRAM_EXTENSION, command, 1);
-        byte[] response = sendSystemCommand(command, 28);
-        
-        if( response[2] == NxtConstants.FILE_NOT_FOUND ) {
-            return new String[0];
-        }
-        
-        byte handle = response[3];
-        String programName = BrickUtils.readString(response, 4, 20);
-        ret.add(programName);
-        
-        // find next
-        int code;
-        do {
-            response = sendSystemCommand(new byte[] { NxtConstants.FIND_NEXT, handle }, 28);
-            code = response[2];
-            programName = BrickUtils.readString(response, 4, 20);
-//            System.err.printf("findNext: code=%d, name='%s'\n", code, programName);
-            
-            if( code == NxtConstants.SUCCESS ) {
-                ret.add(programName);
-            }
-        } while( code == NxtConstants.SUCCESS );
-        
-        return ret.toArray(new String[0]);
-    }
 
     @Override
     public String[] getModules() throws IOException {

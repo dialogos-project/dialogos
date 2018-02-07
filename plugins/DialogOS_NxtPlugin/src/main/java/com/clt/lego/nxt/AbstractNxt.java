@@ -15,13 +15,14 @@ import com.clt.io.InterfaceType;
 import com.clt.lego.BrickDescription;
 import com.clt.lego.BrickFactory;
 import com.clt.lego.BrickUtils;
+import java.util.List;
 
 /**
- * Central class for communicating with the Lego Mindstorms NXT brick.
- * This class implements a number of high-level methods. The low-level
- * implementation of the communication with the brick are left to
- * concrete subclasses, such as {@link NxtBluetooth}.
- * 
+ * Central class for communicating with the Lego Mindstorms NXT brick. This
+ * class implements a number of high-level methods. The low-level implementation
+ * of the communication with the brick are left to concrete subclasses, such as
+ * {@link NxtBluetooth}.
+ *
  * @author dabo
  *
  */
@@ -29,15 +30,7 @@ public abstract class AbstractNxt implements Nxt {
 
     private final Object programExecutionLock = new Object();
 
-    
     /* abstract methods inherited from Nxt interface */
-    
-    @Override
-    abstract public NxtDeviceInfo getDeviceInfo() throws IOException;
-
-    @Override
-    abstract public String[] getPrograms() throws IOException;
-
     @Override
     abstract public String[] getModules() throws IOException;
 
@@ -61,14 +54,68 @@ public abstract class AbstractNxt implements Nxt {
 
     @Override
     abstract public void close() throws IOException;
-    
-    
-    /* abstract methods introduced here */
-    
-    abstract protected byte[] sendDirectCommand(byte[] command, int expectedResponseSize) throws IOException;
-    
 
-    
+    /* abstract methods introduced here */
+    abstract protected byte[] sendDirectCommand(byte[] command, int expectedResponseSize) throws IOException;
+
+    abstract protected byte[] sendSystemCommand(byte[] command, int expectedResponseSize) throws IOException;
+
+
+
+
+    @Override
+    public NxtDeviceInfo getDeviceInfo() throws IOException {
+        byte[] infoResponse = sendSystemCommand(new byte[]{NxtConstants.GET_DEVICE_INFO}, 33);
+        String name = BrickUtils.readString(infoResponse, 3, 16);  // name of device
+        byte[] bluetoothAddress = new byte[6]; // leave blank
+        int[] signalStrength = new int[4];
+        for (int i = 0; i < 4; i++) {
+            signalStrength[i] = infoResponse[25 + i];
+            if (signalStrength[i] < 0) {
+                signalStrength[i] += 256;
+            }
+        }
+        int memory = (int) BrickUtils.readNum(infoResponse, 29, 4, false);
+
+        byte[] firmwareResponse = sendSystemCommand(new byte[]{NxtConstants.GET_FIRMWARE_VERSION}, 7);
+        int protocol = (int) BrickUtils.readNum(firmwareResponse, 3, 2, false);
+        int firmware = (int) BrickUtils.readNum(firmwareResponse, 5, 2, false);
+
+        return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory, firmware, protocol);
+    }
+
+    @Override
+    public String[] getPrograms() throws IOException {
+        List<String> ret = new ArrayList<>();
+
+        // find first
+        byte[] command = new byte[21];
+        command[0] = NxtConstants.FIND_FIRST;
+        BrickUtils.writeString("*" + Nxt.PROGRAM_EXTENSION, command, 1);
+        byte[] response = sendSystemCommand(command, 28);
+
+        if (response[2] == NxtConstants.FILE_NOT_FOUND) {
+            return new String[0];
+        }
+
+        byte handle = response[3];
+        String programName = BrickUtils.readString(response, 4, 20);
+        ret.add(programName);
+
+        // find next
+        int code;
+        do {
+            response = sendSystemCommand(new byte[]{NxtConstants.FIND_NEXT, handle}, 28);
+            code = response[2];
+            programName = BrickUtils.readString(response, 4, 20);
+
+            if (code == NxtConstants.SUCCESS) {
+                ret.add(programName);
+            }
+        } while (code == NxtConstants.SUCCESS);
+
+        return ret.toArray(new String[0]);
+    }
 
     public static Collection<BrickDescription<? extends Nxt>> getAvailableBricks(Component parent, ProgressListener progress, AtomicBoolean cancel, PrintWriter log) {
         Collection<BrickDescription<? extends Nxt>> infos = new ArrayList<BrickDescription<? extends Nxt>>();
@@ -87,7 +134,7 @@ public abstract class AbstractNxt implements Nxt {
                 log.println(exn);
             }
         }
-        
+
         // add USB connectors
         try {
             factories.add(NxtUsb.getFactory());

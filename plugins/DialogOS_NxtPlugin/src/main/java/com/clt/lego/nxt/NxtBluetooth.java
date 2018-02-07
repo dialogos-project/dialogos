@@ -14,8 +14,7 @@ import com.clt.util.Platform;
 import java.util.List;
 
 /**
- * Implementation of the communication with the Lego NXT brick 
- * over Bluetooth.
+ * Implementation of the communication with the Lego NXT brick over Bluetooth.
  *
  * @author dabo
  *
@@ -88,6 +87,34 @@ public class NxtBluetooth extends AbstractNxt {
         }
     }
 
+    @Override
+    protected byte[] sendSystemCommand(byte[] command, int expectedResponseLength) throws IOException {
+        // prepend with Bluetooth length header, plus 0x01 for system command
+        byte[] cmd = new byte[command.length + 3];
+
+        int msgSize = command.length + 1;
+        cmd[0] = (byte) (msgSize & 0xFF);
+        cmd[1] = (byte) (msgSize >>> 8);
+        cmd[2] = 0x01;
+
+        System.arraycopy(command, 0, cmd, 3, command.length);
+
+        this.port.getOutputStream().write(cmd);
+
+        // receive response
+        byte[] response = readResponse();
+
+        if (response[0] != 0x02) {
+            throw new IOException("First byte of response should have been 0x02");
+        }
+
+        if (response[1] != cmd[3]) {
+            throw new IOException("Second byte of response should have been system command (" + Integer.toHexString(cmd[1]) + ")");
+        }
+
+        return response;
+    }
+
     private byte[] send(int d1, int d2) throws IOException {
         if (this.getInterfaceType() == InterfaceType.Bluetooth) {
             this.port.getOutputStream().write(new byte[]{0x02, 0x00, (byte) d1, (byte) d2});
@@ -106,48 +133,6 @@ public class NxtBluetooth extends AbstractNxt {
         return response;
     }
 
-    /**
-     * Reads the device info from a connected NXT brick. If this fails, e.g.
-     * because the connected device is not an NXT brick or it does not use the
-     * current protocol version (1.124), the method returns null.
-     *
-     * @return
-     * @throws IOException
-     */
-    @Override
-    public NxtDeviceInfo getDeviceInfo() throws IOException {
-        byte[] infoResponse = send(0x01, NxtConstants.GET_DEVICE_INFO);
-
-        if (infoResponse.length == 0) {
-            return null;
-        }
-
-        if (infoResponse.length != 33) {
-            throw new IOException("Invalid response from NXT brick of length " + infoResponse.length);
-        }
-
-        String name = BrickUtils.readString(infoResponse, 3, 16);  // name of device
-
-        byte[] bluetoothAddress = new byte[6];
-        System.arraycopy(infoResponse, 18, bluetoothAddress, 0, 6);
-
-        int[] signalStrength = new int[4];
-        for (int i = 0; i < 4; i++) {
-            signalStrength[i] = infoResponse[25 + i];
-            if (signalStrength[i] < 0) {
-                signalStrength[i] += 256;
-            }
-        }
-
-        int memory = (int) BrickUtils.readNum(infoResponse, 29, 4, false);
-
-        byte[] firmwareResponse = send(0x01, NxtConstants.GET_FIRMWARE_VERSION);
-        int protocol = (int) BrickUtils.readNum(firmwareResponse, 3, 2, false);
-        int firmware = (int) BrickUtils.readNum(firmwareResponse, 5, 2, false);
-
-        return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory, firmware, protocol);
-    }
-
     public static void hexdump(byte[] data) {
         for (int i = 0; i < data.length; i++) {
             int val = data[i];
@@ -158,84 +143,6 @@ public class NxtBluetooth extends AbstractNxt {
 
             System.err.printf("%d: %d\t0x %s\tchar %c\n", i, val, Integer.toHexString(val), val);
         }
-    }
-
-    /**
-     * Returns the list of all programs that are installed on the NXT. This
-     * method is currently broken (see issue #33).
-     *
-     * @return
-     * @throws IOException
-     */
-    @Override
-    public String[] getPrograms() throws IOException {
-        // find first
-        byte[] findFirst = new byte[22];
-        findFirst[0] = 0x01;
-        findFirst[1] = (byte) 86;
-        findFirst[2] = (byte) '*';
-//        findFirst[3] = (byte) '.';
-//        findFirst[4] = (byte) '*';
-//        findFirst[5] = (byte) 0;
-
-        for (int i = 0; i < Nxt.PROGRAM_EXTENSION.length(); i++) {
-            findFirst[3 + i] = (byte) Nxt.PROGRAM_EXTENSION.charAt(i);
-        }
-        findFirst[3 + Nxt.PROGRAM_EXTENSION.length()] = 0;
-
-        hexdump(findFirst);
-
-        port.getOutputStream().write((byte) 2);
-        port.getOutputStream().write((byte) 0);
-        this.port.getOutputStream().write(findFirst);
-
-//        hexdump(readResponse());
-        return new String[0];
-
-        /*
-        int answer = this.port.getInputStream().read();
-        if (answer != 0x02) {
-            throw new IOException();
-        }
-        answer = this.port.getInputStream().read();
-        if (answer != 0x86) {
-            throw new IOException("First byte of answer is not the command id");
-        }
-
-        byte[] response = new byte[26];
-        this.port.getInputStream().read(response);
-
-        Collection<String> files = new ArrayList<String>();
-        while (response[0] == 0) {
-            byte fileHandle = response[1];
-            files.add(BrickUtils.readString(response, 2, 20));
-
-            byte[] findNext = new byte[]{0x01, (byte) 0x87, fileHandle};
-            this.port.getOutputStream().write(findNext);
-
-            answer = this.port.getInputStream().read();
-            if (answer != 0x02) {
-                throw new IOException();
-            }
-            answer = this.port.getInputStream().read();
-            if (answer != 0x87) {
-                throw new IOException("First byte of answer is not the command id");
-            }
-
-            response = new byte[26];
-            this.port.getInputStream().read(response);
-
-            // close previous handle
-            this.port.getOutputStream().write(
-                    new byte[]{0x01, (byte) 0x84, fileHandle});
-            this.port.getInputStream().read(new byte[4]);
-        }
-        if (response[0] != (byte) 0xBD) {
-            AbstractNxt.checkStatus(response);
-        }
-
-        return files.toArray(new String[files.size()]);
-         */
     }
 
     @Override
@@ -349,14 +256,14 @@ public class NxtBluetooth extends AbstractNxt {
                         // have a name starting with "cu." (as opposed to "tty.". Skip the
                         // others, to avoid duplicate copies of the NXT brick in the GUI.
 
-                        if( port.startsWith("cu.") && port.contains("NXT")) {
+                        if (port.startsWith("cu.") && port.contains("NXT")) {
                             relevantAvailablePorts.add(port);
                         }
                     } else {
                         relevantAvailablePorts.add(port);
                     }
                 }
-                
+
                 return relevantAvailablePorts.toArray(new String[0]);
             }
 
