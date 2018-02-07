@@ -75,24 +75,9 @@ public class BrickUtils {
 
         return new String(answer, offset, length);
     }
-
-    /*
-  public static void main(String... args) {
-
-    try {
-      BrickFactory<com.clt.lego.rcx.Rcx> factory =
-        com.clt.lego.rcx.RcxSerial.getFactory();
-
-      for (String port : factory.getAvailablePorts()) {
-        System.out.println("Found brick:");
-        System.out.println(factory.getBrickInfo(null, port));
-      }
-
-      System.out.println("Done");
-    } catch (Exception exn) {
-      exn.printStackTrace();
+    
+    public static void writeString(String s, byte[] buffer, int offset) {
+        byte[] sb = s.getBytes();
+        System.arraycopy(sb, 0, buffer, offset, sb.length);
     }
-  }
-
-     */
 }

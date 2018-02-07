@@ -156,7 +156,7 @@ public class NxtBluetooth extends AbstractNxt {
                 val += 256;
             }
 
-            System.err.printf("%d: %d\thex %s\tchar %c\n", i, val, Integer.toHexString(val), val);
+            System.err.printf("%d: %d\t0x %s\tchar %c\n", i, val, Integer.toHexString(val), val);
         }
     }
 

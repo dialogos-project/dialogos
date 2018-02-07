@@ -39,13 +39,13 @@ import javax.usb.UsbServices;
  * @author koller
  */
 public class NxtUsb extends AbstractNxt {
-
+    private static final boolean DEBUG_DATATRANSFERS = false;
     private static Map<String, UsbDevice> nxtDevices;
     private final String port;
     private final UsbDevice device;
     private final UsbInterface iface;
     private static final Pattern USB_LOCATION_PATTERN = Pattern.compile(".*?(\\d+).*?(\\d+).*");
-    
+
     static {
         // At program startup time, restore the USB devices. This makes it possible
         // to save a dialogue to a file (where the old portname is stored) and then
@@ -78,12 +78,12 @@ public class NxtUsb extends AbstractNxt {
             Logger.getLogger(NxtUsb.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private static String makeUsbLocation(UsbDevice dev) {
-        String baseString = dev.toString();        
+        String baseString = dev.toString();
         Matcher m = USB_LOCATION_PATTERN.matcher(baseString);
-        
-        if( m.matches() ) {
+
+        if (m.matches()) {
             return String.format("Bus %s, Device %s", m.group(1), m.group(2));
         } else {
             return baseString;
@@ -114,21 +114,17 @@ public class NxtUsb extends AbstractNxt {
 
     private NxtUsb(String port) throws IOException {
         this.port = port;
-
         device = nxtDevices.get(port);
-//        System.err.println("dev: " + device);
-        
-        if( device == null ) {
+
+        if (device == null) {
             throw new IOException(Resources.getString("UsbNxtDisconnected"));
         }
-        
+
         UsbConfiguration configuration = device.getUsbConfiguration((byte) 1);
-        if( configuration == null ) {
+        if (configuration == null) {
             throw new IOException(Resources.getString("UsbNxtDisconnected"));
         }
-        
-//        System.err.println("active: " + configuration.isActive());
-        
+
         iface = configuration.getUsbInterface((byte) 0);
 
         try {
@@ -184,28 +180,50 @@ public class NxtUsb extends AbstractNxt {
     public NxtDeviceInfo getDeviceInfo() throws IOException {
         // TODO: Both this and getPrograms can probably be pulled up into AbstractNxt,
         // if we implement an abstract method sendSystemCommand alongside sendDirectCommand.
-        
-        try {
-            send(0x01, NxtConstants.GET_DEVICE_INFO);
 
-            byte[] infoResponse = read(33);
-            String name = BrickUtils.readString(infoResponse, 3, 16);  // name of device
-            byte[] bluetoothAddress = new byte[6]; // leave blank
-            int[] signalStrength = new int[4];
-            for (int i = 0; i < 4; i++) {
-                signalStrength[i] = infoResponse[25 + i];
-                if (signalStrength[i] < 0) {
-                    signalStrength[i] += 256;
-                }
+        byte[] infoResponse = sendSystemCommand(new byte[]{NxtConstants.GET_DEVICE_INFO}, 33);
+        String name = BrickUtils.readString(infoResponse, 3, 16);  // name of device
+        byte[] bluetoothAddress = new byte[6]; // leave blank
+        int[] signalStrength = new int[4];
+        for (int i = 0; i < 4; i++) {
+            signalStrength[i] = infoResponse[25 + i];
+            if (signalStrength[i] < 0) {
+                signalStrength[i] += 256;
             }
-            int memory = (int) BrickUtils.readNum(infoResponse, 29, 4, false);
+        }
+        int memory = (int) BrickUtils.readNum(infoResponse, 29, 4, false);
 
-            send(0x01, NxtConstants.GET_FIRMWARE_VERSION);
-            byte[] firmwareResponse = read(7);
-            int protocol = (int) BrickUtils.readNum(firmwareResponse, 3, 2, false);
-            int firmware = (int) BrickUtils.readNum(firmwareResponse, 5, 2, false);
+        byte[] firmwareResponse = sendSystemCommand(new byte[]{NxtConstants.GET_FIRMWARE_VERSION}, 7);
+        int protocol = (int) BrickUtils.readNum(firmwareResponse, 3, 2, false);
+        int firmware = (int) BrickUtils.readNum(firmwareResponse, 5, 2, false);
 
-            return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory, firmware, protocol);
+        return new NxtDeviceInfo(name, bluetoothAddress, signalStrength, memory, firmware, protocol);
+    }
+
+    protected byte[] sendSystemCommand(byte[] command, int expectedResponseLength) throws IOException {
+        try {
+            // prepend with 0x01 for system command
+            byte[] cmd = new byte[command.length + 1];
+            cmd[0] = 0x01;
+            System.arraycopy(command, 0, cmd, 1, command.length);
+            int bytesSent = send(cmd);
+
+            if (bytesSent != cmd.length) {
+                throw new IOException("Command sent incompletely: only transmitted " + bytesSent + " bytes instead of " + cmd.length);
+            }
+
+            // receive response
+            byte[] response = read(expectedResponseLength);
+
+            if (response[0] != 0x02) {
+                throw new IOException("First byte of response should have been 0x02");
+            }
+
+            if (response[1] != cmd[1]) {
+                throw new IOException("Second byte of response should have been system command (" + Integer.toHexString(cmd[1]) + ")");
+            }
+
+            return response;
         } catch (UsbException ex) {
             throw new IOException(ex);
         }
@@ -213,7 +231,36 @@ public class NxtUsb extends AbstractNxt {
 
     @Override
     public String[] getPrograms() throws IOException {
-        throw new UnsupportedOperationException("getPrograms: Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> ret = new ArrayList<>();
+        
+        // find first
+        byte[] command = new byte[21];
+        command[0] = NxtConstants.FIND_FIRST;
+        BrickUtils.writeString("*" + Nxt.PROGRAM_EXTENSION, command, 1);
+        byte[] response = sendSystemCommand(command, 28);
+        
+        if( response[2] == NxtConstants.FILE_NOT_FOUND ) {
+            return new String[0];
+        }
+        
+        byte handle = response[3];
+        String programName = BrickUtils.readString(response, 4, 20);
+        ret.add(programName);
+        
+        // find next
+        int code;
+        do {
+            response = sendSystemCommand(new byte[] { NxtConstants.FIND_NEXT, handle }, 28);
+            code = response[2];
+            programName = BrickUtils.readString(response, 4, 20);
+//            System.err.printf("findNext: code=%d, name='%s'\n", code, programName);
+            
+            if( code == NxtConstants.SUCCESS ) {
+                ret.add(programName);
+            }
+        } while( code == NxtConstants.SUCCESS );
+        
+        return ret.toArray(new String[0]);
     }
 
     @Override
@@ -301,7 +348,6 @@ public class NxtUsb extends AbstractNxt {
 
         for (UsbEndpoint ep : (List<UsbEndpoint>) iface.getUsbEndpoints()) {
             if ((ep.getDirection() & UsbConst.ENDPOINT_DIRECTION_MASK) == direction) {
-//                System.err.println("found endpoint: " + ep + " dir " + ep.getDirection());
                 ret = ep;
             }
         }
@@ -316,12 +362,16 @@ public class NxtUsb extends AbstractNxt {
             throw new UsbException("Could not find endpoint for sending");
         }
 
+        if (DEBUG_DATATRANSFERS) {
+            System.err.println("send:");
+            NxtBluetooth.hexdump(data);
+        }
+
         UsbPipe pipe = endpoint.getUsbPipe();
         pipe.open();
         try {
             int sent = pipe.syncSubmit(data);
             return sent;
-//            System.out.println(sent + " bytes sent");
         } finally {
             pipe.close();
         }
@@ -348,9 +398,12 @@ public class NxtUsb extends AbstractNxt {
         try {
             byte[] data = new byte[numBytes];
             int received = pipe.syncSubmit(data);
-//            System.err.println(received + " bytes received");
-//            NxtSerial.hexdump(data);
-
+            
+            if( DEBUG_DATATRANSFERS ) {
+                System.err.println("receive:");
+                NxtBluetooth.hexdump(data);
+            }
+            
             return data;
         } finally {
             pipe.close();

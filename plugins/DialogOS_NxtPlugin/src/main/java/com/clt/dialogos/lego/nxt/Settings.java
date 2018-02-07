@@ -56,6 +56,8 @@ import com.clt.util.UserCanceledException;
 import com.clt.xml.AbstractHandler;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author dabo
@@ -137,7 +139,8 @@ public class Settings extends PluginSettings {
                                     = AbstractNxt.getAvailableBricks(d, progress, this.cancel, null);
 
                             // remove bricks that are no longer connected
-                            for (BrickDescription x : Settings.availablePorts) {
+                            List<BrickDescription> availablePortsCopy = new ArrayList<>(Settings.availablePorts); // to avoid ConcurrentModificationException
+                            for (BrickDescription x : availablePortsCopy) {
                                 if (!availableBricks.contains(x)) {
                                     Settings.availablePorts.remove(x);
                                 }
