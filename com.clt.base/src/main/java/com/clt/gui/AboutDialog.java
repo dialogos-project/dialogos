@@ -93,8 +93,7 @@ public class AboutDialog {
 
         Window w;
         if (disposeOnFocusLost) {
-            final JDialog d
-                    = new JDialog(parent, GUI.getString("About") + ' ' + this.name + "...",
+            final JDialog d = new JDialog(parent, GUI.getString("About") + ' ' + this.name + "...",
                             false);
             d.addWindowListener(new WindowAdapter() {
 
@@ -149,22 +148,15 @@ public class AboutDialog {
     }
 
     public static JComponent createHeader(final String name, final String version) {
-
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Color.white);
 
-        // String CLT_ICON = "CLT.png";
-        JLabel clt
-                = new JLabel(new ImageIcon(ClassLoader
-                        .getSystemResource(AboutDialog.CLT_ICON)));
+        JLabel clt = new JLabel(new ImageIcon(ClassLoader.getSystemResource(AboutDialog.CLT_ICON)));
 
         clt.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         top.add(clt, BorderLayout.EAST);
 
-        // PatternPanel p = new PatternPanel(new
-        // ImageIcon(ClassLoader.getSystemResource("com/clt/resources/CLT_Background.jpg")));
-        PatternPanel p = new PatternPanel(new ImageIcon(ClassLoader
-                .getSystemResource("com/clt/resources/CLT_BackgroundPattern.jpg")));
+        PatternPanel p = new PatternPanel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/CLT_BackgroundPattern.jpg")));
         p.setLayout(new BorderLayout());
         JLabel nameLabel = new JLabel(name);
         nameLabel.setForeground(Color.white);
@@ -173,16 +165,12 @@ public class AboutDialog {
         int descent = nameLabel.getFontMetrics(nameLabel.getFont()).getDescent();
         nameLabel.setBorder(BorderFactory.createEmptyBorder(5 + descent, 0, 5, 5));
 
-        JLabel versionLabel
-                = new JLabel(StringTools.isEmpty(version) ? "" : ("v" + version));
+        JLabel versionLabel = new JLabel(StringTools.isEmpty(version) ? "" : ("v" + version));
         versionLabel.setForeground(Color.white);
         // version_label.setFont(GUI.getSmallSystemFont());
         versionLabel.setVerticalAlignment(SwingConstants.BOTTOM);
         // make them stand on one line by adjusting for the different descent
-        versionLabel.setBorder(BorderFactory.createEmptyBorder(5 + descent, 5, 5
-                + descent
-                - versionLabel.getFontMetrics(versionLabel.getFont()).getDescent() + 1,
-                10));
+        versionLabel.setBorder(BorderFactory.createEmptyBorder(5 + descent, 5, 5 + descent - versionLabel.getFontMetrics(versionLabel.getFont()).getDescent() + 1, 10));
 
         p.add(nameLabel, BorderLayout.WEST);
         p.add(versionLabel, BorderLayout.CENTER);
@@ -203,8 +191,7 @@ public class AboutDialog {
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        PatternPanel logo = new PatternPanel(new ImageIcon(ClassLoader
-                .getSystemResource("com/clt/resources/CLT_BackgroundLogo.jpg")));
+        PatternPanel logo = new PatternPanel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/CLT_BackgroundLogo.jpg")));
         logo.setPreferredSize(logo.getPatternSize());
         logo.setMinimumSize(logo.getPatternSize());
 
@@ -231,8 +218,7 @@ public class AboutDialog {
 
     public static JComponent createStripes(final String position) {
 
-        return new PatternPanel(new ImageIcon(ClassLoader
-                .getSystemResource("com/clt/resources/stripes_" + position + ".gif"))) {
+        return new PatternPanel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/stripes_" + position + ".gif"))) {
 
             @Override
             public Dimension getPreferredSize() {
@@ -264,9 +250,7 @@ public class AboutDialog {
         return new Color(240, 240, 240);
     }
 
-    private Container create(final boolean aboutDialog,
-            final boolean disposeOnClick) {
-
+    private Container create(final boolean aboutDialog, final boolean disposeOnClick) {
         final Container c = new JPanel();
         c.setLayout(new GridBagLayout());
         c.setBackground(AboutDialog.getBackground());

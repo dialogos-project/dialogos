@@ -52,7 +52,6 @@ public class Version {
         if (Version.IS_NONRELEASE) {
             b.append(" rev ");
             b.append(getShortGitRevision());
-//            b.append(Version.NONRELEASE);
         }
         return b.toString();
     }
@@ -62,12 +61,12 @@ public class Version {
         String credits
                 = // "<b>Das Entwickler-Team:\n\n" +
                 "<b>design\nDaniel Bobbert\nPhilipp Detemple\nGerhard Fliedner\nC.J. Rupp\n\n"
-                + "<b>implementation\nDaniel Beck\nDaniel Bobbert\n\n"
+                + "<b>implementation\nTimo Baumann\nDaniel Beck\nDaniel Bobbert\nArne Köhn\nAlexander Koller\n\n"
                 + "<b>testing\nAnastasia Ammann\nMatthias Bauer\nDaniel Beck\nDaniel Bobbert\nPhilipp Detemple\nGerd Fliedner\nClaudia Grote\nHajo Keffer\nIris Kersten\nRoland Roller\nMichael Roth\nSarah Schmitt\nDiana Steffen";
         new AboutDialog(
                 Version.PRODUCT_NAME,
                 Version.getVersion(),
-                "\u00A9 CLT Sprachtechnologie GmbH"
+                "\u00A9 Universität des Saarlandes\n"
                 + "\nThis product includes software\n"
                 + "developed by the Apache Software\n"
                 + "Foundation (http://www.apache.org/)",

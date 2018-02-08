@@ -208,10 +208,8 @@ public class GUIClientWindow extends JFrame implements MenuCommander {
           b.append(it.next().getName());
           b.append('\n');
         }
-        String credits =
-          "<b>design & implementation\nDaniel Bobbert\nDaniel Beck\n\n"
-                        + "<b>active modules\n" + b.toString();
-        new AboutDialog("DialogClient", Device.VERSION, "\u00A9 CLT Sprachtechnologie GmbH", credits).show(this);
+        String credits = "<b>design & implementation\nDaniel Bobbert\nDaniel Beck\n\n" + "<b>active modules\n" + b.toString();
+        new AboutDialog("DialogClient", Device.VERSION, "\u00A9 Universität des Saarlandes", credits).show(this);
         break;
 
       case cmdClose:
