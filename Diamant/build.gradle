@@ -41,6 +41,7 @@ task('saveGitRevision') {
     def prop = new Properties()
     prop.put("longGitRevision", longGitRevision)
     prop.put("shortGitRevision", shortGitRevision)
+    prop.put("buildTimestamp", new Date().format("yyyy-MM-dd HH:mm"))
     
     def propFile = rootProject.file("Diamant/src/main/resources/VERSION");
     propFile.createNewFile();

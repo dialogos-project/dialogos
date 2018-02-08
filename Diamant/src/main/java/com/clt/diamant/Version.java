@@ -1,4 +1,3 @@
-
 package com.clt.diamant;
 
 import com.clt.gui.AboutDialog;
@@ -25,11 +24,11 @@ public class Version {
     public static final int BUGFIX_VERSION = 0;
 //    public static final String NONRELEASE = "beta1";
     public static final boolean IS_NONRELEASE = true;
-    
+
     public static String getShortGitRevision() {
         InputStream is = Version.class.getResourceAsStream("/VERSION");
         Properties props = new Properties();
-        
+
         try {
             props.load(is);
             return props.getProperty("shortGitRevision");
@@ -37,9 +36,27 @@ public class Version {
             return null;
         }
     }
+    
+    public static String getBuildTimestamp() {
+        InputStream is = Version.class.getResourceAsStream("/VERSION");
+        Properties props = new Properties();
+
+        try {
+            props.load(is);
+            return props.getProperty("buildTimestamp");
+        } catch (IOException ex) {
+            return null;
+        }
+    }
 
     public static String getVersion() {
         StringBuffer b = new StringBuffer();
+
+        if (Version.IS_NONRELEASE) {
+            b.append("<html>");
+        }
+
+        b.append("v");
         b.append(Version.MAJOR_VERSION);
         b.append('.');
         b.append(Version.MINOR_VERSION);
@@ -47,23 +64,24 @@ public class Version {
             b.append('.');
             b.append(Version.BUGFIX_VERSION);
         }
-        
-        
+
         if (Version.IS_NONRELEASE) {
             b.append(" rev ");
             b.append(getShortGitRevision());
+            b.append("<br/>" + getBuildTimestamp());
+            b.append("</html>");
         }
+
         return b.toString();
     }
-    
-    
+
     private static final String[] designers = {
         "Daniel Bobbert",
         "Philipp Detemple",
         "Gerhard Fliedner",
         "C.J. Rupp"
     };
-    
+
     private static final String[] implementers = {
         "Timo Baumann (CMU)",
         "Daniel Beck (CLT)",
@@ -84,14 +102,14 @@ public class Version {
         StringBuffer buf = new StringBuffer();
         buf.append("<b>");
         buf.append(label);
-        
-        for( String person : people ) {
+
+        for (String person : people) {
             buf.append("\n");
             buf.append(person);
         }
-        
+
         buf.append("\n\n");
-        
+
         return buf.toString();
     }
 
@@ -105,17 +123,14 @@ public class Version {
 //                "<b>design\nDaniel Bobbert\nPhilipp Detemple\nGerhard Fliedner\nC.J. Rupp\n\n"
 //                + "<b>implementation\nTimo Baumann\nDaniel Beck\nDaniel Bobbert\nArne Köhn\nAlexander Koller\n\n"
 //                + "<b>testing\nAnastasia Ammann\nMatthias Bauer\nDaniel Beck\nDaniel Bobbert\nPhilipp Detemple\nGerd Fliedner\nClaudia Grote\nHajo Keffer\nIris Kersten\nRoland Roller\nMichael Roth\nSarah Schmitt\nDiana Steffen";
-
         new AboutDialog(
                 Version.PRODUCT_NAME,
                 Version.getVersion(),
                 "\u00A9 Universität des Saarlandes\n"
-
                 + "\nDialogOS includes the Sphinx speech\n"
                 + "recognizer (\u00A9 Carnegie Mellon University)\n"
                 + "and the MaryTTS speech synthesizer\n"
                 + "(\u00A9 DFKI GmbH).\n"
-                        
                 + "\nThis product includes software\n"
                 + "developed by the Apache Software\n"
                 + "Foundation (http://www.apache.org/)",

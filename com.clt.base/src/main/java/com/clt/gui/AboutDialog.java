@@ -148,16 +148,6 @@ public class AboutDialog {
     }
 
     public static JComponent createHeader(final String name, final String version) {
-        /*
-        JPanel top = new JPanel(new BorderLayout());
-        top.setBackground(Color.white);
-
-        JLabel clt = new JLabel(new ImageIcon(ClassLoader.getSystemResource(AboutDialog.CLT_ICON)));
-
-        clt.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        top.add(clt, BorderLayout.EAST);
-        */
-
         PatternPanel p = new PatternPanel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/CLT_BackgroundPattern.jpg")));
         p.setLayout(new BorderLayout());
         JLabel nameLabel = new JLabel(name);
@@ -167,7 +157,7 @@ public class AboutDialog {
         int descent = nameLabel.getFontMetrics(nameLabel.getFont()).getDescent();
         nameLabel.setBorder(BorderFactory.createEmptyBorder(5 + descent, 0, 5, 5));
 
-        JLabel versionLabel = new JLabel(StringTools.isEmpty(version) ? "" : ("v" + version));
+        JLabel versionLabel = new JLabel(StringTools.isEmpty(version) ? "" : version);
         versionLabel.setForeground(Color.white);
         // version_label.setFont(GUI.getSmallSystemFont());
         versionLabel.setVerticalAlignment(SwingConstants.BOTTOM);

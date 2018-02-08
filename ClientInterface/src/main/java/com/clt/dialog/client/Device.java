@@ -45,7 +45,7 @@ abstract class Device {
    * Change this when the XML interface changes so that it is no longer
    * compatible with older versions.
    */
-  protected static final String VERSION = "7.0";
+  protected static final String VERSION = "v7.0";
 
   static final boolean DEBUG_INTERFACE = false;
 
