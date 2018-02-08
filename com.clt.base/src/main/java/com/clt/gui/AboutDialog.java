@@ -61,7 +61,7 @@ public class AboutDialog {
     /**
      * Path leading to the icon of CLT.
      */
-    private static final String CLT_ICON = "com/clt/resources/CLT.png";
+//    private static final String CLT_ICON = "com/clt/resources/CLT.png";
 
     /**
      * Creates an About Dialog containing the name and the version of the
@@ -148,6 +148,7 @@ public class AboutDialog {
     }
 
     public static JComponent createHeader(final String name, final String version) {
+        /*
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Color.white);
 
@@ -155,6 +156,7 @@ public class AboutDialog {
 
         clt.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         top.add(clt, BorderLayout.EAST);
+        */
 
         PatternPanel p = new PatternPanel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/CLT_BackgroundPattern.jpg")));
         p.setLayout(new BorderLayout());
