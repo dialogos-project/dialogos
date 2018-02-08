@@ -57,7 +57,7 @@ public class ApplicationMenuPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        JLabel logo = new JLabel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/MiniCLT.png")));
+        JLabel logo = new JLabel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/MiniUdS.png")));
         logo.setHorizontalAlignment(SwingConstants.LEFT);
         menu.add(logo, gbc);
 
