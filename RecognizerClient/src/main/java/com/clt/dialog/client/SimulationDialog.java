@@ -56,8 +56,7 @@ import com.clt.util.Platform;
 import com.clt.util.StringTools;
 import com.clt.util.Timeout;
 
-class SimulationDialog
-    extends JFrame {
+class SimulationDialog extends JFrame {
 
   private static final int buttonBorderWidth = 4;
 

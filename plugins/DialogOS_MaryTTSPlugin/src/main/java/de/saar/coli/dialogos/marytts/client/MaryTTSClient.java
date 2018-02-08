@@ -11,8 +11,7 @@ import de.saar.coli.dialogos.marytts.MaryTTS;
  * @author dabo
  * 
  */
-public class MaryTTSClient
-    extends TTSClient<MaryTTS> {
+public class MaryTTSClient extends TTSClient<MaryTTS> {
 
   private static final int cmdTranscribePro = 2102;
 
@@ -23,10 +22,7 @@ public class MaryTTSClient
   }
 
   @Override
-  protected MaryTTS createSynthesizer(ProgressListener progress,
-      Properties properties)
-        throws Exception {
-
+  protected MaryTTS createSynthesizer(ProgressListener progress, Properties properties) throws Exception {
       return new MaryTTS();
   }
 

@@ -43,8 +43,7 @@ public class Settings extends PluginSettings {
     public Settings() {
         List<VoiceName> voices = Plugin.getAvailableVoices();
 
-        this.defaultVoice
-                = new DefaultEnumProperty<VoiceName>("voice",
+        this.defaultVoice = new DefaultEnumProperty<VoiceName>("voice",
                         Resources.getString("DefaultVoice"), null, voices
                         .toArray(new VoiceName[voices.size()]), voices.get(0)) {
 

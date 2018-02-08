@@ -9,6 +9,7 @@ import com.clt.dialogos.lego.nxt.nodes.ProgramNode;
 import com.clt.dialogos.lego.nxt.nodes.ReadSensorNode;
 import com.clt.dialogos.lego.nxt.nodes.StopProgramNode;
 import com.clt.dialogos.plugin.PluginSettings;
+import static com.clt.diamant.graph.Node.registerNodeTypes;
 import com.clt.gui.Images;
 
 /**
@@ -19,7 +20,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
     @Override
     public void initialize() {
-        com.clt.diamant.graph.Node.registerNodeTypes(this.getName(), Arrays.asList(new Class<?>[]{ProgramNode.class, StopProgramNode.class, ReadSensorNode.class, MotorNode.class}));
+        registerNodeTypes(this.getName(), Arrays.asList(new Class<?>[]{ProgramNode.class, StopProgramNode.class, ReadSensorNode.class, MotorNode.class}));
     }
 
     @Override

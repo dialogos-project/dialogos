@@ -21,6 +21,7 @@ public interface Nxt extends Brick {
      * @return
      * @throws IOException
      */
+    @Override
     public NxtDeviceInfo getDeviceInfo() throws IOException;
 
     /**

@@ -1,16 +1,7 @@
 package com.example.plugin;
 
-import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
-import com.clt.diamant.IdMap;
-import com.clt.event.ProgressListener;
 import com.clt.gui.Images;
-import com.clt.xml.XMLReader;
-import com.clt.xml.XMLWriter;
-import org.xml.sax.SAXException;
-
-import java.awt.Component;
-import java.io.File;
 import javax.swing.*;
 
 

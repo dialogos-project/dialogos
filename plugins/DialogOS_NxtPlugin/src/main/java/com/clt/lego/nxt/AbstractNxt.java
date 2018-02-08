@@ -60,9 +60,6 @@ public abstract class AbstractNxt implements Nxt {
 
     abstract protected byte[] sendSystemCommand(byte[] command, int expectedResponseSize) throws IOException;
 
-
-
-
     @Override
     public NxtDeviceInfo getDeviceInfo() throws IOException {
         byte[] infoResponse = sendSystemCommand(new byte[]{NxtConstants.GET_DEVICE_INFO}, 33);

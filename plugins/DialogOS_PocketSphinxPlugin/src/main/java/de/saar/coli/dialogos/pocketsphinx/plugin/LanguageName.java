@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.saar.coli.dialogos.pocketsphinx.plugin;
 
 import com.clt.speech.Language;
@@ -12,90 +7,74 @@ import com.clt.util.StringTools;
  *
  * @author koller
  */
-
 public class LanguageName implements Comparable<LanguageName> {
 
-  private String name;
-  private Language language;
+    private String name;
+    private Language language;
 
+    public LanguageName(String name, Language language) {
 
-  public LanguageName(String name, Language language) {
-
-    this.name = name;
-    this.language = language;
-  }
-
-
-  public String getName() {
-
-    return this.name;
-  }
-
-
-  public Language getLanguage() {
-
-    return this.language;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-
-    if (o instanceof LanguageName) {
-      LanguageName ln = (LanguageName)o;
-      if (ln.name.equals(this.name)) {
-        return this.language == null ? ln.language == null : this.language
-          .equals(ln.language);
-      }
-      else {
-        return false;
-      }
+        this.name = name;
+        this.language = language;
     }
-    else {
-      return false;
+
+    public String getName() {
+
+        return this.name;
     }
-  }
 
+    public Language getLanguage() {
 
-  @Override
-  public int hashCode() {
-
-    return this.name.hashCode();
-  }
-
-
-  @Override
-  public String toString() {
-
-    if (StringTools.isEmpty(this.name)) {
-      return "<" + Resources.getString("DefaultLanguage") + ">";
+        return this.language;
     }
-    else {
-      String name = this.getName();
-      if (this.language == null) {
-        return name + " " + Resources.getString("NotAvailable");
-      }
-      else {
-        return this.language.getName();
-      }
-    }
-  }
 
+    @Override
+    public boolean equals(Object o) {
 
-  public int compareTo(LanguageName o) {
+        if (o instanceof LanguageName) {
+            LanguageName ln = (LanguageName) o;
+            if (ln.name.equals(this.name)) {
+                return this.language == null ? ln.language == null : this.language.equals(ln.language);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
-    int result = this.name.compareTo(o.name);
-    if (result != 0) {
-      return result;
+    @Override
+    public int hashCode() {
+
+        return this.name.hashCode();
     }
-    else if (this.language == null) {
-      return o.language == null ? 0 : 1;
+
+    @Override
+    public String toString() {
+
+        if (StringTools.isEmpty(this.name)) {
+            return "<" + Resources.getString("DefaultLanguage") + ">";
+        } else {
+            String name = this.getName();
+            if (this.language == null) {
+                return name + " " + Resources.getString("NotAvailable");
+            } else {
+                return this.language.getName();
+            }
+        }
     }
-    else if (o.language == null) {
-      return this.language == null ? 0 : -1;
+
+    public int compareTo(LanguageName o) {
+
+        int result = this.name.compareTo(o.name);
+        if (result != 0) {
+            return result;
+        } else if (this.language == null) {
+            return o.language == null ? 0 : 1;
+        } else if (o.language == null) {
+            return this.language == null ? 0 : -1;
+        } else {
+            return this.language.toString().compareTo(o.language.toString());
+        }
     }
-    else {
-      return this.language.toString().compareTo(o.language.toString());
-    }
-  }
 }

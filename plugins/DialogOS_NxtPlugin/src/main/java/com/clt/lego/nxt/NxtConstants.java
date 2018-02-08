@@ -1,7 +1,8 @@
 package com.clt.lego.nxt;
 
 /**
- *
+ * Constants for NXT commands and responses.
+ * 
  * @author koller
  */
 public class NxtConstants {

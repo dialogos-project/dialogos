@@ -14,28 +14,29 @@ import java.awt.*;
  * Created by max on 27.04.17.
  */
 public class Settings extends PluginSettings {
-  @Override
-  public void writeAttributes(XMLWriter out, IdMap uidMap) {
-    // nothing to write
-  }
 
-  @Override
-  protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
-    // nothing to read
-  }
+    @Override
+    public void writeAttributes(XMLWriter out, IdMap uidMap) {
+        // nothing to write
+    }
 
-  @Override
-  public JComponent createEditor() {
-    return new JPanel();
-  }
+    @Override
+    protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
+        // nothing to read
+    }
 
-  @Override
-  protected PluginRuntime createRuntime(Component parent) throws Exception {
-    return new PluginRuntime() {
-      @Override
-      public void dispose() {
-        // nothing to dispose
-      }
-    };
-  }
+    @Override
+    public JComponent createEditor() {
+        return new JPanel();
+    }
+
+    @Override
+    protected PluginRuntime createRuntime(Component parent) throws Exception {
+        return new PluginRuntime() {
+            @Override
+            public void dispose() {
+                // nothing to dispose
+            }
+        };
+    }
 }

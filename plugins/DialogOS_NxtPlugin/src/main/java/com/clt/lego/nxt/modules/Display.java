@@ -38,7 +38,7 @@ public class Display extends Module {
 
         this.autoFlush = autoFlush;
         this.image = new BufferedImage(NxtImage.SCREEN_WIDTH, NxtImage.SCREEN_HEIGHT,
-                        BufferedImage.TYPE_INT_ARGB);
+                BufferedImage.TYPE_INT_ARGB);
         this.g = this.image.createGraphics();
         this.g.setColor(Color.WHITE);
         this.g.fillRect(0, 0, this.getWidth(), this.getHeight());

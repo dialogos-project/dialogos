@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.saar.coli.dialogos.pocketsphinx;
 
 import com.clt.audio.LevelMeter;
@@ -43,6 +38,8 @@ import javax.sound.sampled.LineUnavailableException;
 public class PocketSphinx extends AbstractRecognizer {
 
     // Load native libraries for PocketSphinx.
+    // Instructions for recompiling the native libraries:
+    // https://github.com/coli-saar/dialogos/wiki/Recompiling-PocketSphinx
     static {
         try {
             if (Platform.isMac()) {

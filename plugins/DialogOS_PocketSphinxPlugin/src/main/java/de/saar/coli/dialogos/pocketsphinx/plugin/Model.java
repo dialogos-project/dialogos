@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.saar.coli.dialogos.pocketsphinx.plugin;
 
 import com.clt.speech.Language;
@@ -70,7 +65,7 @@ public class Model {
 
     public static Model remoteModelFromJson(JSONObject jsonObject, String id) throws ParseException {
         JSONObject modelRoot = (JSONObject) jsonObject.get(id);
-        
+
         String name = (String) modelRoot.get("name");
         String description = (String) modelRoot.get("description");
         int version = (int) (long) ((Long) modelRoot.get("version"));
@@ -86,7 +81,7 @@ public class Model {
 
         return new Model(id, name, description, version, url, size, lang, acoustic, dictionary, lm);
     }
-    
+
     private static File join(File dir, File sub) {
         System.err.println("join: " + dir);
         System.err.println("with: " + sub);
@@ -94,26 +89,26 @@ public class Model {
         System.err.println("joined: " + joined.toFile());
         return joined.toFile();
     }
-    
+
     public String asJson() {
         JSONObject obj = new JSONObject();
         JSONObject modelRoot = new JSONObject();
         obj.put(id, modelRoot);
-        
+
         modelRoot.put("name", name);
         modelRoot.put("description", description);
         modelRoot.put("version", version);
         modelRoot.put("url", url);
         modelRoot.put("size", size);
         modelRoot.put("language", language.getLocale().toLanguageTag());
-        
+
         // Save relative paths for these; they will be concatenated
         // with the modelDir when the model is loaded by loadModelFromCache
         // (see above).
         modelRoot.put("acoustic", acousticModelDir.toString());
         modelRoot.put("dictionary", dictionaryFile.toString());
         modelRoot.put("lm", languageModelFile.toString());
-        
+
         return obj.toJSONString();
     }
 

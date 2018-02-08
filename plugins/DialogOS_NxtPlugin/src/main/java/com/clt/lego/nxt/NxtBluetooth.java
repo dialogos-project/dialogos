@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Implementation of the communication with the Lego NXT brick over Bluetooth.
+ * (This was called NxtSerial in the commercial version.)
  *
  * @author dabo
  *

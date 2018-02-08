@@ -18,8 +18,7 @@ public abstract class BrickDescription<T extends Brick> implements Comparable<Br
     private InterfaceType type;
     private String port;
 
-    public BrickDescription(String uri, BrickInfo brickInfo, InterfaceType type,
-            String port) {
+    public BrickDescription(String uri, BrickInfo brickInfo, InterfaceType type, String port) {
 
         if (uri == null) {
             throw new IllegalArgumentException();

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.clt.lego.nxt;
 
 import com.clt.io.InterfaceType;
@@ -272,8 +267,6 @@ public class NxtUsb extends AbstractNxt {
             }
 
             if (response[1] != cmd[1]) {
-                NxtBluetooth.hexdump(cmd);
-                NxtBluetooth.hexdump(response);
                 throw new IOException("First byte of answer is not the command ID");
             }
 

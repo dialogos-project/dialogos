@@ -49,12 +49,9 @@ public class NxtDeviceInfo extends BrickInfo {
         StringBuilder b = new StringBuilder();
 
         b.append("Name    : " + this.getName() + "\n");
-        b.append("Address : "
-                + StringTools.toHexString(this.getBluetoothAddress(), ":") + "\n");
-        b.append("Firmware: 0x"
-                + StringTools.toHexString(this.getFirmwareVersion(), 4) + "\n");
-        b.append("Protocol: 0x"
-                + StringTools.toHexString(this.getProtocolVersion(), 4) + "\n");
+        b.append("Address : " + StringTools.toHexString(this.getBluetoothAddress(), ":") + "\n");
+        b.append("Firmware: 0x" + StringTools.toHexString(this.getFirmwareVersion(), 4) + "\n");
+        b.append("Protocol: 0x" + StringTools.toHexString(this.getProtocolVersion(), 4) + "\n");
         for (int i = 0; i < this.getSignalStrength().length; i++) {
             b.append("Signal " + i + " : " + this.getSignalStrength()[i] + "\n");
         }

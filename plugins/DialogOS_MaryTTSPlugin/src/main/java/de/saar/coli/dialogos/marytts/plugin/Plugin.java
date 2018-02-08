@@ -1,5 +1,3 @@
-
-
 package de.saar.coli.dialogos.marytts.plugin;
 
 import java.util.Arrays;
@@ -17,8 +15,7 @@ import de.saar.coli.dialogos.marytts.MaryTTS;
  * @author dabo
  * 
  */
-public class Plugin
-    implements com.clt.dialogos.plugin.Plugin {
+public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
   @Override
   public void initialize() {
@@ -26,8 +23,7 @@ public class Plugin
     // that we should better spend waiting here than after clicking "New Dialog"
     getSynthesizer();
 
-    Node.registerNodeTypes(Resources.getResources()
-            .createLocalizedString("TTS"),
+    Node.registerNodeTypes(Resources.getResources().createLocalizedString("TTS"),
         Arrays.asList(new Class<?>[] { TTSNode.class }));
   }
 

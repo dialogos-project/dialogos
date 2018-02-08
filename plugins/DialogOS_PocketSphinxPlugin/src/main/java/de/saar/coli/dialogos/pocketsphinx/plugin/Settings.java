@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.saar.coli.dialogos.pocketsphinx.plugin;
 
 import com.clt.dialogos.modelcache.ModelCache;
@@ -27,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import org.json.simple.parser.ParseException;
-
 import org.xml.sax.SAXException;
 
 /**
@@ -173,7 +167,7 @@ public class Settings extends PluginSettings {
                         }
                     }
                 };
-                
+
                 w.execute();
             }
         }

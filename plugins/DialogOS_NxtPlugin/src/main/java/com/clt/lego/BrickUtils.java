@@ -1,16 +1,3 @@
-/*
- * @(#)BrickUtils.java
- * Created on 26.04.2007 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.lego;
 
 import com.clt.resources.DynamicResourceBundle;
@@ -33,11 +20,11 @@ public class BrickUtils {
     public static String getString(String key) {
         return BrickUtils.resources.getString(key);
     }
-    
+
     public static long readNum(InputStream is, int length, boolean bigEndian) throws IOException {
         byte[] data = new byte[length];
         is.read(data);
-        
+
         return readNum(data, 0, length, bigEndian);
     }
 
@@ -75,7 +62,7 @@ public class BrickUtils {
 
         return new String(answer, offset, length);
     }
-    
+
     public static void writeString(String s, byte[] buffer, int offset) {
         byte[] sb = s.getBytes();
         System.arraycopy(sb, 0, buffer, offset, sb.length);

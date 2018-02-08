@@ -1,16 +1,3 @@
-/*
- * @(#)Settings.java
- * Created on 30.03.2007 by dabo
- *
- * Copyright (c) CLT Sprachtechnologie GmbH.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of CLT Sprachtechnologie GmbH ("Confidential Information").  You
- * shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement
- * you entered into with CLT Sprachtechnologie GmbH.
- */
 package com.clt.dialogos.lego.nxt;
 
 import java.awt.BorderLayout;
@@ -60,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author dabo
+ * @author dabo, koller
  */
 public class Settings extends PluginSettings {
 
@@ -134,7 +121,7 @@ public class Settings extends PluginSettings {
                             PrintWriter pw = new PrintWriter(log, true);
 
                             boolean foundNewBrick = false;
-                            
+
                             Collection<BrickDescription<? extends Nxt>> availableBricks
                                     = AbstractNxt.getAvailableBricks(d, progress, this.cancel, null);
 
@@ -145,7 +132,7 @@ public class Settings extends PluginSettings {
                                     Settings.availablePorts.remove(x);
                                 }
                             }
-                            
+
                             // add bricks that were newly connected
                             for (BrickDescription x : availableBricks) {
                                 if (!Settings.availablePorts.contains(x)) {
@@ -154,10 +141,10 @@ public class Settings extends PluginSettings {
                                 }
                             }
 
-                            if (! foundNewBrick ) {
+                            if (!foundNewBrick) {
                                 pw.println(Resources.getString("NoNewBrickFound"));
                             }
-                            
+
                             pw.close();
 
                             if (log.getBuffer().length() > 0) {
@@ -181,7 +168,7 @@ public class Settings extends PluginSettings {
 
         BrickDescription<Nxt>[] available = getAvailablePorts();
         this.nxt.setPossibleValues(available);
-        
+
         // display the first of the newly found bricks in
         // the Settings-UI
         if (search && (this.nxt.getPossibleValues().length > 1)) {

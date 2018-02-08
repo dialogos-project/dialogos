@@ -8,7 +8,6 @@ import com.clt.speech.SpeechException;
 import com.clt.speech.tts.AbstractSynthesizer;
 import com.clt.speech.tts.Voice;
 
-import marytts.util.dom.DomUtils;
 import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
 import marytts.exceptions.MaryConfigurationException;
@@ -17,18 +16,10 @@ import marytts.util.data.audio.AudioPlayer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.sound.sampled.AudioInputStream;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -39,7 +30,7 @@ import java.util.Locale;
  * This class contains a Document which is (or should always be) a
  * mary-xml compatible document that is sent to the MaryInterface to be evaluated.
  *
- * @author Nicolas and Phil (taking over the Realspeak class of the old Realspeak Plugin by Daniel Boobert)
+ * @author Nicolas and Phil (taking over the Realspeak class of the old Realspeak Plugin by Daniel Bobbert)
  * 
  */
 public class MaryTTS

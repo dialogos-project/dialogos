@@ -7,8 +7,7 @@ import com.clt.speech.Language;
  * @author dabo
  * 
  */
-public class MaryTTSVoice
-    implements com.clt.speech.tts.Voice {
+public class MaryTTSVoice implements com.clt.speech.tts.Voice {
 
   String name;
   Language language;
