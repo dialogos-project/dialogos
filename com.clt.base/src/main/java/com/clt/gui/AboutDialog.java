@@ -191,7 +191,7 @@ public class AboutDialog {
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        PatternPanel logo = new PatternPanel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/CLT_BackgroundLogo.jpg")));
+        PatternPanel logo = new PatternPanel(new ImageIcon(ClassLoader.getSystemResource("com/clt/resources/UdS_BackgroundLogo.png")));
         logo.setPreferredSize(logo.getPatternSize());
         logo.setMinimumSize(logo.getPatternSize());
 
