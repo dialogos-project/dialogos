@@ -1620,7 +1620,6 @@ public abstract class RecognizerClient<RecognizerType extends AbstractRecognizer
                     progress.progressChanged(new ProgressEvent(this, "Loading contexts",
                             0, 0, 0));
                 }
-                this.getRecognizer().loadInternalGrammars("ISO-8859-1");
             } catch (Exception exn) {
                 this.error(exn);
             }
@@ -1656,12 +1655,12 @@ public abstract class RecognizerClient<RecognizerType extends AbstractRecognizer
                 });
             }
 
-            try {
-                if (this.recognizer.getContext() == null) {
-                    Domain domain = null;
+      try {
+        if (this.recognizer.getContext() == null) {
+          Domain domain = null;
 
-                    boolean showContextChooser
-                            = properties.getProperty("ContextChooser", "false").equalsIgnoreCase(
+          boolean showContextChooser =
+            properties.getProperty("ContextChooser", "false").equalsIgnoreCase(
                                     "true");
 
                     property = properties.getProperty("Domain");

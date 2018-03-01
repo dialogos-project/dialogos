@@ -8,9 +8,12 @@ import java.awt.Image;
 import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -25,6 +29,9 @@ import javax.swing.GrayFilter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -40,20 +47,22 @@ import com.clt.properties.BooleanProperty;
 import com.clt.properties.DefaultIntegerProperty;
 import com.clt.properties.IntegerProperty;
 import com.clt.properties.Property;
+import com.clt.util.Misc;
 
 /**
  * @author Daniel Bobbert
  *
  */
-public class DefaultToolbox extends Toolbox {
+public class DefaultToolbox
+extends Toolbox {
 
-    public static final Color startColor = new Color(235, 235, 235);
-    public static final Color endColor = new Color(215, 215, 215);
+	public static final Color startColor = new Color(235, 235, 235);
+	public static final Color endColor = new Color(215, 215, 215);
 
-    private static final int toolPopupTime = 500;
+	private static final int toolPopupTime = 500;
 
-    private static final int[] BUTTON_STATES
-            = {Buttons.NORMAL, Buttons.DISABLED, Buttons.PRESSED,
+	private static final int[] BUTTON_STATES =
+	{ Buttons.NORMAL, Buttons.DISABLED, Buttons.PRESSED,
                 Buttons.ROLLOVER};
 
     private static final String BUTTON_PREFIX = "toolbar/TB_";
@@ -69,15 +78,15 @@ public class DefaultToolbox extends Toolbox {
 
     public static final int ADD_NODE = 100;
 
-    private final Map<Property<?>, ButtonGroup> optionGroups
-            = new HashMap<Property<?>, ButtonGroup>();
+	private final Map<Property<?>, ButtonGroup> optionGroups =
+		new HashMap<Property<?>, ButtonGroup>();
 
-    private IntegerProperty currentTool
-            = new DefaultIntegerProperty("tool", "Tool", null, DefaultToolbox.ANCHOR);
+	private IntegerProperty currentTool =
+		new DefaultIntegerProperty("tool", "Tool", null, DefaultToolbox.ANCHOR);
 
     @SuppressWarnings("unused")
-    private IntegerProperty nodeTool
-            = new DefaultIntegerProperty("node", "Add Node", null, 0);
+		private IntegerProperty nodeTool =
+		new DefaultIntegerProperty("node", "Add Node", null, 0);
 
     private Image toolbarIcons[][];
     private Image menuIndicator;
@@ -106,23 +115,23 @@ public class DefaultToolbox extends Toolbox {
         if (commander != null) {
             this.addActionButtons(new Tool[]{
                 new Tool("Run", SingleDocumentWindow.cmdRun, "toolbar/T_Run.png"),
-                new Tool("Run", SingleDocumentWindow.cmdDebug, "toolbar/T_Debug.png"),
-                new Tool("Run", SingleDocumentWindow.cmdWoz, "toolbar/T_Woz.png")});
-        }
+					new Tool("Debug", SingleDocumentWindow.cmdDebug,"toolbar/T_Debug.png"),
+					new Tool("Woz", SingleDocumentWindow.cmdWoz,"toolbar/T_Woz.png") });
+		}
 
-        this.addSeparator();
+		this.addSeparator();
 
-        this.addToggleButton(Preferences.getPrefs().showGrid, "toolbar/T_Grid.png");
+		this.addToggleButton(Preferences.getPrefs().showGrid, "toolbar/T_Grid.png");
 
-        this.currentTool.addChangeListener(new ChangeListener() {
+		this.currentTool.addChangeListener(new ChangeListener() {
 
-            public void stateChanged(ChangeEvent evt) {
+				public void stateChanged(ChangeEvent evt) {
 
-                DefaultToolbox.this.notifyState();
-            }
-        });
-        this.setTool(DefaultToolbox.ANCHOR);
-    }
+				DefaultToolbox.this.notifyState();
+				}
+				});
+		this.setTool(DefaultToolbox.ANCHOR);
+	}
 
     @Override
     public void addSeparator() {
@@ -187,303 +196,331 @@ public class DefaultToolbox extends Toolbox {
 
     private AbstractButton[] addActionButtons(Tool tools[]) {
         return this.addButtonGroup(tools, false, (value) -> {
-            {
-                DefaultToolbox.this.commander.doCommand(value);
-            }
-        }, null);
-    }
+				{
+				DefaultToolbox.this.commander.doCommand(value);
+				}
+				},null);
+	}
 
-    private AbstractButton addToggleButton(final BooleanProperty p, String icon) {
 
-        AbstractButton b = this.addButtonGroup(new Tool[]{new Tool(p.getName(), 0, icon) {
+	private AbstractButton addToggleButton(final BooleanProperty p, String icon) {
 
-            @Override
-            public String getName() {
+		AbstractButton b = this.addButtonGroup(new Tool[] { new Tool(p.getName(), 0, icon) {
 
-                return p.getName();
-            }
-        }}, true, new OptionSelector() {
+				@Override
+				public String getName() {
 
-            public void optionSelected(int value) {
+				return p.getName();
+				}
+				} }, true, new OptionSelector() {
 
-                p.setValue(value != 0);
-            }
-        }, null)[0];
-        b.setSelected(p.getValue());
-        return b;
-    }
+				public void optionSelected(int value) {
 
-    private AbstractButton[] addOptionGroup(final IntegerProperty option, final Tool tools[]) {
-        ButtonGroup group = this.optionGroups.get(option);
-        if (group == null) {
-            group = new ButtonGroup();
-            this.optionGroups.put(option, group);
-        }
+				p.setValue(value != 0);
+				}
+				}, null)[0];
+		b.setSelected(p.getValue());
+		return b;
+	}
 
-        final AbstractButton[] buttons = this.addButtonGroup(tools, true, (value) -> {
-            option.setValue(value);
-        }, group);
 
-        ChangeListener l = new ChangeListener() {
+	private AbstractButton[] addOptionGroup(final IntegerProperty option, final Tool tools[]) 
+	{
+		ButtonGroup group = this.optionGroups.get(option);
+		if (group == null) {
+			group = new ButtonGroup();
+			this.optionGroups.put(option, group);
+		}
 
-            public void stateChanged(ChangeEvent evt) {
-                for (int i = 0; i < buttons.length; i++) {
-                    buttons[i].setSelected(true);
-                    if (Preferences.getPrefs().getShowToolboxText()) {
-                        buttons[i].setText(Resources.getString(tools[i].getName()));
-                    }
-                    if (Preferences.getPrefs().getShowToolboxIcons()) {
-                        setIcons(buttons[i], i, tools[i].getIcon(), buttons[i].getIcon().getIconWidth(), buttons[i].getIcon().getIconHeight());
-                    }
-                }
-            }
-        };
+		final AbstractButton[] buttons = this.addButtonGroup(tools, true, (value) -> { option.setValue(value); }, group);
 
-        option.addChangeListener(l);
-        l.stateChanged(new ChangeEvent(option));
-        return buttons;
-    }
+		ChangeListener l = new ChangeListener() {
 
-    private void setIcons(AbstractButton button, int i, ImageIcon icon, int width, int height) {
+			public void stateChanged(ChangeEvent evt) 
+			{
+				for (int i = 0; i < buttons.length; i++) {
+					buttons[i].setSelected(true);
+					if (Preferences.getPrefs().getShowToolboxText())
+					{
+						buttons[i].setText(Resources.getString( tools[i].getName()));
+					}
+					if (Preferences.getPrefs().getShowToolboxIcons())
+					{
+						setIcons(buttons[i], i, buttons.length, tools[i].getIcon(), buttons[i].getIcon().getIconWidth(), buttons[i].getIcon().getIconHeight());
+					}
+				}
+			}
+		};
 
-        Image tb_left[] = (i == 0) ? this.toolbarIcons[0] : this.toolbarIcons[1];
-        Image tb_middle[] = this.toolbarIcons[2];
-        //Image tb_right[] = (i == n - 1) ? this.toolbarIcons[4] : this.toolbarIcons[3];
-        Image tb_right[] = this.toolbarIcons[4];
+		option.addChangeListener(l);
+		l.stateChanged(new ChangeEvent(option));
+		return buttons;
+	}
 
-        button.setSelectedIcon(null);
-        Buttons.setIcons(button,
-                createImages(tb_left, tb_middle, tb_right, icon, BUTTON_STATES, width, height, false),
-                BUTTON_STATES);
 
-        if (button.getSelectedIcon() == null) {
-            button.setSelectedIcon(button.getPressedIcon());
-        }
-    }
+	private void setIcons(AbstractButton button, int i, int maxI, ImageIcon icon, int width, int height) 
+	{
 
-    private AbstractButton[] addButtonGroup(Tool tools[], boolean toggle,
-            final OptionSelector actionListener, ButtonGroup group) {
+		Image tb_left[] = (i == 0) ? this.toolbarIcons[0] : this.toolbarIcons[1];
+		Image tb_middle[] = this.toolbarIcons[2];
+		//Image tb_right[] = (i == n - 1) ? this.toolbarIcons[4] : this.toolbarIcons[3];
+		Image tb_right[] = (i == maxI - 1) ? this.toolbarIcons[4] : this.toolbarIcons[3];
 
-        final AbstractButton groupButtons[] = new AbstractButton[tools.length];
+		button.setSelectedIcon(null);
+		Buttons.setIcons(button,
+				createImages(tb_left, tb_middle, tb_right, icon, BUTTON_STATES, width, height, false),
+				BUTTON_STATES);
 
-        int maxTextWidth = 0;
-        int maxIconWidth = 0;
-        for (int i = 0; i < groupButtons.length; i++) {
-            final Tool tool = tools[i];
-            this.tools.add(tool);
+		if (button.getSelectedIcon() == null) {
+			button.setSelectedIcon(button.getPressedIcon());
+		}
+	}
 
-            if (toggle) {
-                groupButtons[i] = new JToggleButton();
-            } else {
-                groupButtons[i] = new JButton();
-            }
 
-            final AbstractButton button = groupButtons[i];
-            if (group != null) {
-                group.add(button);
-            }
+	private AbstractButton[] addButtonGroup(Tool tools[], boolean toggle,
+			final OptionSelector actionListener, ButtonGroup group) {
 
-            tool.addPropertyChangeListener(new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent evt) {
-                    if (evt.getPropertyName().equals("enabled")) {
-                        button.setEnabled(tool.isEnabled());
-                    } else if (evt.getPropertyName().equals("description")) {
-                        button.setText(tool.getDescription());
-                    }
-                }
-            });
+		final AbstractButton groupButtons[] = new AbstractButton[tools.length];
 
-            button.setFont(GUI.getSmallSystemFont());
-            button.setHorizontalAlignment(SwingConstants.CENTER);
-            button.setVerticalAlignment(SwingConstants.CENTER);
-            button.setHorizontalTextPosition(SwingConstants.CENTER);
+		int maxTextWidth = 0;
+		int maxIconWidth = 0;
+		for (int i = 0; i < groupButtons.length; i++) {
+			final Tool tool = tools[i];
+			this.tools.add(tool);
 
-            if (Preferences.getPrefs().getShowToolboxIcons()) {
-                button.setVerticalTextPosition(SwingConstants.BOTTOM);
-            } else {
-                button.setVerticalTextPosition(SwingConstants.CENTER);
-            }
+			if (toggle) {
+				groupButtons[i] = new JToggleButton();
+			}
+			else {
+				groupButtons[i] = new JButton();
+			}
 
-            if (Preferences.getPrefs().getShowToolboxText()) {
-                button.setText(Resources.getString(tool.getName()));
-            }
+			final AbstractButton button = groupButtons[i];
+			if (group != null) {
+				group.add(button);
+			}
 
-            // showOnlyIcon() must be called AFTER setText(). Otherwise
-            // there will be
-            // a border on the button in Mac OS X.
-            Buttons.showOnlyIcon(button);
-            button.setFocusPainted(false);
-            button.setBorderPainted(false);
+			tool.addPropertyChangeListener(new PropertyChangeListener() 
+					{
+						public void propertyChange(PropertyChangeEvent evt)
+						{
+							if (evt.getPropertyName().equals("enabled")) {
+								button.setEnabled(tool.isEnabled());
+							}
+							else if (evt.getPropertyName().equals("description")) {
+								button.setText(tool.getDescription());
+							}
+						}
+					});
 
-            if (tool.getIcon() != null) {
-                int width = tool.getIcon().getIconWidth();
-                maxIconWidth = Math.max(maxIconWidth, width);
+			button.setFont(GUI.getSmallSystemFont());
+			button.setHorizontalAlignment(SwingConstants.CENTER);
+			button.setVerticalAlignment(SwingConstants.CENTER);
+			button.setHorizontalTextPosition(SwingConstants.CENTER);
 
-                maxTextWidth = Math.max(maxTextWidth, button.getPreferredSize().width + 1);
-            }
+			if (Preferences.getPrefs().getShowToolboxIcons()) {
+				button.setVerticalTextPosition(SwingConstants.BOTTOM);
+			}
+			else {
+				button.setVerticalTextPosition(SwingConstants.CENTER);
+			}
 
-        }
+			if (Preferences.getPrefs().getShowToolboxText()) {
+				button.setText(Resources.getString(tool.getName()));
+			}
 
-        int height = this.toolbarIcons[2][0].getHeight(this);
 
-        for (int i = 0; i < groupButtons.length; i++) {
-            int width;
-            if (groupButtons.length == 1) {
-                // for single buttons the text may be wider than the icon
-                width = maxIconWidth + this.leftButtonCapWidth + this.rightButtonCapWidth;
-            } else {
-                // For button groups, the icons must be as wide as the text.
-                // Also make sure, that the width is an odd number. Otherwise
-                // there will be an empty line between buttons with some LAFs,
-                // only god knows why.
-                width = Math.max(maxIconWidth
-                        + Math.max(this.leftButtonCapWidth, this.rightButtonCapWidth), maxTextWidth + 6);
-                if (width % 2 == 0) {
-                    width += 1;
-                }
-            }
+			// showOnlyIcon() must be called AFTER setText(). Otherwise
+			// there will be
+			// a border on the button in Mac OS X.
+			Buttons.showOnlyIcon(button);
+			button.setFocusPainted(false);
+			button.setBorderPainted(false);
 
-            final Tool tool = tools[i];
-            final AbstractButton b = groupButtons[i];
-            this.setIcons(b, i, tool.getIcon(), width, height);
+			if (tool.getIcon() != null) 
+			{
+				int width = tool.getIcon().getIconWidth();
+				maxIconWidth = Math.max(maxIconWidth, width);
 
-            b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    if (b.isSelected() && (groupButtons.length == 1)) {
-                        actionListener.optionSelected(-1);
-                    } else {
-                        actionListener.optionSelected(tool.getValue());
-                    }
-                }
-            });
+				maxTextWidth = Math.max(maxTextWidth, button.getPreferredSize().width + 1);
+			}
 
-            this.add(b);
-        }
+		}
 
-        return groupButtons;
-    }
+		int height = this.toolbarIcons[2][0].getHeight(this);
 
-    private Image[] createImages(Image left[], Image middle[], Image right[],
-            ImageIcon buttonIcon,
-            int[] states, int width, int height, boolean popup) {
+		for (int i = 0; i < groupButtons.length; i++) {
+			int width;
+			if (groupButtons.length == 1) {
+				// for single buttons the text may be wider than the icon
+				width = maxIconWidth + this.leftButtonCapWidth + this.rightButtonCapWidth;
+			} else {
+				// For button groups, the icons must be as wide as the text.
+				// Also make sure, that the width is an odd number. Otherwise
+				// there will be an empty line between buttons with some LAFs,
+				// only god knows why.
+				width = Math.max(maxIconWidth + 
+						Math.max(this.leftButtonCapWidth, this.rightButtonCapWidth), maxTextWidth + 6);
+				if (width % 2 == 0) 
+				{
+					width += 1;
+				}
+			}
 
-        Icon icons[] = new Icon[left.length];
-        if (buttonIcon != null) {
-            for (int i = 0; i < icons.length; i++) {
-                if (states[i] == Buttons.DISABLED) {
-                    icons[i]
-                            = new ImageIcon(GrayFilter.createDisabledImage(buttonIcon.getImage()));
-                } else {
-                    icons[i] = buttonIcon;
-                }
-            }
-        }
-        return this.createImages(left, middle, right, icons, width, height, popup);
-    }
+			final Tool tool = tools[i];
+			final AbstractButton b = groupButtons[i];
+			this.setIcons(b, i, groupButtons.length, tool.getIcon(), width, height);
 
-    private Image[] createImages(Image left[], Image middle[], Image right[],
-            Icon icons[],
-            int width, int height, boolean popup) {
+			b.addActionListener(new ActionListener() 
+					{
+						public void actionPerformed(ActionEvent e) 
+						{
+							if (b.isSelected() && (groupButtons.length == 1)) {
+								actionListener.optionSelected(-1);
+							} else {
+								actionListener.optionSelected(tool.getValue());
+							}
+						}
+					});
 
-        Image im[] = new Image[left.length];
 
-        for (int i = 0; i < im.length; i++) {
-            im[i] = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			this.add(b);
+		}
 
-            int w_left = left[i].getWidth(this);
-            int w_right = right[i].getWidth(this);
-            int w_middle = middle[i].getWidth(this);
+		return groupButtons;
+	}
 
-            Graphics g = im[i].getGraphics();
-            g.drawImage(left[i], 0, 0, this);
-            g.drawImage(right[i], width - w_right, 0, this);
 
-            int x = w_left;
-            while (x < width - w_right - w_middle) {
-                g.drawImage(middle[i], x, 0, this);
-                x += w_middle;
-            }
+	private Image[] createImages(Image left[], Image middle[], Image right[],
+			ImageIcon buttonIcon,
+			int[] states, int width, int height, boolean popup) {
 
-            if (x < width - w_right) {
-                g.drawImage(middle[i], x, 0, width - w_right, height, 0, 0, width
-                        - w_right - x,
-                        height, this);
-            }
+		Icon icons[] = new Icon[left.length];
+		if (buttonIcon != null) {
+			for (int i = 0; i < icons.length; i++) {
+				if (states[i] == Buttons.DISABLED) {
+					icons[i] =
+						new ImageIcon(GrayFilter.createDisabledImage(buttonIcon.getImage()));
+				}
+				else {
+					icons[i] = buttonIcon;
+				}
+			}
+		}
+		return this.createImages(left, middle, right, icons, width, height, popup);
+	}
 
-            if ((icons != null) && (icons[i] != null)) {
-                Icon icon = icons[i];
 
-                int y = (height - icon.getIconHeight()) / 2;
-                if (popup) {
-                    if (this.menuIndicator != null) {
-                        x
-                                = (width - icon.getIconWidth() - this.menuIndicator.getWidth(this)) / 2;
-                    } else {
-                        x = (width - icon.getIconWidth()) / 2 - 2;
-                    }
-                } else {
-                    x = (width - icon.getIconWidth()) / 2;
-                }
+	private Image[] createImages(Image left[], Image middle[], Image right[],
+			Icon icons[],
+			int width, int height, boolean popup) {
 
-                icon.paintIcon(this, g, x, y);
+		Image im[] = new Image[left.length];
 
-                if (popup) {
-                    if (this.menuIndicator != null) {
-                        g.drawImage(this.menuIndicator, x + icon.getIconWidth(), y
-                                + icon.getIconHeight()
-                                - this.menuIndicator.getHeight(this), this);
-                    } else {
-                        int size = 3;
-                        int h = x + icon.getIconWidth() + size;
-                        int v = y + icon.getIconHeight();
+		for (int i = 0; i < im.length; i++) {
+			im[i] = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-                        g.setColor(Color.black);
-                        for (int k = 1; k < size; k++) {
-                            g.drawLine(h - size, v - k, h - (size - k), v - k);
-                        }
-                        for (int k = 0; k < size; k++) {
-                            g.drawLine(h - size, v - size - k, h - k, v - size - k);
-                        }
-                    }
-                }
-            }
+			int w_left = left[i].getWidth(this);
+			int w_right = right[i].getWidth(this);
+			int w_middle = middle[i].getWidth(this);
 
-            g.dispose();
-        }
+			Graphics g = im[i].getGraphics();
+			g.drawImage(left[i], 0, 0, this);
+			g.drawImage(right[i], width - w_right, 0, this);
 
-        return im;
-    }
+			int x = w_left;
+			while (x < width - w_right - w_middle) {
+				g.drawImage(middle[i], x, 0, this);
+				x += w_middle;
+			}
 
-    @Override
-    public void setEnabled(boolean enabled) {
+			if (x < width - w_right) {
+				g.drawImage(middle[i], x, 0, width - w_right, height, 0, 0, width
+						- w_right - x,
+						height, this);
+			}
 
-        super.setEnabled(enabled);
+			if ((icons != null) && (icons[i] != null)) {
+				Icon icon = icons[i];
 
-        for (int i = 0; i < this.getComponentCount(); i++) {
-            this.getComponent(i).setEnabled(enabled);
-        }
-    }
+				int y = (height - icon.getIconHeight()) / 2;
+				if (popup) {
+					if (this.menuIndicator != null) {
+						x =
+							(width - icon.getIconWidth() - this.menuIndicator.getWidth(this)) / 2;
+					}
+					else {
+						x = (width - icon.getIconWidth()) / 2 - 2;
+					}
+				}
+				else {
+					x = (width - icon.getIconWidth()) / 2;
+				}
 
-    public int getTool() {
+				icon.paintIcon(this, g, x, y);
 
-        return this.currentTool.getValue();
-    }
+				if (popup) {
+					if (this.menuIndicator != null) {
+						g.drawImage(this.menuIndicator, x + icon.getIconWidth(), y
+								+ icon.getIconHeight()
+								- this.menuIndicator.getHeight(this), this);
+					}
+					else {
+						int size = 3;
+						int h = x + icon.getIconWidth() + size;
+						int v = y + icon.getIconHeight();
 
-    public void setTool(int tool) {
+						g.setColor(Color.black);
+						for (int k = 1; k < size; k++) {
+							g.drawLine(h - size, v - k, h - (size - k), v - k);
+						}
+						for (int k = 0; k < size; k++) {
+							g.drawLine(h - size, v - size - k, h - k, v - size - k);
+						}
+					}
+				}
+			}
 
-        this.currentTool.setValue(tool);
-    }
+			g.dispose();
+		}
 
-    @Override
-    public void notifyState() {
+		return im;
+	}
 
-        this.firePropertyChange("CurrentTool", -1, this.currentTool.getValue());
-    }
 
-    private interface OptionSelector {
+	@Override
+		public void setEnabled(boolean enabled) {
 
-        public void optionSelected(int value);
-    }
+			super.setEnabled(enabled);
+
+			for (int i = 0; i < this.getComponentCount(); i++) {
+				this.getComponent(i).setEnabled(enabled);
+			}
+		}
+
+
+	public int getTool() {
+
+		return this.currentTool.getValue();
+	}
+
+
+	public void setTool(int tool) {
+
+		this.currentTool.setValue(tool);
+	}
+
+
+	@Override
+		public void notifyState() {
+
+			this.firePropertyChange("CurrentTool", -1, this.currentTool.getValue());
+		}
+
+	private interface OptionSelector {
+
+		public void optionSelected(int value);
+	}
 
     private static class Tool {
 

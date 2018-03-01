@@ -1,0 +1,6 @@
+dependencies {
+  compile project(':com.clt.speech')
+  compile project(':Diamant')
+  compile project(':SphinxClient')
+  testCompile project(':SphinxClient').sourceSets.test.output
+}

@@ -9,6 +9,7 @@ import javax.swing.Icon;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.graph.Node;
 import com.clt.gui.Images;
+import com.clt.speech.tts.VoiceName;
 import de.saar.coli.dialogos.marytts.MaryTTS;
 
 /**

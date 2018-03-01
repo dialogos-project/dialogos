@@ -23,6 +23,7 @@ import com.clt.properties.EnumProperty;
 import com.clt.properties.IntegerProperty;
 import com.clt.properties.Property;
 import com.clt.properties.PropertySet;
+import com.clt.speech.tts.VoiceName;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 import org.xml.sax.SAXException;

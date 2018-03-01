@@ -1,0 +1,8 @@
+#JSGF V1.0;
+
+grammar null;
+
+public <main> =
+   one <NULL>
+ | two <NULL>
+;

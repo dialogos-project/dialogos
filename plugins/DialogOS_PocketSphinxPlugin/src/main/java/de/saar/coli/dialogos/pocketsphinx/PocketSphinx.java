@@ -260,18 +260,6 @@ public class PocketSphinx extends AbstractRecognizer {
     }
 
     @Override
-    protected Map<Domain, Map<String, RecognitionContext.Info>> loadContextCache(File grammarDirectory) throws SpeechException, IOException {
-        System.err.println("load cc");
-        return null;
-    }
-
-    @Override
-    protected void saveContextCache(Collection<RecognitionContext> contexts, File grammarDirectory) throws SpeechException, IOException {
-        System.err.println("save cc");
-
-    }
-
-    @Override
     protected RecognitionContext createContext(String name, Grammar g, Domain domain, long timestamp) throws SpeechException {
         System.err.println("create con");
         return null;

@@ -18,7 +18,7 @@ public abstract class ItemTableModel<E> extends AbstractTableModel        implem
     private List<E> items;
 
     public ItemTableModel(List<E> items) {
-
+        assert items != null;
         this.items = items;
     }
 

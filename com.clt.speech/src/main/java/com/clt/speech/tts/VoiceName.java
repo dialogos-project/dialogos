@@ -1,9 +1,9 @@
-package de.saar.coli.dialogos.marytts.plugin;
+package com.clt.speech.tts;
 
-import com.clt.speech.tts.Voice;
 import com.clt.util.StringTools;
+import com.clt.speech.Resources;
 
-class VoiceName implements Comparable<VoiceName> {
+public class VoiceName implements Comparable<VoiceName> {
 
     private String name;
     private Voice voice;
@@ -28,7 +28,7 @@ class VoiceName implements Comparable<VoiceName> {
         return this.voice;
     }
 
-    String getNormalizedName() {
+    public String getNormalizedName() {
 
         String name = this.getName();
         if (name.endsWith("16")) {
