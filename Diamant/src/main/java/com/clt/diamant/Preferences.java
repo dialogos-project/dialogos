@@ -115,7 +115,7 @@ public class Preferences {
         this.useTransparency = this.createBooleanProperty("useTransparency", true);
         this.groupNodeToolbox = this.createBooleanProperty("groupNodeToolbox", false);
 
-        this.showGrid = this.createBooleanProperty("showGrid", false);
+        this.showGrid = this.createBooleanProperty("ShowGrid", false);
         this.snapToGrid = this.createBooleanProperty("snapToGrid", false);
         this.loggingEnabled = this.createBooleanProperty("loggingEnabled", false);
 

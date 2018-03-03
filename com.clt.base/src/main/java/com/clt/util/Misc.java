@@ -14,7 +14,7 @@ import com.clt.resources.DynamicResourceBundle;
 
 public class Misc {
 
-    private static DynamicResourceBundle resources = new DynamicResourceBundle("com.clt.util.Resources");
+    private static DynamicResourceBundle resources = new DynamicResourceBundle("com.clt.gui.Resources");
 
     /**
      * Return a localized version of the given string.

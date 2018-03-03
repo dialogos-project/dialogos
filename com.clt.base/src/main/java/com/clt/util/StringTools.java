@@ -655,9 +655,7 @@ public class StringTools {
      * @see java.text.MessageFormat
      */
     public static final String format(String formatString, boolean arg) {
-
-        return MessageFormat.format(formatString, arg ? Misc.getString("true")
-                : Misc.getString("false"));
+        return MessageFormat.format(formatString, arg ? Misc.getString("true") : Misc.getString("false"));
     }
 
     /**

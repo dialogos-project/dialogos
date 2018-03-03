@@ -106,8 +106,8 @@ public class DefaultToolbox extends Toolbox {
         if (commander != null) {
             this.addActionButtons(new Tool[]{
                 new Tool("Run", SingleDocumentWindow.cmdRun, "toolbar/T_Run.png"),
-                new Tool("Run", SingleDocumentWindow.cmdDebug, "toolbar/T_Debug.png"),
-                new Tool("Run", SingleDocumentWindow.cmdWoz, "toolbar/T_Woz.png")});
+                new Tool("Debug", SingleDocumentWindow.cmdDebug, "toolbar/T_Debug.png"),
+                new Tool("Woz", SingleDocumentWindow.cmdWoz, "toolbar/T_Woz.png")});
         }
 
         this.addSeparator();
