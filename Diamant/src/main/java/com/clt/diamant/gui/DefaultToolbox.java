@@ -8,9 +8,12 @@ import java.awt.Image;
 import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -25,6 +29,9 @@ import javax.swing.GrayFilter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -40,12 +47,14 @@ import com.clt.properties.BooleanProperty;
 import com.clt.properties.DefaultIntegerProperty;
 import com.clt.properties.IntegerProperty;
 import com.clt.properties.Property;
+import com.clt.util.Misc;
 
 /**
  * @author Daniel Bobbert
  *
  */
-public class DefaultToolbox extends Toolbox {
+public class DefaultToolbox
+        extends Toolbox {
 
     public static final Color startColor = new Color(235, 235, 235);
     public static final Color endColor = new Color(215, 215, 215);
@@ -233,7 +242,7 @@ public class DefaultToolbox extends Toolbox {
                         buttons[i].setText(Resources.getString(tools[i].getName()));
                     }
                     if (Preferences.getPrefs().getShowToolboxIcons()) {
-                        setIcons(buttons[i], i, tools[i].getIcon(), buttons[i].getIcon().getIconWidth(), buttons[i].getIcon().getIconHeight());
+                        setIcons(buttons[i], i, buttons.length, tools[i].getIcon(), buttons[i].getIcon().getIconWidth(), buttons[i].getIcon().getIconHeight());
                     }
                 }
             }
@@ -244,12 +253,12 @@ public class DefaultToolbox extends Toolbox {
         return buttons;
     }
 
-    private void setIcons(AbstractButton button, int i, ImageIcon icon, int width, int height) {
+    private void setIcons(AbstractButton button, int i, int maxI, ImageIcon icon, int width, int height) {
 
         Image tb_left[] = (i == 0) ? this.toolbarIcons[0] : this.toolbarIcons[1];
         Image tb_middle[] = this.toolbarIcons[2];
         //Image tb_right[] = (i == n - 1) ? this.toolbarIcons[4] : this.toolbarIcons[3];
-        Image tb_right[] = this.toolbarIcons[4];
+        Image tb_right[] = (i == maxI - 1) ? this.toolbarIcons[4] : this.toolbarIcons[3];
 
         button.setSelectedIcon(null);
         Buttons.setIcons(button,
@@ -345,7 +354,7 @@ public class DefaultToolbox extends Toolbox {
 
             final Tool tool = tools[i];
             final AbstractButton b = groupButtons[i];
-            this.setIcons(b, i, tool.getIcon(), width, height);
+            this.setIcons(b, i, groupButtons.length, tool.getIcon(), width, height);
 
             b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {

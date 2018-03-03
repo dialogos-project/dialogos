@@ -18,55 +18,63 @@ import com.clt.xml.XMLReader;
 
 class DocumentLoader {
 
-    private Document d;
+  private Document d;
 
     public DocumentLoader(Document d) {
+    this.d = d;
+  }
 
-        this.d = d;
-    }
 
-    /**
-     * Loads a new document from a file.
-     *
-     * @param f File to load
-     * @param progress ProgressListener
-     * @return The document obtained by loading the file.
-     */
-    public Document load(final File f, ProgressListener progress) throws IOException {
+  /**
+   * Loads a new document from a file.
+   * 
+   * @param f
+   *          File to load
+   * @param progress
+   *          ProgressListener
+   * @return The document obtained by loading the file.
+   */
+  public Document load(final File f, ProgressListener progress)
+      throws IOException {
 
-        final XMLReader r = new XMLReader(Document.validateXML);
+    final XMLReader r = new XMLReader(Document.validateXML);
+    try {
+      String description = Resources.format("Loading", f.getName());
+      LongAction loading = new LoadingAction(description, r, f);
+
+      if (progress == null) {
+        new ProgressDialog(null).run(loading);
+      }
+      else {
+        loading.addProgressListener(progress);
+        progress
+            .progressChanged(new ProgressEvent(this, loading.getDescription(),
+              0, 0, 0));
         try {
-            String description = Resources.format("Loading", f.getName());
-            LongAction loading = new LoadingAction(description, r, f);
-
-            if (progress == null) {
-                new ProgressDialog(null).run(loading);
-            } else {
-                loading.addProgressListener(progress);
-                progress.progressChanged(new ProgressEvent(this, loading.getDescription(), 0, 0, 0));
-                try {
-                    loading.run();
-                } finally {
-                    loading.removeProgressListener(progress);
-                }
-            }
-        } catch (InvocationTargetException exn) {
-            if (exn.getTargetException() instanceof IOException) {
-                throw (IOException) exn.getTargetException();
-            } else if (exn.getTargetException() instanceof RuntimeException) {
-                throw (RuntimeException) exn.getTargetException();
+          loading.run();
+        } finally {
+          loading.removeProgressListener(progress);
+        }
+      }
+    } catch (InvocationTargetException exn) {
+      if (exn.getTargetException() instanceof IOException) {
+        throw (IOException)exn.getTargetException();
+      }
+      else if (exn.getTargetException() instanceof RuntimeException) {
+        throw (RuntimeException)exn.getTargetException();
             } else {
                 throw new IOException(exn.getTargetException().toString());
-            }
-        } catch (Exception exn) {
-            if (exn instanceof IOException) {
-                throw (IOException) exn;
+      }
+    } catch (Exception exn) {
+      if (exn instanceof IOException) {
+        throw (IOException)exn;
             } else if (exn instanceof RuntimeException) {
-                throw (RuntimeException) exn;
-            } else {
-                throw new IOException(exn.toString());
-            }
-        }
+        throw (RuntimeException)exn;
+      }
+      else {
+        throw new IOException(exn.toString());
+      }
+    }
 
         System.out.println("End Of: DocumentLoader::load");
         return this.d;

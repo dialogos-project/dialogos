@@ -7,7 +7,7 @@ import java.util.EventObject;
  * @version 1.0
  */
 
-public class DeviceEvent    extends EventObject {
+public class DeviceEvent extends EventObject {
 
   /** The current state of the device. */
   private ConnectionState state;

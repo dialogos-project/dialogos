@@ -248,6 +248,10 @@ class RuleItem extends Item implements ParserState {
             return "<unassigned>";
         }
 
+        @Override public String toJson() {
+            return this.toString();
+        }
+
         @Override
         public boolean equals(Object o) {
 

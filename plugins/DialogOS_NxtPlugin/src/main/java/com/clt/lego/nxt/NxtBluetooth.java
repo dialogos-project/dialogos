@@ -21,7 +21,7 @@ import java.util.List;
  *
  */
 public class NxtBluetooth extends AbstractNxt {
-
+    private static final boolean DEBUG = false;
     private SerialPort port;
 
     private NxtBluetooth(String port) throws IOException {
@@ -62,7 +62,7 @@ public class NxtBluetooth extends AbstractNxt {
         cmd[offset] = expectedResponseSize > 0 ? (byte) 0x00 : (byte) 0x80;
         System.arraycopy(command, 0, cmd, offset + 1, command.length);
 
-        this.port.getOutputStream().write(cmd);
+        send(cmd);
 
         if (expectedResponseSize > 0) {
             byte[] response = readResponse();
@@ -100,10 +100,14 @@ public class NxtBluetooth extends AbstractNxt {
 
         System.arraycopy(command, 0, cmd, 3, command.length);
 
-        this.port.getOutputStream().write(cmd);
+        send(cmd);
 
         // receive response
         byte[] response = readResponse();
+        
+        if( response.length < 2 ) {
+            throw new IOException("Response is too short");
+        }
 
         if (response[0] != 0x02) {
             throw new IOException("First byte of response should have been 0x02");
@@ -115,21 +119,34 @@ public class NxtBluetooth extends AbstractNxt {
 
         return response;
     }
-
-    private byte[] send(int d1, int d2) throws IOException {
-        if (this.getInterfaceType() == InterfaceType.Bluetooth) {
-            this.port.getOutputStream().write(new byte[]{0x02, 0x00, (byte) d1, (byte) d2});
-        } else {
-            this.port.getOutputStream().write(new byte[]{(byte) d1, (byte) d2});
+    
+    private void send(byte[] data) throws IOException {
+        if(DEBUG) {
+            System.err.println("send:");
+            hexdump(data);
         }
-
-        return readResponse();
+        
+        this.port.getOutputStream().write(data);
+        
+        if(DEBUG) {
+            System.err.println(" - sent.");
+        }
     }
 
     private byte[] readResponse() throws IOException {
         int responseLength = (int) BrickUtils.readNum(port.getInputStream(), 2, false);
         byte[] response = new byte[responseLength];
-        port.getInputStream().read(response);
+        
+        if(DEBUG) {
+            System.err.println("read ...");
+        }
+        
+        int length = port.getInputStream().read(response);
+        
+        if(DEBUG) {
+            System.err.printf("read %d bytes:\n", length);
+            hexdump(response);
+        }        
 
         return response;
     }
@@ -260,8 +277,19 @@ public class NxtBluetooth extends AbstractNxt {
                         if (port.startsWith("cu.") && port.contains("NXT")) {
                             relevantAvailablePorts.add(port);
                         }
+                    } else if (Platform.isLinux() ) {
+                        // On Linux, the serial ports for Bluetooth connections
+                        // are all of the form /dev/rfcomm*. This doesn't work
+                        // yet; see issue #42.
+                        
+                        if (port.contains("rfcomm")) {
+                            relevantAvailablePorts.add(port);
+                        }
                     } else {
-                        relevantAvailablePorts.add(port);
+                        // On Windows, Bluetooth support is currently broken.
+                        // Might as well skip the serial ports. See issue #41.
+                        
+//                        relevantAvailablePorts.add(port);
                     }
                 }
 
@@ -298,7 +326,7 @@ public class NxtBluetooth extends AbstractNxt {
     public static void main(String[] args) throws IOException {
         for (String port : SerialPort.getAvailablePorts()) {
             NxtBluetooth nx = null;
-            if (port.contains("NXT") && port.startsWith("cu")) {
+            if (port.contains("rfcomm")) {
                 try {
                     System.err.println("\n\n\n");
                     System.err.println(port);

@@ -362,12 +362,12 @@ public class Sequence extends NonTerminal {
                     ((com.clt.xml.XMLWriter) w).printElement("item", null);
                     break;
                 case JSGF:
+                    // no built-in support for <NULL> in Sphinx-4 for JSGF
+                    break;
                 case TEMIC:
                 case LH:
                 case VOCON:
                 case VOCON_G:
-                    w.print("<NULL>");
-                    break;
                 case NGSL:
                     w.print("NULL");
                     break;

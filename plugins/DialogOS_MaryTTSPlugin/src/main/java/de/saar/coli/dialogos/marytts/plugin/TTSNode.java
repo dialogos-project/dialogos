@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.swing.*;
 
 import com.clt.diamant.*;
+import com.clt.speech.tts.VoiceName;
 import de.saar.coli.dialogos.marytts.MaryTTS;
 import org.xml.sax.SAXException;
 

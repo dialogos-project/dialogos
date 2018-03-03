@@ -157,6 +157,8 @@ public class Tag extends Expansion {
                 ((com.clt.xml.XMLWriter) w).printElement("tag", tags.toString());
                 break;
             case JSGF:
+                // no built-in support for <NULL> in Sphinx-4 for JSGF
+                break;
             case TEMIC:
                 w.print("<NULL>");
                 break;
