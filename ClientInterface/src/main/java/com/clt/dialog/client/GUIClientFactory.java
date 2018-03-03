@@ -397,15 +397,13 @@ public class GUIClientFactory {
 
         if (clients.isEmpty()) {
             if ((startupScreen == null) && gui) {
-                final GUIClientStartupScreen startupWindow
-                        = new GUIClientStartupScreen(
-                                "Dialog Client", String.valueOf(Device.VERSION));
+                final GUIClientStartupScreen startupWindow 
+                        = new GUIClientStartupScreen("Dialog Client", String.valueOf(Device.VERSION));
                 startupWindow.setTitle("Startup failed");
                 final Object lock = new Object();
                 final JComponent p = new JPanel(new BorderLayout(6, 6));
 
-                p.add(
-                        new JLabel("No active clients were found.", SwingConstants.CENTER),
+                p.add(new JLabel("No active clients were found.", SwingConstants.CENTER),
                         BorderLayout.NORTH);
                 JPanel button = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 button.setOpaque(false);

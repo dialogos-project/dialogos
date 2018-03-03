@@ -47,7 +47,7 @@ public class GUIClientStartupScreen extends JFrame {
 
     public GUIClientStartupScreen(String title, String version) {
 
-        super(title + " " + version);
+        super(title + " " + version.replaceAll("<[^>]*>", " "));
 
         this.numClients = 0;
 

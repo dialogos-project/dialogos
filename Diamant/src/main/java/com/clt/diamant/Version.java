@@ -48,13 +48,9 @@ public class Version {
             return null;
         }
     }
-
-    public static String getVersion() {
+    
+    public static String[] getVersionLines() {
         StringBuffer b = new StringBuffer();
-
-        if (Version.IS_NONRELEASE) {
-            b.append("<html>");
-        }
 
         b.append("v");
         b.append(Version.MAJOR_VERSION);
@@ -68,11 +64,30 @@ public class Version {
         if (Version.IS_NONRELEASE) {
             b.append(" rev ");
             b.append(getShortGitRevision());
-            b.append("<br/>" + getBuildTimestamp());
-            b.append("</html>");
         }
+        
+        if( Version.IS_NONRELEASE ) {
+            String line2 = getBuildTimestamp();
+            return new String[] { b.toString(), line2 };
+        } else {
+            return new String[] { b.toString() };
+        }
+    }
 
-        return b.toString();
+    public static String getVersion() {
+        String[] lines = getVersionLines();
+        
+        if( lines.length > 1 ) {
+            String s = String.join("<br/>", lines);
+            return "<html>" + s + "</html>";
+        } else {
+            return lines[0];
+        }
+    }
+    
+    public static String getVersionNoLinebreaks() {
+        String[] lines = getVersionLines();
+        return String.join(" ", lines);
     }
 
     private static final String[] designers = {
