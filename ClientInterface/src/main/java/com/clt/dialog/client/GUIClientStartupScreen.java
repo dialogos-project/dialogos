@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
 import com.clt.event.ProgressEvent;
 import com.clt.gui.AboutDialog;
 import com.clt.gui.WindowUtils;
+import com.clt.util.StringTools;
 import com.clt.util.Wrapper;
 
 /**
@@ -47,7 +48,7 @@ public class GUIClientStartupScreen extends JFrame {
 
     public GUIClientStartupScreen(String title, String version) {
 
-        super(title + " " + version.replaceAll("<[^>]*>", " "));
+        super(title + " " + StringTools.stripHtml(version));
 
         this.numClients = 0;
 

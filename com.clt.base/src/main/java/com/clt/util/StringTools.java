@@ -8,6 +8,17 @@ import java.text.RuleBasedCollator;
 import java.util.*;
 
 public class StringTools {
+    
+    /**
+     * Removes all HTML elements from the string.
+     * 
+     * @param s
+     * @return 
+     */
+    public static String stripHtml(String s) {
+        String noHtml = s.replaceAll("<[^>]*>", " ");
+        return noHtml.trim().replaceAll(" +", " ");
+    }
 
     /**
      * Joins a list of strings into a larger string. This is similar to Perl's
