@@ -71,13 +71,10 @@ public class Sphinx extends SingleDomainRecognizer {
     }
 
     @Override protected RecognitionResult startImpl() throws SpeechException {
-        System.err.println("start impl");
         assert context != null : "cannot start recognition without a context";
-        // TODO: this implementation reloads the acoustic model for every recognition (which is slow but robust).
-        // TODO cont'd: it would be much better to share AM and dictionary across calls to the recognizer.
         // TODO2: integration of VAD (will require custom-made default.config.xml or other means of setting the frontend anyway)
+        // TODO3: wire VAD information and readyness to GUI
         csr = context.getRecognizer();
-        System.err.println(csr);
         csr.startRecognition();
         fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.RECOGNIZER_READY));
         System.err.println("***ready***");
@@ -103,18 +100,15 @@ public class Sphinx extends SingleDomainRecognizer {
     }
 
     @Override public void setContext(RecognitionContext context) throws SpeechException {
-        System.err.println("set context: " + context);
         assert context instanceof SphinxContext : "you're feeding a context that I do not understand";
         this.context = (SphinxContext) context;
     }
 
     @Override public RecognitionContext getContext() throws SpeechException {
-        System.err.println("get context");
         return this.context;
     }
 
     @Override public SphinxContext createTemporaryContext(Grammar g, Domain domain) throws SpeechException {
-        System.err.println("create tmp con: " + g.toString(JSGF) + (domain == null ? "null" : domain.toString()));
         //TODO: ponder name, ponder timestamp
         return createContext("temp", g, domain, System.currentTimeMillis());
     }
@@ -127,10 +121,8 @@ public class Sphinx extends SingleDomainRecognizer {
         Language l = new Language(Language.findLocale(g.getLanguage()));
         assert l != null;
         if (!contextCache.containsKey(l)) {
-            System.err.println("create con");
             contextCache.put(l, new SphinxContext(name, g, this.languageSettings.get(l)));
         } else {
-            System.err.println("reusing con");
         }
         SphinxContext sc = contextCache.get(l);
         sc.setGrammar(g);
@@ -139,13 +131,11 @@ public class Sphinx extends SingleDomainRecognizer {
 
     /** called during startup, possibly used to configure things via the GUI */
     @Override public Property<?>[] getProperties() {
-        System.err.println("getprop");
         return null;
     }
 
     /** only ever called from TranscriptionWindow (and nobody seems to use that */
     @Override public String[] transcribe(String word, Language language) throws SpeechException {
-        System.err.println("transcript");
         return null;
     }
 

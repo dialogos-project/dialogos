@@ -30,13 +30,11 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
         if (recognizer.getState() != Recognizer.State.READY)
             recognizer.allocate();
         microphone.startRecording();
-        System.err.println("start recording");
     }
 
     public void stopRecognition() {
         microphone.stopRecording();
         recognizer.deallocate();
-        System.err.println("stop recording");
     }
 
     /**
