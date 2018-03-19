@@ -8,7 +8,7 @@ import org.junit.Test;
  */
 public class SphinxPluginTest {
 
-    @Test public void testPluginLoad() {
+    @Test(timeout = 10000) public void testPluginLoad() {
         com.clt.dialogos.plugin.Plugin pl = new Plugin();
         pl.initialize();
     }

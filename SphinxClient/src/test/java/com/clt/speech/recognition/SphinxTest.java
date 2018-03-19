@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public class SphinxTest {
 
     /** startImpl should warn if Sphinx is not properly set up */
-    @Test(expected = NullPointerException.class)
+    @Test(expected = NullPointerException.class, timeout=10000)
     public void invalidRecognitionSetupTest() throws SpeechException {
         Sphinx sphinx = new Sphinx();
         try {
@@ -58,7 +58,7 @@ public class SphinxTest {
     }
 
     /** test our data URL type */
-    @Test public void testDataURL() throws IOException {
+    @Test(timeout = 10000) public void testDataURL() throws IOException {
         final String urlContent = "someText";
         String urlText = "data:text/plain;base64," + DatatypeConverter.printBase64Binary(urlContent.getBytes(StandardCharsets.UTF_8));
         URL url = new URL(null, urlText, new DataStreamHandler());
@@ -77,7 +77,7 @@ public class SphinxTest {
     }
 
     /** test the JSGF parsing in Sphinx via normal and via data-URL-encoding */
-    @Test public void testJSGFParser() throws IOException, JSGFGrammarParseException {
+    @Test(timeout = 10000) public void testJSGFParser() throws IOException, JSGFGrammarParseException {
         // load a minimal jsgf grammar from file
         String fromFileURL = JSGFParser.newGrammarFromJSGF(SphinxTest.class.getResource("minimaljsgf.gram"), new JSGFRuleGrammarFactory(new JSGFRuleGrammarManager())).toString();
         // check that we actually produce a JSGF grammar
@@ -101,7 +101,7 @@ public class SphinxTest {
         assertEquals(fromString, fromPlainDataURL);
     }
 
-    @Test public void testJSGFGrammar() throws JSGFGrammarParseException, JSGFGrammarException, IOException, ClassNotFoundException {
+    @Test(timeout = 10000) public void testJSGFGrammar() throws JSGFGrammarParseException, JSGFGrammarException, IOException, ClassNotFoundException {
         JSGFGrammar jsgfg = new JSGFGrammar("", "", false, false, false, false,
                 new Dictionary(){
                     @Override public void newProperties(PropertySheet ps) throws PropertyException {}
@@ -128,7 +128,7 @@ public class SphinxTest {
     }
 
     /** check out that Sphinx ASR works at all */
-    @Test public void testSpeechRecognitionFunctionality() throws IOException, JSGFGrammarParseException, JSGFGrammarException, UnsupportedAudioFileException {
+    @Test(timeout = 10000) public void testSpeechRecognitionFunctionality() throws IOException, JSGFGrammarParseException, JSGFGrammarException, UnsupportedAudioFileException {
         Configuration configuration = new Configuration();
         configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
         configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
@@ -157,7 +157,7 @@ public class SphinxTest {
         System.err.println(recognizer.recognize());
     }
 
-    @Test//(timeout = 10000) // 10 seconds should be enough to fail
+    @Test(timeout = 10000) // 10 seconds should be enough to fail
     public void grammarRecognitionTest() throws ParseException, IOException, SpeechException {
         Sphinx sphinx = new Sphinx();
         Grammar grammar = Grammar.create(new InputStreamReader(SphinxTest.class.getResourceAsStream("onetwo.gram")));

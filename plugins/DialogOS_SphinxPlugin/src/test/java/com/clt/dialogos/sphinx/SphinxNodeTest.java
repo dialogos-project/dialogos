@@ -47,13 +47,13 @@ import static org.junit.Assert.*;
  */
 public class SphinxNodeTest {
 
-    @Test public void testAvailableLanguages() {
+    @Test(timeout = 10000) public void testAvailableLanguages() {
         SphinxNode node = createNode();
         List<LanguageName> langs = node.getAvailableLanguages();
         assertNotNull(langs);
         assertFalse(langs.isEmpty());
     }
-    @Test public void testDefaultLanguage() {
+    @Test(timeout = 10000) public void testDefaultLanguage() {
         SphinxNode node = createNode();
         assertNotNull(node.getDefaultLanguage());
         List<LanguageName> langs = node.getAvailableLanguages(); // this fails but should of course work!
@@ -61,7 +61,7 @@ public class SphinxNodeTest {
     }
 
     /** test recognition node's recognition capability (not yet the pattern matching) */
-    @Test public void recognize() {
+    @Test(timeout = 10000) public void recognize() {
         SphinxNode node = createNode();
         node.setProperty("grammar", new Grammar("zahl", "language \"English\";\n" +
                 "root $zahl;\n"
@@ -85,7 +85,7 @@ public class SphinxNodeTest {
         }
     }
 
-    @Test public void recognizeAndMatch() {
+    @Test(timeout = 10000) public void recognizeAndMatch() {
         SphinxNode node = createNode();
         node.setProperty("grammar", new Grammar("zahl", "language \"English\";\n" +
                 "root $zahl;\n"
