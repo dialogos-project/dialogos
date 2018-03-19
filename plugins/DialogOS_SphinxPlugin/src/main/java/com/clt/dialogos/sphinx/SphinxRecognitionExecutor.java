@@ -12,9 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.clt.diamant.graph.nodes.AbstractInputNode;
-import com.clt.script.exp.Match;
 import com.clt.script.exp.Pattern;
-import com.clt.script.exp.Value;
 import com.clt.speech.recognition.*;
 import com.clt.speech.recognition.RecognitionExecutor;
 import com.clt.srgf.Grammar;

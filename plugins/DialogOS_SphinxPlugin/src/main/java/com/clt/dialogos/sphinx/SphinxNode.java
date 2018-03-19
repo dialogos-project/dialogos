@@ -6,43 +6,13 @@
 package com.clt.dialogos.sphinx;
 
 import com.clt.diamant.Device;
-import com.clt.diamant.DialogInput;
-import com.clt.diamant.ExecutionStoppedException;
-import com.clt.diamant.InputCenter;
 import com.clt.diamant.Resources;
 import com.clt.diamant.graph.nodes.AbstractInputNode;
 import com.clt.diamant.graph.nodes.NodeExecutionException;
-import com.clt.gui.GUI;
-import com.clt.gui.Passpartout;
-import com.clt.gui.TextBox;
-import com.clt.gui.border.GroupBorder;
-import com.clt.script.exp.Pattern;
-import com.clt.script.exp.Value;
-import com.clt.script.exp.patterns.VarPattern;
 import com.clt.speech.SpeechException;
 import com.clt.speech.recognition.*;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
-import java.awt.event.ActionEvent;
-import javax.swing.border.Border;
 
 /**
  * @author koller

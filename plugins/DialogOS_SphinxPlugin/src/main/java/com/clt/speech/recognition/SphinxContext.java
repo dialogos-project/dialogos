@@ -7,12 +7,10 @@ import edu.cmu.sphinx.api.Context;
 import edu.cmu.sphinx.jsgf.JSGFGrammar;
 import edu.cmu.sphinx.jsgf.JSGFGrammarException;
 import edu.cmu.sphinx.jsgf.JSGFGrammarParseException;
-import edu.cmu.sphinx.linguist.dictionary.TextDictionary;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
 
 import static com.clt.srgf.Grammar.Format.JSGF;
 

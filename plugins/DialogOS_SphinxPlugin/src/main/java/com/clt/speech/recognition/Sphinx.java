@@ -5,27 +5,19 @@
  */
 package com.clt.speech.recognition;
 
-import com.clt.audio.LevelMeter;
 import com.clt.properties.Property;
 import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
 import com.clt.srgf.Grammar;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.stanfy.enroscar.net.DataStreamHandler;
 import edu.cmu.sphinx.api.*;
-import edu.cmu.sphinx.linguist.dictionary.TextDictionary;
-import edu.cmu.sphinx.recognizer.*;
-
-import static com.clt.srgf.Grammar.Format.JSGF;
 
 /**
  *
