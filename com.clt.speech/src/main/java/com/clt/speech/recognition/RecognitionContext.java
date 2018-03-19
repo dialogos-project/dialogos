@@ -26,35 +26,29 @@ public class RecognitionContext {
     }
 
     public String getName() {
-
         return this.name;
     }
 
     public Grammar getGrammar() {
-
         return this.grammar;
     }
 
     public Domain getDomain() {
-
         return this.domain;
     }
 
     public Language getLanguage() {
-
         return this.language;
     }
 
     @Override
     public String toString() {
-
         return this.name;
     }
 
     @SuppressWarnings("unused")
     public void dispose()
             throws RecognizerException {
-
     }
 
     public abstract static class Info {
@@ -63,24 +57,20 @@ public class RecognitionContext {
         private long timestamp;
 
         public Info(String name, long timestamp) {
-
             this.name = name;
             this.timestamp = timestamp;
         }
 
         public String getName() {
-
             return this.name;
         }
 
         public long getTimestamp() {
-
             return this.timestamp;
         }
 
         @Override
         public String toString() {
-
             return this.getName();
         }
 

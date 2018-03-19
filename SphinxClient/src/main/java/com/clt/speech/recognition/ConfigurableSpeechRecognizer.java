@@ -3,6 +3,7 @@ package com.clt.speech.recognition;
 import edu.cmu.sphinx.api.*;
 import edu.cmu.sphinx.frontend.util.StreamDataSource;
 import edu.cmu.sphinx.recognizer.*;
+import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.result.Result;
 
 import java.io.IOException;
@@ -26,11 +27,16 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
     }
 
     public void startRecognition() {
+        if (recognizer.getState() != Recognizer.State.READY)
+            recognizer.allocate();
         microphone.startRecording();
+        System.err.println("start recording");
     }
 
     public void stopRecognition() {
         microphone.stopRecording();
+        recognizer.deallocate();
+        System.err.println("stop recording");
     }
 
     /**

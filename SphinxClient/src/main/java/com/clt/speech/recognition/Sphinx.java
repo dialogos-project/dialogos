@@ -74,15 +74,17 @@ public class Sphinx extends SingleDomainRecognizer {
         System.err.println("start impl");
         assert context != null : "cannot start recognition without a context";
         // TODO: this implementation reloads the acoustic model for every recognition (which is slow but robust).
-        // TODO: it would be much better to share AM and dictionary across calls to the recognizer.
-        // TODO: integration of VAD (will require custom-made default.config.xml or other means of setting the frontend anyway)
+        // TODO cont'd: it would be much better to share AM and dictionary across calls to the recognizer.
+        // TODO2: integration of VAD (will require custom-made default.config.xml or other means of setting the frontend anyway)
         csr = context.getRecognizer();
+        System.err.println(csr);
         csr.startRecognition();
         fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.RECOGNIZER_READY));
         System.err.println("***ready***");
         SpeechResult speechResult = csr.getResult();
         if (speechResult != null) {
             System.err.println("**** result: " + speechResult.getHypothesis());
+            csr.stopRecognition();
             return new SphinxResult(speechResult);
         }
         return null;
@@ -117,13 +119,22 @@ public class Sphinx extends SingleDomainRecognizer {
         return createContext("temp", g, domain, System.currentTimeMillis());
     }
 
+    Map<Language, SphinxContext> contextCache = new HashMap<>();
+
     @Override protected SphinxContext createContext(String name, Grammar g, Domain domain, long timestamp) throws SpeechException {
-        System.err.println("create con");
         //TODO: figure out what to do if the grammar does not have a language
         assert g.getLanguage() != null;
         Language l = new Language(Language.findLocale(g.getLanguage()));
         assert l != null;
-        return new SphinxContext(name, g, this.languageSettings.get(l));
+        if (!contextCache.containsKey(l)) {
+            System.err.println("create con");
+            contextCache.put(l, new SphinxContext(name, g, this.languageSettings.get(l)));
+        } else {
+            System.err.println("reusing con");
+        }
+        SphinxContext sc = contextCache.get(l);
+        sc.setGrammar(g);
+        return sc;
     }
 
     /** called during startup, possibly used to configure things via the GUI */

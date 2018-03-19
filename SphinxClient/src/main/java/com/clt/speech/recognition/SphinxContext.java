@@ -4,6 +4,9 @@ import com.clt.speech.SpeechException;
 import com.clt.srgf.Grammar;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.Context;
+import edu.cmu.sphinx.jsgf.JSGFGrammar;
+import edu.cmu.sphinx.jsgf.JSGFGrammarException;
+import edu.cmu.sphinx.jsgf.JSGFGrammarParseException;
 import edu.cmu.sphinx.linguist.dictionary.TextDictionary;
 
 import java.io.IOException;
@@ -20,6 +23,10 @@ public class SphinxContext extends RecognitionContext {
     public Configuration configuration;
     protected InputStream audioSource;
     SphinxLanguageSettings sls;
+    Grammar grammar;
+    ConfigurableSpeechRecognizer csr;
+    ExtensibleDictionary dic;
+    JSGFGrammar jsgfGrammar;
 
     /**
      * interpolate will interpolate the grammar with a background LM (at the cost of harder-to-identify)
@@ -28,10 +35,13 @@ public class SphinxContext extends RecognitionContext {
         super(name, null, null, grammar);
         assert sls != null;
         this.sls = sls;
-
         this.configuration = sls.getBaseConfiguration();
-        if (grammar != null)
-            this.configuration.setGrammarPath(encodeData(grammar.toString(JSGF)));
+        this.grammar = grammar;
+    }
+
+    public void setGrammar(Grammar grammar) {
+        this.grammar = grammar;
+        this.configuration.setGrammarPath(encodeData(grammar.toString(JSGF)));
     }
 
     public void setAudioSource(InputStream audioSource) {
@@ -39,17 +49,21 @@ public class SphinxContext extends RecognitionContext {
     }
 
     public ConfigurableSpeechRecognizer getRecognizer() throws SpeechException {
-        ConfigurableSpeechRecognizer csr;
         try {
-            Context context = new Context(Sphinx.class.getResource("sphinx/dos-sphinx.config.xml").toString(), configuration);
-            ExtensibleDictionary dic = context.getInstance(ExtensibleDictionary.class);
+            if (csr == null) {
+                Context context = new Context(Sphinx.class.getResource("sphinx/dos-sphinx.config.xml").toString(), configuration);
+                dic = context.getInstance(ExtensibleDictionary.class);
+                jsgfGrammar = context.getInstance(JSGFGrammar.class);
+                csr = new ConfigurableSpeechRecognizer(context, audioSource);
+            }
             dic.loadExceptions(sls.getG2PList());
-            csr = new ConfigurableSpeechRecognizer(context, audioSource);
-        } catch (IOException e) {
+            jsgfGrammar.setBaseURL(new URL(encodeData(grammar.toString(JSGF))));
+            jsgfGrammar.loadJSGF("");
+            return csr;
+        } catch (IOException | JSGFGrammarException | JSGFGrammarParseException e) {
             e.printStackTrace();
             throw new SpeechException(e);
         }
-        return csr;
     }
 
     private static String encodeData(String data) {

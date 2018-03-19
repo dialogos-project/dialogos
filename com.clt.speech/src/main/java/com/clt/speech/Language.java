@@ -24,19 +24,16 @@ public class Language {
 
 
   public Language(Locale locale) {
-
     this(locale, null);
   }
 
 
   public Language(String name) {
-
     this(name == null ? Locale.getDefault() : Language.findLocale(name), null);
   }
 
 
   public Language(Locale locale, String name) {
-
     if (locale == null) {
       throw new IllegalArgumentException();
     }
@@ -107,26 +104,22 @@ public class Language {
 
 
   public String getName() {
-
     return this.name;
   }
 
 
   public Locale getLocale() {
-
     return this.locale;
   }
 
 
   @Override
   public String toString() {
-
     return this.getName();
   }
 
 
   public static Locale findLocale(String name) {
-
     Locale locale = Language.localeNames.get(name);
     if (locale == null) {
       locale = StringTools.parseLocale(name);
@@ -138,7 +131,6 @@ public class Language {
 
   @Override
   public boolean equals(Object o) {
-
     try {
       return this.locale.equals(((Language)o).locale);
     } catch (Exception exn) {
@@ -149,7 +141,6 @@ public class Language {
 
   @Override
   public int hashCode() {
-
     return this.locale.hashCode();
   }
 }
