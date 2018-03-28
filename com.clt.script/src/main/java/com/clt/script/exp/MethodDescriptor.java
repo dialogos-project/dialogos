@@ -10,14 +10,13 @@ import com.clt.script.exp.values.Undefined;
  * @author Daniel Bobbert
  * @version 1.0
  */
-public class MethodDescriptor extends FunctionDescriptor        implements Comparable<MethodDescriptor> {
+public class MethodDescriptor extends FunctionDescriptor implements Comparable<MethodDescriptor> {
 
     private Method method;
     private boolean isStatic;
     private boolean isVarArg;
 
     public MethodDescriptor(Method method, boolean isStatic, boolean isVarArg) {
-
         this.method = method;
         this.isStatic = isStatic;
         this.isVarArg = isVarArg;
@@ -25,7 +24,6 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
 
     @Override
     public Type getReturnType() {
-
         Class<?> returnType = this.method.getReturnType();
         if (returnType == Void.TYPE) {
             return Type.Void;
@@ -36,7 +34,6 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
 
     @Override
     public int hashCode() {
-
         int hash = this.method.getName().hashCode();
         Class<?>[] parmtypes = this.method.getParameterTypes();
         for (int i = 0; i < parmtypes.length; i++) {
@@ -46,7 +43,6 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
     }
 
     public int compareTo(MethodDescriptor m) {
-
         int r = this.getName().compareTo(m.getName());
         if (r == 0) {
             Class<?>[] p1 = this.getParameterClasses();
@@ -61,7 +57,6 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
 
     @Override
     public boolean equals(Object o) {
-
         if (o instanceof MethodDescriptor) {
             MethodDescriptor m = (MethodDescriptor) o;
             if (!this.getName().equals(m.getName())) {
@@ -87,7 +82,6 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
     }
 
     public boolean match(boolean isStatic, String name, Value[] values) {
-
         Class<?>[] c = new Class[values.length];
         for (int i = 0; i < c.length; i++) {
             c[i] = values[i].getClass();
@@ -96,7 +90,6 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
     }
 
     public boolean match(boolean isStatic, String name, Type[] types) {
-
         Class<?>[] c = new Class[types.length];
         for (int i = 0; i < c.length; i++) {
             c[i] = types[i].getObjectClass();
@@ -105,7 +98,6 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
     }
 
     private boolean match(boolean isStatic, String name, Class<?>[] types) {
-
         if (isStatic && !this.isStatic) {
             return false;
         }
@@ -139,18 +131,15 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
 
     @Override
     public String getName() {
-
         return this.method.getName();
     }
 
     public Class<?>[] getParameterClasses() {
-
         return this.method.getParameterTypes();
     }
 
     @Override
     public Type[] getParameterTypes() {
-
         Class<?>[] c = this.getParameterClasses();
         Type[] t = new Type[this.isVarArg() ? c.length - 1 : c.length];
         for (int i = 0; i < t.length; i++) {
@@ -160,23 +149,19 @@ public class MethodDescriptor extends FunctionDescriptor        implements Compa
     }
 
     public Class<?> getDeclaringClass() {
-
         return this.method.getDeclaringClass();
     }
 
     @Override
     public boolean isVarArg() {
-
         return this.isVarArg;
     }
 
     public Value eval(Value[] args) {
-
         return this.eval(null, args);
     }
 
     public Value eval(Object caller, Value[] args) {
-
         if ((caller == null) && !this.isStatic) {
             throw new EvaluationException("Non-static function " + this
                     + " invoked without caller.");

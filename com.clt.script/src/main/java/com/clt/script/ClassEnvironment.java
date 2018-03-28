@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 import com.clt.script.exp.Expression;
 import com.clt.script.exp.MethodDescriptor;
@@ -29,12 +26,10 @@ public class ClassEnvironment implements Environment {
     private Class<?> cls;
 
     public ClassEnvironment(Class<?> cls) {
-
         this(cls, null);
     }
 
     public ClassEnvironment(Class<?> cls, Object caller) {
-
         this.caller = caller;
         this.cls = cls;
         this.methods = new HashSet<MethodDescriptor>();
@@ -83,30 +78,25 @@ public class ClassEnvironment implements Environment {
         }
     }
 
-    public Iterator<MethodDescriptor> getMethods() {
-
-        return this.methods.iterator();
+    public Iterable<MethodDescriptor> getMethods() {
+        return Collections.unmodifiableCollection(this.methods);
     }
 
     @Override
     public int hashCode() {
-
         return this.cls.hashCode()
                 ^ (this.caller == null ? 0 : this.caller.hashCode());
     }
 
     public Type getType(String typeName) {
-
         throw new TypeException("Unknown type: " + typeName);
     }
 
     public Variable createVariableReference(String id) {
-
         throw new TypeException("Unknown variable: " + id);
     }
 
     public Expression createFunctionCall(String name, Expression[] arguments) {
-
         Type[] argTypes = new Type[arguments.length];
         for (int i = 0; i < argTypes.length; i++) {
             argTypes[i] = arguments[i].getType().resolve();
@@ -146,7 +136,6 @@ public class ClassEnvironment implements Environment {
 
     public Reader include(String name)
             throws IOException {
-
         throw new FileNotFoundException("Could not find " + name);
     }
 }

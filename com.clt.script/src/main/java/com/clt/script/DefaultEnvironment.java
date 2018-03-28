@@ -20,40 +20,33 @@ public class DefaultEnvironment implements Environment {
     private static ClassEnvironment builtin = null;
 
     public DefaultEnvironment() {
-
         if (DefaultEnvironment.builtin == null) {
             DefaultEnvironment.builtin = new ClassEnvironment(BuiltinFunctions.class);
         }
     }
 
     public Type getType(String typeName) {
-
         return DefaultEnvironment.builtin.getType(typeName);
     }
 
     public Variable createVariableReference(String name) {
-
         return DefaultEnvironment.builtin.createVariableReference(name);
     }
 
     public Expression createFunctionCall(String name, Expression[] arguments) {
-
         return DefaultEnvironment.builtin.createFunctionCall(name, arguments);
     }
 
     public Reader include(String name)
             throws IOException {
-
         return DefaultEnvironment.builtin.include(name);
     }
 
-    public Iterator<MethodDescriptor> getMethods() {
-
+    public Iterable<MethodDescriptor> getMethods() {
         return DefaultEnvironment.builtin.getMethods();
     }
 
     static String functionSignature(String name, Expression[] arguments) {
-
         StringBuilder f = new StringBuilder();
         f.append(name);
         f.append('(');

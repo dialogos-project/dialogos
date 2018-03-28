@@ -2,10 +2,7 @@ package com.clt.script.exp;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
 import com.clt.script.DefaultEnvironment;
 import com.clt.script.Environment;
@@ -29,18 +26,15 @@ public abstract class Expression {
     public abstract Type getType();
 
     public final Value evaluate() {
-
         return this.evaluate(new DefaultDebugger());
     }
 
     public final Value evaluate(Debugger dbg) {
-
         dbg.preEvaluate(this);
         return this.eval(dbg);
     }
 
     public int getPriority() {
-
         return 0;
     }
 
@@ -49,7 +43,6 @@ public abstract class Expression {
     public abstract Expression copy(Map<?, ?> mapping);
 
     public final void write(PrintWriter w, boolean parens) {
-
         if (parens) {
             w.write('(');
         }
@@ -61,7 +54,6 @@ public abstract class Expression {
 
     @Override
     public final String toString() {
-
         StringWriter w = new StringWriter();
         PrintWriter pw = new PrintWriter(w);
         this.write(pw);
@@ -70,43 +62,29 @@ public abstract class Expression {
     }
 
     public static String[] getBuiltInFunctions(boolean html) {
-
-        Collection<MethodDescriptor> descs = new TreeSet<MethodDescriptor>();
-        for (Iterator<MethodDescriptor> it = new DefaultEnvironment().getMethods(); it
-                .hasNext();) {
-            descs.add(it.next());
+        List<String> functions = new ArrayList<>();
+        for (MethodDescriptor md : new DefaultEnvironment().getMethods()) {
+            functions.add(md.getDescription(html));
         }
-
-        String functions[] = new String[descs.size()];
-
-        int i = 0;
-        for (Iterator<MethodDescriptor> it = descs.iterator(); it.hasNext(); i++) {
-            functions[i] = it.next().getDescription(html);
-        }
-
-        return functions;
+        return functions.toArray(new String[] {});
     }
 
     public static Expression parseExpression(String exp)
             throws Exception {
-
-        return Expression.parseExpression(exp, new DefaultEnvironment());
+        return parseExpression(exp, new DefaultEnvironment());
     }
 
     public static Expression parseExpression(String exp, Environment env)
             throws Exception {
-
         return Parser.parseExpression(exp, env);
     }
 
     public static Pattern parsePattern(String exp)
             throws Exception {
-
         return Parser.parsePattern(exp);
     }
 
     public static String replace(String s, String src, String dst) {
-
         if (!dst.equals(src)) {
             int pos = 0;
             while ((pos = s.indexOf(src, pos)) >= 0) {
