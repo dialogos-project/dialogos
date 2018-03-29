@@ -258,7 +258,7 @@ public abstract class AbstractOutputNode extends Node {
     protected String evaluateGroovyScript(String groovyScript) {
         // Create new Binding and GroovyShell
         Binding sharedData = new Binding();
-        GroovyShell gShell = new GroovyShell(sharedData);
+        GroovyShell gShell = new GroovyShell(this.getClass().getClassLoader(), sharedData);
 
         // get list of all variables(slots) from graph
         List<Slot> allVars = this.getGraph().getAllVariables(Graph.LOCAL);
