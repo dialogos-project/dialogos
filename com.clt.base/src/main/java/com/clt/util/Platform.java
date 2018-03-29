@@ -125,14 +125,4 @@ public class Platform {
         return Platform.showQuitMenuItem;
     }
 
-    /**
-     * @deprecated This was old, now obsolete code for the Mac OS L&amp;F on Mac
-     * OS 9.
-     */
-    @Deprecated
-    public static void setSecondaryMenuBar(JMenuBar mbar) {
-
-        // code removed, this is a noop
-    }
-
 }

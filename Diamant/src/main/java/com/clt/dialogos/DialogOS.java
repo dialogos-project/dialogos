@@ -17,8 +17,6 @@ import com.clt.util.Misc;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author dabo, 2mfriedr

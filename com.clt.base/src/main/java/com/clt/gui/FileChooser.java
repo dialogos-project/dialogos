@@ -6,16 +6,20 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.UnsupportedEncodingException;
+import li.flor.nativejfilechooser.NativeJFileChooser;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.clt.io.FileExtensionFilter;
 import com.clt.util.Platform;
 
 public class FileChooser {
 
-  public static boolean useSystemFileChooser = true;
+  public static boolean useSystemFileChooser = false;
 
   private static Frame awtparent;
 
@@ -28,11 +32,10 @@ public class FileChooser {
 
   private File currentdir;
 
-  private FileFilter filter = null;
+  private FileFilter filter = new FileExtensionFilter("dos", "DialogOS dialog model");
 
 
   public FileChooser() {
-
     String workingDirectory = System.getProperty("user.dir");
     if (workingDirectory == null) {
       workingDirectory = ".";
@@ -42,7 +45,6 @@ public class FileChooser {
 
 
   public FileChooser(String currentDirectoryPath) {
-
     this();
     if (currentDirectoryPath != null) {
       this.currentdir = new File(currentDirectoryPath);
@@ -51,7 +53,6 @@ public class FileChooser {
 
 
   public FileChooser(File currentDirectory) {
-
     this();
     if (currentDirectory != null) {
       this.currentdir = currentDirectory;
@@ -60,7 +61,6 @@ public class FileChooser {
 
 
   public void setFileFilter(FileFilter filter) {
-
     this.filter = filter;
   }
 
@@ -70,19 +70,16 @@ public class FileChooser {
   // **************************************************************************************************************
 
   public File standardGetFile() {
-
     return this.standardGetFile(null);
   }
 
 
   public File standardGetFile(Component parent) {
-
     return this.standardGetFile(parent, null);
   }
 
 
   public File standardGetFile(Component parent, String title) {
-
     if (FileChooser.useSystemFileChooser) {
       FileDialog chooser =
         new FileDialog(FileChooser.awtparent, Platform.isMac() ? null
@@ -123,10 +120,13 @@ public class FileChooser {
       return (file == null ? null : new File(dir, file));
     }
     else {
-      JFileChooser chooser = new SwingFileChooser(this.currentdir);
+      NativeJFileChooser chooser = new NativeJFileChooser(this.currentdir);
       chooser.setDialogTitle(title == null ? GUI.getString("OpenFile") : title);
       if (this.filter != null) {
         chooser.setFileFilter(this.filter);
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setAcceptAllFileFilterUsed(true);
       }
       if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
         return null;
@@ -140,8 +140,7 @@ public class FileChooser {
 
 
   public File standardGetFileOrFolder(Component parent, String title) {
-
-    JFileChooser chooser = new SwingFileChooser(this.currentdir);
+    JFileChooser chooser = new NativeJFileChooser(this.currentdir);
     chooser.setDialogTitle(title == null ? GUI.getString("OpenFile") : title);
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     if (this.filter != null) {
@@ -162,7 +161,6 @@ public class FileChooser {
   // **************************************************************************************************************
 
   private boolean supportsFolderChooser() {
-
     if (Platform.isMac()) {
       try {
         new FileDialog(FileChooser.awtparent, "Test", 3).dispose();
@@ -178,19 +176,16 @@ public class FileChooser {
 
 
   public File standardGetDir() {
-
     return this.standardGetDir(null);
   }
 
 
   public File standardGetDir(Component parent) {
-
     return this.standardGetDir(parent, null);
   }
 
 
   public File standardGetDir(Component parent, String title) {
-
     // Der AWT FolderChooser funktioniert nur auf dem Mac (type = 3)
     if (FileChooser.useSystemFileChooser && this.supportsFolderChooser()) {
       FileDialog chooser =
@@ -262,6 +257,9 @@ public class FileChooser {
       chooser.setApproveButtonText(GUI.getString("Choose"));
       if (this.filter != null) {
         chooser.setFileFilter(this.filter);
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setAcceptAllFileFilterUsed(true);
       }
       if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
         return null;
@@ -279,25 +277,21 @@ public class FileChooser {
   // **************************************************************************************************************
 
   public File standardPutFile() {
-
     return this.standardPutFile(null);
   }
 
 
   public File standardPutFile(String filename) {
-
     return this.standardPutFile(null, filename);
   }
 
 
   public File standardPutFile(Component parent, String filename) {
-
     return this.standardPutFile(parent, filename, null);
   }
 
 
   public File standardPutFile(Component parent, String filename, String title) {
-
     if (FileChooser.useSystemFileChooser) {
       FileDialog chooser =
         new FileDialog(FileChooser.awtparent, title == null ? GUI
@@ -318,13 +312,16 @@ public class FileChooser {
       return (file == null ? null : new File(dir, file));
     }
     else {
-      JFileChooser chooser = new SwingFileChooser(this.currentdir);
+      JFileChooser chooser = new NativeJFileChooser(this.currentdir);
       if (filename != null) {
         chooser.setSelectedFile(new File(this.currentdir, filename));
       }
       chooser.setDialogTitle(title == null ? GUI.getString("SaveAs") : title);
       if (this.filter != null) {
         chooser.setFileFilter(this.filter);
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setAcceptAllFileFilterUsed(true);
       }
 
       if (chooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) {
@@ -343,32 +340,21 @@ public class FileChooser {
   // Wenn man eine langlebige Instanz behaelt, muss man also jedesmal neu
   // setFileSelectionMode() aufrufen.
   private static class SwingFileChooser
-        extends JFileChooser {
+        extends NativeJFileChooser {
 
     boolean dirspecial = false;
 
-
     public SwingFileChooser() {
-
       super();
     }
 
-
-    public SwingFileChooser(String dir) {
-
-      super(dir);
-    }
-
-
     public SwingFileChooser(File dir) {
-
       super(dir);
     }
 
 
     @Override
     public int showDialog(Component parent, String approveButtonText) {
-
       int result;
 
       // Sch.. auf den parent. Das macht der AWTDialog ja auch, und sonst
@@ -392,7 +378,6 @@ public class FileChooser {
 
     @Override
     public void approveSelection() {
-
       File f = this.getSelectedFile();
 
       if ((f == null) || (f.getName().length() == 0)) {

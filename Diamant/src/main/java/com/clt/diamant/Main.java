@@ -303,7 +303,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
     private DocumentWindow<?> openDocument() {
 
-        File f = this.fileChooser.standardGetFile(null);
+        File f = this.fileChooser.standardGetFile(getProjectStartupWindow());
         if (f != null) {
             Preferences.getPrefs().setLastUsedFile(f);
         }
