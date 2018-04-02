@@ -68,9 +68,8 @@ task clean_all {
 
 task clientLibrary(type:Jar) {
     manifest {
-        attributes 'Implementation-Title': 'Gradle Jar File Example',  
-        	'Implementation-Version': version,
-        	'Main-Class': 'com.mkyong.DateUtils'
+        attributes 'Implementation-Title': 'DialogOS Client Library',  
+        	'Implementation-Version': version
     }
     
     baseName = 'dialogos-client-' + version
