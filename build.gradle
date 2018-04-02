@@ -1,5 +1,6 @@
 plugins {
   id 'application'
+  id 'java'
   id 'com.github.johnrengelman.shadow' version '2.0.0'
   id 'com.github.hierynomus.license' version '0.14.0'
   id 'com.bmuschko.izpack' version '2.1'
@@ -44,7 +45,7 @@ shadowJar {
   mergeServiceFiles()
 }
 
-def version = '1.4'
+def version = '2.0'
 
 
 task allJavadoc(type: Javadoc) {
@@ -65,6 +66,40 @@ task clean_all {
     }
 }
 
+task clientLibrary(type:Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',  
+        	'Implementation-Version': version,
+        	'Main-Class': 'com.mkyong.DateUtils'
+    }
+    
+    baseName = 'dialogos-client-' + version
+
+    // collect dependencies from subprojects
+    evaluationDependsOnChildren()
+    subprojects.each { p ->
+      if( p.name == "ClientInterface" ) {
+        p.configurations.each { c ->
+          if( c.name == "compile" ) {
+            c.dependencies.each { d ->
+              if( d.name == "jmdns" ) {
+                from { c.files(d).collect { zipTree(it) } }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // collect Jar files of subprojects
+    from { files(["com.clt.base/build/libs/com.clt.base.jar",
+                  "com.clt.xml/build/libs/com.clt.xml.jar",
+                  "com.clt.script/build/libs/com.clt.script.jar",
+                  "ClientInterface/build/libs/ClientInterface.jar"
+                 ]).collect { zipTree(it) } }
+    
+    // generate Jar file
+    with jar  
+}
 
 
-//apply plugin: "cz.malohlava"
