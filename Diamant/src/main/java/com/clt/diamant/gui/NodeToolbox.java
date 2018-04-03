@@ -1,15 +1,6 @@
 package com.clt.diamant.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Paint;
+import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
@@ -20,12 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -35,6 +21,7 @@ import com.clt.diamant.graph.ui.NodeComponent;
 import com.clt.diamant.graph.ui.NodeTransferable;
 import com.clt.gui.Images;
 import com.clt.properties.BooleanProperty;
+import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
 
 /**
  * The toolbox shown on the right of the DialogOS main window,
@@ -49,17 +36,23 @@ public class NodeToolbox extends Toolbox {
 
     private BooleanProperty structured;
 
+    private static boolean requiresGTKfix;
+    private static Dimension separatorDimension;
+    static {
+        if (UIManager.getLookAndFeel() instanceof GTKLookAndFeel) {
+            requiresGTKfix = true;
+            separatorDimension =  new Dimension(100, 10);
+        }
+    }
+
     private ChangeListener changeListener = new ChangeListener() {
-
         public void stateChanged(ChangeEvent e) {
-
             NodeToolbox.this.initToolbox();
             NodeToolbox.this.update();
         }
     };
 
     public NodeToolbox(BooleanProperty structured) {
-
         super(SwingConstants.VERTICAL);
 
         this.setName(Resources.getString("Nodes"));
@@ -71,22 +64,22 @@ public class NodeToolbox extends Toolbox {
         if (NodeToolbox.macStyle) {
             this.setBackground(new Color(213, 220, 228));
         }
+        // override pre-set layout manager to box layout; otherwise, GTK looks stupid
+        // unfortunately, this breaks the automatic sizing of separators; I just put in Dimension(100,10) as a crude fix
+        if (requiresGTKfix)
+            this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
 
     @Override
     public void addNotify() {
-
         super.addNotify();
-
         this.structured.addChangeListener(this.changeListener);
         this.initToolbox();
     }
 
     @Override
     public void removeNotify() {
-
         this.structured.removeChangeListener(this.changeListener);
-
         super.removeNotify();
     }
 
@@ -108,16 +101,15 @@ public class NodeToolbox extends Toolbox {
             }
 
             if (!this.structured.getValue() && keys.hasNext()) {
-                this.addSeparator();
+                this.addSeparator(separatorDimension);
             }
         }
     }
 
     private void insertNodes(List<Class<Node>> nodeTypes, int inset, int position) {
-
         for (final Class<Node> nodeType : nodeTypes) {
             if (nodeType == null) {
-                this.addSeparator();
+                this.addSeparator(separatorDimension);
             } else {
                 final JLabel button = 
                         new JLabel(Node.getLocalizedNodeTypeName(nodeType), 
@@ -137,12 +129,7 @@ public class NodeToolbox extends Toolbox {
                 button.setBorder(BorderFactory.createEmptyBorder(3, 6 + inset, 3, 6));
 
                 // need to wrap into a panel in order to appease the toolbar's BoxLayout
-                JPanel p = new JPanel(new BorderLayout(0, 0)) {
-                    @Override
-                    public Dimension getMaximumSize() {
-                        return new Dimension(super.getMaximumSize().width, this.getPreferredSize().height);
-                    }
-                };
+                JPanel p = new JPanel(new BorderLayout(0, 0));
                 p.setOpaque(false);
                 p.add(button);
                 this.add(p, position);
@@ -178,7 +165,6 @@ public class NodeToolbox extends Toolbox {
 
     @Override
     public void update() {
-
         this.invalidate();
         Container parent = this.getParent();
         if (parent != null) {
@@ -191,7 +177,6 @@ public class NodeToolbox extends Toolbox {
     private static final ImageIcon iconDisclosureClosed = Images.loadBuiltin("DisclosureRight.png");
 
     private class GroupHeader extends JComponent {
-
         private Color gradientStart = new Color(173, 187, 208);
         private Color gradientEnd = new Color(152, 170, 196);
         private Color gradientBorder = new Color(143, 156, 181);
@@ -259,12 +244,10 @@ public class NodeToolbox extends Toolbox {
         }
 
         public Object getKey() {
-
             return this.key;
         }
 
         public synchronized void setExpanded(boolean expanded) {
-
             if (expanded != this.open) {
                 int headerPosition = NodeToolbox.this.getComponentIndex(this);
                 if (expanded) {

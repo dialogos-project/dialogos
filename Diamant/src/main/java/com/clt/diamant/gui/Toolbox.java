@@ -6,12 +6,10 @@ import javax.swing.SwingConstants;
 public abstract class Toolbox extends JToolBar {
 
     public Toolbox() {
-
         this(SwingConstants.HORIZONTAL);
     }
 
     public Toolbox(int orientation) {
-
         super(orientation);
     }
 
