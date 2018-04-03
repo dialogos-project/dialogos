@@ -894,7 +894,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     public UIElement createUI(GraphUI graphUI, MouseInputListener viewScroller) {
-        return new NodeUI<Node>(graphUI, this, viewScroller);
+        return new NodeUI<>(graphUI, this, viewScroller);
     }
 
     /**

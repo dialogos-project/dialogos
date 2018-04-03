@@ -138,7 +138,6 @@ public class GraphUI
     // private static final Clipboard clipboard =
     // Toolkit.getDefaultToolkit().getSystemClipboard();
     public static Clipboard getClipboard() {
-
         return GraphUI.clipboard;
     }
 
@@ -154,7 +153,6 @@ public class GraphUI
     transient private Edge draggedEdge;
 
     private Undo undo = new Undo() {
-
         @Override
         public synchronized boolean addEdit(UndoableEdit edit) {
 
@@ -238,7 +236,6 @@ public class GraphUI
     }
 
     public GraphUI(Graph g) {
-
         this.setBackground(Color.white);
         // RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         this.setDoubleBuffered(true);
@@ -279,36 +276,28 @@ public class GraphUI
         GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
                 KeyEvent.VK_UP, 0),
                 new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-
                 GraphUI.this.doCommand(GraphUI.cmdUp);
             }
         }, new Class[]{JTextComponent.class}, false);
         GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
                 KeyEvent.VK_DOWN, 0),
                 new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-
                 GraphUI.this.doCommand(GraphUI.cmdDown);
             }
         }, new Class[]{JTextComponent.class}, false);
         GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
                 KeyEvent.VK_LEFT, 0),
                 new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-
                 GraphUI.this.doCommand(GraphUI.cmdLeft);
             }
         }, new Class[]{JTextComponent.class}, false);
         GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
                 KeyEvent.VK_RIGHT, 0),
                 new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-
                 GraphUI.this.doCommand(GraphUI.cmdRight);
             }
         }, new Class[]{JTextComponent.class}, false);
@@ -317,26 +306,18 @@ public class GraphUI
     }
 
     private void initDragAndDrop() {
-
         DropTargetListener dropTargetListener = new DropTargetListener() {
 
             // Die Maus betritt die Komponente mit einem Objekt
-            public void dragEnter(DropTargetDragEvent e) {
-
-            }
+            public void dragEnter(DropTargetDragEvent e) { }
 
             // Die Komponente wird verlassen
-            public void dragExit(DropTargetEvent e) {
-
-            }
+            public void dragExit(DropTargetEvent e) { }
 
             // Die Maus bewegt sich über die Komponente
-            public void dragOver(DropTargetDragEvent e) {
-
-            }
+            public void dragOver(DropTargetDragEvent e) { }
 
             public void drop(DropTargetDropEvent e) {
-
                 try {
                     Transferable tr = e.getTransferable();
                     DataFlavor[] flavors = tr.getTransferDataFlavors();
@@ -367,15 +348,12 @@ public class GraphUI
 
             // Jemand hat die Art des Drops (Move, Copy, Link)
             // geändert
-            public void dropActionChanged(DropTargetDragEvent e) {
-
-            }
+            public void dropActionChanged(DropTargetDragEvent e) { }
         };
         new DropTarget(this, dropTargetListener);
     }
 
     public JComponent getPropertyEditor() {
-
         JTabbedPane tabs = new JTabbedPane();
         tabs.setUI(new com.clt.gui.plaf.AdobeTabbedPaneUI());
 
@@ -399,34 +377,28 @@ public class GraphUI
     }
 
     public GraphSelectionModel getSelectionModel() {
-
         return this.selectionModel;
     }
 
     public void selectAndShowNode(Node n) {
-
         this.getSelectionModel().clear();
         this.selectElement(n, true);
         this.showNode(n);
     }
 
     public void showNode(Node n) {
-
         GUI.scrollIntoCenter(this.getNodeUI(n), this.graphScrollPane.getViewport());
     }
 
     private void setupMouseHandling() {
-
         MouseInputListener m = new MouseInputAdapter() {
 
             // private Point handStart = null;
             private double distance(long x1, long y1, long x2, long y2) {
-
                 return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
             }
 
             public void mousePressed(final MouseEvent e) {
-
                 GraphUI.this.requestFocus();
                 GraphUI.this.dragStart = GraphUI.this.dragEnd = null;
                 GraphUI.this.draggedEdge = null;
@@ -465,7 +437,6 @@ public class GraphUI
                             GraphUI.this.repaint();
                         }
                         break;
-
                     case DefaultToolbox.DELETE:
                         EdgeUI selectedEdge = this.findEdge(e);
                         if (selectedEdge != null) {
@@ -473,15 +444,12 @@ public class GraphUI
                                     .getEdge()));
                         }
                         break;
-
                     default:
-
                         break;
                 }
             }
 
             public void mouseDragged(MouseEvent e) {
-
                 if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
                     if (GraphUI.this.dragStart != null) {
                         Rectangle r = GraphUI.this.getSelectingArea();
@@ -493,7 +461,6 @@ public class GraphUI
                         } else {
                             r = r.union(GraphUI.this.getSelectingArea());
                         }
-
                         r = r.union(this.selectElements(GraphUI.this.getSelectingArea()));
 
                         r.width++;
@@ -504,14 +471,12 @@ public class GraphUI
             }
 
             public void mouseReleased(MouseEvent e) {
-
                 if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
                     if ((GraphUI.this.dragStart != null)
                             && (GraphUI.this.dragEnd != null)) {
                         this.selectElements(GraphUI.this.getSelectingArea());
                     }
                 }
-
                 GraphUI.this.dragStart = null;
                 GraphUI.this.dragEnd = null;
                 // handStart = null;
@@ -521,7 +486,6 @@ public class GraphUI
             }
 
             private Rectangle selectElements(Rectangle r) {
-
                 Rectangle update = new Rectangle(r);
                 for (VisualGraphElement elem : GraphUI.this.ui.keySet()) {
                     UIElement ui = GraphUI.this.ui.get(elem);
@@ -542,7 +506,6 @@ public class GraphUI
             }
 
             private EdgeUI findEdge(MouseEvent e) {
-
                 // reuse one line object
                 Polygon line = new Polygon();
 
@@ -579,7 +542,6 @@ public class GraphUI
             }
 
             private void showContextMenu(final int x, final int y) {
-
                 CmdPopupMenu popup
                         = new CmdPopupMenu(Resources.getString("InsertNode"),
                                 GraphUI.this);
@@ -630,7 +592,6 @@ public class GraphUI
         this.addMouseMotionListener(m);
 
         this.viewScroller = new MouseInputAdapter() {
-
             private Point handStart = null;
             private boolean isDrag = false;
 
@@ -640,7 +601,6 @@ public class GraphUI
             // the
             // same in Document and GraphUI.
             public synchronized void mousePressed(MouseEvent e) {
-
                 GraphUI.this.requestFocus();
                 this.handStart = null;
                 this.isDrag = false;
@@ -665,7 +625,6 @@ public class GraphUI
             }
 
             public synchronized void mouseDragged(MouseEvent e) {
-
                 Point pos = e.getPoint();
                 Rectangle r
                         = GUI
@@ -714,7 +673,6 @@ public class GraphUI
             }
 
             public synchronized void mouseReleased(MouseEvent e) {
-
                 this.handStart = null;
                 this.isDrag = false;
             }
@@ -727,7 +685,6 @@ public class GraphUI
 
     public void fillNodeInsertPopup(JPopupMenu popup, final int x, final int y,
             boolean structured) {
-
         JMenu nodeMenu = null;
 
         if (!structured) {
@@ -768,12 +725,10 @@ public class GraphUI
     }
 
     public JScrollPane getScrollPane() {
-
         return this.graphScrollPane;
     }
 
     public void adjustCursor(int mode) {
-
         Cursor cursor;
 
         switch (mode) {
@@ -809,11 +764,8 @@ public class GraphUI
 
     public static ActionListener createNodeInsertAction(final GraphUI graph,
             final Class<? extends Node> c, final int x, final int y) {
-
         return new ActionListener() {
-
             public void actionPerformed(ActionEvent unused) {
-
                 if (!EndNode.class.isAssignableFrom(c)
                         || graph.getGraph().supportsEndNode(c)) {
                     try {
@@ -838,7 +790,6 @@ public class GraphUI
 
     private JMenuItem createNodeItem(final Class<? extends Node> c, final int x,
             final int y) {
-
         String name = Node.getLocalizedNodeTypeName(c);
         JMenuItem item = new JMenuItem(name);
         item.addActionListener(GraphUI.createNodeInsertAction(this, c, x, y));
@@ -849,13 +800,11 @@ public class GraphUI
 
     public static JMenuItem createColorItem(String name, final boolean hicolor,
             ActionListener action) {
-
         JMenuItem item = new JRadioButtonMenuItem(Resources.getString(name));
         final Color c = GraphUI.gNodeColors.get(name);
         item.setIcon(new Icon() {
 
             public void paintIcon(Component comp, Graphics g, int x, int y) {
-
                 g.setColor(c);
                 g.fillRect(x, y, this.getIconWidth() - 1, this.getIconHeight() - 1);
                 if (hicolor) {
@@ -867,12 +816,10 @@ public class GraphUI
             }
 
             public int getIconWidth() {
-
                 return 16;
             }
 
             public int getIconHeight() {
-
                 return 12;
             }
         });
@@ -881,13 +828,11 @@ public class GraphUI
     }
 
     public JMenuItem createColorItem(String name, final ColorizableElement element) {
-
         final Color c = GraphUI.gNodeColors.get(name);
         JMenuItem item
                 = GraphUI.createColorItem(name, Version.HICOLOR, new ActionListener() {
 
                     private void setColor(final ColorizableElement o) {
-
                         final Color old_color = o.getColor();
                         if (!c.equals(old_color)) {
                             GraphUI.this.undo.addEdit(new AbstractEdit("Color") {
@@ -906,7 +851,6 @@ public class GraphUI
                     }
 
                     public void actionPerformed(ActionEvent e) {
-
                         if (element != null) {
                             this.setColor(element);
                         } else {
@@ -942,7 +886,6 @@ public class GraphUI
     }
 
     private void initAnts() {
-
         if (this.ants != null) {
             this.ants = new Ants();
             Thread t = new Thread(this.ants, "GraphUI marching ants");
@@ -953,14 +896,12 @@ public class GraphUI
     }
 
     public static void initMenu(CmdMenu menu) {
-
         menu.addItem(Resources.getString("Delete"), Commands.cmdDelete, KeyStroke
                 .getKeyStroke(
                         KeyEvent.VK_BACK_SPACE, 0));
         menu.addItem(Resources.getString("Delete"), Commands.cmdDelete, KeyStroke
                 .getKeyStroke(
                         KeyEvent.VK_DELETE, 0));
-
         menu.addItem(Resources.getString("Up"), GraphUI.cmdUp, KeyStroke
                 .getKeyStroke(
                         KeyEvent.VK_UP, 0));
@@ -976,15 +917,7 @@ public class GraphUI
     }
 
     public synchronized void addNotify() {
-
-        // System.out.println("addNotify() " + this.hashCode());
-        /*
-     * if (ui == null) { new Exception("DEBUG").printStackTrace(); throw new
-     * IllegalStateException("Attempt to reactivate a GraphUI that was " +
-     * "removeNotify()d before"); }
-         */
         super.addNotify();
-
         if (this.ui == null) {
             this.ui = new Hashtable<VisualGraphElement, UIElement>();
             this.nodes.clear();
@@ -1007,9 +940,6 @@ public class GraphUI
     }
 
     public synchronized void removeNotify() {
-
-        // System.out.println("removeNotify() " + this.hashCode() + ": "
-        // + GUI.getWindowForComponent(this));
         // in rare cases, removeNotify will be called twice, e.g. when we have
         // already disposed the window, but it is still owned by another window
         // because it is not finalized yet.
@@ -1024,23 +954,19 @@ public class GraphUI
 
             this.ui = null;
         }
-
         if (this.ants != null) {
             this.ants.stop();
             this.ants = null;
         }
-
         super.removeNotify();
     }
 
     public void selectElement(GraphElement e, boolean selected) {
-
         if (selected) {
             this.getSelectionModel().add(e);
         } else {
             this.getSelectionModel().remove(e);
         }
-
         if (e instanceof GroupElement) {
             Group g = Group.getTopGroup((GroupElement) e);
             if (g != null) {
@@ -1060,7 +986,6 @@ public class GraphUI
     }
 
     public void setElementColor(Color c) {
-
         Collection<ColorizableElement> selection
                 = this.getSelectionModel().getSelectedObjects(
                         ColorizableElement.class);
@@ -1077,7 +1002,6 @@ public class GraphUI
             }
             c = new Color((int) (r / selection.size()), (int) (g / selection.size()),
                     (int) (b / selection.size()));
-
             c = JColorChooser.showDialog(this, Resources.getString("ChooseColor"), c);
         }
         if (c != null) {
@@ -1087,17 +1011,12 @@ public class GraphUI
                 final Color old_color = o.getColor();
                 if (!c.equals(old_color)) {
                     this.undo.addEdit(new AbstractEdit("Color") {
-
                         public void run() {
-
                             o.setColor(color);
                         }
-
                         public void unrun() {
-
                             o.setColor(old_color);
                         }
-
                     });
                 }
             }
@@ -1107,7 +1026,6 @@ public class GraphUI
     }
 
     public void propertyChange(final PropertyChangeEvent evt) {
-
         if ((evt.getSource() instanceof Toolbox)
                 && evt.getPropertyName().equals("CurrentTool")) {
             this.currentTool = ((Integer) evt.getNewValue()).intValue();
@@ -1152,7 +1070,6 @@ public class GraphUI
     }
 
     private void moveSelection(int h, int v) {
-
         Collection<MoveableElement> selection
                 = this.getSelectionModel().getSelectedObjects(
                         MoveableElement.class);
@@ -1182,13 +1099,11 @@ public class GraphUI
     }
 
     private Group groupSelection() {
-
         return Group.group(this.getSelectionModel().getSelectedObjects(
                 GroupElement.class));
     }
 
     private boolean selectionGrouped() {
-
         for (GroupElement o : this.getSelectionModel().getSelectedObjects(
                 GroupElement.class)) {
             if (o.getGroup() != null) {
@@ -1199,9 +1114,7 @@ public class GraphUI
     }
 
     public boolean doCommand(final int cmd) {
-
         Set<Node> selectedNodes;
-
         switch (cmd) {
 
             // case showGraph:
@@ -1553,7 +1466,6 @@ public class GraphUI
     }
 
     public boolean menuItemState(int cmd) {
-
         switch (cmd) {
             case cmdSelectAll:
                 return this.getComponentCount() > 0;
@@ -1654,7 +1566,6 @@ public class GraphUI
     }
 
     public String menuItemName(int cmd, String oldName) {
-
         switch (cmd) {
             case cmdUndo:
                 return this.undo.canUndo() ? this.undo.getUndoPresentationName()
@@ -1687,7 +1598,6 @@ public class GraphUI
     private Mapping paste(Collection<VisualGraphElement> elements,
             final Graph graph, int h_offset,
             int v_offset) {
-
         this.undo.startEdit(Resources.getString("Paste"));
 
         final Set<VisualGraphElement> new_elements
@@ -1755,9 +1665,7 @@ public class GraphUI
         }
 
         this.undo.addEdit(new AbstractEdit("Update edges") {
-
             public void run() {
-
                 for (VisualGraphElement elem : new_elements) {
                     if (elem instanceof Node) {
                         ((Node) elem).updateEdges();
@@ -1766,15 +1674,12 @@ public class GraphUI
             }
 
             public void unrun() {
-
             }
         });
 
         if (graph == this.getGraph()) {
             this.undo.addEdit(new AbstractEdit("Update selection") {
-
                 public void run() {
-
                     GraphUI.this.getSelectionModel().clear();
                     for (GraphElement elem : new_elements) {
                         GraphUI.this.selectElement(elem, true);
@@ -1782,7 +1687,6 @@ public class GraphUI
                 }
 
                 public void unrun() {
-
                     for (GraphElement elem : new_elements) {
                         GraphUI.this.selectElement(elem, false);
                     }
@@ -1798,7 +1702,6 @@ public class GraphUI
     private void collateNodes(Collection<? extends VisualGraphElement> selection,
             String name)
             throws IllegalArgumentException {
-
         this.undo.startEdit(Resources.getString("Collate"));
 
         int minx = Integer.MAX_VALUE;
@@ -1960,12 +1863,10 @@ public class GraphUI
     }
 
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
-
         // there is nothing we can do at the moment
     }
 
     protected void addImpl(Component comp, Object constraints, int index) {
-
         if (!(comp instanceof UIElement)) {
             throw new IllegalArgumentException("GraphUI only accepts UIElements.");
         }
@@ -1975,14 +1876,11 @@ public class GraphUI
     private MouseInputListener setupElementMouseHandler(
             final VisualGraphElement element,
             final MouseHandler primaryHandler) {
-
         return new MouseInputAdapter() {
-
             Rectangle dragRect;
             Point originalPosition;
 
             public void mousePressed(MouseEvent evt) {
-
                 boolean eventHandled = false;
                 if (primaryHandler != null) {
                     eventHandled = primaryHandler.mousePressed(evt);
@@ -2025,7 +1923,6 @@ public class GraphUI
             }
 
             public void mouseReleased(MouseEvent evt) {
-
                 if (primaryHandler != null) {
                     primaryHandler.mouseReleased(evt);
                 }
@@ -2051,7 +1948,6 @@ public class GraphUI
             }
 
             public void mouseDragged(MouseEvent evt) {
-
                 if (primaryHandler != null) {
                     primaryHandler.mouseDragged(evt);
                 }
@@ -2112,7 +2008,6 @@ public class GraphUI
     }
 
     private void nodeAdded(Graph g, Node n, final NodeUI<?> ng) {
-
         this.nodes.add(ng);
         ng.addPropertyChangeListener(this);
 
@@ -2154,7 +2049,6 @@ public class GraphUI
             }
 
             public boolean mousePressed(MouseEvent e) {
-
                 // bring selected node to front
                 GraphUI.this.toFront(ng);
                 ng.requestFocus();
@@ -2440,7 +2334,6 @@ public class GraphUI
             }
 
             public void mouseReleased(MouseEvent e) {
-
                 if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
                     if ((GraphUI.this.dragEnd != null)
                             && (GraphUI.this.draggedEdge != null)) {
@@ -2454,7 +2347,6 @@ public class GraphUI
             }
 
             public void mouseDragged(MouseEvent e) {
-
                 if ((GraphUI.this.currentTool == DefaultToolbox.ANCHOR)
                         && (GraphUI.this.dragStart != null)) {
                     if (GraphUI.this.draggedEdge != null) {
@@ -2506,7 +2398,6 @@ public class GraphUI
     }
 
     public void renameNode(final Node node, final String name) {
-
         final String oldName = node.getTitle();
         if (!name.equals(oldName)) {
             this.undo.addEdit(new AbstractEdit(Resources.getString("Rename")) {
@@ -2525,13 +2416,11 @@ public class GraphUI
     }
 
     private void deleteSelection() {
-
         this.deleteElements(this.getSelectionModel().getSelectedObjects(
                 GraphElement.class));
     }
 
     void deleteElements(final Set<? extends GraphElement> elements) {
-
         String title = "Delete";
         if (elements.size() == 1) {
             Object element = elements.iterator().next();
@@ -2602,7 +2491,6 @@ public class GraphUI
     }
 
     private int snap(int x, int raster) {
-
         // System.out.println(x);
         if (x >= 0) {
             return ((x + raster / 2) / raster) * raster;
@@ -2612,13 +2500,11 @@ public class GraphUI
     }
 
     public void toFront(UIElement element) {
-
         super.remove(element);
         super.add(element, 0);
     }
 
     public void remove(NodeUI<?> n) {
-
         super.remove(n);
         this.nodes.remove(n);
 
@@ -2628,7 +2514,6 @@ public class GraphUI
     }
 
     public void elementAdded(Graph g, VisualGraphElement element) {
-
         UIElement ui;
         if (element instanceof Comment) {
             ui = new CommentUI((Comment) element, this);
@@ -2665,7 +2550,6 @@ public class GraphUI
     }
 
     public void elementRemoved(Graph g, VisualGraphElement element) {
-
         this.getSelectionModel().remove(element);
         UIElement ui = this.ui.remove(element);
         ui.dispose();
@@ -2674,21 +2558,17 @@ public class GraphUI
     }
 
     public void sizeChanged(Graph g, int width, int height) {
-
         super.setSize(width, height);
     }
 
     public void graphRenamed(Graph g, String name) {
-
     }
 
     public Graph getGraph() {
-
         return this.model;
     }
 
     public void updateMenus() {
-
         MenuOwner c = GUI.getMenuOwnerForComponent(this.getParent());
         if (c != null) {
             c.updateMenus();
@@ -2696,7 +2576,6 @@ public class GraphUI
     }
 
     public void layout() {
-
         this.doLayout();
     }
 
@@ -2725,7 +2604,6 @@ public class GraphUI
    * gfx.dispose(); pg.dispose(); pjob.end(); } }
      */
     public void print() {
-
         PrinterJob printJob = PrinterJob.getPrinterJob();
         PageFormat pageSetup = printJob.defaultPage();
 
@@ -2749,7 +2627,6 @@ public class GraphUI
     }
 
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
-
         if (pageIndex == 0) {
             Graphics gfx = graphics;
             if (!(gfx instanceof Graphics2D)) {
@@ -2785,7 +2662,6 @@ public class GraphUI
     private static boolean showPaintTiming = false;
 
     public void repaint() {
-
         if (GraphUI.showPaintTiming) {
             System.out
                     .println("Requesting a full repaint at "
@@ -2795,7 +2671,6 @@ public class GraphUI
     }
 
     public void paint(Graphics g) {
-
         if (g instanceof Graphics2D) {
             ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
                     RenderingHints.VALUE_RENDER_SPEED);
@@ -2810,7 +2685,6 @@ public class GraphUI
     }
 
     protected void paintChildren(Graphics g) {
-
         long time = System.currentTimeMillis();
         super.paintChildren(g);
         if (GraphUI.showPaintTiming) {
@@ -2827,13 +2701,11 @@ public class GraphUI
     }
 
     protected synchronized void paintComponent(Graphics g) {
-
         // System.out.println("GraphUI: paint Component");
         if (g instanceof Graphics2D) {
             ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING,
                     RenderingHints.VALUE_RENDER_SPEED);
         }
-
         super.paintComponent(g);
 
         if (Preferences.getPrefs().showGrid.getValue()) {

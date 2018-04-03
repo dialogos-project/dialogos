@@ -21,16 +21,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.MouseInputListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import com.clt.diamant.Preferences;
 import com.clt.diamant.Version;
@@ -43,13 +39,18 @@ import com.clt.gui.border.FrameBorder;
 public class NodeComponent<NodeType extends Node> extends JComponent implements PropertyChangeListener {
 
     private GraphUI graph;
-    private JTextField label;
+    private JTextPane label;
     private NodeType n;
+
+    private static AttributeSet centerAttributes;
+    static {
+        centerAttributes = new SimpleAttributeSet();
+        ((SimpleAttributeSet) centerAttributes).addAttribute(StyleConstants.Alignment, StyleConstants.ALIGN_CENTER);
+    }
 
     private static Map<String, Icon> iconCache = new HashMap<String, Icon>();
 
     public NodeComponent(GraphUI graph, final NodeType n) {
-
         this.setLayout(new GridLayout(1, 1));
 
         final JPanel c = new JPanel(new GridBagLayout());
@@ -71,8 +72,7 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
         if (im != null) {
             type = new JLabel(im, SwingConstants.CENTER);
         } else {
-            type
-                    = new JLabel(Node.getLocalizedNodeTypeName(n), SwingConstants.CENTER);
+            type = new JLabel(Node.getLocalizedNodeTypeName(n), SwingConstants.CENTER);
         }
         // type.setFont(GUI.getSmallSystemFont());
         type.setFont(GUI.getTinySystemFont());
@@ -80,25 +80,16 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
 
         gbc.gridy++;
         gbc.weighty = 0.0;
-        this.label = new JTextField(" ") {
-
-            @Override
-            public Dimension getPreferredSize() {
-
-                Dimension d = super.getPreferredSize();
-                return new Dimension(d.width + 1, d.height);
-            }
-        };
-        this.label.setHorizontalAlignment(SwingConstants.CENTER);
+        this.label = new JTextPane();
+        this.label.setText(" ");
+        this.label.setSize(new Dimension(70, 20));
+        this.label.setParagraphAttributes(centerAttributes, true);
         c.add(this.label, gbc);
         c.setBorder(BorderFactory.createEmptyBorder(2, 2, 1, 2));
         this.add(c);
         this.setBorder(new FrameBorder(FrameBorder.Type.SQUARE) {
-
             @Override
             protected Color getForegroundColor(Component c) {
-
-                // TODO Auto-generated method stub
                 return c.getBackground().darker().darker().darker();
             }
         });
@@ -215,7 +206,6 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     private void hideEditor(boolean acceptChanges) {
-
         synchronized (this.label) {
             if (!this.label.isEnabled()) {
                 return;
@@ -232,7 +222,6 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     private void showEditor() {
-
         synchronized (this.label) {
             if (this.label.isEnabled()) {
                 return;
@@ -253,18 +242,15 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
 
     @Override
     public void setFont(Font font) {
-
         super.setFont(font);
         this.label.setFont(font);
     }
 
     public static Icon getNodeIcon(Node n) {
-
         return NodeComponent.getNodeIcon(n.getClass());
     }
 
     public static Icon getNodeIcon(Class<?> c) {
-
         if (c == null) {
             return null;
         }
@@ -301,7 +287,6 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     private static Icon getNodeIcon(String name) {
-
         Icon im = null;
 
         if (im == null) {
@@ -327,7 +312,6 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     private static Icon getNodeIcon(String name, String suffix) {
-
         try {
             return Images.load("nodes/" + name + suffix);
         } catch (Exception ignore) {
@@ -336,7 +320,6 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     private void init() {
-
         this.setForeground(Color.BLACK);
         Color c = this.n.getColor();
         if (c != null) {
@@ -351,12 +334,10 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     public void dispose() {
-
         this.n.removePropertyChangeListener(this);
     }
 
     private void setBackColor(Color c) {
-
         // make nodes slightly transparent, if transparency is enabled
         // This will slow down node drawing considerably.
         if (Preferences.getPrefs().useTransparency.getValue()) {
@@ -375,7 +356,6 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
 
     @Override
     protected void paintComponent(Graphics g) {
-
         Insets insets = this.getInsets();
 
         g.setColor(this.getBackground());
@@ -398,20 +378,17 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
 
     @Override
     protected void paintChildren(Graphics g) {
-
         if (Version.HICOLOR) {
             // we do this in paintChildren instead of paintComponent in order
             // to include the (already drawn) border in our gradient
             NodeComponent.paintGradient(g, 1, 1, this.getWidth() - 2, this
                     .getHeight() - 2);
         }
-
         super.paintChildren(g);
     }
 
     public static void paintGradient(Graphics g, int x, int y, int width,
             int height) {
-
         int fill = 255;
 
         int mid = height / 2 - 1;
@@ -430,12 +407,10 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     public NodeType getNode() {
-
         return this.n;
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-
         if (evt.getPropertyName().equals("color")) {
             this.setBackColor((Color) evt.getNewValue());
         } else if (evt.getPropertyName().equals("title")) {
@@ -444,15 +419,11 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     private void setLabel(String s) {
-
-        this.label.setText(s);
-
         if (s.length() <= 16) {
             this.label.setText(s);
         } else {
-            this.label.setText(s.substring(0, 15) + "...");
+            this.label.setText(s.substring(0, 13) + "...");
         }
-
         this.label.setCaretPosition(0);
         this.invalidate();
         this.setSize(this.getPreferredSize());
@@ -460,13 +431,11 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
 
     @Override
     public boolean isOpaque() {
-
         return false;
     }
 
     @Override
     public Dimension getPreferredSize() {
-
         Dimension pref = super.getPreferredSize();
         Dimension min = this.getMinimumSize();
         return new Dimension(Math.max(pref.width, min.width), Math.max(pref.height,
@@ -475,7 +444,6 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
 
     @Override
     public Dimension getMinimumSize() {
-
         return new Dimension(60, 40);
     }
 }
