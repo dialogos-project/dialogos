@@ -9,6 +9,7 @@ import com.clt.diamant.graph.GraphOwner;
 import com.clt.diamant.graph.nodes.NodeExecutionException;
 import com.clt.script.Environment;
 import com.clt.speech.recognition.LanguageName;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
@@ -36,6 +37,7 @@ public class SphinxNodeTest {
     }
 
     /** test recognition node's recognition capability (not yet the pattern matching) */
+    @Ignore // until there's some common audio handling, one needs to speak a digit during testing for this to work. Hence disabling.
     @Test(timeout = 10000) public void recognize() {
         SphinxNode node = createNode();
         node.setProperty("grammar", new Grammar("zahl", "language \"English\";\n" +
@@ -60,6 +62,7 @@ public class SphinxNodeTest {
         }
     }
 
+    @Ignore // until there's some common audio handling, one needs to speak a digit during testing for this to work. Hence disabling.
     @Test(timeout = 10000) public void recognizeAndMatch() {
         SphinxNode node = createNode();
         node.setProperty("grammar", new Grammar("zahl", "language \"English\";\n" +

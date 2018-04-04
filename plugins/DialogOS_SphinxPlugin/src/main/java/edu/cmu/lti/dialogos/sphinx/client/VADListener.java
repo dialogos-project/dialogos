@@ -11,7 +11,8 @@ public class VADListener extends BaseDataProcessor {
     @Override
     public Data getData() throws DataProcessingException {
         Data d = getPredecessor().getData();
-        recognizer.evesdropOnFrontend(d);
+        if (recognizer != null)
+            recognizer.evesdropOnFrontend(d);
         return d;
     }
 
