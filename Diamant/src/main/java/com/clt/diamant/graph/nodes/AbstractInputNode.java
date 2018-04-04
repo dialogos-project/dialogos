@@ -690,7 +690,10 @@ abstract public class AbstractInputNode extends Node {
             try {
                 RecognizerListener stateListener = new RecognizerListener() {
                     public void recognizerStateChanged(RecognizerEvent evt) {
-                        System.err.println(evt.toString());
+                        // ensure we execute on Swing thread (has a tendency to be more important on linux)
+                        SwingUtilities.invokeLater(() -> executeStateChange(evt));
+                    }
+                    private void executeStateChange(RecognizerEvent evt) {
                         switch (evt.getType()) {
                             case RecognizerEvent.RECOGNIZER_ACTIVATED:
                                 micState.setIcon(micOff);
