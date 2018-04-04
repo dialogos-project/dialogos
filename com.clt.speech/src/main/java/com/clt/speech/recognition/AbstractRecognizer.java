@@ -47,31 +47,26 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
             = new HashMap<String, Property<?>>();
 
     public void addRecognizerListener(RecognizerListener l) {
-
         synchronized (listeners) {
             listeners.add(l);
         }
     }
 
     public void removeRecognizerListener(RecognizerListener l) {
-
         synchronized (listeners) {
             listeners.remove(l);
         }
     }
 
     protected void fireRecognizerEvent(int state) {
-
         this.fireRecognizerEvent(new RecognizerEvent(this, state));
     }
 
     protected void fireRecognizerEvent(RecognitionResult result) {
-
         this.fireRecognizerEvent(new RecognizerEvent(this, result));
     }
 
     protected void fireRecognizerEvent(RecognizerEvent evt) {
-
         synchronized (listeners) {
             for (RecognizerListener listener : listeners) {
                 listener.recognizerStateChanged(evt);
@@ -79,34 +74,47 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
         }
     }
 
-    @SuppressWarnings("unused")
-    public void dispose()
-            throws SpeechException {
+    protected void informAudioListeners(byte[] streamBytes) {
+        synchronized (listeners) {
+            for (RecognizerListener listener : listeners) {
+                if (listener instanceof AudioAwareRecognizerListener) {
+                    ((AudioAwareRecognizerListener) listener).newAudio(streamBytes);
+                }
+            }
+        }
+    }
 
+    protected void informAudioListeners(double[] samples) {
+        synchronized (listeners) {
+            for (RecognizerListener listener : listeners) {
+                if (listener instanceof AudioAwareRecognizerListener) {
+                    ((AudioAwareRecognizerListener) listener).newAudio(samples);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void dispose() throws SpeechException {
     }
 
     public boolean supportsOfflineRecognition() {
-
         return false;
     }
 
     public synchronized final boolean isActive() {
-
         return this.active;
     }
 
     public synchronized final boolean isLive() {
-
         return this.live;
     }
 
     public final RecognitionResult startLiveRecognition() throws SpeechException {
-
         return this.startLiveRecognition(null);
     }
 
     public final RecognitionResult startLiveRecognition(final Object lock) throws SpeechException {
-
         RecognitionResult result = null;
         RecognizerListener startupListener = new RecognizerListener() {
 
@@ -153,14 +161,12 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
 
     public final RecognitionResult startOfflineRecognition(File file)
             throws SpeechException, IOException, UnsupportedAudioFileException {
-
         return this.startOfflineRecognition(null, file);
     }
 
     public final RecognitionResult startOfflineRecognition(final Object lock,
             File file)
             throws SpeechException, IOException, UnsupportedAudioFileException {
-
         RecognitionResult result = null;
         RecognizerListener startupListener = new RecognizerListener() {
 
@@ -207,7 +213,6 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
 
     public synchronized final void stopRecognition()
             throws SpeechException {
-
         try {
             while (this.isActive()) {
                 this.stopImpl();
@@ -252,7 +257,6 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
     @SuppressWarnings("unused")
     protected RecognitionResult startImpl(File soundFile)
             throws SpeechException, IOException, UnsupportedAudioFileException {
-
         throw new RecognizerException(
                 "Offline processing is not supported by this recognizer.");
     }

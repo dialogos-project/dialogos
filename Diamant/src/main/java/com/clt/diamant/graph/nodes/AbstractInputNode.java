@@ -1,5 +1,6 @@
 package com.clt.diamant.graph.nodes;
 
+import com.clt.audio.LevelMeter;
 import com.clt.diamant.*;
 import com.clt.diamant.Grammar;
 import com.clt.diamant.graph.Edge;
@@ -32,6 +33,8 @@ import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 import org.xml.sax.SAXException;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
@@ -39,6 +42,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -649,9 +653,20 @@ abstract public class AbstractInputNode extends Node {
         });
         final JLabel micState = new JLabel("", micOff, SwingConstants.LEFT);
         final TextBox result = new TextBox(1);
+        final LevelMeter levelMeter;
+        try {
+            levelMeter = new LevelMeter(getAudioFormat());
+        } catch (UnsupportedAudioFileException e) {
+            throw new RuntimeException("something's wrong with the recognizer implementation");
+        }
+        levelMeter.setEnabled(true);
+        levelMeter.setBorder(BorderFactory.createLoweredBevelBorder());
         result.setPreferredSize(new Dimension(300, 75));
         JPanel p = new JPanel(new BorderLayout(12, 12));
-        p.add(micState, BorderLayout.NORTH);
+        JPanel micPanel = new JPanel(new BorderLayout(12, 0));
+        micPanel.add(micState, BorderLayout.NORTH);
+        micPanel.add(levelMeter, BorderLayout.SOUTH);
+        p.add(micPanel, BorderLayout.NORTH);
         p.add(result, BorderLayout.CENTER);
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottom.setOpaque(false);
@@ -688,7 +703,19 @@ abstract public class AbstractInputNode extends Node {
         MatchResult mr;
         try {
             try {
-                RecognizerListener stateListener = new RecognizerListener() {
+                RecognizerListener stateListener = new AudioAwareRecognizerListener() {
+                    @Override
+                    public void newAudio(byte[] audio) {
+                        try {
+                            levelMeter.getStream().write(audio);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    @Override
+                    public void newAudio(double[] audio) {
+                        levelMeter.processDoubleData(audio);
+                    }
                     public void recognizerStateChanged(RecognizerEvent evt) {
                         // ensure we execute on Swing thread (has a tendency to be more important on linux)
                         SwingUtilities.invokeLater(() -> executeStateChange(evt));
@@ -758,6 +785,8 @@ abstract public class AbstractInputNode extends Node {
         }
         return mr;
     }
+
+    protected abstract AudioFormat getAudioFormat();
 
     protected abstract RecognitionExecutor createRecognitionExecutor(com.clt.srgf.Grammar recGrammar);
 

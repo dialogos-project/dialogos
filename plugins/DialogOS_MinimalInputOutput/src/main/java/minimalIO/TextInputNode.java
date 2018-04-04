@@ -12,6 +12,7 @@ import com.clt.speech.htk.MlfNode;
 import com.clt.speech.recognition.*;
 import com.clt.srgf.Grammar;
 
+import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +54,11 @@ public class TextInputNode extends AbstractInputNode {
         if (interactiveTest)
             System.out.println("confirming result: " + match.getUtterance());
         return match;
+    }
+
+    @Override
+    protected AudioFormat getAudioFormat() {
+        return null;
     }
 
     private String attemptRecognition(Grammar recGrammar, Pattern[] patterns, long timeout) {

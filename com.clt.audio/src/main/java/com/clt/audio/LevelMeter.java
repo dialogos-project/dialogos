@@ -36,7 +36,6 @@ public class LevelMeter extends JComponent {
     private int decay = 20;
 
     public LevelMeter() {
-
         this.numChannels = 0;
         this.stream = null;
     }
@@ -78,19 +77,16 @@ public class LevelMeter extends JComponent {
 
             @Override
             public void write(int data) {
-
                 throw new UnsupportedOperationException("use write(byte[]) instead");
             }
 
             @Override
             public void write(byte[] data) {
-
                 this.write(data, 0, data.length);
             }
 
             @Override
             public void write(byte[] data, int start, int length) {
-
                 int min[] = new int[LevelMeter.this.numChannels];
                 int max[] = new int[LevelMeter.this.numChannels];
 
@@ -136,8 +132,24 @@ public class LevelMeter extends JComponent {
         };
     }
 
-    private int getNumBlocks() {
+    public void processDoubleData(double data[]) {
+        assert this.numChannels == 1 : "I only deal with single-channel data";
+        assert this.signed : "I only deal with signed data";
+        assert this.bytesPerSample == 2 : "I (deliberately) only deal with 16bit samples";
+        double max = -1;
+        for (double d : data) {
+            max = Math.max(max, Math.abs(d));
+        }
+        // this is a logarithmic scale (log(2^15)*56.6 = 255, the maximum value setLevels likes)
+        double dbLevel = -20 * Math.log10(max/32767);
+        int[] maxValue = new int[] { (int)(Math.log10(max) * 56.6)};
+        System.err.println(max + " " + dbLevel + " " + maxValue[0]);
+        // this would be linear:
+        //int[] maxValue = new int[] { (int)(max / 128 + 0.5) };
+        setLevels(maxValue, data.length);
+    }
 
+    private int getNumBlocks() {
         int numBlocks;
         if (this.getBorder() == null) {
             numBlocks = this.getWidth() / 2;
@@ -149,9 +161,9 @@ public class LevelMeter extends JComponent {
         if (numBlocks != this.colors.length) {
             this.colors = new Color[numBlocks];
             for (int i = 0; i < numBlocks; i++) {
-                if (i >= numBlocks * 0.9) {
+                if (i >= numBlocks * 0.93) {
                     this.colors[i] = Color.red;
-                } else if (i >= numBlocks * 0.8) {
+                } else if (i >= numBlocks * 0.5) {
                     this.colors[i] = Color.yellow;
                 } else {
                     this.colors[i] = Color.green;
@@ -163,17 +175,14 @@ public class LevelMeter extends JComponent {
     }
 
     public OutputStream getStream() {
-
         return this.stream;
     }
 
     public void setLevels(int[] levels, int numSamples) {
-
         this.setLevels(levels, null, numSamples);
     }
 
     public void setLevels(int[] levels, int[] noise, int numSamples) {
-
         if (this.numChannels == 0) {
             throw new IllegalStateException("LevelMeter not initialized");
         }
@@ -218,7 +227,7 @@ public class LevelMeter extends JComponent {
                     this.noise[i] = (this.noise[i] * factor + levels[i]) / (factor + 1);
                 }
             } else {
-                noise[i] = 0;
+                this.noise[i] = 0;
             }
 
             // peak decay
@@ -238,7 +247,6 @@ public class LevelMeter extends JComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
-
         int height = this.getHeight();
 
         Insets insets
@@ -301,18 +309,15 @@ public class LevelMeter extends JComponent {
     }
 
     public int getNumChannels() {
-
         return this.numChannels;
     }
 
     public void setDecay(int decay) {
-
         this.decay = decay;
     }
 
     @Override
     public Dimension getPreferredSize() {
-
         /*
      * Dimension d = new Dimension(NUMBLOCKS*(BLOCKSIZE + SPACING) - SPACING,
      * numChannels * (16 + CHANNEL_SPACING) - CHANNEL_SPACING); if (getBorder()
@@ -324,7 +329,6 @@ public class LevelMeter extends JComponent {
 
     @Override
     public Dimension getMinimumSize() {
-
         return this.getPreferredSize();
         // return new Dimension(26*5 + 25*SPACING, 16);
     }

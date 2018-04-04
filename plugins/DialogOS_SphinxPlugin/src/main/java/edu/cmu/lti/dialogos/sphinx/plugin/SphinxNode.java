@@ -9,6 +9,7 @@ import com.clt.speech.recognition.LanguageName;
 import com.clt.speech.recognition.RecognitionExecutor;
 import edu.cmu.lti.dialogos.sphinx.client.Sphinx;
 
+import javax.sound.sampled.AudioFormat;
 import java.util.List;
 
 public class SphinxNode extends AbstractInputNode {
@@ -17,6 +18,11 @@ public class SphinxNode extends AbstractInputNode {
 
     public SphinxNode() {
 //        this.setProperty(THRESHOLD, new Long(40)); // TODO put this back in
+    }
+
+    @Override
+    protected AudioFormat getAudioFormat() {
+        return Sphinx.getAudioFormat();
     }
 
     private Sphinx getRecognizer() {

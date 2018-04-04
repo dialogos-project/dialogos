@@ -1,12 +1,8 @@
 package edu.cmu.lti.dialogos.sphinx.client;
 
-import com.clt.speech.recognition.AbstractRecognizer;
 import edu.cmu.sphinx.frontend.BaseDataProcessor;
 import edu.cmu.sphinx.frontend.Data;
 import edu.cmu.sphinx.frontend.DataProcessingException;
-import edu.cmu.sphinx.frontend.Signal;
-import edu.cmu.sphinx.frontend.endpoint.SpeechEndSignal;
-import edu.cmu.sphinx.frontend.endpoint.SpeechStartSignal;
 
 public class VADListener extends BaseDataProcessor {
 
@@ -15,7 +11,7 @@ public class VADListener extends BaseDataProcessor {
     @Override
     public Data getData() throws DataProcessingException {
         Data d = getPredecessor().getData();
-        recognizer.evesdropOnData(d);
+        recognizer.evesdropOnFrontend(d);
         return d;
     }
 

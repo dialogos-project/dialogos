@@ -3,10 +3,7 @@ package edu.cmu.lti.dialogos.sphinx.client;
 import com.clt.properties.Property;
 import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
-import com.clt.speech.recognition.Domain;
-import com.clt.speech.recognition.RecognitionContext;
-import com.clt.speech.recognition.RecognitionResult;
-import com.clt.speech.recognition.RecognizerEvent;
+import com.clt.speech.recognition.*;
 import com.clt.srgf.Grammar;
 
 import java.net.URL;
@@ -22,6 +19,8 @@ import edu.cmu.sphinx.frontend.Signal;
 import edu.cmu.sphinx.frontend.endpoint.SpeechClassifiedData;
 import edu.cmu.sphinx.frontend.endpoint.SpeechEndSignal;
 import edu.cmu.sphinx.frontend.endpoint.SpeechStartSignal;
+
+import javax.sound.sampled.AudioFormat;
 
 /**
  * @author koller, timo
@@ -44,6 +43,9 @@ public class Sphinx extends SingleDomainRecognizer {
     public static final Language US_ENGLISH = new Language(new Locale("en", "US"), "US English");
     public static final Language GERMAN = new Language(new Locale("de", "DE"), "Deutsch");
     private static final Language[] STANDARD_LANGUAGES = { US_ENGLISH, GERMAN };
+
+    public static AudioFormat audioFormat = new AudioFormat(16000f, 16, 1, true, false);
+    public static AudioFormat getAudioFormat() { return audioFormat; }
 
     private Map<Language, SphinxLanguageSettings> languageSettings;
     private SphinxContext context;
@@ -134,15 +136,15 @@ public class Sphinx extends SingleDomainRecognizer {
         return null;
     }
 
-    void evesdropOnData(Data d) {
+    void evesdropOnFrontend(Data d) {
         if (d instanceof SpeechClassifiedData) {
             SpeechClassifiedData scd = (SpeechClassifiedData) d;
             if (scd.isSpeech() != vadInSpeech) {
                 vadInSpeech = scd.isSpeech();
                 fireRecognizerEvent(vadInSpeech ? RecognizerEvent.START_OF_SPEECH : RecognizerEvent.END_OF_SPEECH);
             }
+            informAudioListeners(scd.getValues());
         }
-        // TODO: estimate loudness and pass on to listener as well (maybe not every 10ms)
     }
 
 }

@@ -6,6 +6,7 @@ import edu.cmu.sphinx.recognizer.*;
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.result.Result;
 
+import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -21,7 +22,8 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
     public ConfigurableSpeechRecognizer(Context context, InputStream audioSource) throws IOException {
         super(context);
         recognizer.allocate();
-        microphone = new Microphone(16000, 16, true, false);
+        AudioFormat af = Sphinx.getAudioFormat();
+        microphone = new Microphone(af.getSampleRate(), af.getSampleSizeInBits(), af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED, af.isBigEndian());
         InputStream input = audioSource != null ? audioSource : microphone.getStream();
         this.context.getInstance(StreamDataSource.class).setInputStream(input);
     }
@@ -34,6 +36,14 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
 
     public void stopRecognition() {
         microphone.stopRecording();
+        if (recognizer.getState() == Recognizer.State.RECOGNIZING) {
+            // allow the recognizer some slack to calm down
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         recognizer.deallocate();
     }
 
