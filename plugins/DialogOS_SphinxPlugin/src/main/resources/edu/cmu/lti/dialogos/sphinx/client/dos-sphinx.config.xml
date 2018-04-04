@@ -25,10 +25,10 @@
 
     <component name="recognizer" type="edu.cmu.sphinx.recognizer.Recognizer">
         <property name="decoder" value="decoder"/>
-        <propertylist name="monitors">
+        <!--propertylist name="monitors">
             <item>speedTracker</item>
             <item>memoryTracker</item>
-        </propertylist>
+        </propertylist-->
     </component>
 
     <component name="decoder" type="edu.cmu.sphinx.decoder.Decoder">
