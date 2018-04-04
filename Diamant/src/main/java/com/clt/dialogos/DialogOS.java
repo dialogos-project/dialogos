@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class DialogOS {
 
     private static void usage() {
-        System.err.println("Usage: " + Version.PRODUCT_NAME.toLowerCase() + " [-execute] [-model <model>]");
+        System.err.println("Usage: " + Version.PRODUCT_NAME.toLowerCase() + " [-headless] [-clients] [-execute] [-model <model>]");
         System.exit(1);
     }
 
