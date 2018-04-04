@@ -141,9 +141,7 @@ public class LevelMeter extends JComponent {
             max = Math.max(max, Math.abs(d));
         }
         // this is a logarithmic scale (log(2^15)*56.6 = 255, the maximum value setLevels likes)
-        double dbLevel = -20 * Math.log10(max/32767);
         int[] maxValue = new int[] { (int)(Math.log10(max) * 56.6)};
-        System.err.println(max + " " + dbLevel + " " + maxValue[0]);
         // this would be linear:
         //int[] maxValue = new int[] { (int)(max / 128 + 0.5) };
         setLevels(maxValue, data.length);
