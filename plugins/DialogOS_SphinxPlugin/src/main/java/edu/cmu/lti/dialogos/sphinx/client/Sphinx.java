@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.clt.srgf.Rule;
 import com.stanfy.enroscar.net.DataStreamHandler;
 import edu.cmu.sphinx.api.*;
 import edu.cmu.sphinx.frontend.Data;
@@ -63,25 +64,33 @@ public class Sphinx extends SingleDomainRecognizer {
     }
 
     @Override protected RecognitionResult startImpl() throws SpeechException {
-        assert context != null : "cannot start recognition without a context";
-        // TODO2: integration of VAD (will require custom-made default.config.xml or other means of setting the frontend anyway)
-        // TODO3: wire VAD information and readyness to GUI
         fireRecognizerEvent(RecognizerEvent.RECOGNIZER_LOADING);
+        assert context != null : "cannot start recognition without a context";
         csr = context.getRecognizer();
         context.getVadListener().setRecognizer(this);
         vadInSpeech = false;
-        csr.startRecognition();
-        fireRecognizerEvent(RecognizerEvent.RECOGNIZER_READY);
-        SpeechResult speechResult = csr.getResult();
+        SpeechResult speechResult;
+        boolean isMatch;
+        do {
+            csr.startRecognition();
+            fireRecognizerEvent(RecognizerEvent.RECOGNIZER_READY);
+            speechResult = csr.getResult();
+            isMatch = isMatch(speechResult);
+            if (!isMatch)
+                fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.INVALID_RESULT, new SphinxResult(speechResult)));
+        } while (!isMatch);
         if (speechResult != null) {
-            System.err.println("**** result: " + speechResult.getHypothesis());
             SphinxResult sphinxResult = new SphinxResult(speechResult);
             fireRecognizerEvent(sphinxResult);
             csr.stopRecognition();
             return sphinxResult;
         }
         return null;
-        // FIXME: out-of-grammar input leads to "<unk>" triggering errors further down.
+    }
+
+    private boolean isMatch(SpeechResult speechResult) {
+        Grammar gr = context.getGrammar();
+        return gr.match(speechResult.getHypothesis(), gr.getRoot()) != null;
     }
 
     @Override protected void stopImpl() throws SpeechException {

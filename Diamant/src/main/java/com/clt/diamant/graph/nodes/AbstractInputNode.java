@@ -727,9 +727,14 @@ abstract public class AbstractInputNode extends Node {
                                 break;
                             case RecognizerEvent.START_OF_SPEECH:
                                 micState.setIcon(micOn);
+                                result.setText("");
                                 break;
                             case RecognizerEvent.RECOGNIZER_DEACTIVATED:
                                 micState.setIcon(micOff);
+                                break;
+                            case RecognizerEvent.INVALID_RESULT:
+                                micState.setIcon(micOff);
+                                result.setText(evt.getResult().getAlternative(0).getWords());
                                 break;
                         }
                         if (evt.getType() != RecognizerEvent.RECOGNIZER_WARNING) {

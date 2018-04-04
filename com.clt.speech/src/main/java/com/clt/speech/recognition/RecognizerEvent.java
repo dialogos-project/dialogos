@@ -25,55 +25,50 @@ public class RecognizerEvent extends EventObject {
     public static final int END_OF_SPEECH = 5;
     public static final int PARTIAL_RESULT = 6;
     public static final int RECOGNIZER_LOADING = 7;
+    public static final int INVALID_RESULT = 8;
 
     private int type;
     private String errorMessage;
     private RecognitionResult result;
 
     public RecognizerEvent(Recognizer source, int type) {
-
         super(source);
 
         this.type = type;
     }
 
     public RecognizerEvent(Recognizer source, RecognitionResult result) {
-
-        this(source, RecognizerEvent.PARTIAL_RESULT);
-
-        this.result = result;
+        this(source, RecognizerEvent.PARTIAL_RESULT, result);
     }
 
     public RecognizerEvent(Recognizer source, String errorMessage) {
-
         this(source, RecognizerEvent.RECOGNIZER_WARNING);
-
         this.errorMessage = errorMessage;
     }
 
-    public Recognizer getRecognizer() {
+    public RecognizerEvent(Recognizer source, int type, RecognitionResult result) {
+        this(source, type);
+        this.result = result;
+    }
 
+    public Recognizer getRecognizer() {
         return (Recognizer) this.getSource();
     }
 
     public int getType() {
-
         return this.type;
     }
 
     public String getErrorMessage() {
-
         return this.errorMessage;
     }
 
     public RecognitionResult getResult() {
-
         return this.result;
     }
 
     @Override
     public String toString() {
-
         StringBuilder b = new StringBuilder();
 
         switch (this.getType()) {
@@ -100,6 +95,9 @@ public class RecognizerEvent extends EventObject {
                 break;
             case RECOGNIZER_LOADING:
                 b.append(Resources.getString("RecognizerLoading"));
+                break;
+            case INVALID_RESULT:
+                b.append(Resources.getString("RecognizerInvalidResult"));
                 break;
             default:
                 b.append("Recognizer event #");
