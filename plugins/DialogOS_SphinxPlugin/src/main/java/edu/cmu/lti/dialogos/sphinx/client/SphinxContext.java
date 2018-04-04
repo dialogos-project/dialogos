@@ -26,6 +26,7 @@ public class SphinxContext extends RecognitionContext {
     ConfigurableSpeechRecognizer csr;
     ExtensibleDictionary dic;
     JSGFGrammar jsgfGrammar;
+    VADListener vadListener;
 
     /**
      * interpolate will interpolate the grammar with a background LM (at the cost of harder-to-identify)
@@ -54,6 +55,7 @@ public class SphinxContext extends RecognitionContext {
                 Context context = new Context(config, configuration);
                 dic = context.getInstance(ExtensibleDictionary.class);
                 jsgfGrammar = context.getInstance(JSGFGrammar.class);
+                vadListener = context.getInstance(VADListener.class);
                 csr = new ConfigurableSpeechRecognizer(context, audioSource);
             }
             dic.loadExceptions(sls.getG2PList());
@@ -75,4 +77,7 @@ public class SphinxContext extends RecognitionContext {
         return getName();
     }
 
+    public VADListener getVadListener() {
+        return vadListener;
+    }
 }

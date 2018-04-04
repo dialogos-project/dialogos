@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * takes a SphinxContext and configures a speech recognizer accordingly
+ * takes a SphinxContext and configures the speech recognizer accordingly
  *
  * Created by timo on 30.10.17.
  */

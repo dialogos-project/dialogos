@@ -57,10 +57,6 @@ public class SphinxRecognitionExecutor implements RecognitionExecutor {
 //                throw new RecognizerException(Resources.format("NoMatchFor", r));
                 return mr;
             });
-        if (stateListener != null) {
-            stateListener.recognizerStateChanged(
-                    new RecognizerEvent(recognizer, RecognizerEvent.RECOGNIZER_ACTIVATED));
-        }
         if (timeout <= 0) {
             return result.get();
         } else {

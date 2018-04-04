@@ -24,6 +24,7 @@ public class RecognizerEvent extends EventObject {
     public static final int START_OF_SPEECH = 4;
     public static final int END_OF_SPEECH = 5;
     public static final int PARTIAL_RESULT = 6;
+    public static final int RECOGNIZER_LOADING = 7;
 
     private int type;
     private String errorMessage;
@@ -96,6 +97,9 @@ public class RecognizerEvent extends EventObject {
                 break;
             case PARTIAL_RESULT:
                 b.append(Resources.getString("RecognizerPartialResult"));
+                break;
+            case RECOGNIZER_LOADING:
+                b.append(Resources.getString("RecognizerLoading"));
                 break;
             default:
                 b.append("Recognizer event #");

@@ -269,6 +269,7 @@
             <item>dataSource </item>
             <item>dataBlocker </item>
             <item>speechClassifier </item>
+            <item>vadListener</item>
             <item>speechMarker </item>
             <item>preemphasizer </item>
             <item>windower </item>
@@ -295,6 +296,9 @@
     <component name="speechMarker"
                type="edu.cmu.sphinx.frontend.endpoint.SpeechMarker" >
     </component>
+
+    <component name="vadListener"
+               type="edu.cmu.lti.dialogos.sphinx.client.VADListener" />
 
     <component name="preemphasizer"
                type="edu.cmu.sphinx.frontend.filter.Preemphasizer"/>

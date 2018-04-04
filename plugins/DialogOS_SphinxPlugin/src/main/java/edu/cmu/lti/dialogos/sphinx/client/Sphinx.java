@@ -17,6 +17,11 @@ import java.util.Map;
 
 import com.stanfy.enroscar.net.DataStreamHandler;
 import edu.cmu.sphinx.api.*;
+import edu.cmu.sphinx.frontend.Data;
+import edu.cmu.sphinx.frontend.Signal;
+import edu.cmu.sphinx.frontend.endpoint.SpeechClassifiedData;
+import edu.cmu.sphinx.frontend.endpoint.SpeechEndSignal;
+import edu.cmu.sphinx.frontend.endpoint.SpeechStartSignal;
 
 /**
  * @author koller, timo
@@ -45,6 +50,8 @@ public class Sphinx extends SingleDomainRecognizer {
 
     ConfigurableSpeechRecognizer csr;
 
+    private boolean vadInSpeech = false;
+
     public Sphinx() {
         languageSettings = SphinxLanguageSettings.createDefault();
     }
@@ -57,15 +64,19 @@ public class Sphinx extends SingleDomainRecognizer {
         assert context != null : "cannot start recognition without a context";
         // TODO2: integration of VAD (will require custom-made default.config.xml or other means of setting the frontend anyway)
         // TODO3: wire VAD information and readyness to GUI
+        fireRecognizerEvent(RecognizerEvent.RECOGNIZER_LOADING);
         csr = context.getRecognizer();
+        context.getVadListener().setRecognizer(this);
+        vadInSpeech = false;
         csr.startRecognition();
-        fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.RECOGNIZER_READY));
-        System.err.println("***ready***");
+        fireRecognizerEvent(RecognizerEvent.RECOGNIZER_READY);
         SpeechResult speechResult = csr.getResult();
         if (speechResult != null) {
             System.err.println("**** result: " + speechResult.getHypothesis());
+            SphinxResult sphinxResult = new SphinxResult(speechResult);
+            fireRecognizerEvent(sphinxResult);
             csr.stopRecognition();
-            return new SphinxResult(speechResult);
+            return sphinxResult;
         }
         return null;
         // FIXME: out-of-grammar input leads to "<unk>" triggering errors further down.
@@ -74,6 +85,7 @@ public class Sphinx extends SingleDomainRecognizer {
     @Override protected void stopImpl() throws SpeechException {
         if (csr != null)
             csr.stopRecognition();
+        vadInSpeech = false;
     }
 
     /** Return an array of supported languages */
@@ -120,6 +132,17 @@ public class Sphinx extends SingleDomainRecognizer {
     /** only ever called from TranscriptionWindow (and nobody seems to use that */
     @Override public String[] transcribe(String word, Language language) throws SpeechException {
         return null;
+    }
+
+    void evesdropOnData(Data d) {
+        if (d instanceof SpeechClassifiedData) {
+            SpeechClassifiedData scd = (SpeechClassifiedData) d;
+            if (scd.isSpeech() != vadInSpeech) {
+                vadInSpeech = scd.isSpeech();
+                fireRecognizerEvent(vadInSpeech ? RecognizerEvent.START_OF_SPEECH : RecognizerEvent.END_OF_SPEECH);
+            }
+        }
+        // TODO: estimate loudness and pass on to listener as well (maybe not every 10ms)
     }
 
 }
