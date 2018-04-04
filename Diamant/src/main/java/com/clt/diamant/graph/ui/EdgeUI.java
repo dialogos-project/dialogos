@@ -23,7 +23,7 @@ import com.clt.gui.GUI;
  */
 public class EdgeUI extends JComponent implements PropertyChangeListener {
 
-    private static final int portWidth = 5, portHeight = EdgeUI.portWidth;
+    private static final int portWidth = 7, portHeight = EdgeUI.portWidth;
 
     private NodeUI<?> nui;
     private Edge edge;
