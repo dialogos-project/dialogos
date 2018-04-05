@@ -21,7 +21,6 @@ import com.clt.diamant.graph.ui.NodeComponent;
 import com.clt.diamant.graph.ui.NodeTransferable;
 import com.clt.gui.Images;
 import com.clt.properties.BooleanProperty;
-import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
 
 /**
  * The toolbox shown on the right of the DialogOS main window,
@@ -39,7 +38,7 @@ public class NodeToolbox extends Toolbox {
     private static boolean requiresGTKfix;
     private static Dimension separatorDimension;
     static {
-        if (UIManager.getLookAndFeel() instanceof GTKLookAndFeel) {
+        if (UIManager.getLookAndFeel().getID().contains("GTK")) {
             requiresGTKfix = true;
             separatorDimension =  new Dimension(100, 10);
         }
