@@ -10,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -21,7 +23,6 @@ import com.clt.diamant.graph.ui.NodeComponent;
 import com.clt.diamant.graph.ui.NodeTransferable;
 import com.clt.gui.Images;
 import com.clt.properties.BooleanProperty;
-import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
 
 /**
  * The toolbox shown on the right of the DialogOS main window,
@@ -32,16 +33,35 @@ import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
  */
 public class NodeToolbox extends Toolbox {
 
+    private static final String GTK_LOOKANDFEEL_CLASS_NAME = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+
+    private static final Logger LOGGER = Logger.getLogger(NodeToolbox.class.getName());
+
     private static final boolean macStyle = false;
 
     private BooleanProperty structured;
 
     private static boolean requiresGTKfix;
     private static Dimension separatorDimension;
+
+    private static Class<?> loadGTKLookAndFeelClass() throws ClassNotFoundException {
+        final ClassLoader localClassLoader = NodeToolbox.class.getClassLoader();
+        final ClassLoader classLoader = localClassLoader == null ? ClassLoader.getSystemClassLoader() : localClassLoader;
+        assert classLoader != null;
+        return classLoader.loadClass(GTK_LOOKANDFEEL_CLASS_NAME);
+    }
+
     static {
-        if (UIManager.getLookAndFeel() instanceof GTKLookAndFeel) {
-            requiresGTKfix = true;
-            separatorDimension =  new Dimension(100, 10);
+        try {
+            // Load GTKLookAndFeel class dynamically so that this class is compilable under e.g. Windows
+            final Class<?> gtkLookAndFeelClass = loadGTKLookAndFeelClass();
+            final LookAndFeel currentLookAndFeel = UIManager.getLookAndFeel();
+            if (gtkLookAndFeelClass.isInstance(currentLookAndFeel)) {
+                requiresGTKfix = true;
+                separatorDimension =  new Dimension(100, 10);
+            }
+        } catch (final ClassNotFoundException e) {
+            LOGGER.log(Level.FINE, String.format("Could not find class \"%s\"; Not setting flags for GTK fixes.", GTK_LOOKANDFEEL_CLASS_NAME), e);
         }
     }
 
