@@ -56,6 +56,8 @@ import java.util.concurrent.TimeoutException;
  */
 abstract public class AbstractInputNode extends Node {
 
+    /** used while the recognizer is loading */
+    private static ImageIcon micInv = null;
     private static ImageIcon micOn = null;
     private static ImageIcon micOff = null;
 
@@ -91,11 +93,14 @@ abstract public class AbstractInputNode extends Node {
     public AbstractInputNode() {
         /* important that some value is set (must not be one of Boolean values, not null later) */
         this.setProperty(BACKGROUND, Boolean.FALSE);
+        if (micInv == null) {
+            micInv = Images.load(this, "asr/mic_inv.png");
+        }
         if (micOn == null) {
-            micOn = Images.load(this, "mic_on.png");
+            micOn = Images.load(this, "asr/mic_on.png");
         }
         if (micOff == null) {
-            micOff = Images.load(this, "mic_off.png");
+            micOff = Images.load(this, "asr/mic_off.png");
         }
     }
 
@@ -722,23 +727,26 @@ abstract public class AbstractInputNode extends Node {
                     }
                     private void executeStateChange(RecognizerEvent evt) {
                         switch (evt.getType()) {
+                            case RecognizerEvent.RECOGNIZER_LOADING:
+                            case RecognizerEvent.RECOGNIZER_DEACTIVATED:
+                                micState.setIcon(micInv);
+                                micState.setText(evt.toString());
+                                break;
                             case RecognizerEvent.RECOGNIZER_ACTIVATED:
+                            case RecognizerEvent.RECOGNIZER_READY:
                                 micState.setIcon(micOff);
+                                micState.setText(evt.toString());
                                 break;
                             case RecognizerEvent.START_OF_SPEECH:
+                            case RecognizerEvent.END_OF_SPEECH:
                                 micState.setIcon(micOn);
                                 result.setText("");
                                 break;
-                            case RecognizerEvent.RECOGNIZER_DEACTIVATED:
-                                micState.setIcon(micOff);
-                                break;
                             case RecognizerEvent.INVALID_RESULT:
+                            case RecognizerEvent.PARTIAL_RESULT:
                                 micState.setIcon(micOff);
                                 result.setText(evt.getResult().getAlternative(0).getWords());
                                 break;
-                        }
-                        if (evt.getType() != RecognizerEvent.RECOGNIZER_WARNING) {
-                            micState.setText(evt.toString());
                         }
                     }
                 };
