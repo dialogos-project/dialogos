@@ -1774,6 +1774,7 @@ public class Grammar implements NamedEntity {
         try {
             return com.clt.script.parser.Parser.parseSRGF(r, env);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ParseException(e.toString());
         }
     }

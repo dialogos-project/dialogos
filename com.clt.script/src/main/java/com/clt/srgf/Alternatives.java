@@ -402,9 +402,19 @@ public class Alternatives extends NonTerminal {
         return changed;
     }
 
+    /** an alternative has rule weights if not all of the rule weights are the same */
+    private boolean hasRuleWeights() {
+        double weight = getProbability(0);
+        for (int i = 1; i < size(); i++) {
+            if (getProbability(i) != weight)
+                return true;
+        }
+        return false;
+    }
+
     @Override
     void write(PrintWriter w, Grammar.Format format) {
-
+        boolean jsgfNeedsWeight = format == Grammar.Format.JSGF && hasRuleWeights();
         switch (format) {
             case SRGF:
             case JSGF:
@@ -424,13 +434,15 @@ public class Alternatives extends NonTerminal {
                         if (i > 0) {
                             w.print(" | ");
                         }
-                        if ((format == Grammar.Format.SRGF)
-                                && (this.getProbability(i) != 1.0)) {
-                            w.print("(/" + this.getProbability(i) + "/ ");
+                        if ((format == Grammar.Format.SRGF) && (this.getProbability(i) != 1.0)) {
+                            w.print("(");
+                        }
+                        if ((format == Grammar.Format.SRGF) && (this.getProbability(i) != 1.0)
+                         || jsgfNeedsWeight) {
+                            w.print("/" + this.getProbability(i) + "/ ");
                         }
                         this.get(i).export(w, format);
-                        if ((format == Grammar.Format.SRGF)
-                                && (this.getProbability(i) != 1.0)) {
+                        if ((format == Grammar.Format.SRGF) && (this.getProbability(i) != 1.0)) {
                             w.print(")");
                         }
                         if (this.getOwner() == null) {
