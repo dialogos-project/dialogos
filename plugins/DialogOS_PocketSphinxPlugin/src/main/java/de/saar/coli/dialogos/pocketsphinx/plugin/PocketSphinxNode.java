@@ -151,10 +151,10 @@ public class PocketSphinxNode extends Node {
     public PocketSphinxNode() {
 
         if (micOn == null) {
-            micOn = Images.load(this, "mic_on.png");
+            micOn = Images.load(this, "asr/mic_on.png");
         }
         if (micOff == null) {
-            micOff = Images.load(this, "mic_off.png");
+            micOff = Images.load(this, "asr/mic_off.png");
         }
 
         this.setProperty(PocketSphinxNode.LANGUAGE, new LanguageName("", null));

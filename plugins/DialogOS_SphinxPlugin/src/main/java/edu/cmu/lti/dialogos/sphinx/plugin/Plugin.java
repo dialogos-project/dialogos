@@ -53,7 +53,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
     @Override
     public Icon getIcon() {
-        return Images.load(this, "asr.png");
+        return Images.load(this, "asr/asr.png");
     }
 
     @Override
