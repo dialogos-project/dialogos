@@ -329,7 +329,7 @@ public abstract class AbstractOutputNode extends Node {
         try {
             speak(this.properties);
         } catch (SpeechException e) {
-            e.printStackTrace();
+            throw new NodeExecutionException(this, e.getMessage(), e);
         }
         return this.getEdge(0).getTarget();
     }

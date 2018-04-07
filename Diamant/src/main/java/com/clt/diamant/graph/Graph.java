@@ -1150,7 +1150,6 @@ public class Graph implements IdentityObject {
     private static void printAtt(XMLWriter out, String type, String name,
             Object value,
             boolean close) {
-
         if (close) {
             out.printElement("att", new String[]{"name", "type", "value"},
                     new Object[]{name,
@@ -1164,12 +1163,10 @@ public class Graph implements IdentityObject {
 
     public static void printAtt(XMLWriter out, String type, String name,
             Object value) {
-
         Graph.printAtt(out, type, name, value, value != null);
     }
 
     public static void printTextAtt(XMLWriter out, String name, String value) {
-
         Graph.printAtt(out, "text", name, null, false);
         out.printElement("value", value);
         out.closeElement("att");
@@ -1179,28 +1176,48 @@ public class Graph implements IdentityObject {
     }
 
     public static void printAtt(XMLWriter out, String name, String value) {
-
         Graph.printAtt(out, "string", name, value, true);
     }
 
     public static void printAtt(XMLWriter out, String name, Integer value) {
-
         Graph.printAtt(out, name, value.intValue());
     }
 
     public static void printAtt(XMLWriter out, String name, Long value) {
-
         Graph.printAtt(out, name, value.longValue());
     }
 
     public static void printAtt(XMLWriter out, String name, long value) {
-
         Graph.printAtt(out, "integer", name, String.valueOf(value), true);
     }
 
     public static void printAtt(XMLWriter out, String name, boolean value) {
-
         Graph.printAtt(out, "boolean", name, value ? "1" : "0", true);
+    }
+
+    /** check for existance of class with the given name */
+    private static boolean existsClass(String clss) {
+        try {
+            Class.forName(clss);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static Class getNodeClassForName(String clss) throws ClassNotFoundException {
+        if (existsClass(clss))
+            return Class.forName(clss);
+        if (existsClass("com.clt.diamant." + clss))
+            return Class.forName("com.clt.diamant." + clss);
+        if (existsClass("com.clt.diamant.graph.nodes." + clss))
+            return Class.forName("com.clt.diamant.graph.nodes." + clss);
+        System.err.println("Attempting to substitute class " + clss);
+        if ("com.clt.dialogos.tts.TTSNode".equals(clss))
+            return Class.forName("de.saar.coli.dialogos.marytts.plugin.TTSNode");
+        if ("com.clt.dialogos.vocon.VoconNode".equals(clss))
+            return Class.forName("edu.cmu.lti.dialogos.sphinx.plugin.SphinxNode");
+        return null;
     }
 
     protected class GraphHandler extends AbstractHandler {
@@ -1211,7 +1228,6 @@ public class Graph implements IdentityObject {
         Attributes atts;
 
         public GraphHandler(XMLReader r, Runnable completionRoutine, IdMap uid_map) {
-
             super("graph");
 
             this.r = r;
@@ -1357,13 +1373,7 @@ public class Graph implements IdentityObject {
                 try {
                     String clss = atts.getValue("class");
 
-                    Class<?> c = Class.forName(clss);
-                    if (c == null) {
-                        c = Class.forName("com.clt.diamant." + clss);
-                    }
-                    if (c == null) {
-                        c = Class.forName("com.clt.diamant.graph.nodes." + clss);
-                    }
+                    Class<?> c = getNodeClassForName(clss);
 
                     if (c == null) {
                         throw new ClassNotFoundException(clss);
@@ -1392,7 +1402,7 @@ public class Graph implements IdentityObject {
                         Graph.this.startNode = (StartNode) n;
                     }
                 } catch (Exception exn) {
-                    // exn.printStackTrace();
+                    exn.printStackTrace();
                     this.r.raiseException(exn.toString());
                 }
             } else if (name.equals("edge")) {
