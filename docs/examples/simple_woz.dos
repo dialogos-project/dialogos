@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wizard SYSTEM "Wizard.dtd">
+
+<wizard>
+	<plugin type="dialogos.plugin.tts">
+	</plugin>
+	<plugin type="minimalIO">
+	</plugin>
+	<plugin type="dialogos.plugin.lego">
+	</plugin>
+	<plugin type="dialogos.plugin.pocketsphinx">
+	</plugin>
+	<plugin type="dialogos.plugin.sphinx">
+		<att name="language" type="string" value="de_DE"/>
+	</plugin>
+	<plugin type="dialogos.plugin.example">
+	</plugin>
+	<graph directed="1" Graphic="1" Layout="points">
+		<att name="width" type="integer" value="750"/>
+		<att name="height" type="integer" value="540"/>
+		<groovyFunctions></groovyFunctions>
+		<node uid="1d3fb81a-188b-44a0-9df6-1d823b6f60b7" class="de.saar.coli.dialogos.marytts.plugin.TTSNode">
+			<graphics x="251" y="276" fill="#00b200"/>
+			<att name="title" type="string" value="TTS"/>
+			<att name="prompt" type="text">
+				<value>Option one</value>
+			</att>
+			<att name="prompt_type" type="string" value="text"/>
+			<att name="wait" type="boolean" value="1"/>
+		</node>
+		<node uid="5aa5f765-85fd-40f4-bc4e-3cba6d3798e4" class="de.saar.coli.dialogos.marytts.plugin.TTSNode">
+			<graphics x="484" y="276" fill="#00b200"/>
+			<att name="title" type="string" value="TTS"/>
+			<att name="prompt" type="text">
+				<value>Option three</value>
+			</att>
+			<att name="prompt_type" type="string" value="text"/>
+			<att name="wait" type="boolean" value="1"/>
+		</node>
+		<node uid="66000f48-a6d3-47bf-abc7-077c1ea0f953" class="de.saar.coli.dialogos.marytts.plugin.TTSNode">
+			<graphics x="369" y="275" fill="#00b200"/>
+			<att name="title" type="string" value="TTS"/>
+			<att name="prompt" type="text">
+				<value>Option two</value>
+			</att>
+			<att name="prompt_type" type="string" value="text"/>
+			<att name="wait" type="boolean" value="1"/>
+		</node>
+		<node uid="7dd656f2-863d-45b5-879c-e584c812047e" class="com.clt.diamant.graph.nodes.InputNode">
+			<graphics x="356" y="134" fill="#ff5a5a"/>
+			<att name="title" type="string" value="Eingabe"/>
+			<att name="reset" type="boolean" value="0"/>
+			<att name="wait" type="boolean" value="0"/>
+			<att name="discard" type="boolean" value="0"/>
+			<att name="ignoreInputHandlers" type="boolean" value="0"/>
+		</node>
+		<node uid="f530a09a-5b1a-47bc-9c43-823f0f31cb2f" class="com.clt.diamant.graph.nodes.EndNode">
+			<graphics x="369" y="408" fill="#9999ff"/>
+			<att name="title" type="string" value="Ende"/>
+		</node>
+		<node uid="ff37a405-e8fb-49f6-80f7-520fa6d61138" class="com.clt.diamant.graph.nodes.StartNode">
+			<graphics x="370" y="40" fill="#9999ff"/>
+			<att name="title" type="string" value="Start"/>
+		</node>
+		<edge src="1d3fb81a-188b-44a0-9df6-1d823b6f60b7" tgt="f530a09a-5b1a-47bc-9c43-823f0f31cb2f">
+		</edge>
+		<edge src="5aa5f765-85fd-40f4-bc4e-3cba6d3798e4" tgt="f530a09a-5b1a-47bc-9c43-823f0f31cb2f">
+		</edge>
+		<edge src="66000f48-a6d3-47bf-abc7-077c1ea0f953" tgt="f530a09a-5b1a-47bc-9c43-823f0f31cb2f">
+		</edge>
+		<edge src="7dd656f2-863d-45b5-879c-e584c812047e" tgt="1d3fb81a-188b-44a0-9df6-1d823b6f60b7">
+			<att name="condition" type="string" value="&quot;Option one&quot;"/>
+		</edge>
+		<edge src="7dd656f2-863d-45b5-879c-e584c812047e" tgt="66000f48-a6d3-47bf-abc7-077c1ea0f953">
+			<att name="condition" type="string" value="&quot;Option two&quot;"/>
+		</edge>
+		<edge src="7dd656f2-863d-45b5-879c-e584c812047e" tgt="5aa5f765-85fd-40f4-bc4e-3cba6d3798e4">
+			<att name="condition" type="string" value="&quot;Option three&quot;"/>
+		</edge>
+		<edge src="ff37a405-e8fb-49f6-80f7-520fa6d61138" tgt="7dd656f2-863d-45b5-879c-e584c812047e">
+		</edge>
+	</graph>
+</wizard>
