@@ -444,6 +444,7 @@ public class Rule implements Comparable<Rule>, NamedEntity {
                 break;
 
             case JSGF:
+            case JSGFwithGarbage:
 // TIMO: maybe better handled in Grammar.exportImpl and with slightly different if-expression (this.getRoot().equals(r.getName())); or maybe not.
 /*                if (this.isPublic()) {
                     w.print("public ");
@@ -458,7 +459,13 @@ public class Rule implements Comparable<Rule>, NamedEntity {
                 w.print(((format == Grammar.Format.LH) || (format == Grammar.Format.VOCON) || (format == Grammar.Format.VOCON_G))
                         ? " : "
                         : " = ");
+                if (format == Grammar.Format.JSGFwithGarbage && getGrammar().getRoot().equals(getName())) {
+                    w.print("( ");
+                }
                 this.expansion.export(w, format);
+                if (format == Grammar.Format.JSGFwithGarbage && getGrammar().getRoot().equals(getName())) {
+                    w.println(") <"+Grammar.GARBAGE+"> ");
+                }
                 w.println(";");
                 break;
             case NGSL:

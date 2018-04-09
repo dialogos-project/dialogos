@@ -89,6 +89,10 @@ public class Grammar implements NamedEntity {
          */
         JSGF("Java Speech Grammar Format"),
         /**
+         * JSGF with additional <GARBAGE> tags before all terminals (for robustness)
+         */
+        JSGFwithGarbage("Java Speech Grammar Format with additoinal <GARBAGE> tags for robustness"),
+        /**
          * Temic StarRec grammar format
          */
         TEMIC("Temic StarRec grammar format"),
@@ -141,6 +145,8 @@ public class Grammar implements NamedEntity {
 
     private Script script;
 
+    private boolean requestRobustness = false;
+
     /**
      * Default constructor. Construct a new grammar with default rules NULL,
      * GARBAGE and VOID
@@ -177,6 +183,7 @@ public class Grammar implements NamedEntity {
                     case SRGF:
                     case TEMIC:
                     case JSGF:
+                    case JSGFwithGarbage:
                     case GRXML:
                     case VOCON:
                     case VOCON_G:
@@ -229,6 +236,7 @@ public class Grammar implements NamedEntity {
                             case SRGF:
                             case TEMIC:
                             case JSGF:
+                            case JSGFwithGarbage:
                             case GRXML:
                             case VOCON:
                             case VOCON_G:
@@ -1283,6 +1291,7 @@ public class Grammar implements NamedEntity {
                 break;
             case TEMIC:
             case JSGF:
+            case JSGFwithGarbage:
                 w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "ISO-8859-1")));
                 w.println("#JSGF V1.0 ISO-8859-1;");
                 w.println();
@@ -1342,6 +1351,7 @@ public class Grammar implements NamedEntity {
                 break;
             case TEMIC:
             case JSGF:
+            case JSGFwithGarbage:
                 if (out instanceof PrintWriter) {
                     w = (PrintWriter) out;
                 } else {
@@ -1476,6 +1486,7 @@ public class Grammar implements NamedEntity {
                 break;
             case TEMIC:
             case JSGF:
+            case JSGFwithGarbage:
                 w.println("grammar " + this.getName() + ";");
                 w.println();
                 for (Rule r : allRules) {
@@ -1818,5 +1829,13 @@ public class Grammar implements NamedEntity {
 
 //        ParseNode tree_root = g.getBestParseTree("May I speak to John", "request");
 //        System.out.println(tree_root);
+    }
+
+    public boolean requestsRobustness() {
+        return requestRobustness;
+    }
+
+    public void requestRobustness(boolean requested) {
+        requestRobustness = requested;
     }
 }

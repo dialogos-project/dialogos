@@ -406,6 +406,7 @@ public class Rulename extends Expansion {
                 break;
             case TEMIC:
             case JSGF:
+            case JSGFwithGarbage:
             case LH:
             case VOCON:
             case VOCON_G:

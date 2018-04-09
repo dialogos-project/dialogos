@@ -36,4 +36,12 @@ public class GrammarTest {
         assert v.getType().equals(Type.Int);
         assertEquals(2, ((IntValue) v).getInt());
     }
+
+    @Ignore // this test does not automatically check its output. You'll have to do that yourself.
+    @Test public void testJSGFwithGarbage() throws ParseException {
+        InputStream stream = GrammarTest.class.getResourceAsStream("rightrecursive.srgf");
+        Grammar g = Grammar.create(new InputStreamReader(stream));
+        System.err.println(g.toString(Grammar.Format.JSGFwithGarbage));
+    }
+
 }

@@ -43,7 +43,7 @@ public class AlternativesItem extends Item {
             this.setDone(true);
             p
                     .setProbability(p.getProbability()
-                            * this.alternatives.getProbability(0));
+                            * this.alternatives.getWeight(0));
             p.push(e.createInstance());
             return Item.itemList(p);
         } else {
@@ -54,14 +54,14 @@ public class AlternativesItem extends Item {
                 Expansion e = this.alternatives.get(i);
                 Parse branch = p.branch();
                 branch.setProbability(branch.getProbability()
-                        * this.alternatives.getProbability(i));
+                        * this.alternatives.getWeight(i));
                 branch.push(e.createInstance());
                 l.add(branch);
             }
             p.push(this.alternatives.get(0).createInstance());
             p
                     .setProbability(p.getProbability()
-                            * this.alternatives.getProbability(0));
+                            * this.alternatives.getWeight(0));
             return l;
         }
     }

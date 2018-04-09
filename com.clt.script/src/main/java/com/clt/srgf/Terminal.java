@@ -324,6 +324,9 @@ public class Terminal extends Expansion {
         if (ascii_nowhitespace) {
             if (format == Grammar.Format.NGSL) {
                 w.print(s.toLowerCase());
+            } else if (format == Grammar.Format.JSGFwithGarbage) {
+                w.print("<"+Grammar.GARBAGE+"> ");
+                w.print(s);
             } else {
                 w.print(s);
             }
@@ -332,8 +335,10 @@ public class Terminal extends Expansion {
                 case SRGF:
                 case JSGF:
                     w.print(s);
-//          w.print(StringValue.toSourceString(s, true));
-                    // AK, Jan 18: Let's not spell out unicode characters any more, shall we?
+                    break;
+                case JSGFwithGarbage:
+                    w.print("<"+Grammar.GARBAGE+"> ");
+                    w.print(s);
                     break;
                 case GRXML:
                     w.println(com.clt.xml.XMLWriter.encode(s));

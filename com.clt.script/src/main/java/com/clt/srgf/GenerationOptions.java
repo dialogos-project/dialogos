@@ -15,8 +15,19 @@ public final class GenerationOptions implements Cloneable {
     public String classFilter = null;
     public boolean groupDictionaries = false;
     public Map<String, Map<String, String>> dynamicVocabulary = null;
+    /** repeat branches this many times */
     public int maxRepeats = 1;
     public boolean dynamicVocabularyReplacesOriginalContent = true;
+    /** for grammar branches, do a random walk rather than sequentially through all alternatives */
+    public boolean randomWalk = false;
+    /**
+     * similarly to maxRepeats in sequential grammar enumeration,
+     * add branches to the output until their summed probability reaches this value
+     * the semantics is as follows:
+     * <= 1 implies sampling without replacement, >1 with replacement (just timo's best guess at what people might want).
+     * TODO: would need to be implemented
+     */
+    public double randomWalkProbSum = -1;
 
     @Override
     public Object clone() {

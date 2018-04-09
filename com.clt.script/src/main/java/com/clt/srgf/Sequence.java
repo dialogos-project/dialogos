@@ -362,6 +362,7 @@ public class Sequence extends NonTerminal {
                     ((com.clt.xml.XMLWriter) w).printElement("item", null);
                     break;
                 case JSGF:
+                case JSGFwithGarbage:
                     // no built-in support for <NULL> in Sphinx-4 for JSGF
                     break;
                 case TEMIC:
@@ -378,6 +379,7 @@ public class Sequence extends NonTerminal {
             switch (format) {
                 case SRGF:
                 case JSGF:
+                case JSGFwithGarbage:
                 case TEMIC:
                 case LH:
                 case VOCON:

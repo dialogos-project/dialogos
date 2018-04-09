@@ -22,6 +22,7 @@ import com.clt.util.MetaCollection;
 public class Alternatives extends NonTerminal {
 
     private List<Expansion> alternatives;
+    /** list of "source" probabilities; typically, they do not sum to 1, despite the name */
     private List<Double> probabilities;
 
     public Alternatives() {
@@ -79,30 +80,35 @@ public class Alternatives extends NonTerminal {
     @Override
     Iterator<StringBuilder> generate_(final StringBuilder prefix,
             final GenerationOptions options) {
+        final List<Expansion> orderedBranches = new ArrayList<>();
+
+        final List<Integer> ordering = new ArrayList<>();
+        for (int i = 0; i < Alternatives.this.size(); i++) {
+            ordering.add(i);
+        }
+        if (options.randomWalk) {
+            Collections.shuffle(ordering);
+        }
 
         return new ConcatIterator<StringBuilder>(
                 new Iterator<Iterator<StringBuilder>>() {
-
             int n = 0;
 
             public boolean hasNext() {
-
                 return this.n < Alternatives.this.size();
             }
 
             public Iterator<StringBuilder> next() {
-
                 StringBuilder b;
                 if (this.n < Alternatives.this.size() - 1) {
                     b = new StringBuilder(prefix.toString());
                 } else {
                     b = prefix;
                 }
-                return Alternatives.this.get(this.n++).generate(b, options);
+                return Alternatives.this.get(ordering.get(this.n++)).generate(b, options);
             }
 
             public void remove() {
-
                 throw new UnsupportedOperationException();
             }
         });
@@ -111,7 +117,7 @@ public class Alternatives extends NonTerminal {
     @Override
     Expansion optimize_(boolean removeTags) {
 
-        if ((this.size() == 1) && (this.getProbability(0) == 1.0)) {
+        if ((this.size() == 1) && (this.getWeight(0) == 1.0)) {
             Expansion e = this.get(0).optimize(removeTags);
 
             int min = e.getRepeatMin() * this.getRepeatMin();
@@ -140,18 +146,18 @@ public class Alternatives extends NonTerminal {
                 } else if ((e instanceof Alternatives) && (e.getRepeatMin() == 1)
                         && (e.getRepeatMax() == 1)) {
                     Alternatives a = (Alternatives) e;
-                    double prob = this.getProbability(i);
+                    double prob = this.getWeight(i);
                     for (int j = 0; j < a.size(); j++) {
-                        result.add(a.get(j), prob * a.getProbability(j));
+                        result.add(a.get(j), prob * a.getWeight(j));
                     }
                 } else if ((e.getRepeatMax() == 0)
                         || ((e instanceof Sequence) && (((Sequence) e).size() == 0))) {
-                    if ((this.getProbability(i) == 1.0) && (result.getRepeatMin() <= 1)) {
+                    if ((this.getWeight(i) == 1.0) && (result.getRepeatMin() <= 1)) {
                         result.setRepeat(0, result.getRepeatMax());
                     } else {
                         Expansion s = new Sequence();
                         s.setRepeat(0, 0);
-                        result.add(s, this.getProbability(i));
+                        result.add(s, this.getWeight(i));
                     }
                 } else {
                     if ((this.get(i) instanceof Rulename)
@@ -161,7 +167,7 @@ public class Alternatives extends NonTerminal {
                                             Token.EMPTY)) {
                         containsEmptyRule = true;
                     }
-                    result.add(e, this.getProbability(i));
+                    result.add(e, this.getWeight(i));
                 }
             }
 
@@ -192,7 +198,7 @@ public class Alternatives extends NonTerminal {
 
             result.compress();
 
-            if ((result.size() == 1) && (result.getProbability(0) == 1.0)) {
+            if ((result.size() == 1) && (result.getWeight(0) == 1.0)) {
                 // don't call optimize recursively because we have not computed the
                 // possible tokens of result
                 Expansion e = result.get(0);
@@ -229,7 +235,7 @@ public class Alternatives extends NonTerminal {
             Expansion exp = this.get(i);
             if ((exp instanceof Terminal) && (exp.getRepeatMin() == 1)
                     && (exp.getRepeatMax() == 1)
-                    && (this.getProbability(i) == 1.0)) {
+                    && (this.getWeight(i) == 1.0)) {
                 terminals.add(exp);
                 this.alternatives.remove(i);
                 this.probabilities.remove(i);
@@ -254,14 +260,14 @@ public class Alternatives extends NonTerminal {
                 if (j != i) {
                     Expansion exp2 = this.alternatives.get(j);
                     if (this.subsumes(exp, exp2)) {
-                        this.probabilities.set(i, new Double(this.getProbability(i)
-                                + this.getProbability(j)));
+                        this.probabilities.set(i, new Double(this.getWeight(i)
+                                + this.getWeight(j)));
                         this.probabilities.remove(j);
                         this.alternatives.remove(j);
                         j--;
                     } else if (this.subsumes(exp2, exp)) {
-                        this.probabilities.set(j, new Double(this.getProbability(i)
-                                + this.getProbability(j)));
+                        this.probabilities.set(j, new Double(this.getWeight(i)
+                                + this.getWeight(j)));
                         this.probabilities.remove(i);
                         this.alternatives.remove(i);
                         i--;
@@ -287,19 +293,22 @@ public class Alternatives extends NonTerminal {
 
     @Override
     public int size() {
-
         return this.alternatives.size();
     }
 
     @Override
     public Expansion get(int i) {
-
         return this.alternatives.get(i);
     }
 
-    public double getProbability(int i) {
-
+    public double getWeight(int i) {
         return this.probabilities.get(i).doubleValue();
+    }
+
+    public double getProbability(int i) {
+        double sum = probabilities.stream().mapToDouble(Double::doubleValue).sum();
+        assert sum != 0.0;
+        return sum != 0.0 ? getWeight(i) / sum : getWeight(i);
     }
 
     @Override
@@ -313,7 +322,7 @@ public class Alternatives extends NonTerminal {
                     Expansion e2 = a.get(i);
                     if ((e1.getRepeatMin() != e2.getRepeatMin())
                             || (e1.getRepeatMax() != e2.getRepeatMax())
-                            || (this.getProbability(i) != a.getProbability(i))
+                            || (this.getWeight(i) != a.getWeight(i))
                             || !e1.eq(e2)) {
                         return false;
                     }
@@ -402,11 +411,13 @@ public class Alternatives extends NonTerminal {
         return changed;
     }
 
+
+
     /** an alternative has rule weights if not all of the rule weights are the same */
     private boolean hasRuleWeights() {
-        double weight = getProbability(0);
+        double weight = getWeight(0);
         for (int i = 1; i < size(); i++) {
-            if (getProbability(i) != weight)
+            if (getWeight(i) != weight)
                 return true;
         }
         return false;
@@ -418,6 +429,7 @@ public class Alternatives extends NonTerminal {
         switch (format) {
             case SRGF:
             case JSGF:
+            case JSGFwithGarbage:
             case TEMIC:
             case LH:
             case VOCON:
@@ -434,15 +446,15 @@ public class Alternatives extends NonTerminal {
                         if (i > 0) {
                             w.print(" | ");
                         }
-                        if ((format == Grammar.Format.SRGF) && (this.getProbability(i) != 1.0)) {
+                        if ((format == Grammar.Format.SRGF) && (this.getWeight(i) != 1.0)) {
                             w.print("(");
                         }
-                        if ((format == Grammar.Format.SRGF) && (this.getProbability(i) != 1.0)
+                        if ((format == Grammar.Format.SRGF) && (this.getWeight(i) != 1.0)
                          || jsgfNeedsWeight) {
-                            w.print("/" + this.getProbability(i) + "/ ");
+                            w.print("/" + this.getWeight(i) + "/ ");
                         }
                         this.get(i).export(w, format);
-                        if ((format == Grammar.Format.SRGF) && (this.getProbability(i) != 1.0)) {
+                        if ((format == Grammar.Format.SRGF) && (this.getWeight(i) != 1.0)) {
                             w.print(")");
                         }
                         if (this.getOwner() == null) {
@@ -459,12 +471,12 @@ public class Alternatives extends NonTerminal {
                 } else {
                     xml.openElement("one-of");
                     for (int i = 0; i < this.size(); i++) {
-                        if (this.getProbability(i) == 1.0) {
+                        if (this.getWeight(i) == 1.0) {
                             xml.openElement("item");
                         } else {
                             xml.openElement("item", new String[]{"weight"},
                                     new String[]{String.valueOf(this
-                                                .getProbability(i))});
+                                                .getWeight(i))});
                         }
                         this.get(i).export(xml, format);
                         xml.closeElement("item");
@@ -485,8 +497,8 @@ public class Alternatives extends NonTerminal {
                         w.print(" ");
                     }
                     this.get(i).export(w, format);
-                    if (this.getProbability(i) != 1.0) {
-                        w.print("~" + this.getProbability(i));
+                    if (this.getWeight(i) != 1.0) {
+                        w.print("~" + this.getWeight(i));
                     }
                     if (this.getOwner() == null) {
                         w.println();

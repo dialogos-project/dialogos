@@ -27,6 +27,7 @@ class GarbageRule extends Rule {
                 w.println("<GARBAGE> = %unknowns ;");
                 break;
             case JSGF:
+            case JSGFwithGarbage:
                 // delegate to the JSGF builtin garbage model
                 // TIMO: this rule is not implemented in Sphinx-4's JSGF
                 //w.println("<GARBAGE> = <garbage> ;");

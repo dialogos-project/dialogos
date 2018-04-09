@@ -359,6 +359,7 @@ public abstract class Expansion {
             case SRGF:
             case TEMIC:
             case JSGF:
+            case JSGFwithGarbage:
                 if ((this.getRepeatMin() == 1) && (this.getRepeatMax() == -1)) {
                     this.write(w, format, multiToken);
                     w.print("+");
