@@ -24,7 +24,7 @@ public class SphinxUtterance implements Utterance {
         this.logConfidence = 0;
 
         for( WordResult wr : words ) {
-            if( ! wr.isFiller() ) { // skip silence tokens etc.
+            if( ! wr.isFiller() && !wr.getWord().getSpelling().startsWith("<PHONE_")) { // skip silence tokens etc.
                 this.words.add(new SphinxWord(wr));
                 this.logConfidence += (float) wr.getScore();
             }

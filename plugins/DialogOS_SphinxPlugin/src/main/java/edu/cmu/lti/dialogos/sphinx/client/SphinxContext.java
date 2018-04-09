@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import static com.clt.srgf.Grammar.Format.JSGF;
+import static com.clt.srgf.Grammar.Format.JSGFwithGarbage;
 
 /**
  * Created by timo on 13.10.17.
@@ -59,7 +60,14 @@ public class SphinxContext extends RecognitionContext {
                 csr = new ConfigurableSpeechRecognizer(context, audioSource);
             }
             dic.loadExceptions(sls.getG2PList());
-            jsgfGrammar.setBaseURL(new URL(encodeData(grammar.toString(JSGF))));
+            String grammarString;
+            if (grammar.requestsRobustness()) {
+                grammarString = grammar.toString(JSGFwithGarbage);
+                grammarString += sls.getGarbageRulesText();
+            } else {
+                grammarString = grammar.toString(JSGF);
+            }
+            jsgfGrammar.setBaseURL(new URL(encodeData(grammarString)));
             jsgfGrammar.loadJSGF("");
             return csr;
         } catch (IOException | JSGFGrammarException | JSGFGrammarParseException e) {

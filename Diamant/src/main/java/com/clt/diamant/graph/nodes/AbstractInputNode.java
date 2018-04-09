@@ -72,8 +72,10 @@ abstract public class AbstractInputNode extends Node {
      * for recognition in the background, results are passed on via the InputCenter
      */
     private static final String BACKGROUND = "background";
+    /**name of the property that stores whether recognizers should aim for robust recognition beyond the strict grammar itself*/
+    protected static final String ENABLE_GARBAGE = "enableGarbage";
     /** name of the property that stores the recognition threshold */
-    private static final String THRESHOLD = "threshold";
+    protected static final String THRESHOLD = "threshold";
 
     private static Object DIRECT_GRAMMAR = new Object() {
         @Override
@@ -433,9 +435,7 @@ abstract public class AbstractInputNode extends Node {
                 properties, FORCE_TIMEOUT, com.clt.diamant.Resources.getString(FORCE_TIMEOUT));
 
         timeout.addItemListener(new ItemListener() {
-
             public void itemStateChanged(ItemEvent evt) {
-
                 tf.setEnabled(timeout.isSelected());
                 forceTimeout.setEnabled(timeout.isSelected());
                 if (timeout.isSelected()) {
@@ -457,11 +457,9 @@ abstract public class AbstractInputNode extends Node {
         gbc.insets = new Insets(3, 12, 3, 0);
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridwidth = 1;
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-
         gbc.gridwidth = 1;
 
         options.add(timeout, gbc);
@@ -484,9 +482,7 @@ abstract public class AbstractInputNode extends Node {
         JCheckBox background = NodePropertiesDialog.createCheckBox(properties,
                 BACKGROUND, Resources.getString(BACKGROUND));
         final Runnable updater = new Runnable() {
-
             public void run() {
-
                 boolean bg = (Boolean) properties.get(BACKGROUND);
                 table.setEnabled(!bg);
                 newButton.setEnabled(!bg);
@@ -496,9 +492,7 @@ abstract public class AbstractInputNode extends Node {
             }
         };
         background.addItemListener(new ItemListener() {
-
             public void itemStateChanged(ItemEvent e) {
-
                 boolean bg = e.getStateChange() == ItemEvent.SELECTED;
                 if (bg) {
                     // if in background mode, patterns are located at an input
@@ -506,12 +500,19 @@ abstract public class AbstractInputNode extends Node {
                     edgeModel.clear();
                     edgeModel.addRow();
                 }
-
                 updater.run();
             }
         });
         updater.run();
         options.add(background, gbc);
+
+        gbc.gridy++;
+        gbc.weighty = 0.0;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 2;
+        JCheckBox robustness = NodePropertiesDialog.createCheckBox(properties,
+                ENABLE_GARBAGE, Resources.getString(ENABLE_GARBAGE));
+        options.add(robustness, gbc);
 
         gbc.gridy++;
         gbc.weighty = 0.0;

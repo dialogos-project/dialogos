@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
 public class Settings extends PluginSettings {
 
     private DefaultEnumProperty<LanguageName> defaultLanguage;
-//    private Map<String, List<G2PEntry>> g2pLists;
+
 
     public Settings() {
         List<LanguageName> languages = Plugin.getAvailableLanguages();

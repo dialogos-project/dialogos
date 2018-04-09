@@ -83,7 +83,7 @@ public class Preferences {
     private static final File defaultDirectory;
 
     static {
-        defaultDirectory = new File(System.getProperty("user.home") + "/.dialogos");
+        defaultDirectory = new File(System.getProperty("user.home") + File.separatorChar + ".dialogos" + File.separatorChar);
 
         if (!defaultDirectory.exists()) {
             defaultDirectory.mkdirs();

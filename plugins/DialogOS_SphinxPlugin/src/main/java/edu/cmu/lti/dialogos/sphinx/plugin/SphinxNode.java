@@ -33,10 +33,9 @@ public class SphinxNode extends AbstractInputNode {
         try {
             this.getRecognizer().stopRecognition();
         } catch (SpeechException exn) {
-            throw new NodeExecutionException(this, Resources
-                    .getString("RecognizerError")
-                    + ".", exn);
+            throw new NodeExecutionException(this, Resources.getString("RecognizerError") + ".", exn);
         }
+        recGrammar.requestRobustness(Boolean.TRUE == getProperty(ENABLE_GARBAGE));
         return new SphinxRecognitionExecutor(getRecognizer(), getSettings());
     }
 
@@ -56,6 +55,7 @@ public class SphinxNode extends AbstractInputNode {
         return getSettings().getDefaultLanguage();
     }
 
+    /** retrieve the settings from the dialog graph (which is where they are stored -- not within Plugin!) */
     private Settings getSettings() {
         if (getGraph() != null && getGraph().getOwner() != null)
             return ((Settings) getGraph().getOwner()

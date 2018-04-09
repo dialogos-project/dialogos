@@ -4,9 +4,9 @@
 
     <property name="logLevel" value="OFF"/>
 
-    <property name="absoluteBeamWidth"  value="20000"/>
+    <property name="absoluteBeamWidth"  value="10000"/>
     <property name="relativeBeamWidth"  value="1e-60"/>
-    <property name="absoluteWordBeamWidth"  value="200"/>
+    <property name="absoluteWordBeamWidth"  value="500"/>
     <property name="relativeWordBeamWidth"  value="1e-40"/>
 
     <property name="wordInsertionProbability" value="0.1"/>
@@ -18,7 +18,7 @@
     <property name="acousticLookaheadWeight" value="1.7"/>
     <property name="phoneticBeam" value="1e-12"/>
 
-    <property name="oogProbability" value="1e-30"/>
+    <property name="oogProbability" value="1e-35"/>
     <property name="oogLoopProbability" value="1e-10"/>
 
     <property name="languageWeight" value="8.0"/>
@@ -159,7 +159,7 @@
     </component>
 
     <component name="flatLinguist"
-               type="edu.cmu.sphinx.linguist.flat.FlatLinguist">
+               type="edu.cmu.sphinx.linguist.dflat.DynamicFlatLinguist">
         <property name="grammar" value="jsgfGrammar"/>
         <property name="acousticModel" value="acousticModel"/>
         <property name="wordInsertionProbability"

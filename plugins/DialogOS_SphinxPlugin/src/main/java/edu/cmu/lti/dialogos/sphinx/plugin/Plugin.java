@@ -19,7 +19,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     @Override
     public void initialize() {
         getRecognizer(); // to perform one-time initialization work at DialogOS startup time
-        // TODO unlocalized string
+        // TODO unlocalized string --> this should be "Speech/Sprache/Parole"
         Node.registerNodeTypes("IO", Arrays.asList(new Class<?>[]{SphinxNode.class}));
     }
 

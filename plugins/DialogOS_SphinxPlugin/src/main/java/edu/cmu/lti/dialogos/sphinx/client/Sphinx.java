@@ -7,19 +7,12 @@ import com.clt.speech.recognition.*;
 import com.clt.srgf.Grammar;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
-import com.clt.srgf.Rule;
 import com.stanfy.enroscar.net.DataStreamHandler;
 import edu.cmu.sphinx.api.*;
 import edu.cmu.sphinx.frontend.Data;
-import edu.cmu.sphinx.frontend.Signal;
 import edu.cmu.sphinx.frontend.endpoint.SpeechClassifiedData;
-import edu.cmu.sphinx.frontend.endpoint.SpeechEndSignal;
-import edu.cmu.sphinx.frontend.endpoint.SpeechStartSignal;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -27,7 +20,8 @@ import javax.sound.sampled.AudioFormat;
  * @author koller, timo
  *
  * List of TODOs:
- * handle multiple languages (configurable for more than DE/EN?), exhibit a "default" language through Plugin
+ * handle multiple languages (configurable for more than DE/EN?),
+ * exhibit a "default" language through Plugin
  *
  */
 public class Sphinx extends SingleDomainRecognizer {
@@ -43,7 +37,6 @@ public class Sphinx extends SingleDomainRecognizer {
 
     public static final Language US_ENGLISH = new Language(new Locale("en", "US"), "US English");
     public static final Language GERMAN = new Language(new Locale("de", "DE"), "Deutsch");
-    private static final Language[] STANDARD_LANGUAGES = { US_ENGLISH, GERMAN };
 
     public static AudioFormat audioFormat = new AudioFormat(16000f, 16, 1, true, false);
     public static AudioFormat getAudioFormat() { return audioFormat; }
@@ -90,7 +83,8 @@ public class Sphinx extends SingleDomainRecognizer {
 
     private boolean isMatch(SpeechResult speechResult) {
         Grammar gr = context.getGrammar();
-        return gr.match(speechResult.getHypothesis(), gr.getRoot()) != null;
+        String result = speechResult.getHypothesis().replaceAll("<PHONE_.*?> ?", "");
+        return gr.match(result, gr.getRoot()) != null;
     }
 
     @Override protected void stopImpl() throws SpeechException {
