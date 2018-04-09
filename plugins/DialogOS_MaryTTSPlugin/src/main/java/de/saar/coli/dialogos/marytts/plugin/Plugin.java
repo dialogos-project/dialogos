@@ -24,7 +24,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     // that we should better spend waiting here than after clicking "New Dialog"
     getSynthesizer();
 
-    Node.registerNodeTypes(Resources.getResources().createLocalizedString("TTS"),
+    Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
         Arrays.asList(new Class<?>[] { TTSNode.class }));
   }
 

@@ -5,6 +5,7 @@ import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
 import com.clt.diamant.graph.Node;
 import com.clt.gui.Images;
+import com.clt.speech.Resources;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 import org.xml.sax.SAXException;
@@ -20,8 +21,9 @@ import java.util.Arrays;
 public class Plugin implements com.clt.dialogos.plugin.Plugin {
     @Override
     public void initialize() {
-        System.out.println("Hello MinimalIO Plugin!");
-        Node.registerNodeTypes("IO", Arrays.asList(new Class<?>[] { TextInputNode.class, TextOutputNode.class }));
+        Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
+                Arrays.asList(new Class<?>[] {
+                TextInputNode.class, TextOutputNode.class }));
     }
 
     @Override

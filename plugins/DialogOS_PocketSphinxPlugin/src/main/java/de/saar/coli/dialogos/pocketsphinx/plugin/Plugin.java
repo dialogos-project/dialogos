@@ -6,6 +6,7 @@ import com.clt.diamant.graph.Node;
 import com.clt.gui.Images;
 import javax.swing.Icon;
 import com.clt.speech.Language;
+import com.clt.speech.Resources;
 import com.clt.speech.SpeechException;
 import de.saar.coli.dialogos.pocketsphinx.PocketSphinx;
 import java.io.IOException;
@@ -26,7 +27,8 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     public void initialize() {
         getRecognizer(); // to perform one-time initialization work at DialogOS startup time
 
-        Node.registerNodeTypes("Speech Recognition", Arrays.asList(new Class<?>[]{PocketSphinxNode.class}));
+        Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
+                Arrays.asList(new Class<?>[]{PocketSphinxNode.class}));
     }
 
     static List<LanguageName> getAvailableLanguages() {

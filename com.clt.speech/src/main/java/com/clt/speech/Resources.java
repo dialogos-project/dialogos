@@ -25,7 +25,7 @@ public class Resources {
         return StringTools.format(Resources.getString(key), param);
     }
 
-    public static ResourceBundle getResources() {
+    public static DynamicResourceBundle getResources() {
 
         return Resources.resources;
     }
