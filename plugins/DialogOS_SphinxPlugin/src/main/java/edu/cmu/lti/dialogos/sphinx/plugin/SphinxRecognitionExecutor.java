@@ -12,15 +12,17 @@ import com.clt.speech.recognition.*;
 import com.clt.speech.recognition.RecognitionExecutor;
 import com.clt.srgf.Grammar;
 import edu.cmu.lti.dialogos.sphinx.client.Sphinx;
+import edu.cmu.lti.dialogos.sphinx.client.SphinxContext;
 
 /**
  *
  */
 public class SphinxRecognitionExecutor implements RecognitionExecutor {
 
-    private Sphinx recognizer;
+    private AbstractRecognizer recognizer;
 
-    public SphinxRecognitionExecutor(Sphinx recognizer) {
+    public SphinxRecognitionExecutor(AbstractRecognizer recognizer) {
+        assert recognizer instanceof Sphinx;
         this.recognizer = recognizer;
     }
 
@@ -32,20 +34,20 @@ public class SphinxRecognitionExecutor implements RecognitionExecutor {
         Future<MatchResult> result = Executors.newSingleThreadExecutor().submit(() -> {
             // TODO: all that is relevant to context, thus including the recognition threshold!
             recognizer.setContext(grammar);
+            ((SphinxContext) recognizer.getContext()).setThreshold(recognitionThreshold);
             if (stateListener != null) {
                 recognizer.addRecognizerListener(stateListener);
             }
             RecognitionResult recognitionResult = null;
             try {
-                do {
+//                do {
                     recognitionResult = recognizer.startLiveRecognition();
                     if (recognitionResult == null) {
-                        System.err.println("SphinxRecognitionExecutor, returning null");
                         //TODO: this may break the contract of RecognitionExecutor if null is returned but it's not the timeout that is at fault
                         return null;
                     }
-                } while ((recognitionResult.numAlternatives() == 0)
-                        || (recognitionResult.getAlternative(0).getConfidence() < recognitionThreshold));
+//                } while ((recognitionResult.numAlternatives() == 0)
+//                        || (recognitionResult.getAlternative(0).getConfidence() < recognitionThreshold));
             } finally {
                 if (stateListener != null) {
                     recognizer.removeRecognizerListener(stateListener);

@@ -9,6 +9,7 @@ import edu.cmu.sphinx.api.Context;
 import edu.cmu.sphinx.jsgf.JSGFGrammar;
 import edu.cmu.sphinx.jsgf.JSGFGrammarException;
 import edu.cmu.sphinx.jsgf.JSGFGrammarParseException;
+import edu.cmu.sphinx.linguist.dflat.DynamicFlatLinguist;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,8 @@ public class SphinxContext extends RecognitionContext {
     ExtensibleDictionary dic;
     JSGFGrammar jsgfGrammar;
     VADListener vadListener;
+    DynamicFlatLinguist dflat;
+    private Double threshold;
 
     /**
      * interpolate will interpolate the grammar with a background LM (at the cost of harder-to-identify)
@@ -70,9 +73,13 @@ public class SphinxContext extends RecognitionContext {
                 dic = context.getInstance(ExtensibleDictionary.class);
                 jsgfGrammar = context.getInstance(JSGFGrammar.class);
                 vadListener = context.getInstance(VADListener.class);
+                dflat = context.getInstance(DynamicFlatLinguist.class);
                 csr = new ConfigurableSpeechRecognizer(context, audioSource);
             }
             dic.loadExceptions(sls.getG2PList());
+            dflat.setAddOutOfGrammarBranch(threshold != null);
+            if (threshold != null)
+                dflat.setOutOfGrammarProbability(threshold); //TODO: this needs to know the rejection threshold
             String grammarString;
             if (grammar.requestsRobustness()) {
                 grammarString = grammar.toString(JSGFwithGarbage);
@@ -100,5 +107,30 @@ public class SphinxContext extends RecognitionContext {
 
     public VADListener getVadListener() {
         return vadListener;
+    }
+
+    /**
+     * set the threshold on a range 0 .. 100 %
+     * @param threshold
+     *  (0 map anything to grammar, 100 reject if it's not a perfect match)
+     */
+    public void setThreshold(Float threshold) {
+        /*
+        thresholds must be converted to be useful in Sphinx.
+        TIMO tested this with a bunch of files containing digits
+        except for one or two and tested a grammar that only allowed
+        those two digits. The range of false positives varied within
+        a range of 10e-25 and 10e-50 (anything accepted as one|two at 10e-50).
+
+        thus 0 -> 10e-50
+        and  1 -> 10e-25
+        */
+        if (threshold == null)
+            this.threshold = null;
+        else {
+            assert 0 <= threshold && 1 >= threshold : "out of bounds, I only like >= 0 & <= 1";
+            this.threshold = Math.pow(10., -50+(25*threshold));
+        }
+
     }
 }
