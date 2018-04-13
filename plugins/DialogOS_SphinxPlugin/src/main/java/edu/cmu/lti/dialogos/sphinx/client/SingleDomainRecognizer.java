@@ -1,5 +1,6 @@
 package edu.cmu.lti.dialogos.sphinx.client;
 
+import com.clt.properties.Property;
 import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
 import com.clt.speech.recognition.AbstractRecognizer;
@@ -7,6 +8,7 @@ import com.clt.speech.recognition.Domain;
 import com.clt.speech.recognition.RecognitionContext;
 import com.clt.speech.recognition.RecognizerException;
 
+import javax.sound.sampled.AudioFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,21 +19,21 @@ public abstract class SingleDomainRecognizer extends AbstractRecognizer {
 
     private Domain domain = new DefaultDomain();
 
-    @Override public Domain[] getDomains() throws SpeechException {
+    @Override public Domain[] getDomains() {
         return new Domain[] { domain };
     }
 
-    @Override public Domain createDomain(String name) throws SpeechException {
+    @Override public Domain createDomain(String name) {
         return new DefaultDomain();
     }
 
-    @Override public void setDomain(Domain domain) throws SpeechException {}
+    @Override public void setDomain(Domain domain) {}
 
-    @Override public Domain getDomain() throws SpeechException {
+    @Override public Domain getDomain() {
         return domain;
     }
 
-    private static class DefaultDomain extends Domain {
+    private class DefaultDomain extends Domain {
         private List<RecognitionContext> contexts;
 
         public DefaultDomain() {
@@ -40,25 +42,28 @@ public abstract class SingleDomainRecognizer extends AbstractRecognizer {
         }
 
         @Override
-        public RecognitionContext[] getContexts() throws RecognizerException {
+        public RecognitionContext[] getContexts() {
             return contexts.toArray(new RecognitionContext[0]);
         }
 
         @Override
         public boolean addContext(RecognitionContext ctx)  {
-            System.err.println("sphinx default domain: add context " + ctx.toString());
             contexts.add(ctx);
             return true;
         }
 
         @Override
-        public void removeContext(RecognitionContext ctx) throws RecognizerException {
+        public void removeContext(RecognitionContext ctx) {
             contexts.remove(ctx);
         }
 
         @Override
         public Language[] getLanguages() throws RecognizerException {
-            return null;
+            try {
+                return SingleDomainRecognizer.this.getLanguages();
+            } catch (SpeechException se) {
+                throw new RecognizerException("" + se);
+            }
         }
 
     }

@@ -283,6 +283,11 @@
 
     <component name="dataSource"
                type="edu.cmu.sphinx.frontend.util.StreamDataSource"/>
+    <component name="microphone"
+               type="edu.cmu.sphinx.frontend.util.Microphone">
+        <property name="bigEndian" value="false" />
+        <property name="closeBetweenUtterances" value="false" />
+    </component>
 
     <component name="dataBlocker" type="edu.cmu.sphinx.frontend.DataBlocker"/>
 

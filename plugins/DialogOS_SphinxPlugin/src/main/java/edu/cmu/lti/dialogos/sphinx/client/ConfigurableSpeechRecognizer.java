@@ -1,10 +1,15 @@
 package edu.cmu.lti.dialogos.sphinx.client;
 
-import edu.cmu.sphinx.api.*;
+import edu.cmu.sphinx.api.AbstractSpeechRecognizer;
+import edu.cmu.sphinx.api.Context;
+import edu.cmu.sphinx.api.SpeechResult;
+import edu.cmu.sphinx.frontend.util.Microphone;
 import edu.cmu.sphinx.frontend.util.StreamDataSource;
 import edu.cmu.sphinx.recognizer.*;
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.result.Result;
+import edu.cmu.sphinx.util.props.PropertyException;
+import edu.cmu.sphinx.util.props.PropertySheet;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
@@ -17,34 +22,40 @@ import java.io.InputStream;
  */
 public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
 
-    private final Microphone microphone;
+    private Microphone microphone;
 
     public ConfigurableSpeechRecognizer(Context context, InputStream audioSource) throws IOException {
         super(context);
         recognizer.allocate();
-        AudioFormat af = Sphinx.getAudioFormat();
-        microphone = new Microphone(af.getSampleRate(), af.getSampleSizeInBits(), af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED, af.isBigEndian());
-        InputStream input = audioSource != null ? audioSource : microphone.getStream();
-        this.context.getInstance(StreamDataSource.class).setInputStream(input);
-    }
 
-    public void startRecognition() {
-        if (recognizer.getState() != Recognizer.State.READY)
-            recognizer.allocate();
-        microphone.startRecording();
-    }
-
-    public void stopRecognition() {
-        microphone.stopRecording();
-        if (recognizer.getState() == Recognizer.State.RECOGNIZING) {
-            // allow the recognizer some slack to calm down
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        recognizer.addStateListener(new StateListener() {
+            @Override public void statusChanged(edu.cmu.sphinx.recognizer.Recognizer.State status) {
+                System.err.println("listener defined in configurable speech recognizer: " + status);
             }
+            @Override public void newProperties(PropertySheet ps) throws PropertyException { }
+        });
+
+        AudioFormat af = Sphinx.getAudioFormat();
+        StreamDataSource sds = context.getInstance(StreamDataSource.class);
+        if (audioSource != null) {
+            sds.setInputStream(audioSource);
+        } else {
+            microphone = context.getInstance(Microphone.class);
+            microphone.initialize();
+            sds.setPredecessor(microphone);
         }
-        recognizer.deallocate();
+    }
+
+    public synchronized void startRecognition() {
+        if (recognizer.getState() == Recognizer.State.DEALLOCATED)
+            recognizer.allocate();
+        if (microphone != null)
+            microphone.startRecording();
+    }
+
+    public synchronized void stopRecognition() {
+        if (microphone != null && microphone.isRecording())
+            microphone.stopRecording();
     }
 
     /**

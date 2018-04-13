@@ -29,14 +29,8 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     static List<LanguageName> getAvailableLanguages() {
         List<LanguageName> languages = new ArrayList<LanguageName>();
         if (getRecognizer() != null) {
-            try {
-                for (Language l : getRecognizer().getLanguages()) {
-                    languages.add(new LanguageName(l.getName(), l));
-                }
-            } catch (SpeechException ex) {
-                // this should never happen - AK
-                System.err.println("SpeechException in DialogOS_SphinxPlugin.Plugin#getAvailableLanguages: " + ex);
-                System.exit(1);
+            for (Language l : getRecognizer().getLanguages()) {
+                languages.add(new LanguageName(l.getName(), l));
             }
         }
         Collections.sort(languages);
@@ -50,7 +44,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
     @Override
     public String getName() {
-        return "CMU Sphinx";
+        return "CMU Sphinx-4";
     }
 
     @Override

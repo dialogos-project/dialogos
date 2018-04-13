@@ -633,19 +633,24 @@ abstract public class AbstractInputNode extends Node {
             recognizeInBackground(recGrammar, input, (VarPattern) patterns[0], confidenceThreshold);
             return edges.get(0).getTarget();
         } else {
-            MatchResult mep = graphicallyRecognize(layer, recGrammar, patterns, timeout, confidenceThreshold, interactiveTest);
-            if (mep == null) {
+            try {
+                MatchResult mep = graphicallyRecognize(layer, recGrammar, patterns, timeout, confidenceThreshold, interactiveTest);
+                if (mep == null || mep.getEdge() == -1) {
+                    throw new ExecutionStoppedException();
+                } else {
+                    setVariablesAccordingToMatch(mep.getMatch());
+                    return edges.get(mep.getEdge()).getTarget();
+                }
+            } catch (TimeoutException te) {
                 return edges.get(timeoutEdgeIndex).getTarget();
-            } else if (mep.getEdge() == -1) {
-                throw new ExecutionStoppedException();
-            } else {
-                setVariablesAccordingToMatch(mep.getMatch());
-                return edges.get(mep.getEdge()).getTarget();
             }
+/*            if (mep == null) {
+                assert timeoutEdgeIndex > -1 : "timeout but there's no timeout edge. graphicallyRecognize should only return null for timeouts";
+                return edges.get(timeoutEdgeIndex).getTarget();*/
         }
     }
 
-    protected MatchResult graphicallyRecognize(JLayeredPane layer, com.clt.srgf.Grammar recGrammar, Pattern[] patterns, long timeout, float confidenceThreshold, boolean interactiveTest) {
+    protected MatchResult graphicallyRecognize(JLayeredPane layer, com.clt.srgf.Grammar recGrammar, Pattern[] patterns, long timeout, float confidenceThreshold, boolean interactiveTest) throws TimeoutException {
         RecognitionExecutor recExecutor = createRecognitionExecutor(recGrammar);
 
         final JButton stop = new JButton(GUI.getString("Cancel"));
@@ -787,7 +792,8 @@ abstract public class AbstractInputNode extends Node {
             throw new ExecutionStoppedException();
         } catch (TimeoutException exn) {
             recExecutor.stop();
-            return null; // null is the proper return value for timeouts
+            throw exn;
+//            return null; // null is the proper return value for timeouts
         } catch (ExecutionException exn) {
             throw new NodeExecutionException(this, Resources
                     .getString("RecognizerError")

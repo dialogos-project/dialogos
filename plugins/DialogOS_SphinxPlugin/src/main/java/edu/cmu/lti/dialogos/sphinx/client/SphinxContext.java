@@ -3,6 +3,7 @@ package edu.cmu.lti.dialogos.sphinx.client;
 import com.clt.speech.SpeechException;
 import com.clt.speech.recognition.RecognitionContext;
 import com.clt.srgf.Grammar;
+import com.stanfy.enroscar.net.DataStreamHandler;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.Context;
 import edu.cmu.sphinx.jsgf.JSGFGrammar;
@@ -20,6 +21,18 @@ import static com.clt.srgf.Grammar.Format.JSGFwithGarbage;
  * Created by timo on 13.10.17.
  */
 public class SphinxContext extends RecognitionContext {
+
+    static {
+        try {
+            URL.setURLStreamHandlerFactory(protocol -> "data".equals(protocol) ? new DataStreamHandler() : null);
+        } catch (Error e) {
+            if (!"factory already defined".equals(e.getMessage())) {
+                throw e;
+            }
+        }
+    }
+
+
     public Configuration configuration;
     protected InputStream audioSource;
     SphinxLanguageSettings sls;

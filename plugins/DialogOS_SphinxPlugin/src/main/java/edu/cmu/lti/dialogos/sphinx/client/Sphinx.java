@@ -24,24 +24,9 @@ import javax.sound.sampled.AudioFormat;
  * exhibit a "default" language through Plugin
  *
  */
-public class Sphinx extends SingleDomainRecognizer {
-    static {
-        try {
-            URL.setURLStreamHandlerFactory(protocol -> "data".equals(protocol) ? new DataStreamHandler() : null);
-        } catch (Error e) {
-            if (!"factory already defined".equals(e.getMessage())) {
-                throw e;
-            }
-        }
-    }
-
-    public static final Language US_ENGLISH = new Language(new Locale("en", "US"), "US English");
-    public static final Language GERMAN = new Language(new Locale("de", "DE"), "Deutsch");
-
-    public static AudioFormat audioFormat = new AudioFormat(16000f, 16, 1, true, false);
-    public static AudioFormat getAudioFormat() { return audioFormat; }
-
+public class Sphinx extends SphinxBaseRecognizer {
     private Map<Language, SphinxLanguageSettings> languageSettings;
+
     private SphinxContext context;
 
     ConfigurableSpeechRecognizer csr;
@@ -57,6 +42,7 @@ public class Sphinx extends SingleDomainRecognizer {
     }
 
     @Override protected RecognitionResult startImpl() throws SpeechException {
+        System.err.println("Sphinx: startImpl()");
         fireRecognizerEvent(RecognizerEvent.RECOGNIZER_LOADING);
         assert context != null : "cannot start recognition without a context";
         csr = context.getRecognizer();
@@ -68,17 +54,22 @@ public class Sphinx extends SingleDomainRecognizer {
             csr.startRecognition();
             fireRecognizerEvent(RecognizerEvent.RECOGNIZER_READY);
             speechResult = csr.getResult();
+            if (speechResult == null)
+                break;
             isMatch = isMatch(speechResult);
             if (!isMatch)
                 fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.INVALID_RESULT, new SphinxResult(speechResult)));
         } while (!isMatch);
+        csr.stopRecognition();
         if (speechResult != null) {
             SphinxResult sphinxResult = new SphinxResult(speechResult);
             fireRecognizerEvent(sphinxResult);
-            csr.stopRecognition();
+            System.err.println("Sphinx: returning from startImpl()");
             return sphinxResult;
+        } else {
+            System.err.println("Sphinx: returning null from startImpl()");
+            return null;
         }
-        return null;
     }
 
     private boolean isMatch(SpeechResult speechResult) {
@@ -87,36 +78,35 @@ public class Sphinx extends SingleDomainRecognizer {
         return gr.match(result, gr.getRoot()) != null;
     }
 
-    @Override protected void stopImpl() throws SpeechException {
+    @Override protected void stopImpl() {
         if (csr != null)
             csr.stopRecognition();
         vadInSpeech = false;
     }
 
     /** Return an array of supported languages */
-    @Override public Language[] getLanguages() throws SpeechException {
+    @Override public Language[] getLanguages() {
         Collection<Language> langs = languageSettings.keySet();
         return langs.toArray(new Language[langs.size()]);
     }
 
-    @Override public void setContext(RecognitionContext context) throws SpeechException {
+    @Override public void setContext(RecognitionContext context) {
         assert context instanceof SphinxContext : "you're feeding a context that I do not understand";
         this.context = (SphinxContext) context;
     }
 
-    @Override public RecognitionContext getContext() throws SpeechException {
+    @Override public RecognitionContext getContext() {
         return this.context;
     }
 
-    @Override public SphinxContext createTemporaryContext(Grammar g, Domain domain) throws SpeechException {
-        //TODO: ponder name, ponder timestamp
+    @Override public SphinxContext createTemporaryContext(Grammar g, Domain domain) {
         return createContext("temp", g, domain, System.currentTimeMillis());
     }
 
     Map<Language, SphinxContext> contextCache = new HashMap<>();
 
-    @Override protected SphinxContext createContext(String name, Grammar g, Domain domain, long timestamp) throws SpeechException {
-        //TODO: figure out what to do if the grammar does not have a language
+    @Override protected SphinxContext createContext(String name, Grammar g, Domain domain, long timestamp) {
+        //TODO: figure out what to do if the grammar does not have a language -> use default language?
         assert g.getLanguage() != null;
         Language l = new Language(Language.findLocale(g.getLanguage()));
         assert l != null;
@@ -127,16 +117,6 @@ public class Sphinx extends SingleDomainRecognizer {
         SphinxContext sc = contextCache.get(l);
         sc.setGrammar(g);
         return sc;
-    }
-
-    /** called during startup, possibly used to configure things via the GUI */
-    @Override public Property<?>[] getProperties() {
-        return null;
-    }
-
-    /** only ever called from TranscriptionWindow (and nobody seems to use that */
-    @Override public String[] transcribe(String word, Language language) throws SpeechException {
-        return null;
     }
 
     void evesdropOnFrontend(Data d) {

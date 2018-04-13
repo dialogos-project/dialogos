@@ -38,13 +38,10 @@ import com.clt.srgf.Grammar;
  */
 public abstract class AbstractRecognizer implements Recognizer, G2P {
 
-    private final Collection<RecognizerListener> listeners = new ArrayList<RecognizerListener>();
+    private final Collection<RecognizerListener> listeners = new ArrayList<>();
 
     private boolean active = false;
     private boolean live = true;
-
-    private Map<String, Property<?>> additionalParameters
-            = new HashMap<String, Property<?>>();
 
     public void addRecognizerListener(RecognizerListener l) {
         synchronized (listeners) {
@@ -378,25 +375,13 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
         }
     }
 
-    public final Property<?>[] getParameters() {
-
-        return this.additionalParameters.values().toArray(
-                new Property<?>[this.additionalParameters.size()]);
+    /** return a shallow copy of the parameters */
+    public Property<?>[] getParameters() {
+        return new Property<?>[0];
     }
 
-    public final Property<?> getParameter(String id) {
-
-        Property<?> p = this.additionalParameters.get(id);
-        if (p != null) {
-            return p;
-        } else {
-            for (Property<?> property : this.additionalParameters.values()) {
-                if (id.equals(property.getName())) {
-                    return property;
-                }
-            }
-            return null;
-        }
+    public Property<?> getParameter(String id) {
+        return null;
     }
 
     @SuppressWarnings("unused")

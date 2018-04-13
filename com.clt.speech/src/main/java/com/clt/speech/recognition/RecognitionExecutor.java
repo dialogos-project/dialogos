@@ -21,15 +21,17 @@ public interface RecognitionExecutor {
      * @param timeout timeout after which null should be returned to indicate timeout
      * @param stateListener listener that should be informed about relevant recognition events
      * @param recognitionThreshold threshold that must be met for recognition to be considered successful
-     * @return a MatchResult which encodes the actual match (name-value pairs) and the ID of the matching pattern, or null if timeout was reached
+     * @return a MatchResult which encodes the actual match (name-value pairs) and the ID of the matching pattern, or null if timeout was reached (timeouts can also be signified by throwing a TimeoutException)
      */
-    public MatchResult start(final Grammar grammar, final Pattern[] patterns, long timeout, final RecognizerListener stateListener, final float recognitionThreshold)
+    public MatchResult start(final Grammar grammar, final Pattern[] patterns, long timeout,
+                             final RecognizerListener stateListener, final float recognitionThreshold)
             throws InterruptedException, ExecutionException, TimeoutException;
 
     /**
      * should interrupt any ongoing recognition
      *
      * will probably trigger an InterruptedException in any active calls to start above
+     * implementations should be prepared that stop() could be called multiple times and also if recognition has already terminated successfully
      */
     public void stop();
 

@@ -51,31 +51,4 @@ public class RecognitionContext {
             throws RecognizerException {
     }
 
-    public abstract static class Info {
-
-        private String name;
-        private long timestamp;
-
-        public Info(String name, long timestamp) {
-            this.name = name;
-            this.timestamp = timestamp;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public long getTimestamp() {
-            return this.timestamp;
-        }
-
-        @Override
-        public String toString() {
-            return this.getName();
-        }
-
-        public abstract RecognitionContext createContext(Grammar grammar,
-                Domain domain)
-                throws SpeechException;
-    }
 }

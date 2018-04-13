@@ -36,7 +36,7 @@ public class SphinxNode extends AbstractInputNode {
             throw new NodeExecutionException(this, Resources.getString("RecognizerError") + ".", exn);
         }
         recGrammar.requestRobustness(Boolean.TRUE == getProperty(ENABLE_GARBAGE));
-        return new SphinxRecognitionExecutor(getRecognizer(), getSettings());
+        return new SphinxRecognitionExecutor(getRecognizer());
     }
 
     @Override
