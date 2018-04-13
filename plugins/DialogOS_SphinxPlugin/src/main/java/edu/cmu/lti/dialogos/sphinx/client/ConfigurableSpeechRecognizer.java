@@ -28,12 +28,12 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
         super(context);
         recognizer.allocate();
 
-        recognizer.addStateListener(new StateListener() {
+/*        recognizer.addStateListener(new StateListener() {
             @Override public void statusChanged(edu.cmu.sphinx.recognizer.Recognizer.State status) {
                 System.err.println("listener defined in configurable speech recognizer: " + status);
             }
             @Override public void newProperties(PropertySheet ps) throws PropertyException { }
-        });
+        });*/
 
         AudioFormat af = Sphinx.getAudioFormat();
         StreamDataSource sds = context.getInstance(StreamDataSource.class);

@@ -26,11 +26,8 @@ import javax.sound.sampled.AudioFormat;
  */
 public class Sphinx extends SphinxBaseRecognizer {
     private Map<Language, SphinxLanguageSettings> languageSettings;
-
     private SphinxContext context;
-
     ConfigurableSpeechRecognizer csr;
-
     private boolean vadInSpeech = false;
 
     public Sphinx() {
@@ -42,7 +39,6 @@ public class Sphinx extends SphinxBaseRecognizer {
     }
 
     @Override protected RecognitionResult startImpl() throws SpeechException {
-        System.err.println("Sphinx: startImpl()");
         fireRecognizerEvent(RecognizerEvent.RECOGNIZER_LOADING);
         assert context != null : "cannot start recognition without a context";
         csr = context.getRecognizer();
@@ -64,10 +60,8 @@ public class Sphinx extends SphinxBaseRecognizer {
         if (speechResult != null) {
             SphinxResult sphinxResult = new SphinxResult(speechResult);
             fireRecognizerEvent(sphinxResult);
-            System.err.println("Sphinx: returning from startImpl()");
             return sphinxResult;
         } else {
-            System.err.println("Sphinx: returning null from startImpl()");
             return null;
         }
     }

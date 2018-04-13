@@ -76,7 +76,7 @@ class DocumentLoader {
       }
     }
 
-        System.out.println("End Of: DocumentLoader::load");
+//        System.out.println("End Of: DocumentLoader::load");
         return this.d;
     }
 
@@ -121,23 +121,23 @@ class DocumentLoader {
                 public void start(String name, Attributes atts)
                         throws SAXException {
 
-                    System.out.println("  LoadingAction::start::name: " + name);
+//                    System.out.println("  LoadingAction::start::name: " + name);
                     if (name.equals("wizard")) {
                         if (DocumentLoader.this.d == null) {
-                            System.out.println("  LoadingAction::start - creating"
-                                    + " new single document");
+//                            System.out.println("  LoadingAction::start - creating"
+//                                    + " new single document");
                             DocumentLoader.this.d = new SingleDocument();
-                            System.out.println("  LoadingAction::start - done "
-                                    + "creating new single document");
+//                            System.out.println("  LoadingAction::start - done "
+//                                    + "creating new single document");
                         } else if (!(DocumentLoader.this.d instanceof SingleDocument)) {
                             LoadingAction.this.r.raiseException(Resources
                                     .getString("DocumentTypeChanged"));
                         }
-                        System.out.println("  LoadingAction::start - loading");
+//                        System.out.println("  LoadingAction::start - loading");
                         // here a new start node is created
                         DocumentLoader.this.d.load(LoadingAction.this.f,
                                 LoadingAction.this.r);
-                        System.out.println("LoadingAction::start - done loading");
+//                        System.out.println("LoadingAction::start - done loading");
                     } else if (name.equals("log")) {
                         System.out.println("log");
                         if (DocumentLoader.this.d == null) {
@@ -149,7 +149,7 @@ class DocumentLoader {
                         DocumentLoader.this.d.load(LoadingAction.this.f,
                                 LoadingAction.this.r);
                     } else if (name.equals("experiment")) {
-                        System.out.println("experiment");
+//                        System.out.println("experiment");
                         if (DocumentLoader.this.d == null) {
                             DocumentLoader.this.d = new MultiDocument();
                         } else if (!(DocumentLoader.this.d instanceof MultiDocument)) {
@@ -159,13 +159,13 @@ class DocumentLoader {
                         DocumentLoader.this.d.load(LoadingAction.this.f,
                                 LoadingAction.this.r);
                     } else {
-                        System.out.println("raise exception");
+//                        System.out.println("raise exception");
                         LoadingAction.this.r.raiseException(Resources
                                 .getString("UnknownDocumentType"));
                     }
                 }
             });
-            System.out.println("LoadingAction::run  - end");
+//            System.out.println("LoadingAction::run  - end");
         }
     }
 
