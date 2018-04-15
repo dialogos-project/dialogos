@@ -127,9 +127,17 @@ public abstract class Value {
         return toString(); 
     }
 
+    public static Value fromJson(JSONObject o) {
+        return parse(o);
+    }
+
+    public static Value fromJson(JSONArray o) {
+        return parse(o);
+    }
+
     public static Value fromJson(String s) {
-        JSONObject fileJson = new JSONObject(s);
-        return parse(fileJson);
+        Object json = (s.startsWith("[")) ? new JSONArray(s) : new JSONObject(s);
+        return parse(json);
     }
 
     private static Value parse(Object obj) {
