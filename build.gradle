@@ -95,4 +95,7 @@ task clientLibrary(type:Jar) {
     with jar  
 }
 
-
+task sourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
