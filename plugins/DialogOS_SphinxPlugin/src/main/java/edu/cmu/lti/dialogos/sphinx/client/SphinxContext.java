@@ -61,6 +61,10 @@ public class SphinxContext extends RecognitionContext {
         this.configuration.setGrammarPath(encodeData(grammar.toString(JSGF)));
     }
 
+    @Override public Grammar getGrammar() {
+        return this.grammar;
+    }
+
     public void setAudioSource(InputStream audioSource) {
         this.audioSource = audioSource;
     }
@@ -87,6 +91,7 @@ public class SphinxContext extends RecognitionContext {
             } else {
                 grammarString = grammar.toString(JSGF);
             }
+            System.err.println(grammarString);
             jsgfGrammar.setBaseURL(new URL(encodeData(grammarString)));
             jsgfGrammar.loadJSGF("");
             return csr;

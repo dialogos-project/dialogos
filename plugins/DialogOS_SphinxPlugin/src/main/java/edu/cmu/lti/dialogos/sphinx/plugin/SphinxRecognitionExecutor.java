@@ -55,7 +55,6 @@ public class SphinxRecognitionExecutor implements RecognitionExecutor {
             }
             Utterance utterance = recognitionResult.getAlternative(0);
             MatchResult mr = AbstractInputNode.findMatch(utterance.getWords(), grammar, patterns);
-            System.err.println("SphinxRecognitionExecutor, result is " + mr);
             // TODO unlocalized string
             if (mr == null)
                 throw new RecognizerException("No match for recognition result '" + utterance.getWords() + "'");
