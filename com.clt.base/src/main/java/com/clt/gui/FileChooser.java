@@ -4,9 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
-import java.awt.Toolkit;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.UnsupportedEncodingException;
 import li.flor.nativejfilechooser.NativeJFileChooser;
 
@@ -32,17 +30,20 @@ public class FileChooser {
 
   private File currentdir;
 
-  private FileFilter filter = new FileExtensionFilter("dos", "DialogOS dialog model");
-
+  private FileFilter filter;
 
   public FileChooser() {
+    this(new FileExtensionFilter("dos", "DialogOS dialog model"));
+  }
+
+  public FileChooser(FileExtensionFilter filter) {
+    this.filter = filter;
     String workingDirectory = System.getProperty("user.dir");
     if (workingDirectory == null) {
       workingDirectory = ".";
     }
     this.currentdir = new File(workingDirectory);
   }
-
 
   public FileChooser(String currentDirectoryPath) {
     this();

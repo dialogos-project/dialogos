@@ -14,11 +14,9 @@ import java.util.List;
  */
 public class ModelCache {
 
-    private String plugin;
     private File pluginDirectory;
 
     public ModelCache(String plugin) {
-        this.plugin = plugin;
         pluginDirectory = new File(Preferences.getBaseDirectory(), plugin);
         if (!pluginDirectory.exists()) {
             pluginDirectory.mkdirs();

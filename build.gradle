@@ -1,9 +1,7 @@
 plugins {
   id 'application'
   id 'java'
-  id 'com.github.johnrengelman.shadow' version '2.0.3'
   id 'com.github.hierynomus.license' version '0.14.0'
-  id 'com.bmuschko.izpack' version '2.1'
 }
 
 allprojects {
@@ -39,10 +37,6 @@ mainClassName = 'com.clt.dialogos.DialogOS'
 
 run {
   systemProperties System.getProperties()
-  }
-
-shadowJar {
-  mergeServiceFiles()
 }
 
 def version = '2.0'
@@ -69,7 +63,7 @@ task clean_all {
 task clientLibrary(type:Jar) {
     manifest {
         attributes 'Implementation-Title': 'DialogOS Client Library',  
-        	'Implementation-Version': version
+        'Implementation-Version': version
     }
     
     baseName = 'dialogos-client-' + version
