@@ -28,7 +28,7 @@ public class DialogOS {
         System.exit(1);
     }
 
-    private static File getDefaultModel(File appDir) {
+    public static File getDefaultModel(File appDir) {
         File file = new File(appDir, "Model.xml");
         
         if (file.isFile()) {
@@ -103,9 +103,7 @@ public class DialogOS {
             startupScreen = new GUIClientStartupScreen(Version.PRODUCT_NAME, Version.getVersion());
 
             if (!startupScreen.isShowing()) {
-                GUI.invokeAndWait(() -> {
-                    startupScreen.show(null);
-                });
+                GUI.invokeAndWait(() -> startupScreen.show(null));
             }
         }
 
@@ -172,7 +170,7 @@ public class DialogOS {
                                     try {
                                         final WozInterface executer = new Executer(null, false);
 
-                                        ExecutionResult result = d.run(null, executer);
+                                        d.run(null, executer);
 
                                         System.out.println(Resources.getString("ExecutionComplete"));
                                         System.exit(0);
@@ -195,12 +193,10 @@ public class DialogOS {
                 } else {
                     if (initialModel != null) {
                         if (!startupScreen.isShowing()) {
-                            GUI.invokeAndWait(() -> {
-                                startupScreen.show(null);
-                            });
+                            GUI.invokeAndWait(() -> startupScreen.show(null));
                         }
                         startupScreen.setStatus(Resources.getString("InitializingDialogEngine"));
-                        ProgressListener progress = (event) -> {
+                        ProgressListener progress = event -> {
                             startupScreen.setClientStatus(event.getMessage());
                             startupScreen.setClientProgress(event.getPercentComplete());
                         };
@@ -236,7 +232,7 @@ public class DialogOS {
     private static GUIClientFactory loadBuiltinClients(final Main app, File appDir,
             GUIClientStartupScreen startupScreen) throws IOException {
 
-        String clientArgs[] = new String[0];
+        String[] clientArgs = new String[0];
         GUIClientFactory clients = new GUIClientFactory() {
 
             @Override
