@@ -16,10 +16,6 @@ public class SphinxNode extends AbstractInputNode {
 
     private static Device sphinxDevice = new Device(Resources.getString("Sphinx"));
 
-    public SphinxNode() {
-//        this.setProperty(THRESHOLD, new Long(40)); // TODO put this back in
-    }
-
     @Override
     protected AudioFormat getAudioFormat() {
         return Sphinx.getAudioFormat();

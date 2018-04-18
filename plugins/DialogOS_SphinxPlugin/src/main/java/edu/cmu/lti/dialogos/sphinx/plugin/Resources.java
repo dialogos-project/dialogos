@@ -11,7 +11,7 @@ public class Resources {
 
   private static DynamicResourceBundle resources =
     new DynamicResourceBundle(
-        "com.clt.dialogos.sphinx.Resource", null, Resources.class
+        "edu.cmu.lti.dialogos.sphinx.Resource", null, Resources.class
           .getClassLoader());
 
 

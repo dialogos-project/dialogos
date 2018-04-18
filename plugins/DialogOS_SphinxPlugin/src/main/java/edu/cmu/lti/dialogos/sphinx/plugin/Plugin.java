@@ -5,9 +5,7 @@ import com.clt.diamant.graph.Node;
 import com.clt.gui.Images;
 import javax.swing.Icon;
 import com.clt.speech.Language;
-import com.clt.speech.Resources;
 import com.clt.speech.recognition.LanguageName;
-import com.clt.speech.SpeechException;
 import edu.cmu.lti.dialogos.sphinx.client.Sphinx;
 
 import java.util.ArrayList;
@@ -20,14 +18,13 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     @Override
     public void initialize() {
         getRecognizer(); // to perform one-time initialization work at DialogOS startup time
-        // TODO unlocalized string --> this should be "Speech/Sprache/Parole"
         Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
-                Arrays.asList(new Class<?>[]{SphinxNode.class}));
+                Arrays.asList(SphinxNode.class));
     }
 
     /** turn the List<Language> (given by com.clt.dialogos.sphinx.Sphinx) into a List<LanguageName> */
     static List<LanguageName> getAvailableLanguages() {
-        List<LanguageName> languages = new ArrayList<LanguageName>();
+        List<LanguageName> languages = new ArrayList<>();
         if (getRecognizer() != null) {
             for (Language l : getRecognizer().getLanguages()) {
                 languages.add(new LanguageName(l.getName(), l));

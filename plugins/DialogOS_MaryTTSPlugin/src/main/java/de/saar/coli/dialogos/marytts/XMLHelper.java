@@ -17,15 +17,14 @@ import java.io.StringWriter;
  */
 public final class XMLHelper {
 
-
-  /*
-   * str2Docuemnt: Given a valid XML in String, produces a
-   * corresponding Document Element.
-   **/
-  public static Document str2Document(String str){
-      return str2Document(str, "");
+  private XMLHelper() {
+    throw new IllegalStateException("Utility class must not be instantiated");
   }
 
+  /*
+   * str2Document: Given a valid XML in String, produces a
+   * corresponding Document Element.
+   **/
   public static Document str2Document(String str, String errorMsg){
     Object d = new Object();
     try {
@@ -56,11 +55,8 @@ public final class XMLHelper {
       Transformer transformer = tf.newTransformer();
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
       transformer.transform(new DOMSource(xml), new StreamResult(writer));
-    } catch (TransformerConfigurationException e) {
-      System.out.println("Conversion from XML to string failed.");
-      e.printStackTrace();
     } catch (TransformerException e) {
-      System.out.println("Conversion from XML to string failed.");
+      System.err.println("Conversion from XML to string failed.");
       e.printStackTrace();
     }
     return writer.getBuffer().toString().replaceAll("\n|\r", "");

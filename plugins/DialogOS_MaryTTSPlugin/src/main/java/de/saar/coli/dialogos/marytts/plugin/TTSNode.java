@@ -1,8 +1,6 @@
 package de.saar.coli.dialogos.marytts.plugin;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Map;
 
@@ -125,14 +123,11 @@ public class TTSNode
         gbc2.weighty = 1.0;
         gbc2.fill = GridBagConstraints.BOTH;
         final JButton refreshB = new JButton(Resources.getString("Prompt to XML"));
-        refreshB.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String text = (String) properties.get(TTSNode.XMLAREA);
-                String strXML = ((MaryTTS) Plugin.getSynthesizer()).createMaryXMLStr(text);
-                properties.replace(XMLAREA, strXML);
-                jta.setText(strXML);
-            }
+        refreshB.addActionListener(actionEvent -> {
+            String text = (String) properties.get(TTSNode.XMLAREA);
+            String strXML = Plugin.getSynthesizer().createMaryXMLStr(text);
+            properties.replace(XMLAREA, strXML);
+            jta.setText(strXML);
         });
         //Add buttons
         JPanel border2 = new JPanel(new BorderLayout());
@@ -149,11 +144,7 @@ public class TTSNode
   * stopSynthesis: Stops the Synthesis midway.
   */
   protected void stopSynthesis() {
-
-    try {
-      Plugin.getSynthesizer().stop();
-    } catch (Exception ignore) {
-    }
+    Plugin.getSynthesizer().stop();
   }
 
   /*

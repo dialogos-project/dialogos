@@ -12,6 +12,10 @@ import com.clt.util.StringTools;
  */
 public class Resources {
 
+    private Resources() {
+        throw new IllegalStateException("Utility class must not be instantiated");
+    }
+
     private static DynamicResourceBundle resources = new DynamicResourceBundle(
             Resources.class.getPackage().getName() + ".Resources", null,
             Resources.class.getClassLoader());

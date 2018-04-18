@@ -26,7 +26,6 @@ import com.clt.properties.PropertySet;
 import com.clt.speech.tts.VoiceName;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -103,9 +102,6 @@ public class Settings extends PluginSettings {
     }
 
     public VoiceName getDefaultVoice() {
-//    return new VoiceName("cmu-slt-hsmm",
-//            new com.clt.speech.marytts.Voice("cmu-slt-hsmm",
-//                    new MaryTTSLanguage("GED", "german-id", "1.0")));
         return this.defaultVoice.getValue();
     }
 
@@ -120,87 +116,25 @@ public class Settings extends PluginSettings {
     }
 
     public int getVolume() {
-
         return this.volume.getValue();
     }
 
     public String getStrVolume() {//TODO
-
-        //return this.volume.getValue();
         return "loud";
     }
 
     @Override
     public JComponent createEditor() {
-        //return new JPanel();
-
         JPanel p = new JPanel(new BorderLayout(12, 12));
 
         p.add(new PropertySet<Property<?>>(this.defaultVoice,
-                this.speed,
-                this.pitch, this.volume).createPropertyPanel(false),
+                this.speed, this.pitch, this.volume).createPropertyPanel(false),
                 BorderLayout.NORTH);
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         final JButton tryPrompt = new JButton(Resources.getString("Try"));
-        tryPrompt.addActionListener(new ActionListener() {
-            boolean speaking = false;
-
-            private void reset() {
-
-                try {
-//          for (com.clt.speech.tts.Synthesizer s : Plugin.synthesizers) {
-//            s.stop();
-//          }
-                    Plugin.getSynthesizer().stop();//Only MaryTTS now
-                } catch (Exception exn) {
-                    // ignore
-                }
-                this.speaking = false;
-                tryPrompt.setText(Resources.getString("Try"));
-            }
-
-            public void actionPerformed(ActionEvent e) {
-
-                if (this.speaking) {
-                    this.reset();
-                } else {
-                    new Thread(new Runnable() {
-
-                        public void run() {
-
-                            try {
-                                speaking = true;
-                                tryPrompt.setText(GUI.getString("Cancel"));
-
-                                Locale language
-                                        = Settings.this.defaultVoice.getValue()
-                                                .getVoice()
-                                                .getLanguage().getLocale();
-                                if (language.equals(Locale.UK) || language.equals(Locale.US)) {
-                                    language = new Locale("", "");
-                                }
-                                String prompt
-                                        = Resources.format("VoiceSample", language,
-                                                Settings.this.defaultVoice.getValue()
-                                                        .getNormalizedName());
-                                TTSNode.speak(Settings.this, Settings.this.defaultVoice
-                                        .getValue(),
-                                        prompt);
-                            } catch (Exception exn) {
-                                String msg = exn.getLocalizedMessage();
-                                if ((msg == null) || (msg.length() == 0)) {
-                                    msg = exn.getClass().getName();
-                                }
-                                OptionPane.error(tryPrompt, msg);
-                            }
-                            reset();
-                        }
-                    }).start();
-                }
-            }
-        });
+        tryPrompt.addActionListener(new TryPromptActionListener(tryPrompt));
         bottom.add(tryPrompt);
         p.add(bottom, BorderLayout.SOUTH);
         return p;
@@ -208,20 +142,69 @@ public class Settings extends PluginSettings {
 
     @Override
     public void writeAttributes(XMLWriter out, IdMap uidMap) {
-
+        // nothing to be written
     }
 
     @Override
-    protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
+    protected void readAttribute(XMLReader r, String name, String value, IdMap uidMap) {
+        // nothing to be read
     }
 
     @Override
-    protected PluginRuntime createRuntime(Component parent) throws Exception {
-        return new PluginRuntime() {
-            @Override
-            public void dispose() {
-
-            }
+    protected PluginRuntime createRuntime(Component parent) {
+        return () -> {
+            // no runtime
         };
+    }
+
+    private class TryPromptActionListener implements ActionListener {
+        JButton tryPrompt;
+        boolean speaking = false;
+
+        TryPromptActionListener(JButton tryPrompt) {
+            this.tryPrompt = tryPrompt;
+        }
+
+        private void reset() {
+            Plugin.getSynthesizer().stop();//Only MaryTTS now
+            speaking = false;
+            tryPrompt.setText(Resources.getString("Try"));
+        }
+
+        public synchronized void actionPerformed(ActionEvent e) {
+
+            if (speaking) {
+                this.reset();
+            } else {
+                new Thread(() -> {
+                    try {
+                        speaking = true;
+                        tryPrompt.setText(GUI.getString("Cancel"));
+
+                        Locale language
+                                = Settings.this.defaultVoice.getValue()
+                                .getVoice()
+                                .getLanguage().getLocale();
+                        if (language.equals(Locale.UK) || language.equals(Locale.US)) {
+                            language = new Locale("", "");
+                        }
+                        String prompt
+                                = Resources.format("VoiceSample", language,
+                                Settings.this.defaultVoice.getValue()
+                                        .getNormalizedName());
+                        TTSNode.speak(Settings.this, Settings.this.defaultVoice
+                                .getValue(), prompt);
+                    } catch (Exception exn) {
+                        String msg = exn.getLocalizedMessage();
+                        if ((msg == null) || (msg.length() == 0)) {
+                            msg = exn.getClass().getName();
+                        }
+                        OptionPane.error(tryPrompt, msg);
+                    }
+                    reset();
+                }).start();
+            }
+        }
+
     }
 }

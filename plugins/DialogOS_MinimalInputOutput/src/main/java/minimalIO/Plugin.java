@@ -4,14 +4,10 @@ import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
 import com.clt.diamant.graph.Node;
-import com.clt.gui.Images;
-import com.clt.speech.Resources;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
-import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.swing.plaf.metal.MetalIconFactory;
 import java.awt.*;
 import java.util.Arrays;
 
@@ -22,8 +18,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     @Override
     public void initialize() {
         Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
-                Arrays.asList(new Class<?>[] {
-                TextInputNode.class, TextOutputNode.class }));
+                Arrays.asList(TextInputNode.class, TextOutputNode.class));
     }
 
     @Override
@@ -51,12 +46,12 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
         return new PluginSettings() {
             @Override
             public void writeAttributes(XMLWriter out, IdMap uidMap) {
-
+                // nothing to be written
             }
 
             @Override
-            protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
-
+            protected void readAttribute(XMLReader r, String name, String value, IdMap uidMap) {
+                // nothing to be read
             }
 
             @Override
@@ -65,12 +60,9 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
             }
 
             @Override
-            protected PluginRuntime createRuntime(Component parent) throws Exception {
-                return new PluginRuntime() {
-                    @Override
-                    public void dispose() {
-
-                    }
+            protected PluginRuntime createRuntime(Component parent) {
+                return () -> {
+                    // no runtime
                 };
             }
         };

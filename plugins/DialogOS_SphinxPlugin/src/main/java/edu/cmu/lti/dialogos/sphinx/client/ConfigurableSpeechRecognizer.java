@@ -5,13 +5,9 @@ import edu.cmu.sphinx.api.Context;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.frontend.util.Microphone;
 import edu.cmu.sphinx.frontend.util.StreamDataSource;
-import edu.cmu.sphinx.recognizer.*;
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.result.Result;
-import edu.cmu.sphinx.util.props.PropertyException;
-import edu.cmu.sphinx.util.props.PropertySheet;
 
-import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -35,7 +31,6 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
             @Override public void newProperties(PropertySheet ps) throws PropertyException { }
         });*/
 
-        AudioFormat af = Sphinx.getAudioFormat();
         StreamDataSource sds = context.getInstance(StreamDataSource.class);
         if (audioSource != null) {
             sds.setInputStream(audioSource);
@@ -64,6 +59,7 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
      * @return recognition result or {@code null} if there is no result, e.g., because the
      * 			microphone or input stream has been closed
      */
+    @Override
     public SpeechResult getResult() {
         Result result = recognizer.recognize();
         return null == result ? null : new SpeechResult(result);

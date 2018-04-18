@@ -1,20 +1,15 @@
 package edu.cmu.lti.dialogos.sphinx.client;
 
-import com.clt.properties.Property;
 import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
 import com.clt.speech.recognition.*;
 import com.clt.srgf.Grammar;
 
-import java.net.URL;
 import java.util.*;
 
-import com.stanfy.enroscar.net.DataStreamHandler;
 import edu.cmu.sphinx.api.*;
 import edu.cmu.sphinx.frontend.Data;
 import edu.cmu.sphinx.frontend.endpoint.SpeechClassifiedData;
-
-import javax.sound.sampled.AudioFormat;
 
 /**
  * @author koller, timo
@@ -106,7 +101,6 @@ public class Sphinx extends SphinxBaseRecognizer {
         assert l != null;
         if (!contextCache.containsKey(l)) {
             contextCache.put(l, new SphinxContext(name, g, this.languageSettings.get(l)));
-        } else {
         }
         SphinxContext sc = contextCache.get(l);
         sc.setGrammar(g);

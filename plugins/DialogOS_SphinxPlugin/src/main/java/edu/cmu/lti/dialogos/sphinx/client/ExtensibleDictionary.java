@@ -16,6 +16,7 @@ public class ExtensibleDictionary extends TextDictionary {
         try {
             URL.setURLStreamHandlerFactory(protocol -> "data".equals(protocol) ? new DataStreamHandler() : null);
         } catch (Error e) {
+            System.err.println("ExtensibleDictionary");
             if (!"factory already defined".equals(e.getMessage())) {
                 throw e;
             }

@@ -34,11 +34,12 @@ import org.xml.sax.SAXException;
 public class Settings extends PluginSettings {
 
     private DefaultEnumProperty<LanguageName> defaultLanguage;
+    private static final String LANGUAGE = "language";
 
 
     public Settings() {
         List<LanguageName> languages = Plugin.getAvailableLanguages();
-        this.defaultLanguage = new DefaultEnumProperty<LanguageName>("language",
+        this.defaultLanguage = new DefaultEnumProperty<LanguageName>(LANGUAGE,
                 Resources.getString("DefaultLanguage"), null,
                 languages.toArray(new LanguageName[languages.size()])) {
             @Override public String getName() {
@@ -64,15 +65,13 @@ public class Settings extends PluginSettings {
 
     @Override
     public void writeAttributes(XMLWriter out, IdMap uidMap) {
-        if (this.getDefaultLanguage() != null) {
-            if (this.getDefaultLanguage().getName().length() > 0) {
-                Graph.printAtt(out, "language", this.getDefaultLanguage().getLanguage().getLocale().toString());
-            }
+        if (this.getDefaultLanguage() != null && this.getDefaultLanguage().getName().length() > 0) {
+            Graph.printAtt(out, LANGUAGE, this.getDefaultLanguage().getLanguage().getLocale().toString());
         }
         for (LanguageName ln : getLanguages()) {
             SphinxLanguageSettings sls = Plugin.getRecognizer().getLanguageSettings(ln.getLanguage());
             if (!sls.getG2PList().isEmpty()) {
-                out.openElement("g2p", new String[] {"language"}, new Locale[] {ln.getLanguage().getLocale()});
+                out.openElement("g2p", new String[] {LANGUAGE}, new Locale[] {ln.getLanguage().getLocale()});
                 for (G2PEntry entry : sls.getG2PList()) {
                     out.printElement("entry", new String[] {"g", "p"}, new String[] {entry.getGraphemes(), entry.getPhonemes()});
                 }
@@ -82,8 +81,8 @@ public class Settings extends PluginSettings {
     }
 
     @Override
-    protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
-        if (name.equals("language")) {
+    protected void readAttribute(XMLReader r, String name, String value, IdMap uidMap) throws SAXException {
+        if (name.equals(LANGUAGE)) {
             LanguageName ln = lnForLocale(value);
             assert ln != null;
             this.defaultLanguage.setValue(ln);
@@ -97,9 +96,9 @@ public class Settings extends PluginSettings {
     }
 
     @Override
-    protected void readOtherXML(XMLReader r, String name, Attributes atts, IdMap uid_map) throws SAXException {
+    protected void readOtherXML(XMLReader r, String name, Attributes atts, IdMap uidMap) throws SAXException {
         if (name.equals("g2p")) {
-            String langName = atts.getValue("language");
+            String langName = atts.getValue(LANGUAGE);
             LanguageName ln = lnForLocale(langName);
             SphinxLanguageSettings sls = Plugin.getRecognizer().getLanguageSettings(ln.getLanguage());
             assert sls != null;
@@ -109,7 +108,7 @@ public class Settings extends PluginSettings {
                 }
             });
         } else {
-            super.readOtherXML(r, name, atts, uid_map);
+            super.readOtherXML(r, name, atts, uidMap);
         }
     }
 

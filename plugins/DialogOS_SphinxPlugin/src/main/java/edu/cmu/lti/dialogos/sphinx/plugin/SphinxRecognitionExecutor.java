@@ -32,7 +32,7 @@ public class SphinxRecognitionExecutor implements RecognitionExecutor {
         // in the case of a timeout, stop() will be called externally.
 
         Future<MatchResult> result = Executors.newSingleThreadExecutor().submit(() -> {
-            // TODO: all that is relevant to context, thus including the recognition threshold!
+            // all that is relevant to context, thus including the recognition threshold!
             recognizer.setContext(grammar);
             ((SphinxContext) recognizer.getContext()).setThreshold(recognitionThreshold);
             if (stateListener != null) {
@@ -40,14 +40,10 @@ public class SphinxRecognitionExecutor implements RecognitionExecutor {
             }
             RecognitionResult recognitionResult = null;
             try {
-//                do {
-                    recognitionResult = recognizer.startLiveRecognition();
-                    if (recognitionResult == null) {
-                        //TODO: this may break the contract of RecognitionExecutor if null is returned but it's not the timeout that is at fault
-                        return null;
-                    }
-//                } while ((recognitionResult.numAlternatives() == 0)
-//                        || (recognitionResult.getAlternative(0).getConfidence() < recognitionThreshold));
+                recognitionResult = recognizer.startLiveRecognition();
+                if (recognitionResult == null) {
+                    return null;
+                }
             } finally {
                 if (stateListener != null) {
                     recognizer.removeRecognizerListener(stateListener);

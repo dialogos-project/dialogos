@@ -257,10 +257,7 @@ public class MaryTTS
       if (waitUntilDone){
         audioPlayer.join();
       }
-
-    } catch (SynthesisException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e){
+    } catch (SynthesisException | InterruptedException e){
       //Something in audioPlayer.join() went wrong.
       e.printStackTrace();
     }
@@ -278,7 +275,6 @@ public class MaryTTS
     for(int i=0; i < prosody.getLength(); i++){
       p = (Element) prosody.item(i);
       //Delete previous (text) children nodes (if there were any. There should always be just one)
-      //for(Node n : p.getChildNodes())
       for (int j=0; j < p.getChildNodes().getLength(); j++)
       {
           p.removeChild(p.getFirstChild());
@@ -288,12 +284,13 @@ public class MaryTTS
   }
 
   @Override
-  public void stop() throws SpeechException {
+  public void stop() {
     audioPlayer.cancel();
   }
 
   @Override
-  public void dispose() throws SpeechException {
+  public void dispose() {
+    // nothing to be done
   }
 
   @Override
@@ -324,41 +321,18 @@ public class MaryTTS
   }
 
   @Override
-  public void synthesizeToFile(String text, File f)
-      throws SpeechException {
+  public void synthesizeToFile(String text, File f) {
+    throw new UnsupportedOperationException("synthesis to file is not yet supported");
   }
 
   @Override
-  public Language[] getLanguages() throws SpeechException {
+  public Language[] getLanguages() {
     return new Language[0];
   }
 
   @Override
-  public String[] transcribe(String word, Language language) throws SpeechException {
+  public String[] transcribe(String word, Language language) {
     return new String[0];
   }
 
-
-  /*
-  * introspection: Helper method for debugging
-  * Prints to terminal available voices and available Locales from
-  * mary (LocalMaryInterface).
-  *
-  * Taken from:
-  * https://github.com/marytts/marytts/blob/master/marytts-common/src/main/java/marytts/MaryInterface.java
-  * */
-  private void introspection(){
-    System.out.println("I currently have " + mary.getAvailableVoices() + " voices in "
-            + mary.getAvailableLocales() + " languages available.");
-    System.out.println("Out of these, " + mary.getAvailableVoices(Locale.US) + " are for US English.");
-  }
-
-  /*
-  * testPrintMaryXML: Helper method for debugging
-  * Prints maryXML to terminal.
-  * */
-  private void testPrintMaryXML(){
-    String output = XMLHelper.xml2str(maryXML);
-    System.out.println(output);
-  }
 }

@@ -34,7 +34,7 @@ public class SphinxContext extends RecognitionContext {
     }
 
 
-    public Configuration configuration;
+    Configuration configuration;
     protected InputStream audioSource;
     SphinxLanguageSettings sls;
     Grammar grammar;
@@ -83,7 +83,7 @@ public class SphinxContext extends RecognitionContext {
             dic.loadExceptions(sls.getG2PList());
             dflat.setAddOutOfGrammarBranch(threshold != null);
             if (threshold != null)
-                dflat.setOutOfGrammarProbability(threshold); //TODO: this needs to know the rejection threshold
+                dflat.setOutOfGrammarProbability(threshold);
             String grammarString;
             if (grammar.requestsRobustness()) {
                 grammarString = grammar.toString(JSGFwithGarbage);
@@ -91,7 +91,6 @@ public class SphinxContext extends RecognitionContext {
             } else {
                 grammarString = grammar.toString(JSGF);
             }
-            System.err.println(grammarString);
             jsgfGrammar.setBaseURL(new URL(encodeData(grammarString)));
             jsgfGrammar.loadJSGF("");
             return csr;

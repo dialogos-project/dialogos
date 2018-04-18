@@ -51,6 +51,7 @@ public class SphinxTest {
         try {
             URL.setURLStreamHandlerFactory(protocol -> "data".equals(protocol) ? new DataStreamHandler() : null);
         } catch (Error e) {
+            System.err.println("SphinxTest");
             if (!"factory already defined".equals(e.getMessage())) {
                 throw e;
             }

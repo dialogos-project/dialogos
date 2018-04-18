@@ -25,7 +25,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     getSynthesizer();
 
     Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
-        Arrays.asList(new Class<?>[] { TTSNode.class }));
+        Arrays.asList(TTSNode.class));
   }
 
   public static List<VoiceName> getAvailableVoices() {

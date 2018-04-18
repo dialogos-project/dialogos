@@ -11,7 +11,7 @@ import javax.sound.sampled.AudioFormat;
  */
 public abstract class SphinxBaseRecognizer extends SingleDomainRecognizer {
 
-    public static AudioFormat audioFormat = new AudioFormat(16000f, 16, 1, true, false);
+    public static final AudioFormat audioFormat = new AudioFormat(16000f, 16, 1, true, false);
     public static AudioFormat getAudioFormat() { return audioFormat; }
 
     public Property<?>[] getProperties() {
@@ -20,7 +20,7 @@ public abstract class SphinxBaseRecognizer extends SingleDomainRecognizer {
 
     /** only ever called from TranscriptionWindow (and nobody seems to use that */
     @Override public String[] transcribe(String word, Language language) throws SpeechException {
-        return null;
+        return new String[]{};
     }
 
 

@@ -30,7 +30,7 @@ public class SphinxLanguageSettings {
     /** return the default settings for a given language, or null if no such default exists */
     public static SphinxLanguageSettings createDefaultSettingsForLanguage(Language l) {
         SphinxLanguageSettings sls = new SphinxLanguageSettings();
-        // TODO: put language-relevant initializations in here (this would be the place to initialize g2pLists with digits)
+        // put language-relevant initializations in here (this could be the place to initialize g2pLists with digits)
         if (l.equals(en_US)) {
             sls.acousticModelPath = "resource:/edu/cmu/sphinx/models/en-us/en-us";
             sls.dictionaryPath = "resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict";
@@ -172,7 +172,7 @@ public class SphinxLanguageSettings {
                     "| /0.00393351/ \"<PHONE_Y+>\"\n" +
                     ";\n";
         } else
-            throw new RuntimeException("unknown language " + l);
+            throw new IllegalArgumentException("unknown language " + l);
         return sls;
     }
 
