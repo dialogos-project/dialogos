@@ -1,7 +1,6 @@
 package com.clt.speech.recognition;
 
 import com.clt.speech.Language;
-import com.clt.speech.SpeechException;
 import com.clt.srgf.Grammar;
 
 /**
@@ -47,8 +46,8 @@ public class RecognitionContext {
     }
 
     @SuppressWarnings("unused")
-    public void dispose()
-            throws RecognizerException {
+    public void dispose() {
+        // no need for cleanup here
     }
 
 }

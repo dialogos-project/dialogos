@@ -61,7 +61,7 @@ abstract public class AbstractInputNode extends Node {
     private static ImageIcon micOn = null;
     private static ImageIcon micOff = null;
 
-    private static final float DEFAULT_THRESHOLD = 0; // TODO choose a more reasonable value
+    private static final float DEFAULT_THRESHOLD = 0;
     private static final String TIMEOUT = "timeout";
     private static final String FORCE_TIMEOUT = "forceTimeout";
     private static final String GRAMMAR = "grammar";
@@ -520,7 +520,7 @@ abstract public class AbstractInputNode extends Node {
         gbc.gridwidth = 2;
 
         JPanel threshold = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
-        threshold.add(new JLabel(Resources.getString("threshold")));
+        threshold.add(new JLabel(Resources.getString(THRESHOLD)));
         threshold.add(NodePropertiesDialog.createLongField(properties, THRESHOLD, 0, 100));
         threshold.add(new JLabel("%"));
         options.add(threshold, gbc);
@@ -766,13 +766,6 @@ abstract public class AbstractInputNode extends Node {
                     synchronized (stop) {
                         stop.setText(GUI.getString("OK"));
                         micState.setText(Resources.getString("RecognitionResult") + ":");
-                        // Utterance bestAlternative = recThread.getLastResult()
-                        // .getAlternative(0);
-                        // result.setForeground(Color.black);
-                        // result.setText(bestAlternative.getWords() );
-                        // result.setForeground(Color.GRAY.brighter());
-                        // result.append( " (" +
-                        // bestAlternative.getConfidence()*100 + "%)");
                         result.setText(mr.getUtterance());
                         stop.wait();
                     }
@@ -822,13 +815,13 @@ abstract public class AbstractInputNode extends Node {
 
     private List<Edge> getEdges(long timeout, Map<String, Object> properties, boolean interactiveTest) {
         if (interactiveTest) {
-            List<Edge> edges = new ArrayList<Edge>((List<Edge>) properties.get(EdgeConditionModel.EDGE_PROPERTY));
+            List<Edge> edges = new ArrayList<>((List<Edge>) properties.get(EdgeConditionModel.EDGE_PROPERTY));
             if (timeout > 0) {
                 edges.add(new TimeoutEdge(this));
             }
             return edges;
         } else
-            return new ArrayList<Edge>(this.edges());
+            return new ArrayList<>(this.edges());
     }
 
     private int getTimeoutEdgeIndex(List<Edge> edges) {
@@ -958,7 +951,7 @@ abstract public class AbstractInputNode extends Node {
 
     protected com.clt.srgf.Grammar compileGrammar(Map<String, Object> properties,
                                                   List<Edge> edges)
-            throws ParseException, Exception {
+            throws Exception {
         Grammar grammar = (Grammar) properties.get(GRAMMAR);
         com.clt.srgf.Grammar recGrammar;
         if (grammar != null) {
@@ -971,12 +964,12 @@ abstract public class AbstractInputNode extends Node {
         } else {
             if (edges == null) {
                 if (properties == this.properties) {
-                    edges = new ArrayList<Edge>(this.numEdges());
+                    edges = new ArrayList<>(this.numEdges());
                     for (int i = 0; i < this.numEdges(); i++) {
                         edges.add(this.getEdge(i));
                     }
                 } else {
-                    edges = new ArrayList<Edge>((List<Edge>) properties.get(EdgeConditionModel.EDGE_PROPERTY));
+                    edges = new ArrayList<>((List<Edge>) properties.get(EdgeConditionModel.EDGE_PROPERTY));
                 }
             }
 

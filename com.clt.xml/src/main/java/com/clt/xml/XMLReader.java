@@ -33,7 +33,7 @@ public class XMLReader {
 
     private ContentHandler contentHandler;
     private Locator locator;
-    private Collection<XMLProgressListener> progressListeners = new ArrayList<XMLProgressListener>();
+    private Collection<XMLProgressListener> progressListeners = new ArrayList<>();
     private String systemID;
 
     /**
@@ -50,7 +50,7 @@ public class XMLReader {
 
         this.validating = validating;
         this.systemID = systemID;
-        this.handlers = new Stack<ContentHandler>();
+        this.handlers = new Stack<>();
     }
 
     public String getSystemID() {
@@ -231,8 +231,6 @@ public class XMLReader {
             public void characters(char[] ch, int start, int length)
                     throws SAXException {
 
-                // System.out.println("characters: " + new String(ch, start,
-                // length));
                 XMLReader.this.contentHandler.characters(ch, start, length);
             }
 
@@ -256,7 +254,7 @@ public class XMLReader {
                 // avoid possible overhead of exception, if there are no
                 // listeners
                 long totalLength = in.getLength();
-                if ((XMLReader.this.progressListeners.size() > 0) && (totalLength > 0)) {
+                if (!XMLReader.this.progressListeners.isEmpty() && totalLength > 0) {
                     XMLReader.this.fireProgress((float) in.getPosition()
                             / (float) totalLength * 0.9f);
                 }
@@ -286,11 +284,6 @@ public class XMLReader {
             public void ignorableWhitespace(char[] ch, int start, int length)
                     throws SAXException {
 
-                /*
-         * System.out.print("whitespace:"); for (int i=0; i<length; i++)
-         * System.out.print(" 0x" + Integer.toHexString(ch[start+i]));
-         * System.out.println();
-                 */
                 XMLReader.this.contentHandler.ignorableWhitespace(ch, start, length);
             }
 
@@ -313,7 +306,7 @@ public class XMLReader {
             }
         });
 
-        this.completionRoutines = new ArrayList<CompletionRoutine>();
+        this.completionRoutines = new ArrayList<>();
 
         try {
             InputSource source = new InputSource(in);
@@ -504,7 +497,7 @@ public class XMLReader {
         } else {
             throw new SAXException(MessageFormat.format(XML
                     .getString("XMLErrorInLine"),
-                    new Object[]{new Integer(this.locator.getLineNumber())})
+                    this.locator.getLineNumber())
                     + ": " + message, source);
         }
     }
@@ -514,7 +507,7 @@ public class XMLReader {
 
         throw new SAXException(MessageFormat.format(XML
                 .getString("UnexpectedElement"),
-                new Object[]{elementName}));
+                elementName));
     }
 
     public void raiseAttributeValueException(String attributeName)
@@ -522,7 +515,7 @@ public class XMLReader {
 
         throw new SAXException(MessageFormat.format(XML
                 .getString("IllegalAttributeValue"),
-                new Object[]{attributeName}));
+                attributeName));
     }
 
     public static InputStream createStream(String xml) {

@@ -59,11 +59,6 @@ public class AboutDialog {
     private String credits;
 
     /**
-     * Path leading to the icon of CLT.
-     */
-//    private static final String CLT_ICON = "com/clt/resources/CLT.png";
-
-    /**
      * Creates an About Dialog containing the name and the version of the
      * application, a disclaimer, as well as the credits (e.g. who developed the
      * software).
@@ -187,7 +182,6 @@ public class AboutDialog {
         logo.setPreferredSize(logo.getPatternSize());
         logo.setMinimumSize(logo.getPatternSize());
 
-        // header.add(top, gbc);
         // gbc.gridy++;
         header.add(AboutDialog.createLine(4), gbc);
         gbc.gridy++;
@@ -259,8 +253,8 @@ public class AboutDialog {
         Container header = AboutDialog.createHeader(this.name, this.version);
         c.add(header, gbc);
 
-        JComponent stripes_left = AboutDialog.createStripes("left");
-        JComponent stripes_right = AboutDialog.createStripes("right");
+        JComponent stripesLeft = AboutDialog.createStripes("left");
+        JComponent stripesRight = AboutDialog.createStripes("right");
 
         gbc.gridy++;
 
@@ -271,7 +265,7 @@ public class AboutDialog {
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.NORTH;
 
-        c.add(stripes_left, gbc);
+        c.add(stripesLeft, gbc);
         gbc.gridx++;
 
         if (aboutDialog) {
@@ -304,17 +298,12 @@ public class AboutDialog {
             gbc.weighty = 1.0;
             gbc.fill = GridBagConstraints.BOTH;
 
-            // final VerticalTextScroller vts = new VerticalTextScroller();
-            // vts.setText(credits);
             CreditsPane creditsPane = new CreditsPane();
             creditsPane.setText(this.credits);
 
             final VerticalScroller vts = new VerticalScroller(creditsPane);
             vts.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
             vts.start();
-            // vts.setBackground(Color.yellow);
-            // vts.setForeground(Color.blue);
-            // vts.setFlashColor(new Color(40, 100, 180));
 
             vts.setPreferredSize(new Dimension(200, 160));
             c.add(vts, gbc);
@@ -333,7 +322,6 @@ public class AboutDialog {
             gbc2.anchor = GridBagConstraints.CENTER;
 
             JProgressBar progress = new JProgressBar();
-            // progress.setIndeterminate(true);
             progress.setPreferredSize(new Dimension(300,
                     progress.getPreferredSize().height));
             main.add(progress, gbc2);
@@ -359,11 +347,7 @@ public class AboutDialog {
 
         gbc.gridx++;
         gbc.weightx = 0.0;
-        c.add(stripes_right, gbc);
-        /*
-     * addWindowListener(new WindowAdapter() { public void
-     * windowOpened(WindowEvent evt) { vts.start(); } });
-         */
+        c.add(stripesRight, gbc);
 
         if (disposeOnClick) {
             c.addMouseListener(new MouseAdapter() {

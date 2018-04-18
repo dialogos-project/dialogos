@@ -25,8 +25,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -96,17 +94,14 @@ public abstract class AbstractOutputNode extends Node {
         for (JRadioButton button : NodePropertiesDialog.createRadioButtons(
                 properties, PROMPT_TYPE,
                 getDefaultPromptType().getValues())) {
-            button.addItemListener(new ItemListener(){
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if(button.isSelected()) {
-                        if (button.getText().equals(getDefaultPromptType().groovy().toString())) {
-                            groovyEditor.setVisible(true);
-                            standardEditor.setVisible(false);
-                        } else {
-                            standardEditor.setVisible(true);
-                            groovyEditor.setVisible(false);
-                        }
+            button.addItemListener(e -> {
+                if(button.isSelected()) {
+                    if (button.getText().equals(getDefaultPromptType().groovy().toString())) {
+                        groovyEditor.setVisible(true);
+                        standardEditor.setVisible(false);
+                    } else {
+                        standardEditor.setVisible(true);
+                        groovyEditor.setVisible(false);
                     }
                 }
             });
@@ -163,21 +158,19 @@ public abstract class AbstractOutputNode extends Node {
                     this.reset();
                 }
                 else {
-                    new Thread(new Runnable() {
-                        public void run() {
-                            try {
-                                speaking = true;
-                                tryPrompt.setText(GUI.getString("Cancel"));
-                                speak(properties);
-                            } catch (Exception exn) {
-                                String msg = exn.getLocalizedMessage();
-                                if ((msg == null) || (msg.length() == 0)) {
-                                    msg = exn.getClass().getName();
-                                }
-                                OptionPane.error(tryPrompt, msg);
+                    new Thread(() -> {
+                        try {
+                            speaking = true;
+                            tryPrompt.setText(GUI.getString("Cancel"));
+                            speak(properties);
+                        } catch (Exception exn) {
+                            String msg = exn.getLocalizedMessage();
+                            if ((msg == null) || (msg.length() == 0)) {
+                                msg = exn.getClass().getName();
                             }
-                            reset();
+                            OptionPane.error(tryPrompt, msg);
                         }
+                        reset();
                     }).start();
                 }
             }
@@ -244,7 +237,7 @@ public abstract class AbstractOutputNode extends Node {
         return prompt;
     }
 
-    abstract protected void stopSynthesis();
+    protected abstract void stopSynthesis();
 
 
     @Override
@@ -306,13 +299,11 @@ public abstract class AbstractOutputNode extends Node {
                     entry.setValue(newVars.get(entry.getName()));
                 }
             }
-        } catch (EvaluationException e) {
+        } catch (Exception e) {
             //TODO localize Exception
             throw new NodeExecutionException(this, "Can't change type of global variables in Groovy script", e);
-        } catch (Exception e) {
-            throw new NodeExecutionException(this, "Can't change type of global variables in Groovy script", e);
         }
-        System.out.println("result"+result);
+        System.err.println("result"+result);
         String prompt;
         try {
             prompt = (String)result;
@@ -353,7 +344,7 @@ public abstract class AbstractOutputNode extends Node {
 
     @Override
     protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-        // TODO: implement? doesn't seem to be implemented anywhere in DialogOS...
+        // nothing needed
     }
 
     @Override

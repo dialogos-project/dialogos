@@ -1143,7 +1143,7 @@ public class Grammar implements NamedEntity {
             }
         }) {
 
-            Map<ParseNode, Parse> parseTrees = new HashMap<ParseNode, Parse>();
+            Map<ParseNode, Parse> parseTrees = new HashMap<>();
 
             public boolean add(Parse parse) {
 

@@ -19,7 +19,7 @@ import com.clt.util.MetaCollection;
  */
 final class Garbage extends Expansion {
 
-    public static Token<Class<Garbage>> garbageToken = new Token<Class<Garbage>>(Garbage.class) {
+    public static final Token<Class<Garbage>> garbageToken = new Token<Class<Garbage>>(Garbage.class) {
 
         @Override
         public boolean match(Input input) {
@@ -35,8 +35,6 @@ final class Garbage extends Expansion {
     };
 
     Garbage() {
-
-        // setRepeat(0, -1);
         this.setRepeat(1, 1);
     }
 
@@ -68,8 +66,8 @@ final class Garbage extends Expansion {
                 /* +++ */
                 Collection<TreeMatch> c
                         = match.createSparseBranches(grammar, options, true, null);
-                if (c.size() > 0) {
-                    return new MetaCollection<TreeMatch>(Collections.singleton(match), c);
+                if (!c.isEmpty()) {
+                    return new MetaCollection<>(Collections.singleton(match), c);
                 } else {
                     return Collections.singleton(match);
                 }
@@ -86,7 +84,7 @@ final class Garbage extends Expansion {
     @Override
     public void check(Collection<String> visibleIDs,
             Collection<Exception> warnings) {
-
+        // nothing to be checked
     }
 
     @Override
@@ -118,16 +116,14 @@ final class Garbage extends Expansion {
     }
 
     @Override
-    WordGraph.Node[] createWordGraphImpl(WordGraph.Node predecessors[],
+    WordGraph.Node[] createWordGraphImpl(WordGraph.Node[] predecessors,
             boolean mergePrivateRules,
             Tokenizer tokenizer) {
-
         return predecessors;
     }
 
     @Override
     boolean computePossibleTokens_(boolean recompute) {
-
         return this.addPossibleToken(Garbage.garbageToken);
     }
 

@@ -338,7 +338,7 @@ public class BuiltinFunctions {
      */
     public static ListValue remove(ListValue list, ListValue remove) {
 
-        List<Value> v = new ArrayList<Value>(list.size());
+        List<Value> v = new ArrayList<>(list.size());
         for (int i = 0; i < list.size(); i++) {
             if (!BuiltinFunctions.member(remove, list.get(i)).getBool()) {
                 v.add(list.get(i));
@@ -353,7 +353,7 @@ public class BuiltinFunctions {
      */
     public static ListValue remove(ListValue list, IntValue n) {
 
-        List<Value> v = new ArrayList<Value>(list.size());
+        List<Value> v = new ArrayList<>(list.size());
         for (int i = 0; i < list.size(); i++) {
             if (i != n.getInt()) {
                 v.add(list.get(i));
@@ -495,20 +495,17 @@ public class BuiltinFunctions {
             elements[i] = list.get(i);
         }
 
-        Arrays.sort(elements, new Comparator<Value>() {
+        Arrays.sort(elements, (v1, v2) -> {
 
-            public int compare(Value v1, Value v2) {
-
-                if (v1.getClass() != v2.getClass()) {
-                    throw new EvaluationException("Can't compare values of type "
-                            + v1.getType()
-                            + " and " + v2.getType());
-                } else if (!(v1 instanceof Comparable)) {
-                    throw new EvaluationException("Can't compare values of type "
-                            + v1.getType());
-                } else {
-                    return ((Comparable<Value>) v1).compareTo(v2);
-                }
+            if (v1.getClass() != v2.getClass()) {
+                throw new EvaluationException("Can't compare values of type "
+                        + v1.getType()
+                        + " and " + v2.getType());
+            } else if (!(v1 instanceof Comparable)) {
+                throw new EvaluationException("Can't compare values of type "
+                        + v1.getType());
+            } else {
+                return ((Comparable<Value>) v1).compareTo(v2);
             }
         });
         return new ListValue(elements);
@@ -521,7 +518,7 @@ public class BuiltinFunctions {
         long end = endValue.getInt();
         long interval = Math.abs(intervalValue.getInt());
 
-        Value values[] = new Value[(int) (Math.abs(end - start) / interval) + 1];
+        Value[] values = new Value[(int) (Math.abs(end - start) / interval) + 1];
 
         if (start <= end) {
             for (int i = 0; start <= end; start += interval) {

@@ -33,8 +33,8 @@ public class Script {
 
     public Script() {
 
-        this.procedures = new ArrayList<Prototype>();
-        this.types = new HashMap<String, Type>();
+        this.procedures = new ArrayList<>();
+        this.types = new HashMap<>();
 
         this.main = new Block(null);
     }
@@ -83,8 +83,8 @@ public class Script {
 
         try {
             this.main.execute(dbg);
-        } catch (ReturnMessage msg) {
-        } catch (BreakMessage msg) {
+        } catch (ReturnMessage|BreakMessage msg) {
+            // nothing to be done
         }
     }
 

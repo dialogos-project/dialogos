@@ -110,7 +110,7 @@ public class OptionPane {
      * @see WindowUtils#CENTER_ON_PARENT
      * @see WindowUtils#ALERT_POSITION
      */
-    public static int placing = WindowUtils.ALERT_POSITION;
+    public static final int placing = WindowUtils.ALERT_POSITION;
     
     // placing = Platform.isMac() ?
             // WindowUtils.ALERT_POSITION :
@@ -234,15 +234,11 @@ public class OptionPane {
                 return null;
             }
         };
-        new Thread(new Runnable() {
-
-            public void run() {
-
-                try {
-                    a.call();
-                } catch (Exception exn) {
-                    // ignore
-                }
+        new Thread(() -> {
+            try {
+                a.call();
+            } catch (Exception exn) {
+                // ignore
             }
         }).start();
         OptionPane.showOptionDialog(parentComponent, message, title,
@@ -338,7 +334,6 @@ public class OptionPane {
         final MyOptionPane pane = OptionPane.createOptionPane(message, messageType,
                 optionType, icon, options, initialValue);
 
-        // final JDialog dialog = pane.createDialog(parentComponent, title);
         final JDialog dialog = pane.createDialog(null, title);
 
         ProgressListener progress = null;
@@ -393,7 +388,7 @@ public class OptionPane {
             String errorLine = exn.getLocalizedMessage();
 
             if ((errorLine == null) || (errorLine.length() == 0)) {
-                StackTraceElement trace[] = exn.getStackTrace();
+                StackTraceElement[] trace = exn.getStackTrace();
                 if ((trace != null) && (trace.length > 0)) {
                     for (int i = 0; i < trace.length; i++) {
                         if (trace[i].getClassName().startsWith("com.clt")) {
@@ -412,16 +407,13 @@ public class OptionPane {
                 .getClass().getName())), errorLine};
         }
 
-        if (message instanceof String[] ? ((String[]) message).length == 2
-                : false) {
+        if (message instanceof String[] && ((String[]) message).length == 2) {
             StaticText s1 = new StaticText(((String[]) message)[0],
                     OptionPane.SOFT_WRAP_LIMIT);
             s1.setFont((Font) UIManager.get("Label.font"));
             StaticText s2 = new StaticText(((String[]) message)[1],
                     OptionPane.SOFT_WRAP_LIMIT);
             s2.setFont(GUI.getSmallSystemFont());
-            // s2.setFont(new Font("SansSerif", Font.PLAIN,
-            // s1.getFont().getSize()-2));
 
             message = new Object[]{s1, s2, Box.createVerticalStrut(5)};
         }
@@ -489,10 +481,8 @@ public class OptionPane {
                         char c = s.charAt(0);
                         boolean single = true;
                         for (int j = i + 1; j < optns.length; j++) {
-                            if (optns[j] instanceof String) {
-                                if (((String) optns[j]).charAt(0) == c) {
-                                    single = false;
-                                }
+                            if (optns[j] instanceof String && ((String) optns[j]).charAt(0) == c) {
+                                single = false;
                             }
                         }
                         if (single) {
@@ -656,26 +646,19 @@ public class OptionPane {
 
             Object msg = this.getMessage();
             boolean hardwrap = false;
-            if (msg instanceof String ? ((String) msg).indexOf('\n') >= 0
-                    : false) {
+            if (msg instanceof String && ((String) msg).indexOf('\n') >= 0) {
                 hardwrap = true;
             } else if (msg instanceof Object[]) {
                 Object[] obj = (Object[]) msg;
                 for (int i = 0; (i < obj.length) && !hardwrap; i++) {
-                    if (obj[i] instanceof String) {
-                        if (((String) obj[i]).indexOf('\n') >= 0) {
-                            hardwrap = true;
-                        }
+                    if (obj[i] instanceof String && ((String) obj[i]).indexOf('\n') >= 0) {
+                        hardwrap = true;
                     }
                 }
 
             }
 
-            if (hardwrap) {
-                return OptionPane.HARD_WRAP_LIMIT;
-            } else {
-                return OptionPane.SOFT_WRAP_LIMIT;
-            }
+            return hardwrap ? OptionPane.HARD_WRAP_LIMIT : OptionPane.SOFT_WRAP_LIMIT;
         }
     }
 

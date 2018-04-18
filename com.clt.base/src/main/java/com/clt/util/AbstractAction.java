@@ -21,8 +21,8 @@ import javax.swing.KeyStroke;
  */
 public abstract class AbstractAction implements Action, Runnable {
 
-    private Map<String, Object> properties = new HashMap<String, Object>();
-    private Collection<PropertyChangeListener> listeners = new LinkedList<PropertyChangeListener>();
+    private Map<String, Object> properties = new HashMap<>();
+    private Collection<PropertyChangeListener> listeners = new LinkedList<>();
 
     public AbstractAction() {
 
@@ -61,12 +61,12 @@ public abstract class AbstractAction implements Action, Runnable {
 
     public boolean isEnabled() {
 
-        return ((Boolean) this.getValue("enabled")).booleanValue();
+        return (Boolean) this.getValue("enabled");
     }
 
     public void setEnabled(boolean enabled) {
 
-        this.putValue("enabled", new Boolean(enabled));
+        this.putValue("enabled", enabled);
     }
 
     public String getName() {
@@ -140,6 +140,4 @@ public abstract class AbstractAction implements Action, Runnable {
 
         this.run();
     }
-
-    public abstract void run();
 }

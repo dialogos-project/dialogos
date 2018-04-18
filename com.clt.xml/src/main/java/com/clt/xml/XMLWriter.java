@@ -136,7 +136,7 @@ public class XMLWriter extends IndentedWriter {
 
         this.print("<" + name);
         if (argnames != null) {
-            if (argvalues == null ? true : argnames.length != argvalues.length) {
+            if (argvalues == null || argnames.length != argvalues.length) {
                 throw new IllegalArgumentException(
                         "Argument names and values do not match");
             }
@@ -183,9 +183,6 @@ public class XMLWriter extends IndentedWriter {
                         i++;
                     }
                     break;
-                // case '\'':
-                // b.append("&apos;");
-                // break;
 
                 default:
                     b.append(s.charAt(i));

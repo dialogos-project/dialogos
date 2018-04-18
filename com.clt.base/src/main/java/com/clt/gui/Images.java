@@ -31,6 +31,10 @@ import com.clt.resources.ResourceFormatException;
  */
 public class Images {
 
+    private Images() {
+        throw new IllegalStateException("Utility class must not be instantiated");
+    }
+
     public static BufferedImage createReflectedPicture(BufferedImage image) {
 
         int imageWidth = image.getWidth();
@@ -136,8 +140,7 @@ public class Images {
             }
         };
         ImageProducer prod = new FilteredImageSource(image.getSource(), filter);
-        Image result = Toolkit.getDefaultToolkit().createImage(prod);
-        return result;
+        return Toolkit.getDefaultToolkit().createImage(prod);
     }
 
     public static Icon adjustBrightness(Icon icon, float fraction) {
@@ -178,8 +181,7 @@ public class Images {
             }
         };
         ImageProducer prod = new FilteredImageSource(image.getSource(), filter);
-        Image result = Toolkit.getDefaultToolkit().createImage(prod);
-        return result;
+        return Toolkit.getDefaultToolkit().createImage(prod);
     }
 
     public static Icon adjustOpacity(Icon icon, float fraction) {
@@ -228,8 +230,7 @@ public class Images {
             }
         };
         ImageProducer prod = new FilteredImageSource(image.getSource(), filter);
-        Image result = Toolkit.getDefaultToolkit().createImage(prod);
-        return result;
+        return Toolkit.getDefaultToolkit().createImage(prod);
     }
 
     public static Icon blend(Icon icon, Color color, float opacity) {
@@ -250,8 +251,6 @@ public class Images {
     }
 
     public static ImageIcon loadBuiltin(String name) {
-
-        // URL path = ClassLoader.getSystemResource("com/clt/resources/" + name);
         URL path = com.clt.resources.DynamicResourceBundle.class.getResource(name);
         if (path == null) {
             throw new MissingResourceException("Could not find image", Images.class
@@ -391,9 +390,8 @@ public class Images {
                 for (int n = 0; n < rgb.length; n++) {
                     // Use NTSC conversion formula.
                     int gray
-                            = (int) ((0.30 * ((maskRgb[n] >> 16) & 0xff) + 0.59
-                            * ((maskRgb[n] >> 8) & 0xff) + 0.11 * ((maskRgb[n]) & 0xff)));
-                    // int gray = (maskRgb[n] >> 8) & 0xff;
+                            = (int) (0.30 * ((maskRgb[n] >> 16) & 0xff) + 0.59
+                            * ((maskRgb[n] >> 8) & 0xff) + 0.11 * ((maskRgb[n]) & 0xff));
 
                     rgb[n] = (rgb[n] & 0x00FFFFFF) | ((0xff - gray) << 24);
                 }

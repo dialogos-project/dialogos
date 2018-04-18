@@ -63,7 +63,7 @@ public class ScriptEditor extends JEditorPane {
             public Symbol[] parse(Reader in) {
 
                 try {
-                    List<Symbol> tokens = new ArrayList<Symbol>();
+                    List<Symbol> tokens = new ArrayList<>();
                     Iterator<Token> tks;
                     switch (type) {
                         case SRGF:
@@ -112,7 +112,6 @@ public class ScriptEditor extends JEditorPane {
 
         this.setEditorKit(kit);
         this.setBackground(Color.white);
-        // setFont(new Font("Courier", 0, 12));
         this.setFont(new Font("Monospaced", 0, 12));
         this.setEditable(true);
 

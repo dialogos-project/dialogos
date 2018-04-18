@@ -40,16 +40,12 @@ public interface Plugin {
     default void initialize() {
     }
 
-    ;
-
   /**
    * This method is called when a plugin should terminate. It should be used to clean up any resources. An empty
    * implementation is provided by default.
    */
     default void terminate() {
     }
-
-    ;
 
   /**
    * This method is called later from the document. Plugins need to return their settings (including a settings GUI
