@@ -6,9 +6,6 @@ plugins {
 
 allprojects {
   repositories {
-    flatDir {
-      dirs "${rootDir}/libs"
-    }
     mavenCentral()
     jcenter()
 
