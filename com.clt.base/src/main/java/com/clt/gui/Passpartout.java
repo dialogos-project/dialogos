@@ -65,9 +65,7 @@ public class Passpartout extends JComponent {
      * @param paintBorder If true, a border is paint around the wrapped
      * Component. Else, no boarder is painted.
      */
-    public Passpartout(JComponent content, Color backgroundColor,
-            boolean paintBorder) {
-
+    public Passpartout(JComponent content, Color backgroundColor, boolean paintBorder) {
         this.content = null;
 
         this.setLayout(new GridBagLayout());
@@ -93,13 +91,11 @@ public class Passpartout extends JComponent {
      */
     @Override
     public boolean isOpaque() {
-
         return super.isOpaque() && (this.getBackground().getAlpha() == 255);
     }
 
     @Override
     protected void addImpl(Component content, Object constraints, int index) {
-
         if (this.content != null) {
             this.content.removeComponentListener(this.contentListener);
             this.remove(this.content);
@@ -112,7 +108,6 @@ public class Passpartout extends JComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
-
         g.setColor(this.getBackground());
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 

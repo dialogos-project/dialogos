@@ -117,19 +117,23 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public void finishSetup() {
-
         this.updateMenus();
         this.pack();
         Dimension size = this.getSize();
         Dimension screenSize = WindowUtils.getScreenSize();
         int min = Math.min(screenSize.width - size.width, screenSize.height - size.height);
         DocumentWindow.gStackedPosition = new Point(DocumentWindow.gStackedPosition.x + 30, DocumentWindow.gStackedPosition.y + 30);
+
         if ((DocumentWindow.gStackedPosition.x >= min - 30) || (DocumentWindow.gStackedPosition.y >= min - 30)) {
             DocumentWindow.gStackedPosition = new Point(30, 30);
         }
+
         this.setLocation(DocumentWindow.gStackedPosition);
         this.setSize(new Dimension(Math.min(size.width, screenSize.width - this.getLocation().x - 40), Math.min(size.height, screenSize.height - this.getLocation().y - 40)));
-        // setLocation(30 + gUntitledDocuments*20 % min, 30 + gUntitledDocuments*20
+        
+
+
+// setLocation(30 + gUntitledDocuments*20 % min, 30 + gUntitledDocuments*20
         // % min);
         this.setDirty(false);
     }
