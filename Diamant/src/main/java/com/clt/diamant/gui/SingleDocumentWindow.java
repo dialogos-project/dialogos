@@ -92,6 +92,7 @@ import com.clt.mac.RequiredEventHandler;
 import com.clt.util.DefaultLongAction;
 import com.clt.util.UserCanceledException;
 import com.clt.xml.XMLWriter;
+import java.util.function.ToIntFunction;
 
 public class SingleDocumentWindow<DocType extends SingleDocument>
         extends DocumentWindow<DocType>
@@ -130,6 +131,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     private transient WozInterface runtime;
     private transient Thread executionThread;
+
+    private transient List<JComponent> componentsVertical = new ArrayList<>();
+    private transient List<JComponent> componentsHorizontal = new ArrayList<>();
+    private transient List<JComponent> verticalComponentsOnRight = new ArrayList<>();
 
     public SingleDocumentWindow(DocType d, MenuCommander superCommander, final RequiredEventHandler systemEventHandler, boolean singleWindow) {
         super(d);
@@ -207,22 +212,16 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         };
 
         this.addWindowListener(new WindowAdapter() {
-
             @Override
             public void windowOpened(WindowEvent evt) {
-
                 SingleDocumentWindow.this.requestFocus();
-                GraphEditorFactory.register(SingleDocumentWindow.this.getGraphOwner(),
-                        SingleDocumentWindow.this);
+                GraphEditorFactory.register(SingleDocumentWindow.this.getGraphOwner(), SingleDocumentWindow.this);
             }
 
             @Override
             public void windowClosed(WindowEvent evt) {
-
-                GraphEditorFactory
-                        .unregister(SingleDocumentWindow.this.getGraphOwner());
-                GraphEditorFactory.ownerDeleting(SingleDocumentWindow.this
-                        .getGraphOwner());
+                GraphEditorFactory.unregister(SingleDocumentWindow.this.getGraphOwner());
+                GraphEditorFactory.ownerDeleting(SingleDocumentWindow.this.getGraphOwner());
             }
         });
 
@@ -251,52 +250,148 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         content.removeAll();
         content.setLayout(new BorderLayout());
 
+        componentsHorizontal.clear();
+        componentsVertical.clear();
+        verticalComponentsOnRight.clear();
+
+        // add toolbar at the top (select/scroll/delete - run/debug/wizard - ...)
         this.toolbars.removeAll();
         content.add(this.toolbars, BorderLayout.NORTH);
 
         if (Preferences.getPrefs().showToolbox.getValue()) {
             this.toolbars.add(this.toolbox);
+            componentsVertical.add(toolbox);
+            verticalComponentsOnRight.add(toolbox);
         } else {
             this.toolbox.setTool(DefaultToolbox.ANCHOR);
         }
+
         if (Preferences.getPrefs().showProcedureTree.getValue()) {
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
             split.setOneTouchExpandable(true);
 
-            JScrollPane jsp = GUI.createScrollPane(this.procTree,
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            JScrollPane jsp = GUI.createScrollPane(this.procTree, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             jsp.setBorder(null);
             jsp.setMinimumSize(new Dimension(100, 100));
 
+            // add toolbar at the left for subgraphs
             JPanel left = new JPanel(new BorderLayout());
             left.add(jsp, BorderLayout.CENTER);
-            left
-                    .add(new Header(Resources.getString("Subgraphs")), BorderLayout.NORTH);
+            left.add(new Header(Resources.getString("Subgraphs")), BorderLayout.NORTH);
             split.setLeftComponent(left);
+            componentsHorizontal.add(left);
 
+            // add graph panel in the center
             JPanel right = new JPanel(new BorderLayout());
             right.add(this.header, BorderLayout.NORTH);
-
             right.add(this.contentPanel, BorderLayout.CENTER);
-
             split.setRightComponent(right);
-            // split.getLeftComponent().setVisible(false);
-            // split.setDividerSize(0);
             content.add(split, BorderLayout.CENTER);
+            componentsVertical.add(header);
         } else {
+            // add graph panel (without header) in the center
             content.add(this.contentPanel, BorderLayout.CENTER);
             this.setMainView(this.getGraphOwner().getOwnedGraph());
         }
 
+        // add toolbar at the right for node types
         if (Preferences.getPrefs().showNodePanel.getValue()) {
-            JScrollPane nodeScroller = new JScrollPane(this.nodebox,
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane nodeScroller = new JScrollPane(this.nodebox, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             nodeScroller.setBorder(null);
             nodeScroller.setViewportBorder(null);
             content.add(nodeScroller, BorderLayout.EAST);
+            componentsHorizontal.add(nodeScroller);
+            verticalComponentsOnRight.add(nodeScroller);
         }
+
+    }
+
+    // Dimensions of window minus dimensions of neighbors,
+    // calculated at time of previous call to validate.
+    private int previousMaxWidth = -1;
+    private int previousMaxHeight = -1;
+
+    @Override
+    public void validate() {
+        super.validate();
+
+        if (mainView != null) {
+            int neighborsWidth = totalSize(componentsHorizontal, c -> c.getWidth());
+            int neighborsHeight = totalSize(componentsVertical, c -> c.getHeight());
+
+            int w = (int) getSize().getWidth() - neighborsWidth;
+            int h = (int) getSize().getHeight() - neighborsHeight;
+
+            int windowGrewX = 0, windowGrewY = 0;
+
+            if (previousMaxWidth < 0) {
+                // first time we are calculating these dimensions => resize graph to fit
+                // height of node toolbar if needed
+                int nodeToolbarHeight = totalSize(verticalComponentsOnRight, c -> c.getHeight());
+                int heightAroundGraph = neighborsHeight + mainView.getGraph().getHeight();
+
+                if (nodeToolbarHeight > heightAroundGraph) {
+                    // I don't know where the 4 extra pixels come from, but they are needed
+                    // (on MacOS) to make the graph fit correctly.
+                    mainView.getGraph().setSize(mainView.getGraph().getWidth(),
+                            mainView.getGraph().getHeight() + nodeToolbarHeight - heightAroundGraph - mainView.getHorizontalScrollbarHeight() - 4);
+                }
+
+                previousMaxWidth = w;
+                previousMaxHeight = h;
+            } else {
+                // subsequent times: make graph bigger if the window was dragged larger
+                // or toolbars removed, so it fits the window again
+                if (w > previousMaxWidth) {
+                    windowGrewX = w - previousMaxWidth;
+                    previousMaxWidth = w;
+                }
+
+                if (h > previousMaxHeight) {
+                    windowGrewY = h - previousMaxHeight;
+                    previousMaxHeight = h;
+                }
+
+                if (windowGrewX + windowGrewY > 0) {
+                    mainView.getGraph().setSize(mainView.getGraph().getWidth() + windowGrewX, mainView.getGraph().getHeight() + windowGrewY);
+                }
+            }
+
+
+            /*
+
+            System.err.printf("\nSDW#validate, new size: %s\n", getSize());
+
+//        System.err.println("vertical neighbors: " + componentsVertical);
+//        System.err.println("horizontal: " + componentsHorizontal);
+            System.err.println("vertical:");
+            for (JComponent c : componentsVertical) {
+                System.err.printf("- %d %s\n", c.getHeight(), c);
+            }
+
+            System.err.println("horizontal:");
+            for (JComponent c : componentsHorizontal) {
+                System.err.printf("- %d %s\n", c.getWidth(), c);
+            }
+
+            System.err.printf("total width %d, height %d\n", neighborsWidth, neighborsHeight);
+
+            System.err.printf("size of content pane: %s\n", mainView.getSize());
+            System.err.printf("size of graph: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
+            System.err.printf("with scrollbars: %s\n", mainView.getSizeWithScrollbars());
+            System.err.printf("window - neighbors - graph: %dx%d",
+                    (int) (getSize().getWidth() - neighborsWidth - mainView.getGraph().getWidth()),
+                    (int) (getSize().getHeight() - neighborsHeight - mainView.getGraph().getHeight()));
+             */
+        }
+    }
+
+    private int totalSize(List<JComponent> components, ToIntFunction<JComponent> attribute) {
+        int ret = 0;
+        for (JComponent c : components) {
+            ret += attribute.applyAsInt(c);
+        }
+        return ret;
     }
 
     @Override
@@ -500,23 +595,15 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         }
 
         m = mbar.addMenu(Resources.getString("GraphMenu"));
-        m.addItem(Resources.getString("Variables") + "...",
-                GraphUI.cmdEditVariables);
-        m.addItem(Resources.getString("Functions") + "...",
-                GraphUI.cmdEditFunctions);
-        m.addItem(Resources.getString("GroovyFunctions") + "...",
-                GraphUI.cmdEditGroovyFunctions);
-        m.addItem("Groovy " + Resources.getString("Variables") + "...",
-                GraphUI.cmdEditGroovyVariables);
-        m.addItem(Resources.getString("Grammars") + "...",
-                GraphUI.cmdEditGrammars);
-        m.addItem(Resources.getString("InputHandlers") + "...",
-                GraphUI.cmdEditHandlers);
-        m.addItem(Resources.getString("CanvasSize") + "...",
-                GraphUI.cmdCanvasSize);
+        m.addItem(Resources.getString("Variables") + "...", GraphUI.cmdEditVariables);
+        m.addItem(Resources.getString("Functions") + "...", GraphUI.cmdEditFunctions);
+        m.addItem(Resources.getString("GroovyFunctions") + "...", GraphUI.cmdEditGroovyFunctions);
+        m.addItem("Groovy " + Resources.getString("Variables") + "...", GraphUI.cmdEditGroovyVariables);
+        m.addItem(Resources.getString("Grammars") + "...", GraphUI.cmdEditGrammars);
+        m.addItem(Resources.getString("InputHandlers") + "...", GraphUI.cmdEditHandlers);
+        m.addItem(Resources.getString("CanvasSize") + "...", GraphUI.cmdCanvasSize);
         m.addSeparator();
-        m.addItem(Resources.getString("Validate"),
-                SingleDocumentWindow.cmdValidate, KeyEvent.VK_K);
+        m.addItem(Resources.getString("Validate"), SingleDocumentWindow.cmdValidate, KeyEvent.VK_K);
         /*
      * m.addItem(Resources.getString("CheckSamples") + "...", cmdCheckSamples);
      * //m.addItem("Export as VoiceXML", cmdExportVXML); m.addSeparator();
@@ -525,12 +612,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
          */
 
         m = mbar.addMenu(Resources.getString("NodeMenu"));
-        this.colorMenu
-                = m.addSubMenu(Resources.getString("Color"), GraphUI.cmdColorMenu);
+        this.colorMenu = m.addSubMenu(Resources.getString("Color"), GraphUI.cmdColorMenu);
         this.setupColorMenu(this.mainView);
         m.addSeparator();
-        m.addItem(Resources.getString("Align") + "...", GraphUI.cmdAlign,
-                KeyEvent.VK_L);
+        m.addItem(Resources.getString("Align") + "...", GraphUI.cmdAlign, KeyEvent.VK_L);
         m.addSeparator();
         m.addItem(Resources.getString("Group"), GraphUI.cmdGroup, KeyEvent.VK_G);
         m.addItem(Resources.getString("Ungroup"), GraphUI.cmdUngroup, KeyStroke
@@ -983,8 +1068,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
         final SingleDocument doc = this.getDocument();
 
-        JDialog setupDialog
-                = new JDialog(this, Resources.getString("DialogSetup"), true);
+        JDialog setupDialog = new JDialog(this, Resources.getString("DialogSetup"), true);
         setupDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         JTabbedPane jtp = GUI.createTabbedPane();
         IconTabbedPaneUI ui = new IconTabbedPaneUI(SwingConstants.TOP);
@@ -995,8 +1079,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 new ListEditor(
                         new ListEditor.Model() {
 
-                    private List<Device> devices
-                            = new ArrayList<Device>(doc.getDevices());
+                    private List<Device> devices = new ArrayList<Device>(doc.getDevices());
 
                     public int getSize() {
 
@@ -1010,13 +1093,11 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                     @Override
                     public void editItemAt(Component parent, int index) {
-
                         DeviceEditor.editDevice(this.devices.get(index), parent);
                     }
 
                     @Override
                     public int addElement(Component parent) {
-
                         Device d = new Device();
                         if (DeviceEditor.editDevice(d, parent)) {
                             doc.getDevices().add(d);
@@ -1090,8 +1171,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     public GraphUI setMainView(Graph graph) {
 
-        if (((graph == null) || (this.getMainView() == null)) ? true
-                : graph != this.getMainView().getGraph()) {
+        if (((graph == null) || (this.getMainView() == null)) ? true : graph != this.getMainView().getGraph()) {
             if (this.getMainView() != null) {
                 this.contentPanel.removeAll();
                 if (this.toolbox != null) {

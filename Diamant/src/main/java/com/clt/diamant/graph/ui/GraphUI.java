@@ -202,14 +202,11 @@ public class GraphUI
     public static Map<String, Color> gNodeColors;
 
     static {
-        if (com.clt.util.Platform.isMac()
-                || (com.clt.util.Platform.isWindows() && Version.HICOLOR)) {
-            GraphUI.lineStroke
-                    = new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        if (com.clt.util.Platform.isMac() || (com.clt.util.Platform.isWindows() && Version.HICOLOR)) {
+            GraphUI.lineStroke = new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
             GraphUI.lineAntiAliasingSettings = RenderingHints.VALUE_ANTIALIAS_ON;
         } else {
-            GraphUI.lineStroke
-                    = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            GraphUI.lineStroke = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
             GraphUI.lineAntiAliasingSettings = RenderingHints.VALUE_ANTIALIAS_OFF;
         }
 
@@ -253,10 +250,7 @@ public class GraphUI
 
         super.setSize(this.model.getWidth(), this.model.getHeight());
 
-        // System.out.println("Listeners: " + model.getStartNode());
-        // System.out.println("Creating " + this.hashCode());
-        this.graphScrollPane
-                = GUI.createScrollPane(new Passpartout(this),
+        this.graphScrollPane = GUI.createScrollPane(new Passpartout(this),
                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         this.graphScrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -264,45 +258,40 @@ public class GraphUI
         this.graphScrollPane.getHorizontalScrollBar().setUnitIncrement(10);
         this.graphScrollPane.getVerticalScrollBar().setUnitIncrement(10);
 
-        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_UP, 0));
-        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_DOWN, 0));
-        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_LEFT, 0));
-        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_RIGHT, 0));
+        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0));
+        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
+        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0));
+        GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0));
 
-        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_UP, 0),
-                new ActionListener() {
+        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GraphUI.this.doCommand(GraphUI.cmdUp);
             }
         }, new Class[]{JTextComponent.class}, false);
-        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_DOWN, 0),
-                new ActionListener() {
+        
+        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GraphUI.this.doCommand(GraphUI.cmdDown);
             }
         }, new Class[]{JTextComponent.class}, false);
-        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_LEFT, 0),
-                new ActionListener() {
+        
+        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GraphUI.this.doCommand(GraphUI.cmdLeft);
             }
         }, new Class[]{JTextComponent.class}, false);
-        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(
-                KeyEvent.VK_RIGHT, 0),
-                new ActionListener() {
+        
+        GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GraphUI.this.doCommand(GraphUI.cmdRight);
             }
         }, new Class[]{JTextComponent.class}, false);
 
         this.initDragAndDrop();
+    }
+    
+    public Dimension getSizeWithScrollbars() {
+        return graphScrollPane.getSize();
     }
 
     private void initDragAndDrop() {
@@ -3205,5 +3194,9 @@ public class GraphUI
     public boolean isReadOnly() {
 
         return this.getGraph().isReadOnly();
+    }
+    
+    public int getHorizontalScrollbarHeight() {
+        return graphScrollPane.getHorizontalScrollBar().getHeight();
     }
 }
