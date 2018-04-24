@@ -82,9 +82,11 @@ public class Preferences {
 
     private static final File defaultDirectory;
 
+    private static final File installationDirectory;
+
     static {
         defaultDirectory = new File(System.getProperty("user.home") + File.separatorChar + ".dialogos" + File.separatorChar);
-
+        installationDirectory = new File(System.getProperty("appDir", System.getProperty("user.dir", ".")) + File.separatorChar);
         if (!defaultDirectory.exists()) {
             defaultDirectory.mkdirs();
         }
@@ -96,8 +98,13 @@ public class Preferences {
      *
      * @return
      */
-    public static File getBaseDirectory() {
+    public static File getSettingsDirectory() {
         return defaultDirectory;
+    }
+
+    public static File getInstallationDirectory() {
+        System.err.println("installation directory is " + installationDirectory.toString());
+        return installationDirectory;
     }
 
     private Preferences() {
@@ -490,7 +497,7 @@ public class Preferences {
     }
 
     public static List<String> getModelUrls() {
-        File modelUrlsFile = new File(getBaseDirectory(), "model_urls.json");
+        File modelUrlsFile = new File(getSettingsDirectory(), "model_urls.json");
 
         try {
             // create file with default values if necessary

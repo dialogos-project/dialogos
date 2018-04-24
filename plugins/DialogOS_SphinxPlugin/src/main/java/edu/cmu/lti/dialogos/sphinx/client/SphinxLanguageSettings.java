@@ -78,8 +78,8 @@ public class SphinxLanguageSettings {
                     "| /0.000667308/ \"<PHONE_ZH>\"\n" +
                     ";";
         } else if (l.equals(de_DE)) {
-            sls.acousticModelPath = Preferences.getBaseDirectory() + "/sphinx/model_de";
-            sls.dictionaryPath = Preferences.getBaseDirectory() + "/sphinx/model_de/dic";
+            sls.acousticModelPath = "resource:/edu/cmu/sphinx/models/de-de/"; // Preferences.getInstallationDirectory() + "/pluginData/dialogos.plugin.sphinx/model_de";
+            sls.dictionaryPath = "resource:/edu/cmu/sphinx/models/de-de/dic"; // Preferences.getInstallationDirectory() + "/pluginData/dialogos.plugin.sphinx/model_de/dic";
             sls.garbageRulesText = "\n\n<GARBAGE> = /0.999/ <NULL> | /0.001/ (<WEIGHTED_PHONE> <WEIGHTED_PHONE> [<WEIGHTED_PHONE>]) <GARBAGE> ;\n" +
                     "\n" +
                     "<WEIGHTED_PHONE>\n" +

@@ -17,7 +17,7 @@ public class ModelCache {
     private File pluginDirectory;
 
     public ModelCache(String plugin) {
-        pluginDirectory = new File(Preferences.getBaseDirectory(), plugin);
+        pluginDirectory = new File(Preferences.getSettingsDirectory(), plugin);
         if (!pluginDirectory.exists()) {
             pluginDirectory.mkdirs();
         }
