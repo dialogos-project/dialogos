@@ -93,6 +93,7 @@ import com.clt.util.DefaultLongAction;
 import com.clt.util.UserCanceledException;
 import com.clt.xml.XMLWriter;
 import java.util.function.ToIntFunction;
+import javax.swing.UIManager;
 
 public class SingleDocumentWindow<DocType extends SingleDocument>
         extends DocumentWindow<DocType>
@@ -269,6 +270,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         if (Preferences.getPrefs().showProcedureTree.getValue()) {
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
             split.setOneTouchExpandable(true);
+            System.err.println("divider size: " + split.getDividerSize()); // AKAKAK #51
 
             JScrollPane jsp = GUI.createScrollPane(this.procTree, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             jsp.setBorder(null);
@@ -316,6 +318,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         super.validate();
 
         if (mainView != null) {
+            mainView.printScrollbarSizes();
+            
             int neighborsWidth = totalSize(componentsHorizontal, c -> c.getWidth());
             int neighborsHeight = totalSize(componentsVertical, c -> c.getHeight());
 
@@ -333,6 +337,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 if (nodeToolbarHeight > heightAroundGraph) {
                     // I don't know where the 4 extra pixels come from, but they are needed
                     // (on MacOS) to make the graph fit correctly.
+                    
+                    
                     mainView.getGraph().setSize(mainView.getGraph().getWidth(),
                             mainView.getGraph().getHeight() + nodeToolbarHeight - heightAroundGraph - mainView.getHorizontalScrollbarHeight() - 4);
                 }

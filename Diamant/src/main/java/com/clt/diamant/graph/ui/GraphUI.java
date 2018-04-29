@@ -124,13 +124,14 @@ import com.clt.undo.AbstractEdit;
 import com.clt.undo.Undo;
 import com.clt.util.MetaCollection;
 import com.clt.util.StringTools;
+import javax.swing.UIManager;
 
 /**
  * GraphUI is a JPanel which displays the nodes and the edges of a DialogOS
  * automaton. It supports undo and redo functionality.
  */
-public class GraphUI 
-        extends JPanel 
+public class GraphUI
+        extends JPanel
         implements MenuCommander, Commands, Printable, PropertyChangeListener, ClipboardOwner, GraphListener {
 
     private static final Clipboard clipboard = new Clipboard("Graph");
@@ -232,6 +233,15 @@ public class GraphUI
         GraphUI.gNodeColors.put("DeepGray", new Color(76, 76, 128));
     }
 
+    // AKAKAK (debugging of #51)
+    public void printScrollbarSizes() {
+        System.err.println("vert scrollbar prefsize " + graphScrollPane.getVerticalScrollBar().getPreferredSize());
+        System.err.println("vert scrollbar size " + graphScrollPane.getVerticalScrollBar().getSize());
+        System.err.println("horiz scrollbar prefsize " + graphScrollPane.getHorizontalScrollBar().getPreferredSize());
+        System.err.println("horiz scrollbar size " + graphScrollPane.getHorizontalScrollBar().getSize());
+        System.err.println("uiman scrollbar " + ((Integer) UIManager.get("ScrollBar.width")));
+    }
+
     public GraphUI(Graph g) {
         this.setBackground(Color.white);
         // RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
@@ -251,12 +261,14 @@ public class GraphUI
         super.setSize(this.model.getWidth(), this.model.getHeight());
 
         this.graphScrollPane = GUI.createScrollPane(new Passpartout(this),
-                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         this.graphScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         this.graphScrollPane.getHorizontalScrollBar().setUnitIncrement(10);
         this.graphScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        
+        printScrollbarSizes();
 
         GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0));
         GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
@@ -268,19 +280,19 @@ public class GraphUI
                 GraphUI.this.doCommand(GraphUI.cmdUp);
             }
         }, new Class[]{JTextComponent.class}, false);
-        
+
         GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GraphUI.this.doCommand(GraphUI.cmdDown);
             }
         }, new Class[]{JTextComponent.class}, false);
-        
+
         GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GraphUI.this.doCommand(GraphUI.cmdLeft);
             }
         }, new Class[]{JTextComponent.class}, false);
-        
+
         GUI.setKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 GraphUI.this.doCommand(GraphUI.cmdRight);
@@ -289,7 +301,7 @@ public class GraphUI
 
         this.initDragAndDrop();
     }
-    
+
     public Dimension getSizeWithScrollbars() {
         return graphScrollPane.getSize();
     }
@@ -298,13 +310,16 @@ public class GraphUI
         DropTargetListener dropTargetListener = new DropTargetListener() {
 
             // Die Maus betritt die Komponente mit einem Objekt
-            public void dragEnter(DropTargetDragEvent e) { }
+            public void dragEnter(DropTargetDragEvent e) {
+            }
 
             // Die Komponente wird verlassen
-            public void dragExit(DropTargetEvent e) { }
+            public void dragExit(DropTargetEvent e) {
+            }
 
             // Die Maus bewegt sich über die Komponente
-            public void dragOver(DropTargetDragEvent e) { }
+            public void dragOver(DropTargetDragEvent e) {
+            }
 
             public void drop(DropTargetDropEvent e) {
                 try {
@@ -337,7 +352,8 @@ public class GraphUI
 
             // Jemand hat die Art des Drops (Move, Copy, Link)
             // geändert
-            public void dropActionChanged(DropTargetDragEvent e) { }
+            public void dropActionChanged(DropTargetDragEvent e) {
+            }
         };
         new DropTarget(this, dropTargetListener);
     }
@@ -1003,6 +1019,7 @@ public class GraphUI
                         public void run() {
                             o.setColor(color);
                         }
+
                         public void unrun() {
                             o.setColor(old_color);
                         }
@@ -3195,8 +3212,10 @@ public class GraphUI
 
         return this.getGraph().isReadOnly();
     }
-    
+
     public int getHorizontalScrollbarHeight() {
-        return graphScrollPane.getHorizontalScrollBar().getHeight();
+        int ret = graphScrollPane.getHorizontalScrollBar().getHeight();
+        System.err.println("horiz scrollbar height: " + ret); // AKAKAK #51
+        return ret;
     }
 }
