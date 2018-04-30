@@ -94,6 +94,8 @@ import com.clt.util.UserCanceledException;
 import com.clt.xml.XMLWriter;
 import java.util.function.ToIntFunction;
 import javax.swing.UIManager;
+import javax.swing.plaf.SplitPaneUI;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 public class SingleDocumentWindow<DocType extends SingleDocument>
         extends DocumentWindow<DocType>
@@ -136,6 +138,11 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     private transient List<JComponent> componentsVertical = new ArrayList<>();
     private transient List<JComponent> componentsHorizontal = new ArrayList<>();
     private transient List<JComponent> verticalComponentsOnRight = new ArrayList<>();
+    
+    static {
+        // remove border around splitpane in MacOS
+        UIManager.getDefaults().put("SplitPane.border", BorderFactory.createEmptyBorder());        
+    }
 
     public SingleDocumentWindow(DocType d, MenuCommander superCommander, final RequiredEventHandler systemEventHandler, boolean singleWindow) {
         super(d);
@@ -244,9 +251,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         this.validate();
         this.updateMenus();
     }
-
+    
     private void initContentPane() {
-
         Container content = this.getContentPane();
         content.removeAll();
         content.setLayout(new BorderLayout());
@@ -270,7 +276,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         if (Preferences.getPrefs().showProcedureTree.getValue()) {
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
             split.setOneTouchExpandable(true);
-            System.err.println("divider size: " + split.getDividerSize()); // AKAKAK #51
 
             JScrollPane jsp = GUI.createScrollPane(this.procTree, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             jsp.setBorder(null);
@@ -308,6 +313,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     }
 
+    // The code below is an attempt by Alexander to fit the size of the graph
+    // so it fits precisely into the GraphUI panel. A secondary goal is to
+    // grow the graph when the window is resized to a bigger size.
+    // See issue #51 for a detailed discussion.
     // Dimensions of window minus dimensions of neighbors,
     // calculated at time of previous call to validate.
     private int previousMaxWidth = -1;
@@ -318,8 +327,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         super.validate();
 
         if (mainView != null) {
-            mainView.printScrollbarSizes();
-            
+//            mainView.printScrollbarSizes();
+
             int neighborsWidth = totalSize(componentsHorizontal, c -> c.getWidth());
             int neighborsHeight = totalSize(componentsVertical, c -> c.getHeight());
 
@@ -334,13 +343,14 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 int nodeToolbarHeight = totalSize(verticalComponentsOnRight, c -> c.getHeight());
                 int heightAroundGraph = neighborsHeight + mainView.getGraph().getHeight();
 
+                System.err.println("window height: " + (h + neighborsHeight));
+                System.err.println("neighb height: " + neighborsHeight);
+                System.err.println("diff: " + h);
+                System.err.println("graph height: " + mainView.getGraph().getHeight());
+
                 if (nodeToolbarHeight > heightAroundGraph) {
-                    // I don't know where the 4 extra pixels come from, but they are needed
-                    // (on MacOS) to make the graph fit correctly.
-                    
-                    
                     mainView.getGraph().setSize(mainView.getGraph().getWidth(),
-                            mainView.getGraph().getHeight() + nodeToolbarHeight - heightAroundGraph - mainView.getHorizontalScrollbarHeight() - 4);
+                            mainView.getGraph().getHeight() + nodeToolbarHeight - heightAroundGraph - mainView.getHorizontalScrollbarHeight());
                 }
 
                 previousMaxWidth = w;
@@ -363,32 +373,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 }
             }
 
-
-            /*
-
-            System.err.printf("\nSDW#validate, new size: %s\n", getSize());
-
-//        System.err.println("vertical neighbors: " + componentsVertical);
-//        System.err.println("horizontal: " + componentsHorizontal);
-            System.err.println("vertical:");
-            for (JComponent c : componentsVertical) {
-                System.err.printf("- %d %s\n", c.getHeight(), c);
-            }
-
-            System.err.println("horizontal:");
-            for (JComponent c : componentsHorizontal) {
-                System.err.printf("- %d %s\n", c.getWidth(), c);
-            }
-
-            System.err.printf("total width %d, height %d\n", neighborsWidth, neighborsHeight);
-
-            System.err.printf("size of content pane: %s\n", mainView.getSize());
-            System.err.printf("size of graph: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
-            System.err.printf("with scrollbars: %s\n", mainView.getSizeWithScrollbars());
-            System.err.printf("window - neighbors - graph: %dx%d",
-                    (int) (getSize().getWidth() - neighborsWidth - mainView.getGraph().getWidth()),
-                    (int) (getSize().getHeight() - neighborsHeight - mainView.getGraph().getHeight()));
-             */
         }
     }
 
@@ -402,9 +386,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     @Override
     public void addNotify() {
-
         super.addNotify();
-
         Preferences.getPrefs().addPropertyChangeListener(this.preferenceListener);
         this.getDocument().addPropertyChangeListener(this.documentPropertyListener);
         this.updateGraph(true);
@@ -412,13 +394,9 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     @Override
     public void removeNotify() {
-
-        this.getDocument().removePropertyChangeListener(
-                this.documentPropertyListener);
-        Preferences.getPrefs()
-                .removePropertyChangeListener(this.preferenceListener);
+        this.getDocument().removePropertyChangeListener(this.documentPropertyListener);
+        Preferences.getPrefs().removePropertyChangeListener(this.preferenceListener);
         this.updateGraph(false);
-
         super.removeNotify();
     }
 

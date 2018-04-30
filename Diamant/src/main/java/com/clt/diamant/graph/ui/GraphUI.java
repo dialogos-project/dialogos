@@ -268,7 +268,7 @@ public class GraphUI
         this.graphScrollPane.getHorizontalScrollBar().setUnitIncrement(10);
         this.graphScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         
-        printScrollbarSizes();
+//        printScrollbarSizes();
 
         GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0));
         GUI.removeKeyBinding(this.graphScrollPane, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
@@ -2950,8 +2950,7 @@ public class GraphUI
             Graphics2D gfx = (Graphics2D) g;
             Stroke s = gfx.getStroke();
             Object oldValue = gfx.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-            gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    GraphUI.lineAntiAliasingSettings);
+            gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, GraphUI.lineAntiAliasingSettings);
             gfx.setStroke(GraphUI.lineStroke);
             gfx.drawPolyline(line.xpoints, line.ypoints, line.npoints);
             gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldValue);
@@ -3215,7 +3214,7 @@ public class GraphUI
 
     public int getHorizontalScrollbarHeight() {
         int ret = graphScrollPane.getHorizontalScrollBar().getHeight();
-        System.err.println("horiz scrollbar height: " + ret); // AKAKAK #51
+//        System.err.println("horiz scrollbar height: " + ret); // AKAKAK #51
         return ret;
     }
 }

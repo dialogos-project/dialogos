@@ -261,9 +261,8 @@ public class Graph implements IdentityObject {
 
     public void rename(Component parent) {
 
-        String s
-                = OptionPane.edit(parent, Resources.getString("EnterName"), Resources
-                        .getString("GraphName"), this.getOwner().getGraphName());
+        String s = OptionPane.edit(parent, Resources.getString("EnterName"), 
+                Resources.getString("GraphName"), this.getOwner().getGraphName());
         if (s != null) {
             this.getOwner().setGraphName(s);
         }
