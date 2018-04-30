@@ -302,10 +302,6 @@ public class GraphUI
         this.initDragAndDrop();
     }
 
-    public Dimension getSizeWithScrollbars() {
-        return graphScrollPane.getSize();
-    }
-
     private void initDragAndDrop() {
         DropTargetListener dropTargetListener = new DropTargetListener() {
 

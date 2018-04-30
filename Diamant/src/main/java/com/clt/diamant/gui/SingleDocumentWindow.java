@@ -94,8 +94,6 @@ import com.clt.util.UserCanceledException;
 import com.clt.xml.XMLWriter;
 import java.util.function.ToIntFunction;
 import javax.swing.UIManager;
-import javax.swing.plaf.SplitPaneUI;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 public class SingleDocumentWindow<DocType extends SingleDocument>
         extends DocumentWindow<DocType>
@@ -134,6 +132,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     private transient WozInterface runtime;
     private transient Thread executionThread;
+    
+    private transient int scrollbarWidth = 0;
 
     private transient List<JComponent> componentsVertical = new ArrayList<>();
     private transient List<JComponent> componentsHorizontal = new ArrayList<>();
@@ -321,6 +321,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     // calculated at time of previous call to validate.
     private int previousMaxWidth = -1;
     private int previousMaxHeight = -1;
+    
+    private boolean firstValidate = true;
 
     @Override
     public void validate() {
@@ -328,7 +330,32 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
         if (mainView != null) {
 //            mainView.printScrollbarSizes();
+            int scrollbarWidth = mainView.getScrollPane().getHorizontalScrollBar().getHeight();
+            System.err.println("sw " + scrollbarWidth);
+            int requiredGraphWidth = contentPanel.getSize().width - scrollbarWidth;
+            int requiredGraphHeight = contentPanel.getSize().height - scrollbarWidth;
+            Graph g = mainView.getGraph();
 
+            System.err.printf("\nbefore resize:\ngraph size: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
+            System.err.printf("graph UI size: %s\n", mainView.getSize());
+            System.err.printf("content panel: %s\n", contentPanel.getSize());
+            System.err.printf("required: %dx%d\n", requiredGraphWidth, requiredGraphHeight);
+            
+            
+                if( requiredGraphWidth > g.getWidth() ) {
+                    g.setSize(requiredGraphWidth, g.getHeight());
+                }
+                
+                if( requiredGraphHeight > g.getHeight() ) {
+                    g.setSize(g.getWidth(), requiredGraphHeight);
+                }
+            
+            System.err.printf("after resize:\ngraph size: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
+            System.err.printf("graph UI size: %s\n", mainView.getSize());
+            System.err.printf("content panel: %s\n", contentPanel.getSize());
+
+
+            /*
             int neighborsWidth = totalSize(componentsHorizontal, c -> c.getWidth());
             int neighborsHeight = totalSize(componentsVertical, c -> c.getHeight());
 
@@ -336,6 +363,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             int h = (int) getSize().getHeight() - neighborsHeight;
 
             int windowGrewX = 0, windowGrewY = 0;
+            
+            System.err.printf("graph size: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
+            System.err.printf("graph UI size: %s\n", mainView.getSize());
+            
 
             if (previousMaxWidth < 0) {
                 // first time we are calculating these dimensions => resize graph to fit
@@ -372,6 +403,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                     mainView.getGraph().setSize(mainView.getGraph().getWidth() + windowGrewX, mainView.getGraph().getHeight() + windowGrewY);
                 }
             }
+            */
 
         }
     }
@@ -1191,8 +1223,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 }
 
                 for (ComponentListener l : this.viewListeners) {
-                    l.componentShown(new ComponentEvent(jsp,
-                            ComponentEvent.COMPONENT_SHOWN));
+                    l.componentShown(new ComponentEvent(jsp, ComponentEvent.COMPONENT_SHOWN));
                 }
             }
             this.setupColorMenu(this.mainView);
