@@ -343,10 +343,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 int nodeToolbarHeight = totalSize(verticalComponentsOnRight, c -> c.getHeight());
                 int heightAroundGraph = neighborsHeight + mainView.getGraph().getHeight();
 
-                System.err.println("window height: " + (h + neighborsHeight));
-                System.err.println("neighb height: " + neighborsHeight);
-                System.err.println("diff: " + h);
-                System.err.println("graph height: " + mainView.getGraph().getHeight());
+                System.err.println("window width: " + (w + neighborsWidth));
+                System.err.println("neighb width: " + neighborsWidth);
+                System.err.println("diff: " + w);
+                System.err.println("graph width: " + mainView.getGraph().getWidth());
 
                 if (nodeToolbarHeight > heightAroundGraph) {
                     mainView.getGraph().setSize(mainView.getGraph().getWidth(),
