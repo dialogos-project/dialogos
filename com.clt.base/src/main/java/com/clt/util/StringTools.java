@@ -1,6 +1,10 @@
 package com.clt.util;
 
 import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.text.Collator;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -951,5 +955,16 @@ public class StringTools {
         throw new IllegalArgumentException(
                 "Could not determine locale for identifier \"" + name
                 + "\"");
+    }
+    
+    /**
+     * Copies a string to the system clipboard.
+     * 
+     * @param writeMe 
+     */
+    public static void copyToClipboard(String writeMe) {
+        Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable tText = new StringSelection(writeMe);
+        clip.setContents(tText, null);
     }
 }

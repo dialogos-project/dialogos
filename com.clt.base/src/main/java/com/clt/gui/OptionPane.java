@@ -34,6 +34,9 @@ import com.clt.gui.menus.MenuCommander;
 import com.clt.util.AbstractLongCallable;
 import com.clt.util.LongCallable;
 import com.clt.util.Misc;
+import com.clt.util.StringTools;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 
 
 /*
@@ -43,8 +46,6 @@ import com.clt.util.Misc;
  * functionality. By using the private inner class MyOptionPane instead, only
  * explicitly exported functionality is available to the user.
  */
-
-
 /**
  * An advanced replacement for JOptionPane. Features:
  * <ul>
@@ -111,11 +112,10 @@ public class OptionPane {
      * @see WindowUtils#ALERT_POSITION
      */
     public static final int placing = WindowUtils.ALERT_POSITION;
-    
-    // placing = Platform.isMac() ?
-            // WindowUtils.ALERT_POSITION :
-            // WindowUtils.CENTER_ON_PARENT;
 
+    // placing = Platform.isMac() ?
+    // WindowUtils.ALERT_POSITION :
+    // WindowUtils.CENTER_ON_PARENT;
     private static final int SOFT_WRAP_LIMIT = 70;
     private static final int HARD_WRAP_LIMIT = 140;
 
@@ -132,15 +132,15 @@ public class OptionPane {
     public static String input(Component parentComponent, Object message) {
 
         return OptionPane.input(parentComponent, message, GUI.getString("Input"),
-                OptionPane.QUESTION);
+                                OptionPane.QUESTION);
     }
 
     public static String input(Component parentComponent, Object message,
             String title, int messageType) {
 
         return (String) OptionPane.input(parentComponent, message, title,
-                messageType,
-                null, null, null);
+                                         messageType,
+                                         null, null, null);
     }
 
     public static Object input(Component parentComponent, Object message,
@@ -148,7 +148,7 @@ public class OptionPane {
             Object initialSelectionValue) {
 
         final MyOptionPane pane = OptionPane.createOptionPane(message, messageType,
-                OptionPane.OK_CANCEL_OPTION, icon, null, null);
+                                                              OptionPane.OK_CANCEL_OPTION, icon, null, null);
 
         pane.setWantsInput(true);
         pane.setSelectionValues(selectionValues);
@@ -179,19 +179,19 @@ public class OptionPane {
     public static void error(Component parentComponent, Object message) {
 
         OptionPane.message(parentComponent, message, GUI.getString("Error"),
-                OptionPane.ERROR);
+                           OptionPane.ERROR);
     }
 
     public static void warning(Component parentComponent, Object message) {
 
         OptionPane.message(parentComponent, message, GUI.getString("Warning"),
-                OptionPane.WARNING);
+                           OptionPane.WARNING);
     }
 
     public static void message(Component parentComponent, Object message) {
 
         OptionPane.message(parentComponent, message, GUI.getString("Information"),
-                OptionPane.INFORMATION);
+                           OptionPane.INFORMATION);
     }
 
     public static void message(Component parentComponent, Object message,
@@ -204,8 +204,8 @@ public class OptionPane {
             String title, int messageType, Icon icon) {
 
         OptionPane.showOptionDialog(parentComponent, message, title,
-                OptionPane.DEFAULT_OPTION,
-                messageType, icon, null, null);
+                                    OptionPane.DEFAULT_OPTION,
+                                    messageType, icon, null, null);
     }
 
     public static void timedMessage(Component parentComponent, Object message,
@@ -242,8 +242,8 @@ public class OptionPane {
             }
         }).start();
         OptionPane.showOptionDialog(parentComponent, message, title,
-                OptionPane.DEFAULT_OPTION,
-                messageType, null, null, null, a);
+                                    OptionPane.DEFAULT_OPTION,
+                                    messageType, null, null, null, a);
     }
 
     // **************************************************************************
@@ -254,30 +254,30 @@ public class OptionPane {
     public static int confirm(Component parentComponent, Object message) {
 
         return OptionPane.confirm(parentComponent, message, GUI
-                .getString("ChooseOption"),
-                OptionPane.YES_NO_CANCEL_OPTION);
+                                  .getString("ChooseOption"),
+                                  OptionPane.YES_NO_CANCEL_OPTION);
     }
 
     public static int confirm(Component parentComponent, Object message,
             String title, int optionType) {
 
         return OptionPane.confirm(parentComponent, message, title, optionType,
-                OptionPane.QUESTION);
+                                  OptionPane.QUESTION);
     }
 
     public static int confirm(Component parentComponent, Object message,
             String title, int optionType, int messageType) {
 
         return OptionPane.confirm(parentComponent, message, title, optionType,
-                messageType, null);
+                                  messageType, null);
     }
 
     public static int confirm(Component parentComponent, Object message,
             String title, int optionType, int messageType, Icon icon) {
 
         return OptionPane.showOptionDialog(parentComponent, message, title,
-                optionType,
-                messageType, icon, null, null);
+                                           optionType,
+                                           messageType, icon, null, null);
     }
 
     // **************************************************************************
@@ -289,17 +289,17 @@ public class OptionPane {
             String title, String initialValue) {
 
         return (String) OptionPane.input(parentComponent, message, title,
-                OptionPane.PLAIN, null,
-                null, initialValue);
+                                         OptionPane.PLAIN, null,
+                                         null, initialValue);
     }
 
     public static int showCancelDialog(Component parentComponent,
             Object message, LongCallable<?> action) {
 
         return OptionPane.showOptionDialog(parentComponent, message, GUI
-                .getString("CancelAction?"), OptionPane.YES_NO_OPTION,
-                OptionPane.QUESTION, null,
-                null, null, action);
+                                           .getString("CancelAction?"), OptionPane.YES_NO_OPTION,
+                                           OptionPane.QUESTION, null,
+                                           null, null, action);
     }
 
     // **************************************************************************
@@ -312,8 +312,8 @@ public class OptionPane {
             Icon icon, Object[] options, Object initialValue) {
 
         return OptionPane.showOptionDialog(parentComponent, message, title,
-                optionType,
-                messageType, icon, options, initialValue, null);
+                                           optionType,
+                                           messageType, icon, options, initialValue, null);
     }
 
     public static int showOptionDialog(Component parentComponent,
@@ -332,7 +332,7 @@ public class OptionPane {
         }
 
         final MyOptionPane pane = OptionPane.createOptionPane(message, messageType,
-                optionType, icon, options, initialValue);
+                                                              optionType, icon, options, initialValue);
 
         final JDialog dialog = pane.createDialog(null, title);
 
@@ -383,12 +383,14 @@ public class OptionPane {
 
         if (message instanceof String) {
             message = new Object[]{message, Box.createVerticalStrut(5)};
+
         } else if (message instanceof Throwable) {
             Throwable exn = (Throwable) message;
             String errorLine = exn.getLocalizedMessage();
 
             if ((errorLine == null) || (errorLine.length() == 0)) {
                 StackTraceElement[] trace = exn.getStackTrace();
+
                 if ((trace != null) && (trace.length > 0)) {
                     for (int i = 0; i < trace.length; i++) {
                         if (trace[i].getClassName().startsWith("com.clt")) {
@@ -403,23 +405,53 @@ public class OptionPane {
             }
 
             message = new String[]{
-                GUI.format("UnexpectedException", GUI.getString(message
-                .getClass().getName())), errorLine};
+                GUI.format("UnexpectedException", GUI.getString(message.getClass().getName())),
+                errorLine
+            };
+
+            if (options == null) {
+                JButton b = new JButton("Details");
+                options = new Object[]{b, "Ok"};
+                initialValue = 1;
+
+                MyOptionPane ret = new MyOptionPane(message, messageType, optionType, icon, options, initialValue);
+
+                StringBuilder stackTraceStr = new StringBuilder();
+                for (StackTraceElement e : exn.getStackTrace()) {
+                    stackTraceStr.append(e.toString());
+                    stackTraceStr.append("\n");
+                }
+                
+                String body = GUI.format("DetailedErrorReportBody", exn.getClass().toString(), exn.toString(), stackTraceStr.toString());
+                String header = GUI.getString("DetailedErrorReport");
+                String details = GUI.format("ErrorReportBodyForGithub", exn.getClass().toString(), exn.toString(), stackTraceStr.toString()).replaceAll("±", "\n");
+                
+                b.addActionListener(e -> {
+                    JButton bb = new JButton(GUI.getString("Copy"));
+                    Object[] infoOptions = new Object[] { bb, "Ok" };
+                    
+                    bb.addActionListener(ee -> {
+                        StringTools.copyToClipboard(details);
+                    });
+                    
+                    JOptionPane.showOptionDialog(ret, body, header, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, infoOptions, 1);
+                });
+
+                return ret;
+
+            }
         }
 
         if (message instanceof String[] && ((String[]) message).length == 2) {
-            StaticText s1 = new StaticText(((String[]) message)[0],
-                    OptionPane.SOFT_WRAP_LIMIT);
+            StaticText s1 = new StaticText(((String[]) message)[0], OptionPane.SOFT_WRAP_LIMIT);
             s1.setFont((Font) UIManager.get("Label.font"));
-            StaticText s2 = new StaticText(((String[]) message)[1],
-                    OptionPane.SOFT_WRAP_LIMIT);
+            StaticText s2 = new StaticText(((String[]) message)[1], OptionPane.SOFT_WRAP_LIMIT);
             s2.setFont(GUI.getSmallSystemFont());
 
             message = new Object[]{s1, s2, Box.createVerticalStrut(5)};
         }
 
-        return new MyOptionPane(message, messageType, optionType, icon,
-                options, initialValue);
+        return new MyOptionPane(message, messageType, optionType, icon, options, initialValue);
     }
 
     private static class MyOptionPane extends JOptionPane {
