@@ -132,16 +132,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     private transient WozInterface runtime;
     private transient Thread executionThread;
-    
-    private transient int scrollbarWidth = 0;
 
-    private transient List<JComponent> componentsVertical = new ArrayList<>();
-    private transient List<JComponent> componentsHorizontal = new ArrayList<>();
-    private transient List<JComponent> verticalComponentsOnRight = new ArrayList<>();
-    
     static {
         // remove border around splitpane in MacOS
-        UIManager.getDefaults().put("SplitPane.border", BorderFactory.createEmptyBorder());        
+        UIManager.getDefaults().put("SplitPane.border", BorderFactory.createEmptyBorder());
     }
 
     public SingleDocumentWindow(DocType d, MenuCommander superCommander, final RequiredEventHandler systemEventHandler, boolean singleWindow) {
@@ -251,15 +245,11 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         this.validate();
         this.updateMenus();
     }
-    
+
     private void initContentPane() {
         Container content = this.getContentPane();
         content.removeAll();
         content.setLayout(new BorderLayout());
-
-        componentsHorizontal.clear();
-        componentsVertical.clear();
-        verticalComponentsOnRight.clear();
 
         // add toolbar at the top (select/scroll/delete - run/debug/wizard - ...)
         this.toolbars.removeAll();
@@ -267,8 +257,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
         if (Preferences.getPrefs().showToolbox.getValue()) {
             this.toolbars.add(this.toolbox);
-            componentsVertical.add(toolbox);
-            verticalComponentsOnRight.add(toolbox);
         } else {
             this.toolbox.setTool(DefaultToolbox.ANCHOR);
         }
@@ -286,7 +274,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             left.add(jsp, BorderLayout.CENTER);
             left.add(new Header(Resources.getString("Subgraphs")), BorderLayout.NORTH);
             split.setLeftComponent(left);
-            componentsHorizontal.add(left);
 
             // add graph panel in the center
             JPanel right = new JPanel(new BorderLayout());
@@ -294,7 +281,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             right.add(this.contentPanel, BorderLayout.CENTER);
             split.setRightComponent(right);
             content.add(split, BorderLayout.CENTER);
-            componentsVertical.add(header);
         } else {
             // add graph panel (without header) in the center
             content.add(this.contentPanel, BorderLayout.CENTER);
@@ -307,104 +293,33 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             nodeScroller.setBorder(null);
             nodeScroller.setViewportBorder(null);
             content.add(nodeScroller, BorderLayout.EAST);
-            componentsHorizontal.add(nodeScroller);
-            verticalComponentsOnRight.add(nodeScroller);
         }
 
     }
-
-    // The code below is an attempt by Alexander to fit the size of the graph
-    // so it fits precisely into the GraphUI panel. A secondary goal is to
-    // grow the graph when the window is resized to a bigger size.
-    // See issue #51 for a detailed discussion.
-    // Dimensions of window minus dimensions of neighbors,
-    // calculated at time of previous call to validate.
-    private int previousMaxWidth = -1;
-    private int previousMaxHeight = -1;
-    
-    private boolean firstValidate = true;
 
     @Override
     public void validate() {
         super.validate();
 
         if (mainView != null) {
-//            mainView.printScrollbarSizes();
+            // Depending on the configuration of the toolbars in the DialogOS window,
+            // the original size of the graph in the GraphUI can be too small or too large.
+            // Also, when the user drags the DialogOS window bigger, the boundaries of the
+            // GraphUI become visible as a black border.
+
+            // The code below automatically resizes the graph to the correct size.
             int scrollbarWidth = mainView.getScrollPane().getHorizontalScrollBar().getHeight();
-            System.err.println("sw " + scrollbarWidth);
             int requiredGraphWidth = contentPanel.getSize().width - scrollbarWidth;
             int requiredGraphHeight = contentPanel.getSize().height - scrollbarWidth;
             Graph g = mainView.getGraph();
 
-            System.err.printf("\nbefore resize:\ngraph size: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
-            System.err.printf("graph UI size: %s\n", mainView.getSize());
-            System.err.printf("content panel: %s\n", contentPanel.getSize());
-            System.err.printf("required: %dx%d\n", requiredGraphWidth, requiredGraphHeight);
-            
-            
-                if( requiredGraphWidth > g.getWidth() ) {
-                    g.setSize(requiredGraphWidth, g.getHeight());
-                }
-                
-                if( requiredGraphHeight > g.getHeight() ) {
-                    g.setSize(g.getWidth(), requiredGraphHeight);
-                }
-            
-            System.err.printf("after resize:\ngraph size: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
-            System.err.printf("graph UI size: %s\n", mainView.getSize());
-            System.err.printf("content panel: %s\n", contentPanel.getSize());
-
-
-            /*
-            int neighborsWidth = totalSize(componentsHorizontal, c -> c.getWidth());
-            int neighborsHeight = totalSize(componentsVertical, c -> c.getHeight());
-
-            int w = (int) getSize().getWidth() - neighborsWidth;
-            int h = (int) getSize().getHeight() - neighborsHeight;
-
-            int windowGrewX = 0, windowGrewY = 0;
-            
-            System.err.printf("graph size: %dx%d\n", mainView.getGraph().getWidth(), mainView.getGraph().getHeight());
-            System.err.printf("graph UI size: %s\n", mainView.getSize());
-            
-
-            if (previousMaxWidth < 0) {
-                // first time we are calculating these dimensions => resize graph to fit
-                // height of node toolbar if needed
-                int nodeToolbarHeight = totalSize(verticalComponentsOnRight, c -> c.getHeight());
-                int heightAroundGraph = neighborsHeight + mainView.getGraph().getHeight();
-
-                System.err.println("window width: " + (w + neighborsWidth));
-                System.err.println("neighb width: " + neighborsWidth);
-                System.err.println("diff: " + w);
-                System.err.println("graph width: " + mainView.getGraph().getWidth());
-
-                if (nodeToolbarHeight > heightAroundGraph) {
-                    mainView.getGraph().setSize(mainView.getGraph().getWidth(),
-                            mainView.getGraph().getHeight() + nodeToolbarHeight - heightAroundGraph - mainView.getHorizontalScrollbarHeight());
-                }
-
-                previousMaxWidth = w;
-                previousMaxHeight = h;
-            } else {
-                // subsequent times: make graph bigger if the window was dragged larger
-                // or toolbars removed, so it fits the window again
-                if (w > previousMaxWidth) {
-                    windowGrewX = w - previousMaxWidth;
-                    previousMaxWidth = w;
-                }
-
-                if (h > previousMaxHeight) {
-                    windowGrewY = h - previousMaxHeight;
-                    previousMaxHeight = h;
-                }
-
-                if (windowGrewX + windowGrewY > 0) {
-                    mainView.getGraph().setSize(mainView.getGraph().getWidth() + windowGrewX, mainView.getGraph().getHeight() + windowGrewY);
-                }
+            if (requiredGraphWidth > g.getWidth()) {
+                g.setSize(requiredGraphWidth, g.getHeight());
             }
-            */
 
+            if (requiredGraphHeight > g.getHeight()) {
+                g.setSize(g.getWidth(), requiredGraphHeight);
+            }
         }
     }
 
@@ -499,7 +414,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                     Color end = DefaultToolbox.startColor;
                     Color start = new Color(end.getRed() + 5, end.getGreen() + 5,
-                            end.getBlue() + 5, end.getAlpha());
+                                            end.getBlue() + 5, end.getAlpha());
 
                     Graphics2D gfx = (Graphics2D) g;
                     Paint oldPaint = gfx.getPaint();
@@ -551,15 +466,15 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
         m = mbar.addMenu(Resources.getString("DialogMenu"));
         m.addItem(Resources.getString("Run"), SingleDocumentWindow.cmdRun,
-                KeyEvent.VK_R);
+                  KeyEvent.VK_R);
         m.addItem(Resources.getString("RunConfiguration"), SingleDocumentWindow.cmdRunConfiguration);
         // m.addItem(Resources.getString("RunWithLog"), cmdRunWithLog);
         m.addItem(Resources.getString("Debug"), SingleDocumentWindow.cmdDebug,
-                KeyStroke.getKeyStroke(KeyEvent.VK_R,
-                        (m.getToolkit().getMenuShortcutKeyMask() | Event.ALT_MASK)));
+                  KeyStroke.getKeyStroke(KeyEvent.VK_R,
+                                         (m.getToolkit().getMenuShortcutKeyMask() | Event.ALT_MASK)));
         m.addItem(Resources.getString("Woz"), SingleDocumentWindow.cmdWoz,
-                KeyStroke.getKeyStroke(KeyEvent.VK_R, (m
-                        .getToolkit().getMenuShortcutKeyMask() | Event.SHIFT_MASK)));
+                  KeyStroke.getKeyStroke(KeyEvent.VK_R, (m
+                                         .getToolkit().getMenuShortcutKeyMask() | Event.SHIFT_MASK)));
         // doesn't work if devices aren't connected
         // m.addItem(Resources.getString("ResetDevices"), cmdResetDevices);
 
@@ -567,7 +482,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         // m.addItem(Resources.getString("SetDelay") + "...", cmdDelay);
         this.subwin
                 = new JCheckBoxMenuItem(Resources.getString("ExecuteInNewWindows"), this
-                        .openSubWindows());
+                                        .openSubWindows());
         this.subwin.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -582,32 +497,32 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
         // m.addItem(Resources.getString("DialogSetup") + "...", cmdSetup);
         m.addItem(Resources.getString("Devices") + "...",
-                SingleDocumentWindow.cmdEditDevices, KeyEvent.VK_D);
+                  SingleDocumentWindow.cmdEditDevices, KeyEvent.VK_D);
 
         for (final Plugin plugin : PluginLoader.getPlugins()) {
             m.add(new CmdMenuItem(plugin.getName(), 1, null, new MenuCommander() {
 
-                public String menuItemName(int cmd, String oldName) {
+                              public String menuItemName(int cmd, String oldName) {
 
-                    return plugin.getName() + "...";
-                }
+                                  return plugin.getName() + "...";
+                              }
 
-                public boolean menuItemState(int cmd) {
+                              public boolean menuItemState(int cmd) {
 
-                    if (SingleDocumentWindow.this.runtime != null) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
+                                  if (SingleDocumentWindow.this.runtime != null) {
+                                      return false;
+                                  } else {
+                                      return true;
+                                  }
+                              }
 
-                public boolean doCommand(int cmd) {
+                              public boolean doCommand(int cmd) {
 
-                    SingleDocumentWindow.this.showSetupDialog(plugin.getName());
-                    return true;
-                }
+                                  SingleDocumentWindow.this.showSetupDialog(plugin.getName());
+                                  return true;
+                              }
 
-            }));
+                          }));
         }
 
         m = mbar.addMenu(Resources.getString("GraphMenu"));
@@ -635,13 +550,13 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         m.addSeparator();
         m.addItem(Resources.getString("Group"), GraphUI.cmdGroup, KeyEvent.VK_G);
         m.addItem(Resources.getString("Ungroup"), GraphUI.cmdUngroup, KeyStroke
-                .getKeyStroke(
-                        KeyEvent.VK_G,
-                        (m.getToolkit().getMenuShortcutKeyMask() | Event.SHIFT_MASK)));
+                  .getKeyStroke(
+                          KeyEvent.VK_G,
+                          (m.getToolkit().getMenuShortcutKeyMask() | Event.SHIFT_MASK)));
         m.addItem(Resources.getString("Collate"), GraphUI.cmdCollateNodes);
         m.addSeparator();
         m.addItem(Resources.getString("Find") + "...", GraphUI.cmdFind,
-                KeyEvent.VK_F);
+                  KeyEvent.VK_F);
         // m.addItem(Resources.getString("Show Graph") + "...", GraphUI.showGraph,
         // KeyEvent.VK_1);
         m.addItem(Resources.getString("SetBreakpoint"), GraphUI.cmdBreakpoint);
@@ -712,7 +627,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             }
             JMenuItem item
                     = this.colorMenu.addItem(Resources.getString("Other") + "...",
-                            GraphUI.cmdColorOther);
+                                             GraphUI.cmdColorOther);
             item.setEnabled(view != null);
         }
     }
@@ -816,7 +731,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                 case cmdRunConfiguration:
                     RunConfigurationDialog rcd = new RunConfigurationDialog(this,
-                            Resources.getString("RunConfiguration"), Preferences.getPrefs());
+                                                                            Resources.getString("RunConfiguration"), Preferences.getPrefs());
                     break;
 
                 case cmdRun:
@@ -928,19 +843,19 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                                         try {
                                             ExecutionResult r = doc.run(SingleDocumentWindow.this,
-                                                    SingleDocumentWindow.this.runtime);
+                                                                        SingleDocumentWindow.this.runtime);
 
                                             if (r.getNode() == null) {
                                                 if (r.getType() == ExecutionResult.INFORMATION) {
                                                     OptionPane.timedMessage(SingleDocumentWindow.this,
-                                                            r.getMessage(), Resources
-                                                            .getString("Message"),
-                                                            OptionPane.INFORMATION, 5000);
+                                                                            r.getMessage(), Resources
+                                                                            .getString("Message"),
+                                                                            OptionPane.INFORMATION, 5000);
                                                 } else {
                                                     OptionPane.message(SingleDocumentWindow.this, r
-                                                            .getMessage(),
-                                                            Resources.getString("Error"),
-                                                            OptionPane.ERROR);
+                                                                       .getMessage(),
+                                                                       Resources.getString("Error"),
+                                                                       OptionPane.ERROR);
                                                 }
                                             } else {
                                                 int result
@@ -977,10 +892,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                                         } catch (InvocationTargetException exn) {
                                             if (exn.getTargetException() instanceof UserCanceledException) {
                                                 OptionPane.message(SingleDocumentWindow.this, Resources
-                                                        .getString("ExecutionStopped"));
+                                                                   .getString("ExecutionStopped"));
                                             } else {
                                                 OptionPane.error(SingleDocumentWindow.this, exn
-                                                        .getTargetException());
+                                                                 .getTargetException());
                                             }
                                         } catch (Exception exn) {
                                             OptionPane.error(SingleDocumentWindow.this, exn);
@@ -1006,8 +921,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 case cmdDelay:
                     String s
                             = OptionPane.edit(null, Resources.getString("PleaseEnterDelay"),
-                                    Resources
-                                            .getString("SetDelay"), String.valueOf(this.delay));
+                                              Resources
+                                                      .getString("SetDelay"), String.valueOf(this.delay));
                     if (s != null) {
                         try {
                             this.delay = Integer.parseInt(s);
@@ -1037,8 +952,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                         });
                         if (errors.size() > 0) {
                             SearchResultsDialog.show(this, Resources
-                                    .getString("DocumentProblems"),
-                                    errors);
+                                                     .getString("DocumentProblems"),
+                                                     errors);
                         } else {
                             OptionPane.message(this, Resources.getString("DocumentValid"));
                         }
@@ -1092,46 +1007,46 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         ui.setSelectionbackground(new Color(164, 192, 248));
         jtp.setUI(ui);
         jtp.addTab(Resources.getString("Devices"), Images.load("Devices.png"),
-                new ListEditor(
-                        new ListEditor.Model() {
+                   new ListEditor(
+                           new ListEditor.Model() {
 
-                    private List<Device> devices = new ArrayList<Device>(doc.getDevices());
+                       private List<Device> devices = new ArrayList<Device>(doc.getDevices());
 
-                    public int getSize() {
+                       public int getSize() {
 
-                        return this.devices.size();
-                    }
+                           return this.devices.size();
+                       }
 
-                    public Object getElementAt(int index) {
+                       public Object getElementAt(int index) {
 
-                        return this.devices.get(index);
-                    }
+                           return this.devices.get(index);
+                       }
 
-                    @Override
-                    public void editItemAt(Component parent, int index) {
-                        DeviceEditor.editDevice(this.devices.get(index), parent);
-                    }
+                       @Override
+                       public void editItemAt(Component parent, int index) {
+                           DeviceEditor.editDevice(this.devices.get(index), parent);
+                       }
 
-                    @Override
-                    public int addElement(Component parent) {
-                        Device d = new Device();
-                        if (DeviceEditor.editDevice(d, parent)) {
-                            doc.getDevices().add(d);
-                            this.devices.add(d);
-                            return this.devices.indexOf(d);
-                        } else {
-                            return -1;
-                        }
-                    }
+                       @Override
+                       public int addElement(Component parent) {
+                           Device d = new Device();
+                           if (DeviceEditor.editDevice(d, parent)) {
+                               doc.getDevices().add(d);
+                               this.devices.add(d);
+                               return this.devices.indexOf(d);
+                           } else {
+                               return -1;
+                           }
+                       }
 
-                    @Override
-                    public boolean removeElement(Component parent, int index) {
+                       @Override
+                       public boolean removeElement(Component parent, int index) {
 
-                        Device d = this.devices.remove(index);
-                        doc.getDevices().remove(d);
-                        return true;
-                    }
-                }, true));
+                           Device d = this.devices.remove(index);
+                           doc.getDevices().remove(d);
+                           return true;
+                       }
+                   }, true));
 
         for (Plugin plugin : PluginLoader.getPlugins()) {
             JPanel p = new JPanel(new BorderLayout(6, 6));
@@ -1141,7 +1056,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                     + plugin.getVersion()), BorderLayout.NORTH);
             p.add(this.getDocument().getPluginSettings(plugin.getClass())
                     .createEditor(),
-                    BorderLayout.CENTER);
+                  BorderLayout.CENTER);
             jtp.addTab(plugin.getName(), plugin.getIcon(), p);
         }
 
@@ -1158,7 +1073,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         for (int i = 0; i < jtp.getTabCount(); i++) {
             ((JComponent) jtp.getComponentAt(i)).setBorder(BorderFactory
                     .createEmptyBorder(8, 8, 8,
-                            8));
+                                       8));
             if (selectedTab != null) {
                 if (Resources.getString(selectedTab).equals(jtp.getTitleAt(i))) {
                     jtp.setSelectedIndex(i);
