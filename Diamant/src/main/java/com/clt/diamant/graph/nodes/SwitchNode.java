@@ -152,7 +152,6 @@ public class SwitchNode extends Node {
                 if (result.getBool()) {
                     Node target = edge.getTarget();
                     comm.transition(this, target, targetIndex, result.toString());
-                    System.err.println("returning on condition " + cond);
                     return target;
                 }
             }
