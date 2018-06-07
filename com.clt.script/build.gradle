@@ -29,7 +29,7 @@ clean.doFirst {
 dependencies {
   javaCup group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   flex group: 'de.jflex', name: 'jflex', version: '1.6.1'
-  compile group: 'org.json', name: 'json', version: '20170516'
+  compile group: 'org.json', name: 'json', version: '20180130'
 
   compile group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   compile group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'

@@ -42,10 +42,11 @@ import com.clt.properties.Property;
 import com.clt.properties.PropertySet;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONTokener;
 
 public class Preferences {
 
@@ -503,24 +504,20 @@ public class Preferences {
             // create file with default values if necessary
             if (!modelUrlsFile.exists()) {
                 JSONArray list = new JSONArray();
-                list.add("http://www.coli.uni-saarland.de/~koller/dialogos/models/pocketsphinx.json");
+                list.put("http://www.coli.uni-saarland.de/~koller/dialogos/models/pocketsphinx.json");
 
                 FileWriter w = new FileWriter(modelUrlsFile);
-                w.write(list.toJSONString());
-                w.write("\n");
+                list.write(w);
                 w.flush();
                 w.close();
             }
 
             // read URLs from config file
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader(modelUrlsFile));
-            List<String> ret = new ArrayList<>();
-            Iterator<String> iterator = ((JSONArray) obj).iterator();
-            while (iterator.hasNext()) {
-                ret.add(iterator.next());
-            }
-
+            JSONTokener tokener = new JSONTokener(new FileReader(modelUrlsFile));
+            JSONArray array = new JSONArray(tokener);
+            List<String> ret = StreamSupport.stream(array.spliterator(), true)
+                                    .map(Object::toString)
+                                    .collect(Collectors.toList());
             return ret;
 
         } catch (Exception ex) {
