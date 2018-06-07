@@ -8,10 +8,7 @@ allprojects {
   repositories {
     mavenCentral()
     jcenter()
-
-    maven { // for DummyRecognizer
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
+    maven { url "https://jitpack.io/" }
   }
 
   apply plugin: 'java'
