@@ -58,7 +58,7 @@ public class PronDictDialog extends TableEditor<G2PEntry> {
     }
 
     public static void showDialog(Component parent, List<G2PEntry> g2pList, String title) {
-        new TableEditDialog<G2PEntry>(parent, PronDictDialog.createModel(g2pList),  title, null, false).setVisible(true);
+        new TableEditDialog<>(parent, PronDictDialog.createModel(g2pList),  title, null, false).setVisible(true);
     }
 
 

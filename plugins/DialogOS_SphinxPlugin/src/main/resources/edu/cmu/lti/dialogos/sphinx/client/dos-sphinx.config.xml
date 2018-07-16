@@ -246,6 +246,7 @@
         <property name="dictionaryPath" value=""/>
         <property name="fillerPath" value=""/>
         <property name="unitManager" value="unitManager"/>
+        <property name="g2pModelPath" value=""/>
     </component>
 
     <component name="acousticModel"

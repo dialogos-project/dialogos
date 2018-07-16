@@ -2,6 +2,7 @@ package edu.cmu.lti.dialogos.sphinx.client;
 
 import com.stanfy.enroscar.net.DataStreamHandler;
 import edu.cmu.sphinx.linguist.dictionary.TextDictionary;
+import edu.cmu.sphinx.linguist.dictionary.Word;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,6 +22,16 @@ public class ExtensibleDictionary extends TextDictionary {
                 throw e;
             }
         }
+    }
+
+    @Override
+    public Word getWord(String text) {
+        Word w = super.getWord(text);
+        if (w == null)
+            w = super.getWord(text.toLowerCase());
+        if (w == null)
+            w = super.getWord(text.toUpperCase());
+        return w;
     }
 
     public void loadExceptions(List<G2PEntry> g2pList) throws IOException {
