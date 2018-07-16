@@ -7,9 +7,11 @@ dependencies {
 
 
   implementation project(':com.clt.base')
+  implementation project(':com.clt.script')
   implementation project(':com.clt.xml')
   implementation project(':com.clt.audio')
   implementation project(':com.clt.speech')
+  implementation project(':com.clt.mac')
   implementation project(':ClientInterface')
   
   runtime fileTree(dir: "${projectDir}/../plugins", include: '*/build/libs/*.jar')

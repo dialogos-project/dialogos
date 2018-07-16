@@ -34,7 +34,7 @@ dependencies {
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
 
-  implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
+  compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
 
   implementation project(':com.clt.base')
   implementation project(':com.clt.xml')

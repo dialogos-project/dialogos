@@ -41,6 +41,7 @@ dependencies {
 
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
-
+  
+  implementation project(':com.clt.base')
   implementation project(':com.clt.script')
 }

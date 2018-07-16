@@ -8,6 +8,8 @@ dependencies {
   
   implementation group: 'org.jmdns', name: 'jmdns', version: '3.5.3'
 
-  implementation project(':com.clt.script')
-  implementation project(':com.clt.mac')
+  compile project(':com.clt.base')
+  compile project(':com.clt.script')
+  compile project(':com.clt.mac')
+  compile project(':com.clt.xml')
 }
