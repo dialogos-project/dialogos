@@ -11,11 +11,11 @@ The open-source DialogOS runs under Windows, MacOS, and Linux. This is in contra
 
 ## Documentation
 
-An [English manual](https://github.com/coli-saar/dialogos/wiki/Manual) is available in the Wiki.
+An [English manual](https://github.com/dialogos-project/dialogos/wiki/Manual) is available in the Wiki.
 
-Ein [deutsches Handbuch](https://github.com/coli-saar/dialogos/wiki/Handbuch) finden Sie im Wiki.
+Ein [deutsches Handbuch](https://github.com/dialogos-project/dialogos/wiki/Handbuch) finden Sie im Wiki.
 
-Developers should check out the [Wiki](https://github.com/coli-saar/dialogos/wiki) for detailed technical information.
+Developers should check out the [Wiki](https://github.com/dialogos-project/dialogos/wiki) for detailed technical information.
 
 
 ## Running DialogOS
