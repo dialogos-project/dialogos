@@ -136,7 +136,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
         if (Main.projectStartupWindow == null) {
             JFrame projectStartupFrame = new JFrame(Version.PRODUCT_NAME);
-
+            projectStartupFrame.setIconImage(Images.load("logo/DialogOS.png").getImage());
             @SuppressWarnings("unused")
             AbstractAction newEmptyProject = new AbstractAction(Resources
                     .getString("EmptyDialog"), Images.load("NewFile.png")) {
