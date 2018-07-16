@@ -1,4 +1,4 @@
 dependencies {
-  compile project(':SpeechClient')
-  compile project(':com.clt.audio')
+  implementation project(':SpeechClient')
+  implementation project(':com.clt.audio')
 }

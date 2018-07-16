@@ -1,10 +1,10 @@
 dependencies {
-  compile project(':Diamant')
+  implementation project(':Diamant')
 
-  compile project(':TTSClient')
-  compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'     //Englisch,männlich
-  compile group: 'de.dfki.mary', name: 'voice-bits1-hsmm', version: '5.2'       //Deutsch,weiblich
-  compile group: 'de.dfki.mary', name: 'voice-bits3-hsmm', version: '5.2'       //Deutsch,männlich
-  compile group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2' //Französisch,männlich
+  implementation project(':TTSClient')
+  implementation group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'     //Englisch,männlich
+  implementation group: 'de.dfki.mary', name: 'voice-bits1-hsmm', version: '5.2'       //Deutsch,weiblich
+  implementation group: 'de.dfki.mary', name: 'voice-bits3-hsmm', version: '5.2'       //Deutsch,männlich
+  implementation group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2' //Französisch,männlich
 
 }

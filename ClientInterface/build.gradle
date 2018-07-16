@@ -6,8 +6,8 @@ dependencies {
   // compile group: 'javax.jmdns', name: 'jmdns', version: '3.4.1'
 //  compile name: 'JRendezvous'
   
-  compile group: 'org.jmdns', name: 'jmdns', version: '3.5.3'
+  implementation group: 'org.jmdns', name: 'jmdns', version: '3.5.3'
 
-  compile project(':com.clt.script')
-  compile project(':com.clt.mac')
+  implementation project(':com.clt.script')
+  implementation project(':com.clt.mac')
 }

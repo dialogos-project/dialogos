@@ -1,4 +1,4 @@
 dependencies {
-  compile project(':com.clt.speech')
-  compile project(':ClientInterface')
+  implementation project(':com.clt.speech')
+  implementation project(':ClientInterface')
 }

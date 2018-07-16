@@ -29,13 +29,13 @@ clean.doFirst {
 dependencies {
   javaCup group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   flex group: 'de.jflex', name: 'jflex', version: '1.6.1'
-  compile group: 'org.json', name: 'json', version: '20180130'
+  implementation group: 'org.json', name: 'json', version: '20180130'
 
-  compile group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
-  compile group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
+  implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
+  implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
 
-  compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
+  implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
 
-  compile project(':com.clt.base')
-  compile project(':com.clt.xml')
+  implementation project(':com.clt.base')
+  implementation project(':com.clt.xml')
 }

@@ -1,16 +1,16 @@
 dependencies {
-  compile group: 'org.json', name: 'json', version: '20180130'
-  compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.1'
-  compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+  implementation group: 'org.json', name: 'json', version: '20180130'
+  implementation group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.1'
+  implementation group: 'org.jdom', name: 'jdom2', version: '2.0.6'
   //Jing conflicts with MaryTTS, thats why it's taken out for now
   //compile group: 'com.thaiopensource', name: 'jing', version: '20091111'
 
 
-  compile project(':com.clt.base')
-  compile project(':com.clt.xml')
-  compile project(':com.clt.audio')
-  compile project(':com.clt.speech')
-  compile project(':ClientInterface')
+  implementation project(':com.clt.base')
+  implementation project(':com.clt.xml')
+  implementation project(':com.clt.audio')
+  implementation project(':com.clt.speech')
+  implementation project(':ClientInterface')
   
   runtime fileTree(dir: "${projectDir}/../plugins", include: '*/build/libs/*.jar')
 }
