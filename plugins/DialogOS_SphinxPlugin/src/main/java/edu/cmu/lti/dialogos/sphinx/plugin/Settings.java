@@ -126,10 +126,11 @@ public class Settings extends PluginSettings {
         JPanel p = new JPanel(new BorderLayout());
         p.add(new PropertySet<Property<?>>(defaultLanguage).createPropertyPanel(false),
                 BorderLayout.NORTH);
-        p.add(new JButton(new AbstractAction("Aussprachewörterbuch bearbeiten") { // TODO: l10n!
+        p.add(new JButton(new AbstractAction(Resources.getString("EditPronunciationDict")) { 
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                PronDictDialog.showDialog(p, Plugin.getRecognizer().getLanguageSettings(defaultLanguage.getValue().getLanguage()).getG2PList(), "description");
+                PronDictDialog.showDialog(p, Plugin.getRecognizer().getLanguageSettings(defaultLanguage.getValue().getLanguage()).getG2PList(), 
+                        Resources.getString("PronunciationDict"));
             }
         }), BorderLayout.CENTER);
         p.add(new JLabel(""), BorderLayout.SOUTH);

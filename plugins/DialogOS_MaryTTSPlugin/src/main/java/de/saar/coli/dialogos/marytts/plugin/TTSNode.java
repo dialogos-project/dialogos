@@ -17,76 +17,84 @@ import com.clt.speech.tts.VoiceName;
 import com.clt.util.StringTools;
 
 /**
- * This is the implementation of the text-to-speech node for the Mary-synthesizer.
- * It includes the following configurations:
- *     + prompt-type: Either text, expression or maryxml. (Enum PromptType,
- *       GUI: Radio buttons)
- *     + prompt: User text to be spoken; evaluated according to
- *       prompt-type. (String, GUI: Text field)
- *     + voice (Voicename, GUI: ComboBox)
- *     + wait: Wait for that to be spoken to evaluate further TTSNodes
- *       (Boolean, GUI: checkbox)
- *     + xml-area: XML that is generated from what's in the prompt and
- *       Settings configs. (String, GUI: Text field)
- * The configurations are stored in a property map (See:
- * DefaultPropertyContainer, which is extended by TTSNode).
- * The GUIs are created with the help of the NodePropertiesDialog.
- * Note: When the prompt is of type MaryXML the configurations in Settings are ignored.
+ * This is the implementation of the text-to-speech node for the
+ * Mary-synthesizer. It includes the following configurations: + prompt-type:
+ * Either text, expression or maryxml. (Enum PromptType, GUI: Radio buttons) +
+ * prompt: User text to be spoken; evaluated according to prompt-type. (String,
+ * GUI: Text field) + voice (Voicename, GUI: ComboBox) + wait: Wait for that to
+ * be spoken to evaluate further TTSNodes (Boolean, GUI: checkbox) + xml-area:
+ * XML that is generated from what's in the prompt and Settings configs.
+ * (String, GUI: Text field) The configurations are stored in a property map
+ * (See: DefaultPropertyContainer, which is extended by TTSNode). The GUIs are
+ * created with the help of the NodePropertiesDialog. Note: When the prompt is
+ * of type MaryXML the configurations in Settings are ignored.
  *
- * @author Nicolas and Phil (taking over the TTSNode class of the old Realspeak Plugin by Daniel Boobert)
- * @author Till and Bri (Groovy functionality)
- * TODO : This recasting to MaryTTS every time we dont know
- * how to call it doesnt make sense! Change that!
+ * @author Nicolas and Phil (taking over the TTSNode class of the old Realspeak
+ * Plugin by Daniel Boobert)
+ * @author Till and Bri (Groovy functionality) TODO : This recasting to MaryTTS
+ * every time we dont know how to call it doesnt make sense! Change that!
  */
-public class TTSNode
-    extends AbstractOutputNode {
+public class TTSNode extends AbstractOutputNode {
 
-  private static final String XMLAREA ="xmlarea";
+    public static String getNodeTypeName(Class<?> c) {
+        return Resources.getString("TTS");
+    }
 
-  public enum PromptType implements IPromptType {
-      text("Text"),
-      maryxml("MaryXML"),
-      expression("Expression"),
-      groovy("GroovyScript");
+    private static final String XMLAREA = "xmlarea";
 
-    public IPromptType groovy() { return groovy; }
-    public IPromptType expression() { return expression; }
-    private String key;
-    public IPromptType[] getValues() { return values(); };
+    public enum PromptType implements IPromptType {
+        text("Text"),
+        maryxml("MaryXML"),
+        expression("Expression"),
+        groovy("GroovyScript");
+
+        public IPromptType groovy() {
+            return groovy;
+        }
+
+        public IPromptType expression() {
+            return expression;
+        }
+        private String key;
+
+        public IPromptType[] getValues() {
+            return values();
+        }
+
+        ;
 
     private PromptType(String key) {
-      this.key = key;
+            this.key = key;
+        }
+
+        @Override
+        public String toString() {
+            return Resources.getString(this.key);
+        }
+    }
+
+    public IPromptType getDefaultPromptType() {
+        return PromptType.text;
+    }
+
+    public String getResourceString(String key) {
+        return Resources.getString(key);
+    }
+
+    public TTSNode() {
+        this.setProperty(TTSNode.XMLAREA, "");
     }
 
     @Override
-    public String toString() {
-      return Resources.getString(this.key);
+    protected List<VoiceName> getAvailableVoices() {
+        List<VoiceName> voices = Plugin.getAvailableVoices();
+        voices.add(0, new VoiceName("", null));
+
+        if (!voices.contains(properties.get(VOICE))) {
+            voices.add(1, (VoiceName) properties.get(VOICE));
+        }
+        return voices;
     }
-  }
-
-  public IPromptType getDefaultPromptType() {
-    return PromptType.text;
-  }
-
-  public String getResourceString(String key) {
-      return Resources.getString(key);
-  }
-
-  public TTSNode() {
-    this.setProperty(TTSNode.XMLAREA, "");
-  }
-
-  @Override
-  protected List<VoiceName> getAvailableVoices() {
-      List<VoiceName> voices = Plugin.getAvailableVoices();
-      voices.add(0, new VoiceName("", null));
-
-      if (!voices.contains(properties.get(VOICE))) {
-          voices.add(1, (VoiceName)properties.get(VOICE));
-      }
-      return voices;
-  }
-
 
     @Override
     protected JTabbedPane addMoreTabsToEditorComponent(JTabbedPane jtp) {
@@ -135,25 +143,25 @@ public class TTSNode
         border2.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         GridBagConstraints gbc = new GridBagConstraints();
         p2.add(border2, gbc);
-        jtp.addTab("MaryXML",p2);
+        jtp.addTab("MaryXML", p2);
         return jtp;
     }
 
 
     /*
   * stopSynthesis: Stops the Synthesis midway.
-  */
-  protected void stopSynthesis() {
-    Plugin.getSynthesizer().stop();
-  }
+     */
+    protected void stopSynthesis() {
+        Plugin.getSynthesizer().stop();
+    }
 
-  /*
+    /*
   * speak: Given a properties map (configurations of the node) speaks what's
   * in the prompt (possibly according to the settings).
   * */
-  protected void speak(String prompt, Map<String, Object> properties) throws SpeechException {
+    protected void speak(String prompt, Map<String, Object> properties) throws SpeechException {
 
-    Settings settings = (Settings)this.getGraph().getOwner().getPluginSettings(Plugin.class);
+        Settings settings = (Settings) this.getGraph().getOwner().getPluginSettings(Plugin.class);
 
         // Till and Bri's (from the merge)
         //    VoiceName voicename = (VoiceName)properties.get(TTSNode.VOICE);
@@ -181,33 +189,31 @@ public class TTSNode
     /*
   * speak: Speaks whats in prompt according to the given settings and voicename.
   * */
-  static void speak(Settings settings, VoiceName voicename, String prompt)
-      throws SpeechException {
-    Synthesizer synthesizer = Plugin.getSynthesizer();
-    setVoice(settings, synthesizer, voicename);
-    ((MaryTTS) synthesizer).setProsody2MaryXML(settings.getStrVolume() , settings.getPitch(), settings.getSpeed());
-    synthesizer.speak(prompt);
-  }
-
-  /**
-   * setVoice: Sets the given voicename to the given synthesizer.
-   **/
-  private static void setVoice(Settings settings, Synthesizer synthesizer, VoiceName voicename)
-          throws SpeechException {
-
-    if ((voicename == null) || StringTools.isEmpty(voicename.getName())) {
-      voicename = settings.getDefaultVoice();
+    static void speak(Settings settings, VoiceName voicename, String prompt)
+            throws SpeechException {
+        Synthesizer synthesizer = Plugin.getSynthesizer();
+        setVoice(settings, synthesizer, voicename);
+        ((MaryTTS) synthesizer).setProsody2MaryXML(settings.getStrVolume(), settings.getPitch(), settings.getSpeed());
+        synthesizer.speak(prompt);
     }
-    //Set up voice:
-    Voice voice = synthesizer.findVoice(voicename.getName());
-    if (voice == null) {
-      throw new SpeechException(Resources.format("VoiceNotFound",
-              voicename.getNormalizedName()));
+
+    /**
+     * setVoice: Sets the given voicename to the given synthesizer.
+   *
+     */
+    private static void setVoice(Settings settings, Synthesizer synthesizer, VoiceName voicename)
+            throws SpeechException {
+
+        if ((voicename == null) || StringTools.isEmpty(voicename.getName())) {
+            voicename = settings.getDefaultVoice();
+        }
+        //Set up voice:
+        Voice voice = synthesizer.findVoice(voicename.getName());
+        if (voice == null) {
+            throw new SpeechException(Resources.format("VoiceNotFound",
+                    voicename.getNormalizedName()));
+        }
+        synthesizer.setVoice(voice);
     }
-    synthesizer.setVoice(voice);
-  }
-
-
-
 
 }

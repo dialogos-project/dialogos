@@ -4,6 +4,7 @@ import com.clt.gui.table.ItemTableModel;
 import com.clt.gui.table.TableEditDialog;
 import com.clt.gui.table.TableEditor;
 import edu.cmu.lti.dialogos.sphinx.client.G2PEntry;
+import edu.cmu.lti.dialogos.sphinx.plugin.Resources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,8 +29,8 @@ public class PronDictDialog extends TableEditor<G2PEntry> {
             @Override
             public String getColumnName(int columnIndex) {
                 switch(columnIndex) {
-                    case 0: return "Buchstaben"; //TODO: i10n
-                    case 1: return "Laute";
+                    case 0: return Resources.getString("Letters");
+                    case 1: return Resources.getString("Phonemes");
                     default:
                         throw new RuntimeException("something is wrong");
                 }
