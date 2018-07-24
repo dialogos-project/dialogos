@@ -3,6 +3,7 @@ package edu.cmu.lti.dialogos.sphinx.client;
 import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
 import com.clt.speech.recognition.*;
+import com.clt.speech.recognition.simpleresult.SimpleRecognizerResult;
 import com.clt.srgf.Grammar;
 
 import java.util.*;
@@ -49,11 +50,11 @@ public class Sphinx extends SphinxBaseRecognizer {
                 break;
             isMatch = isMatch(speechResult);
             if (!isMatch)
-                fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.INVALID_RESULT, new SphinxResult(speechResult)));
+                fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.INVALID_RESULT, sphinx2DOSResult(speechResult)));
         } while (!isMatch);
         csr.stopRecognition();
         if (speechResult != null) {
-            SphinxResult sphinxResult = new SphinxResult(speechResult);
+            RecognitionResult sphinxResult = sphinx2DOSResult(speechResult);
             fireRecognizerEvent(sphinxResult);
             return sphinxResult;
         } else {
@@ -65,6 +66,10 @@ public class Sphinx extends SphinxBaseRecognizer {
         Grammar gr = context.getGrammar();
         String result = speechResult.getHypothesis().replaceAll("<PHONE_.*?> ?", "");
         return gr.match(result, gr.getRoot()) != null;
+    }
+
+    private RecognitionResult sphinx2DOSResult(SpeechResult sphinx) {
+        return new SimpleRecognizerResult(sphinx.getHypothesis().replaceAll("<PHONE_.*?> ?", ""));
     }
 
     @Override protected void stopImpl() {
