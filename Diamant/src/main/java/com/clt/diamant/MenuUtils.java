@@ -156,40 +156,6 @@ public class MenuUtils {
         return m;
     }
 
-    private static void addLanguageItem(CmdMenu m, final String language,
-            final Locale locale,
-            final MenuOwner owner) {
-
-        Icon icon = null;
-        try {
-            icon = Images.load(language + ".png");
-        } catch (Exception ignore) {
-        }
-        JMenuItem item
-                = new CmdCheckBoxMenuItem(Resources.getString(language), 1, null,
-                        new MenuCommander() {
-
-                    public boolean menuItemState(int cmd) {
-
-                        return Preferences.getPrefs().locale.getValue().equals(locale);
-                    }
-
-                    public String menuItemName(int cmd, String oldName) {
-
-                        return Resources.getString(language);
-                    }
-
-                    public boolean doCommand(int cmd) {
-
-                        Preferences.getPrefs().locale.setValue(locale);
-                        owner.updateMenus();
-                        return true;
-                    }
-                });
-        item.setIcon(icon);
-        m.add(item);
-    }
-
     public static CmdMenu addHelpMenu(final CmdMenuBar mbar) {
 
         MenuOwner owner = new MenuOwner() {
@@ -259,12 +225,6 @@ public class MenuUtils {
             m.addSeparator();
             mbar.add(m);
         }
-
-        // language switching
-        MenuUtils.addLanguageItem(m, "German", Locale.GERMANY, owner);
-        MenuUtils.addLanguageItem(m, "English", Locale.US, owner);
-        MenuUtils.addLanguageItem(m, "French", Locale.FRANCE, owner);
-        m.addSeparator();
 
         m.addItem(Resources.getString("BuiltinFunctions"), Main.cmdHelpFunctions);
 

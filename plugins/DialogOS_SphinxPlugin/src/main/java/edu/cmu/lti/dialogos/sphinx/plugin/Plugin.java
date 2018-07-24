@@ -41,7 +41,8 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
     @Override
     public String getName() {
-        return "CMU Sphinx-4";
+        return Resources.getString("SpeechRecognizer");
+//        return "Speech recognizer"; // "CMU Sphinx-4";
     }
 
     @Override
