@@ -156,6 +156,13 @@ public class MenuUtils {
         return m;
     }
 
+    private static void addLanguageItem(CmdMenu m, final String language,
+            final Locale locale,
+            final MenuOwner owner) {
+
+        return;
+    }
+
     public static CmdMenu addHelpMenu(final CmdMenuBar mbar) {
 
         MenuOwner owner = new MenuOwner() {
