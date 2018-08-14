@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JColorChooser;
@@ -34,6 +35,7 @@ import com.clt.properties.DefaultBooleanProperty;
 import com.clt.properties.DefaultColorProperty;
 import com.clt.properties.DefaultFileProperty;
 import com.clt.properties.DefaultIntegerProperty;
+import com.clt.properties.EnumProperty;
 import com.clt.properties.FileProperty;
 import com.clt.properties.IntegerProperty;
 import com.clt.properties.Property;
@@ -72,6 +74,8 @@ public class Preferences {
     public final FileProperty lastUsedFile;
     public final FileProperty loggingDirectory;
     public final List<File> additional_mru;
+
+    public final EnumProperty<Locale> locale;
 
     private final Map<String, Color> defaultNodeColors;
 
@@ -135,6 +139,41 @@ public class Preferences {
         this.selectionColor = this.createColorProperty("selectionColor", new Color(255, 40, 40));
         this.neighbourColor = this.createColorProperty("neighbourColor", new Color(255, 192, 40));
         this.gridColor = this.createColorProperty("gridColor", new Color(224, 224, 255));
+
+        this.locale = new EnumProperty<Locale>("locale") {
+
+            private Locale[] locales = Locale.getAvailableLocales();
+
+            @Override
+            protected void setValueImpl(Locale locale) {
+
+                Locale.setDefault(locale);
+            }
+
+            @Override
+            public Locale getValue() {
+
+                return Locale.getDefault();
+            }
+
+            @Override
+            public String getName() {
+
+                return Resources.getString("locale");
+            }
+
+            @Override
+            public String getDescription() {
+
+                return null;
+            }
+
+            @Override
+            public Locale[] getPossibleValues() {
+
+                return this.locales;
+            }
+        };
 
         File logDirectory = new File(defaultDirectory.getPath() + "/logs");
         if (!logDirectory.exists()) {
@@ -265,6 +304,8 @@ public class Preferences {
         ps.add(this.gridColor);
         ps.add(this.selectionColor);
         ps.add(this.neighbourColor);
+
+        ps.add(this.locale);
 
         ps.add(this.lastUsedFile);
 

@@ -207,7 +207,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                         || (e.getSource() == Preferences.getPrefs().showProcedureTree)
                         || (e.getSource() == Preferences.getPrefs().showNodePanel)
                         || (e.getSource() == Preferences.getPrefs().lastUsedFile)
-                        ) {
+                        || (e.getSource() == Preferences.getPrefs().locale)) {
                     SingleDocumentWindow.this.initUI(systemEventHandler);
                 }
             }
