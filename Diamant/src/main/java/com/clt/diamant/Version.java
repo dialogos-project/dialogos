@@ -19,11 +19,11 @@ public class Version {
 
     public static final String PRODUCT_NAME = "DialogOS";
 
-    public static final int MAJOR_VERSION = 1;
-    public static final int MINOR_VERSION = 9;
+    public static final int MAJOR_VERSION = 2;
+    public static final int MINOR_VERSION = 0;
     public static final int BUGFIX_VERSION = 0;
 //    public static final String NONRELEASE = "beta1";
-    public static final boolean IS_NONRELEASE = true;
+    public static final boolean IS_NONRELEASE = false;
 
     public static String getShortGitRevision() {
         InputStream is = Version.class.getResourceAsStream("/VERSION");
@@ -134,10 +134,6 @@ public class Version {
                 = join("design", designers)
                 + join("implementation", implementers);
 
-// "<b>Das Entwickler-Team:\n\n" +
-//                "<b>design\nDaniel Bobbert\nPhilipp Detemple\nGerhard Fliedner\nC.J. Rupp\n\n"
-//                + "<b>implementation\nTimo Baumann\nDaniel Beck\nDaniel Bobbert\nArne Köhn\nAlexander Koller\n\n"
-//                + "<b>testing\nAnastasia Ammann\nMatthias Bauer\nDaniel Beck\nDaniel Bobbert\nPhilipp Detemple\nGerd Fliedner\nClaudia Grote\nHajo Keffer\nIris Kersten\nRoland Roller\nMichael Roth\nSarah Schmitt\nDiana Steffen";
         new AboutDialog(
                 Version.PRODUCT_NAME,
                 Version.getVersion(),
