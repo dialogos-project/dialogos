@@ -650,7 +650,7 @@ abstract public class AbstractInputNode extends Node {
         }
     }
 
-    protected MatchResult graphicallyRecognize(JLayeredPane layer, com.clt.srgf.Grammar recGrammar, Pattern[] patterns, long timeout, float confidenceThreshold, boolean interactiveTest) throws TimeoutException {
+    public MatchResult graphicallyRecognize(JLayeredPane layer, com.clt.srgf.Grammar recGrammar, Pattern[] patterns, long timeout, float confidenceThreshold, boolean interactiveTest) throws TimeoutException {
         RecognitionExecutor recExecutor = createRecognitionExecutor(recGrammar);
 
         final JButton stop = new JButton(GUI.getString("Cancel"));
@@ -886,11 +886,8 @@ abstract public class AbstractInputNode extends Node {
     }
 
     /* * recognize in the background and return result via @param input */
-    protected void recognizeInBackground(
-        com.clt.srgf.Grammar recGrammar,
-        InputCenter input,
-        VarPattern backgroundPattern,
-        float confidenceThreshold) {
+    public void recognizeInBackground(com.clt.srgf.Grammar recGrammar, InputCenter input,
+        VarPattern backgroundPattern, float confidenceThreshold) {
         RecognitionExecutor recThread = createRecognitionExecutor(recGrammar);
         new Thread(() -> {
             try {
