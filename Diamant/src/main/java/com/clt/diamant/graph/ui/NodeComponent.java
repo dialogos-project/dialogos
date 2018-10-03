@@ -26,7 +26,6 @@ import javax.swing.event.MouseInputListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 import com.clt.diamant.Preferences;
 import com.clt.diamant.Version;

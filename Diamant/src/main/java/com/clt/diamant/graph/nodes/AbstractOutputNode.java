@@ -232,11 +232,16 @@ public abstract class AbstractOutputNode extends Node {
 
     /**
      * Returns the {@link IPromptType} that is selected by
-     * default in a new node of this class.
+     * default in a new node of this class. If your output node
+     * class defines a different set of prompt types than the
+     * {@link DefaultPromptType}, overwrite this method to return 
+     * an instance of that class here.
      * 
      * @return 
      */
-    abstract protected IPromptType getDefaultPromptType();
+    protected IPromptType getDefaultPromptType() {
+        return DefaultPromptType.text;
+    }
     
     /**
      * Returns a localized version of the given string.
@@ -251,13 +256,13 @@ public abstract class AbstractOutputNode extends Node {
      * 
      * @return 
      */
-    abstract protected List<VoiceName> getAvailableVoices();
+    abstract public List<VoiceName> getAvailableVoices();
 
     protected void speak(Map<String, Object> properties) throws SpeechException {
         speak(determineSpeechOutput(properties), properties);
     }
     
-    protected abstract void speak(String prompt, Map<String, Object> properties) throws SpeechException;
+    abstract public void speak(String prompt, Map<String, Object> properties) throws SpeechException;
 
     /**
      * evaluates DialogOS script and groovyscript expressions.
@@ -296,7 +301,7 @@ public abstract class AbstractOutputNode extends Node {
         return prompt;
     }
 
-    protected abstract void stopSynthesis();
+    abstract public void stopSynthesis();
 
 
     @Override

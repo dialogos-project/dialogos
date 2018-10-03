@@ -86,7 +86,7 @@ public class TTSNode extends AbstractOutputNode {
     }
 
     @Override
-    protected List<VoiceName> getAvailableVoices() {
+    public List<VoiceName> getAvailableVoices() {
         List<VoiceName> voices = Plugin.getAvailableVoices();
         voices.add(0, new VoiceName("", null));
 
@@ -151,7 +151,7 @@ public class TTSNode extends AbstractOutputNode {
     /*
   * stopSynthesis: Stops the Synthesis midway.
      */
-    protected void stopSynthesis() {
+    public void stopSynthesis() {
         Plugin.getSynthesizer().stop();
     }
 
@@ -159,7 +159,7 @@ public class TTSNode extends AbstractOutputNode {
   * speak: Given a properties map (configurations of the node) speaks what's
   * in the prompt (possibly according to the settings).
   * */
-    protected void speak(String prompt, Map<String, Object> properties) throws SpeechException {
+    public void speak(String prompt, Map<String, Object> properties) throws SpeechException {
 
         Settings settings = (Settings) this.getGraph().getOwner().getPluginSettings(Plugin.class);
 

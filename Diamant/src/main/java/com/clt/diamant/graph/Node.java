@@ -185,7 +185,6 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     protected static String getNodeTypeName(Class<?> c) {
-
         if (c == null) {
             return null;
         }

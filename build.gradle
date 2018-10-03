@@ -104,7 +104,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
  ****************************************/
 // Commented out for now because I don't understand how this would
 // interact with the distribution process. - AK
-/*
+
 configurations {
     childJars
 }
@@ -120,4 +120,3 @@ jar {
     from { configurations.childJars.collect { zipTree(it) } }
 }
 
-*/
