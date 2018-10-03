@@ -799,11 +799,11 @@ abstract public class AbstractInputNode extends Node {
         return mr;
     }
 
-    protected abstract AudioFormat getAudioFormat();
+    abstract public AudioFormat getAudioFormat();
 
-    protected abstract RecognitionExecutor createRecognitionExecutor(com.clt.srgf.Grammar recGrammar);
+    abstract public RecognitionExecutor createRecognitionExecutor(com.clt.srgf.Grammar recGrammar);
 
-    protected abstract Device getDevice();
+    abstract public Device getDevice();
 
     private boolean hasGrammar() {
         return properties.get(GRAMMAR) != null;
@@ -1099,8 +1099,8 @@ abstract public class AbstractInputNode extends Node {
         }
     }
 
-    protected abstract List<LanguageName> getAvailableLanguages();
-    protected abstract LanguageName getDefaultLanguage();
+    abstract public List<LanguageName> getAvailableLanguages();
+    abstract public LanguageName getDefaultLanguage();
 
     @Override
     protected void writeAttributes(XMLWriter out, IdMap uid_map) {

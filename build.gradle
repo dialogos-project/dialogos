@@ -102,10 +102,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
  *
  https://discuss.gradle.org/t/how-to-get-gradle-install-to-actually-bundle-all-project-subproject-classes-resources-etc/12070/4
  ****************************************/
-// Commented out for now because I don't understand how this would
-// interact with the distribution process. - AK
 
-/*
+// This should not interfere with the distribution process, but let's
+// keep an eye on it. - AK
+
 configurations {
     childJars
 }
@@ -120,5 +120,3 @@ jar {
     dependsOn configurations.childJars
     from { configurations.childJars.collect { zipTree(it) } }
 }
-
-*/

@@ -17,7 +17,7 @@ public class SphinxNode extends AbstractInputNode {
     private static Device sphinxDevice = new Device(Resources.getString("Sphinx"));
 
     @Override
-    protected AudioFormat getAudioFormat() {
+    public AudioFormat getAudioFormat() {
         return Sphinx.getAudioFormat();
     }
 
@@ -25,7 +25,8 @@ public class SphinxNode extends AbstractInputNode {
         return Plugin.getRecognizer();
     }
 
-    @Override protected RecognitionExecutor createRecognitionExecutor(com.clt.srgf.Grammar recGrammar) {
+    @Override 
+    public RecognitionExecutor createRecognitionExecutor(com.clt.srgf.Grammar recGrammar) {
         try {
             this.getRecognizer().stopRecognition();
         } catch (SpeechException exn) {
@@ -36,17 +37,17 @@ public class SphinxNode extends AbstractInputNode {
     }
 
     @Override
-    protected Device getDevice() {
+    public Device getDevice() {
         return sphinxDevice;
     }
 
     @Override
-    protected List<LanguageName> getAvailableLanguages() {
+    public List<LanguageName> getAvailableLanguages() {
         return getSettings() != null ? getSettings().getLanguages() : Plugin.getAvailableLanguages();
     }
 
     @Override
-    protected LanguageName getDefaultLanguage() {
+    public LanguageName getDefaultLanguage() {
         assert this.getGraph() != null : "must not query default language when plugin settings are unreachable";
         return getSettings().getDefaultLanguage();
     }
