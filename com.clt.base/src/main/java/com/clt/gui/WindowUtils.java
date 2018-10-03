@@ -53,7 +53,6 @@ public class WindowUtils {
      * leading to a placement of the DialogOS windows in an invisible
      * location; it returns the size of the default monitor instead.
      * 
-     * @param w
      * @return 
      */
     public static Dimension getScreenSize() {

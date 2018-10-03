@@ -8,7 +8,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * interface for one-time execution of speech recognition.
- * Your mileage on multiple recognitions (start->stop->start again with different settings) will probably vary.
+ * Your mileage on multiple recognitions (start-&gt;stop-&gt;start again with different settings) will probably vary.
  * Better create a new RecognitionExecutor for every call to recognition.
  */
 public interface RecognitionExecutor {

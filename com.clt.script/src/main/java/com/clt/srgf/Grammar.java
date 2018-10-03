@@ -89,7 +89,7 @@ public class Grammar implements NamedEntity {
          */
         JSGF("Java Speech Grammar Format"),
         /**
-         * JSGF with additional <GARBAGE> tags before all terminals (for robustness)
+         * JSGF with additional &lt;GARBAGE&gt; tags before all terminals (for robustness)
          */
         JSGFwithGarbage("Java Speech Grammar Format with additoinal <GARBAGE> tags for robustness"),
         /**
