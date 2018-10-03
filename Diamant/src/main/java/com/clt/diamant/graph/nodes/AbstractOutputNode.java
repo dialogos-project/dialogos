@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Base class for output nodes in the DialogOS graph.
+ * 
  * Created by timo on 09.10.17.
  */
 public abstract class AbstractOutputNode extends Node {
@@ -39,11 +41,49 @@ public abstract class AbstractOutputNode extends Node {
     protected static final String VOICE = "voice";
     protected static final String WAIT = "wait";
 
+    /**
+     * Enumeration of different types of prompts.
+     * A prompt type specifies how the value that this node outputs
+     * is determined. The different prompt types are represented
+     * as radio buttons in the "Speech Synthesis" tab of the node
+     * in the DialogOS GUI.<p>
+     * 
+     * The {@link AbstractOutputNode} knows how to
+     * evaluate values that are specified as raw text, as DialogOS
+     * expressions, or as Groovy expressions. 
+     */
     public interface IPromptType {
         public IPromptType[] getValues();
         public String name();
         public IPromptType groovy();
         public IPromptType expression();
+    }
+    
+    /**
+     * A default collection of prompt types.
+     * In most cases, you can simply return one of the
+     * values of this enum (e.g. DefaultPromptType.text())
+     * in the {@link #getDefaultPromptType() } method of your
+     * custom output node.
+     */
+    public static enum DefaultPromptType implements IPromptType {
+        text("Text"),
+        expression("Expression"),
+        groovy("GroovyScript");
+
+        public IPromptType groovy() { return groovy; }
+        public IPromptType expression() { return expression; }
+        private String key;
+        public IPromptType[] getValues() { return values(); };
+
+        private DefaultPromptType(String key) {
+            this.key = key;
+        }
+
+        @Override
+        public String toString() {
+            return Resources.getString(this.key);
+        }
     }
 
     public AbstractOutputNode() {
@@ -190,14 +230,33 @@ public abstract class AbstractOutputNode extends Node {
         return jtp;
     }
 
+    /**
+     * Returns the {@link IPromptType} that is selected by
+     * default in a new node of this class.
+     * 
+     * @return 
+     */
     abstract protected IPromptType getDefaultPromptType();
+    
+    /**
+     * Returns a localized version of the given string.
+     * 
+     * @param key
+     * @return 
+     */
     abstract public String getResourceString(String key);
 
+    /**
+     * Returns the list of available voices for this node.
+     * 
+     * @return 
+     */
     abstract protected List<VoiceName> getAvailableVoices();
 
     protected void speak(Map<String, Object> properties) throws SpeechException {
         speak(determineSpeechOutput(properties), properties);
     }
+    
     protected abstract void speak(String prompt, Map<String, Object> properties) throws SpeechException;
 
     /**
@@ -303,7 +362,7 @@ public abstract class AbstractOutputNode extends Node {
             //TODO localize Exception
             throw new NodeExecutionException(this, "Can't change type of global variables in Groovy script", e);
         }
-        System.err.println("result"+result);
+
         String prompt;
         try {
             prompt = (String)result;
@@ -327,7 +386,6 @@ public abstract class AbstractOutputNode extends Node {
 
     @Override
     public void validate(Collection<SearchResult> errors) {
-
         super.validate(errors);
 
         String prompt = (String)this.getProperty(PROMPT);
@@ -348,14 +406,10 @@ public abstract class AbstractOutputNode extends Node {
     }
 
     @Override
-    protected void readAttribute(XMLReader r, String name, String value,
-                                 IdMap uid_map)
-            throws SAXException {
-
+    protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
         if (name.equals(PROMPT)) {
             this.setProperty(name, value);
-        }
-        else if (name.equals(VOICE)) {
+        } else if (name.equals(VOICE)) {
             this.setProperty(name, new VoiceName(value, null));
             List<VoiceName> voices = getAvailableVoices();
             for (VoiceName voice : voices) {
@@ -384,7 +438,6 @@ public abstract class AbstractOutputNode extends Node {
 
     @Override
     protected void writeAttributes(XMLWriter out, IdMap uid_map) {
-
         super.writeAttributes(out, uid_map);
 
         VoiceName voice = (VoiceName)this.getProperty(VOICE);
@@ -400,8 +453,7 @@ public abstract class AbstractOutputNode extends Node {
         if (promptType != null) {
             Graph.printAtt(out, PROMPT_TYPE, promptType.name());
         }
-        Graph.printAtt(out, WAIT, ((Boolean)this.getProperty(WAIT))
-                .booleanValue());
+        Graph.printAtt(out, WAIT, ((Boolean)this.getProperty(WAIT)).booleanValue());
     }
 
 
