@@ -84,9 +84,7 @@ public class GraphNode extends OwnerNode {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map)
-            throws IOException {
-
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException {
         w.printElement("subdialog", new String[]{"name"}, new String[]{"graph"
             + uid_map.graphs.put(this.getOwnedGraph())});
 

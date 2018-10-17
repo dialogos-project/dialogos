@@ -50,8 +50,7 @@ public class ScriptNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(Map<String, Object> properties) {
-
+    public JComponent createEditorComponent(Map<String, Object> properties) {
         JPanel p = new JPanel(new BorderLayout());
 
         // p.add(new JLabel(Resources.getString("Script") + ':'),
@@ -134,8 +133,7 @@ public class ScriptNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
         w.openElement("script");
         w.println("<![CDATA[");
         w.println((String) this.getProperty(ScriptNode.SCRIPT));

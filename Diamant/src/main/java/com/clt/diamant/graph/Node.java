@@ -642,7 +642,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
      *
      * @return A reference on the created JComponent.
      */
-    abstract protected JComponent createEditorComponent(Map<String, Object> properties);
+    abstract public JComponent createEditorComponent(Map<String, Object> properties);
 
     public void validate(Collection<SearchResult> errors) {
         for (int i = 0; i < this.numEdges(); i++) {
@@ -847,7 +847,18 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
         return this.getGraph().parsePattern(s);
     }
 
-    protected abstract void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException;
+    /**
+     * Writes a representation of this node into a VoiceXML
+     * dialog specification.<p>
+     * 
+     * This is very old code, and nobody can remember how exactly
+     * to use it. See issue #97. (AK, Oct 2018)
+     * 
+     * @param w
+     * @param uid_map
+     * @throws IOException 
+     */
+    abstract public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException;
 
     protected final void writeVoiceXMLGoto(XMLWriter w, IdMap uid_map, int edgeIndex) {
         Node target = this.getEdge(edgeIndex).getTarget();

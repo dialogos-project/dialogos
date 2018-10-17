@@ -1340,7 +1340,7 @@ public class InputNode extends OutputNode {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         // vxml
         w.openElement("field", new String[]{"name"}, new String[]{"input"});

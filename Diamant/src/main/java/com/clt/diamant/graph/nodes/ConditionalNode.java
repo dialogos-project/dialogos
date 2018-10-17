@@ -198,7 +198,7 @@ public class ConditionalNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         w.openElement("if", new String[]{"cond"},
                 new String[]{Node.vxmlExp((String) this

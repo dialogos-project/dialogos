@@ -373,8 +373,7 @@ public abstract class OwnerNode extends Node implements GraphOwner {
     }
 
     @Override
-    protected JComponent createEditorComponent(Map<String, Object> properties) {
-
+    public JComponent createEditorComponent(Map<String, Object> properties) {
         return null;
     }
 

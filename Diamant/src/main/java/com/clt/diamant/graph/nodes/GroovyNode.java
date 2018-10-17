@@ -63,7 +63,7 @@ public class GroovyNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(Map<String, Object> properties) {
+    public JComponent createEditorComponent(Map<String, Object> properties) {
 
         JTabbedPane tp = new JTabbedPane();
 
@@ -209,7 +209,7 @@ public class GroovyNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         w.openElement("script");
         w.println("<![CDATA[");

@@ -51,8 +51,7 @@ public class SleepNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(Map<String, Object> properties) {
-
+    public JComponent createEditorComponent(Map<String, Object> properties) {
         JPanel p = new JPanel(new GridBagLayout());
         p.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
@@ -146,7 +145,7 @@ public class SleepNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         // vxml
     }

@@ -442,7 +442,7 @@ public class TestVariableNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         // vxml
     }

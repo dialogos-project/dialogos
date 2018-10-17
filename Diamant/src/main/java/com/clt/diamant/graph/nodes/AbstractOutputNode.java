@@ -99,8 +99,7 @@ public abstract class AbstractOutputNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(
-            final Map<String, Object> properties) {
+    public JComponent createEditorComponent(final Map<String, Object> properties) {
 
         List<VoiceName> voices = getAvailableVoices();
 
@@ -406,8 +405,9 @@ public abstract class AbstractOutputNode extends Node {
 
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
         // nothing needed
+        // see #97 (AK)
     }
 
     @Override

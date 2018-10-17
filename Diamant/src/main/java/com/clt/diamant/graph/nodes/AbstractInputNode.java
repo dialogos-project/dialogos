@@ -190,9 +190,7 @@ abstract public class AbstractInputNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(
-            final Map<String, Object> properties) {
-
+    public JComponent createEditorComponent(final Map<String, Object> properties) {
         List<LanguageName> languages = new ArrayList<>(getAvailableLanguages());
 
         if (!languages.contains(properties.get(LANGUAGE))) {
@@ -1143,8 +1141,9 @@ abstract public class AbstractInputNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
         // TODO: implement? doesn't seem to be implemented anywhere in DialogOS...
+        // see #97 (AK)
     }
 
 

@@ -30,7 +30,7 @@ public class StartNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(Map<String, Object> properties) {
+    public JComponent createEditorComponent(Map<String, Object> properties) {
 
         return null;
     }
@@ -44,7 +44,7 @@ public class StartNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         this.writeVoiceXMLGoto(w, uid_map, 0);
     }

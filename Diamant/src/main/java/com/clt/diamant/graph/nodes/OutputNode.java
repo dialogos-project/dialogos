@@ -760,7 +760,7 @@ public class OutputNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         // vxml
         Map<Device, DialogOutput> h = this.getOutputMap(false);

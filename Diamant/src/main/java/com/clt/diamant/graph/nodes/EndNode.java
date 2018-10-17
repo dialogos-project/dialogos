@@ -34,8 +34,7 @@ public class EndNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(Map<String, Object> properties) {
-
+    public JComponent createEditorComponent(Map<String, Object> properties) {
         return null;
     }
 
@@ -58,8 +57,7 @@ public class EndNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
         Graph superGraph = this.getGraph().getSuperGraph();
         List<Slot> vars = superGraph == null ? new ArrayList<Slot>()
                 : superGraph.getAllVariables(Graph.GLOBAL);

@@ -198,6 +198,6 @@ public class SwitchNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException { }
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException { }
 
 }

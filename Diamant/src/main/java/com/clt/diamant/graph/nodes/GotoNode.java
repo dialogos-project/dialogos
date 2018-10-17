@@ -58,7 +58,7 @@ public class GotoNode extends Node {
     }
 
     @Override
-    protected JComponent createEditorComponent(Map<String, Object> properties) {
+    public JComponent createEditorComponent(Map<String, Object> properties) {
 
         final JPanel p = new JPanel(new GridBagLayout());
 
@@ -155,7 +155,7 @@ public class GotoNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
         // vxml
     }

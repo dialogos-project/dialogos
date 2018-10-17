@@ -528,10 +528,8 @@ public class SetVariableNode extends Node {
     }
 
     @Override
-    protected void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        List<VarAssignment> assignments
-                = this.getAssignments(this.properties, false);
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
+        List<VarAssignment> assignments = this.getAssignments(this.properties, false);
         if (assignments != null) {
             for (VarAssignment va : assignments) {
                 w.printElement("assign", new String[]{"name", "expr"}, new Object[]{
