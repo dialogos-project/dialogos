@@ -33,7 +33,7 @@ run {
   systemProperties System.getProperties()
 }
 
-def version = '2.0'
+def version = '2.0.1'
 
 
 task allJavadoc(type: Javadoc) {

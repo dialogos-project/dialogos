@@ -19,11 +19,11 @@ public class Version {
 
     public static final String PRODUCT_NAME = "DialogOS";
 
-    public static final int MAJOR_VERSION = 1;
-    public static final int MINOR_VERSION = 9;
-    public static final int BUGFIX_VERSION = 0;
+    public static final int MAJOR_VERSION = 2;
+    public static final int MINOR_VERSION = 0;
+    public static final int BUGFIX_VERSION = 1;
 //    public static final String NONRELEASE = "beta1";
-    public static final boolean IS_NONRELEASE = true;
+    public static final boolean IS_NONRELEASE = false;
 
     public static String getShortGitRevision() {
         InputStream is = Version.class.getResourceAsStream("/VERSION");
