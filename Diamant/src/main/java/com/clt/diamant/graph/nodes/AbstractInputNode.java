@@ -50,13 +50,16 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * This class encapsulates common functionality for input nodes that are useful
- * for implementations of speech recognition (see e.g. SphinxNode) or text input (see TextInputNode).
-
+ * for implementations of speech recognition (see e.g. SphinxNode) or text input
+ * (see TextInputNode).
+ *
  * Created by timo on 09.10.17.
  */
 abstract public class AbstractInputNode extends Node {
 
-    /** used while the recognizer is loading */
+    /**
+     * used while the recognizer is loading
+     */
     private static ImageIcon micInv = null;
     private static ImageIcon micOn = null;
     private static ImageIcon micOff = null;
@@ -68,13 +71,19 @@ abstract public class AbstractInputNode extends Node {
     private static final String GRAMMAR_EXPRESSION = "grammarExpression";
     private static final String LANGUAGE = "language";
     /**
-     * name of the property that stores whether recognition should be performed in the background
-     * for recognition in the background, results are passed on via the InputCenter
+     * name of the property that stores whether recognition should be performed
+     * in the background for recognition in the background, results are passed
+     * on via the InputCenter
      */
     private static final String BACKGROUND = "background";
-    /**name of the property that stores whether recognizers should aim for robust recognition beyond the strict grammar itself*/
+    /**
+     * name of the property that stores whether recognizers should aim for
+     * robust recognition beyond the strict grammar itself
+     */
     protected static final String ENABLE_GARBAGE = "enableGarbage";
-    /** name of the property that stores the recognition threshold */
+    /**
+     * name of the property that stores the recognition threshold
+     */
     protected static final String THRESHOLD = "threshold";
 
     private static Object DIRECT_GRAMMAR = new Object() {
@@ -204,7 +213,7 @@ abstract public class AbstractInputNode extends Node {
 
         final EdgeConditionModel edgeModel = new EdgeConditionModel(this,
                 properties, com.clt.diamant.Resources
-                .getString("InputPatterns"));
+                        .getString("InputPatterns"));
 
         Vector<Object> grammars = new Vector<Object>();
         grammars.add(DIRECT_GRAMMAR);
@@ -224,7 +233,10 @@ abstract public class AbstractInputNode extends Node {
         final JComboBox grammar = new JComboBox(grammars);
         grammar.setRenderer(new com.clt.gui.ComponentRenderer());
 
-        /** button to open a new window to edit the selected grammar/grammar expression */
+        /**
+         * button to open a new window to edit the selected grammar/grammar
+         * expression
+         */
         final JButton editGrammar = new CmdButton(com.clt.diamant.Resources
                 .getString("Edit"), new Runnable() {
             public void run() {
@@ -232,8 +244,7 @@ abstract public class AbstractInputNode extends Node {
                 if (selection instanceof Grammar) {
                     Grammar g = (Grammar) selection;
                     ScriptEditorDialog.editGrammar(p, g);
-                }
-                // this case happens if "generate from expression" was chosen.
+                } // this case happens if "generate from expression" was chosen.
                 // should a script-editor be used there?
                 else if (selection == DYNAMIC_GRAMMAR) {
                     String g = (String) properties.get(GRAMMAR_EXPRESSION);
@@ -300,8 +311,7 @@ abstract public class AbstractInputNode extends Node {
                     editGrammar.setText(Resources.getString("EditGrammar"));
                     editGrammar.setEnabled(true);
                     edgeModel.setName(com.clt.diamant.Resources.getString("InputPatterns"));
-                }
-                // The words/sentences to be recognized is given as a list
+                } // The words/sentences to be recognized is given as a list
                 // of words are sentences
                 else if (grammar.getSelectedItem() == DIRECT_GRAMMAR) {
                     properties.remove(GRAMMAR);
@@ -309,8 +319,7 @@ abstract public class AbstractInputNode extends Node {
                     editGrammar.setText(com.clt.diamant.Resources.getString("Edit"));
                     editGrammar.setEnabled(false);
                     edgeModel.setName(Resources.getString("InputWords"));
-                }
-                // The grammar is given as an expression (to be evaluated).
+                } // The grammar is given as an expression (to be evaluated).
                 else if (grammar.getSelectedItem() == DYNAMIC_GRAMMAR) {
                     properties.remove(GRAMMAR);
                     properties.putIfAbsent(GRAMMAR_EXPRESSION, "");
@@ -376,8 +385,8 @@ abstract public class AbstractInputNode extends Node {
 
             @Override
             public Component getTableCellRendererComponent(JTable table,
-                                                           Object value, boolean isSelected, boolean hasFocus,
-                                                           int row, int column) {
+                    Object value, boolean isSelected, boolean hasFocus,
+                    int row, int column) {
 
                 JLabel label = (JLabel) super.getTableCellRendererComponent(
                         table, value, isSelected, hasFocus, row, column);
@@ -408,10 +417,10 @@ abstract public class AbstractInputNode extends Node {
         deleteButton.setEnabled(table.getSelectedRow() >= 0);
         table.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
-                    public void valueChanged(ListSelectionEvent e) {
-                        deleteButton.setEnabled(table.getSelectedRow() >= 0);
-                    }
-                });
+            public void valueChanged(ListSelectionEvent e) {
+                deleteButton.setEnabled(table.getSelectedRow() >= 0);
+            }
+        });
         final JButton newButton = new CmdButton(new Runnable() {
             public void run() {
                 if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
@@ -530,7 +539,9 @@ abstract public class AbstractInputNode extends Node {
         gbc.insets = insets;
         options.add(Box.createVerticalGlue(), gbc);
 
-        /** try out recognition */
+        /**
+         * try out recognition
+         */
         final JButton test = new JButton(Resources.getString("TryRecognition"));
         test.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -587,11 +598,11 @@ abstract public class AbstractInputNode extends Node {
     }
 
     /**
-     * determine timeout (if applicable), background,
-     * determine timeoutedge from edges, assemble grammar
+     * determine timeout (if applicable), background, determine timeoutedge from
+     * edges, assemble grammar
      */
     protected Node recognizeExec(JLayeredPane layer, Debugger dbg,
-                             final InputCenter input, Map<String, Object> properties, boolean interactiveTest) {
+            final InputCenter input, Map<String, Object> properties, boolean interactiveTest) {
         long timeout = getTimeout(dbg);
 
         // Boolean b = (Boolean) properties.get(FORCE_TIMEOUT);
@@ -642,7 +653,7 @@ abstract public class AbstractInputNode extends Node {
             } catch (TimeoutException te) {
                 return edges.get(timeoutEdgeIndex).getTarget();
             }
-/*            if (mep == null) {
+            /*            if (mep == null) {
                 assert timeoutEdgeIndex > -1 : "timeout but there's no timeout edge. graphicallyRecognize should only return null for timeouts";
                 return edges.get(timeoutEdgeIndex).getTarget();*/
         }
@@ -684,12 +695,15 @@ abstract public class AbstractInputNode extends Node {
         p.setOpaque(false);
         Border bevel = new Border() {
             private int size = 20;
+
             public Insets getBorderInsets(Component c) {
                 return new Insets(this.size, this.size, this.size, this.size);
             }
+
             public boolean isBorderOpaque() {
                 return false;
             }
+
             public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
                 g.setColor(new Color(0, 0, 0, 128));
                 g.fillRoundRect(x, y, width, height, this.size * 2, this.size * 2);
@@ -703,7 +717,8 @@ abstract public class AbstractInputNode extends Node {
             Color c = p.getBackground();
             popup = new Passpartout(p, c, false);
             // consume mouse events
-            popup.addMouseListener(new MouseAdapter() {});
+            popup.addMouseListener(new MouseAdapter() {
+            });
             popup.setSize(layer.getWidth(), layer.getHeight());
             layer.add(popup, JLayeredPane.POPUP_LAYER);
             layer.revalidate();
@@ -721,14 +736,17 @@ abstract public class AbstractInputNode extends Node {
                             e.printStackTrace();
                         }
                     }
+
                     @Override
                     public void newAudio(double[] audio) {
                         levelMeter.processDoubleData(audio);
                     }
+
                     public void recognizerStateChanged(RecognizerEvent evt) {
                         // ensure we execute on Swing thread (has a tendency to be more important on linux)
                         SwingUtilities.invokeLater(() -> executeStateChange(evt));
                     }
+
                     private void executeStateChange(RecognizerEvent evt) {
                         switch (evt.getType()) {
                             case RecognizerEvent.RECOGNIZER_LOADING:
@@ -818,14 +836,16 @@ abstract public class AbstractInputNode extends Node {
                 edges.add(new TimeoutEdge(this));
             }
             return edges;
-        } else
+        } else {
             return new ArrayList<>(this.edges());
+        }
     }
 
     private int getTimeoutEdgeIndex(List<Edge> edges) {
         for (int i = 0; i < edges.size(); i++) {
-            if (edges.get(i) instanceof TimeoutEdge)
+            if (edges.get(i) instanceof TimeoutEdge) {
                 return i;
+            }
         }
         return -1;
     }
@@ -851,7 +871,7 @@ abstract public class AbstractInputNode extends Node {
                     } catch (Exception exn) {
                         throw new NodeExecutionException(this,
                                 com.clt.diamant.Resources.getString("IllegalPattern")
-                                        + ": " + e.getCondition(), exn);
+                                + ": " + e.getCondition(), exn);
                     }
                     n++;
                 }
@@ -871,13 +891,13 @@ abstract public class AbstractInputNode extends Node {
                 throw new NodeExecutionException(this,
                         com.clt.diamant.Resources
                                 .getString("IllegalTimeoutValue")
-                                + " " + t, exn);
+                        + " " + t, exn);
             }
             if (timeout < 0) {
                 throw new NodeExecutionException(this,
                         com.clt.diamant.Resources
                                 .getString("IllegalTimeoutValue")
-                                + " " + t);
+                        + " " + t);
             }
         }
         return timeout;
@@ -885,11 +905,11 @@ abstract public class AbstractInputNode extends Node {
 
     /* * recognize in the background and return result via @param input */
     public void recognizeInBackground(com.clt.srgf.Grammar recGrammar, InputCenter input,
-        VarPattern backgroundPattern, float confidenceThreshold) {
+            VarPattern backgroundPattern, float confidenceThreshold) {
         RecognitionExecutor recThread = createRecognitionExecutor(recGrammar);
         new Thread(() -> {
             try {
-                com.clt.speech.recognition.MatchResult mr = recThread.start(recGrammar, new Pattern[] {backgroundPattern},0, null, confidenceThreshold);
+                com.clt.speech.recognition.MatchResult mr = recThread.start(recGrammar, new Pattern[]{backgroundPattern}, 0, null, confidenceThreshold);
                 if (mr != null) {
                     Value result = mr.getMatch().get(backgroundPattern.getVariableName());
                     input.put(new DialogInput<Object>(getDevice(), result));
@@ -901,30 +921,37 @@ abstract public class AbstractInputNode extends Node {
     }
 
     /**
-     * useful for subclasses to construct a MatchResult (pair of match and edge-ID) during recognition attemps
-     * @param utterance a string representation of the text to be checked against the grammar
-     * @param recGrammar the grammar to be tested against (needed for included semantic tags)
+     * useful for subclasses to construct a MatchResult (pair of match and
+     * edge-ID) during recognition attemps
+     *
+     * @param utterance a string representation of the text to be checked
+     * against the grammar
+     * @param recGrammar the grammar to be tested against (needed for included
+     * semantic tags)
      * @param patterns the patterns to be tested and matched against
-     * @return a MatchResult which encodes the actual match (name-value pairs) and the ID of the matching pattern, or null if no match
+     * @return a MatchResult which encodes the actual match (name-value pairs)
+     * and the ID of the matching pattern, or null if no match
      */
     public static MatchResult findMatch(String utterance, com.clt.srgf.Grammar recGrammar, Pattern[] patterns) {
         Value r = recGrammar.match(utterance, null);
         for (int i = 0; i < patterns.length; i++) {
             Match match = patterns[i].match(r);
-            if (match != null)
+            if (match != null) {
                 return new MatchResult(utterance, match, i);
+            }
         }
         return null;
     }
 
     /**
-     * sets variables according to a match;
-     * to be used by implementors of recognizeBlocking/recognizeInBackground
+     * sets variables according to a match; to be used by implementors of
+     * recognizeBlocking/recognizeInBackground
+     *
      * @param match
      */
-    private void setVariablesAccordingToMatch(Match match){
+    private void setVariablesAccordingToMatch(Match match) {
         List<Slot> accessible_vars = this.getGraph().getAllVariables(Graph.LOCAL);
-        for (Iterator<String> vars = match.variables(); vars.hasNext(); ) {
+        for (Iterator<String> vars = match.variables(); vars.hasNext();) {
             String name = vars.next();
             Slot v = null;
             for (int j = accessible_vars.size() - 1; (j >= 0)
@@ -943,9 +970,8 @@ abstract public class AbstractInputNode extends Node {
         }
     }
 
-
     protected com.clt.srgf.Grammar compileGrammar(Map<String, Object> properties,
-                                                  List<Edge> edges)
+            List<Edge> edges)
             throws Exception {
         Grammar grammar = (Grammar) properties.get(GRAMMAR);
         com.clt.srgf.Grammar recGrammar;
@@ -953,7 +979,7 @@ abstract public class AbstractInputNode extends Node {
             recGrammar = com.clt.srgf.Grammar.create(grammar.getGrammar());
         } else if (this.getProperty(GRAMMAR_EXPRESSION) != null) {
             Value v = this.parseExpression(
-                            (String) this.getProperty(GRAMMAR_EXPRESSION))
+                    (String) this.getProperty(GRAMMAR_EXPRESSION))
                     .evaluate();
             recGrammar = com.clt.srgf.Grammar.create(((StringValue) v).getString());
         } else {
@@ -994,7 +1020,6 @@ abstract public class AbstractInputNode extends Node {
         }
         return recGrammar;
     }
-
 
     @Override
     public void validate(Collection<SearchResult> errors) {
@@ -1049,10 +1074,9 @@ abstract public class AbstractInputNode extends Node {
 
     }
 
-
     @Override
     protected void readAttribute(XMLReader r, String name, String value,
-                                 IdMap uid_map)
+            IdMap uid_map)
             throws SAXException {
 
         if (name.equals(TIMEOUT)) {
@@ -1095,6 +1119,7 @@ abstract public class AbstractInputNode extends Node {
     }
 
     abstract public List<LanguageName> getAvailableLanguages();
+
     abstract public LanguageName getDefaultLanguage();
 
     @Override
@@ -1146,7 +1171,6 @@ abstract public class AbstractInputNode extends Node {
         // see #97 (AK)
     }
 
-
     @Override
     public String getDescription(Edge selectedEdge) {
 
@@ -1184,9 +1208,12 @@ abstract public class AbstractInputNode extends Node {
         return buffer.toString();
     }
 
-    @Override public void setGraph(Graph g) {
+    @Override
+    public void setGraph(Graph g) {
         super.setGraph(g);
-        this.setProperty(LANGUAGE, getDefaultLanguage());
-    }
 
+        if (g != null) {
+            this.setProperty(LANGUAGE, getDefaultLanguage());
+        }
+    }
 }
