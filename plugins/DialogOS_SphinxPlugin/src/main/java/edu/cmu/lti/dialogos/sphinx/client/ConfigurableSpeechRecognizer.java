@@ -24,7 +24,7 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
         super(context);
         recognizer.allocate();
 
-/*        recognizer.addStateListener(new StateListener() {
+        /*recognizer.addStateListener(new StateListener() {
             @Override public void statusChanged(edu.cmu.sphinx.recognizer.Recognizer.State status) {
                 System.err.println("listener defined in configurable speech recognizer: " + status);
             }
@@ -51,6 +51,12 @@ public class ConfigurableSpeechRecognizer extends AbstractSpeechRecognizer {
     public synchronized void stopRecognition() {
         if (microphone != null && microphone.isRecording())
             microphone.stopRecording();
+    }
+
+    public synchronized void resetRecognition() {
+        stopRecognition();
+        if (recognizer.getState() != Recognizer.State.DEALLOCATED)
+            recognizer.deallocate();
     }
 
     /**

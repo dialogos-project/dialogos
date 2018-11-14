@@ -75,12 +75,18 @@ public class SphinxContext extends RecognitionContext {
                 String config = SphinxContext.class.getResource("dos-sphinx.config.xml").toString();
                 Context context = new Context(config, configuration);
                 dic = context.getInstance(ExtensibleDictionary.class);
+                dic.loadExceptions(sls.getG2PList());
                 jsgfGrammar = context.getInstance(JSGFGrammar.class);
                 vadListener = context.getInstance(VADListener.class);
                 dflat = context.getInstance(DynamicFlatLinguist.class);
                 csr = new ConfigurableSpeechRecognizer(context, audioSource);
             }
-            dic.loadExceptions(sls.getG2PList());
+            if (sls.revalidateG2P) {
+                csr.resetRecognition();
+                dic.deallocate();
+                dic.loadExceptions(sls.getG2PList());
+                sls.revalidateG2P = false;
+            }
             dflat.setAddOutOfGrammarBranch(threshold != null);
             if (threshold != null)
                 dflat.setOutOfGrammarProbability(threshold);

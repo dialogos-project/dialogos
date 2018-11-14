@@ -1,6 +1,5 @@
 package edu.cmu.lti.dialogos.sphinx.client;
 
-import com.clt.diamant.Preferences;
 import com.clt.speech.Language;
 import edu.cmu.sphinx.api.Configuration;
 
@@ -15,6 +14,7 @@ public class SphinxLanguageSettings {
     private static final Language de_DE = new Language(Locale.GERMANY);
 
     final List<G2PEntry> g2pList  = new ArrayList<>();
+    boolean revalidateG2P = true;
 
     private String acousticModelPath;
     private String dictionaryPath;
@@ -23,6 +23,10 @@ public class SphinxLanguageSettings {
 
     public List<G2PEntry> getG2PList() {
         return g2pList;
+    }
+
+    public void g2pListUpdate() {
+        revalidateG2P = true;
     }
 
     private SphinxLanguageSettings() {}

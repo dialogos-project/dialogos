@@ -155,7 +155,7 @@ public class SphinxTest {
         jsgfGrammar.loadJSGF("onetwo");
 
         recognizer.allocate();
-        System.err.println(recognizer.recognize());
+        assertEquals(recognizer.recognize().toString(), "<sil> one <sil>");
     }
 
     @Test(timeout = 10000) // 10 seconds should be enough to fail

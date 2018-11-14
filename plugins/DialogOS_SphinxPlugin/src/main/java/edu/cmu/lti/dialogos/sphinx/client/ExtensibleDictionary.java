@@ -43,6 +43,7 @@ public class ExtensibleDictionary extends TextDictionary {
                 sb.append(e.getPhonemes());
                 sb.append("\n");
             }
+            System.err.println(sb.toString());
             addendaUrlList.clear();
             addendaUrlList.add(new URL(sb.toString()));
         }

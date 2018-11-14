@@ -131,6 +131,7 @@ public class Settings extends PluginSettings {
             public void actionPerformed(ActionEvent actionEvent) {
                 PronDictDialog.showDialog(p, Plugin.getRecognizer().getLanguageSettings(defaultLanguage.getValue().getLanguage()).getG2PList(), 
                         Resources.getString("PronunciationDict"));
+                Plugin.getRecognizer().getLanguageSettings(defaultLanguage.getValue().getLanguage()).g2pListUpdate();
             }
         }), BorderLayout.CENTER);
         p.add(new JLabel(""), BorderLayout.SOUTH);
