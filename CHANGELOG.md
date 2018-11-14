@@ -1,3 +1,11 @@
+**Version 2.0.2**
+
+Unreleased
+
+- Deleting a speech recognizer node no longer crashes DialogOS.
+- Better error reporting from various parts of DialogOS.
+
+
 **Version 2.0.1, 25 October 2018**
 
 Released by @alexanderkoller
