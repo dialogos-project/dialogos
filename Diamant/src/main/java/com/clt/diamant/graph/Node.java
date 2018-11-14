@@ -640,6 +640,11 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
      * Property-window, with which the user can configure attributes like the
      * name of the node, its color, etc.
      *
+     * This is called every time when the settings of a node are opened (i.e., the editor component is never cached).
+     *
+     * Make sure that your code within this method only edits what's in the local properties map, not this.properties!
+     * This is necessary for proper functioning of the "Cancel" button and proper propagation to propertyChangeListeners
+     *
      * @return A reference on the created JComponent.
      */
     abstract public JComponent createEditorComponent(Map<String, Object> properties);
