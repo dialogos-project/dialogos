@@ -772,10 +772,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                                                         public void windowOpened(WindowEvent e) {
 
                                                             if (SingleDocumentWindow.this.runtime instanceof Window) {
-                                                                ((Window) SingleDocumentWindow.this.runtime)
-                                                                        .toFront();
-                                                                ((Window) SingleDocumentWindow.this.runtime)
-                                                                        .requestFocus();
+                                                                ((Window) SingleDocumentWindow.this.runtime).toFront();
+                                                                ((Window) SingleDocumentWindow.this.runtime).requestFocus();
                                                             }
                                                         }
 
@@ -783,18 +781,16 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                                                         public void windowClosed(WindowEvent e) {
 
                                                             if (SingleDocumentWindow.this.runtime instanceof Window) {
-                                                                ((Window) SingleDocumentWindow.this.runtime)
-                                                                        .toFront();
-                                                                ((Window) SingleDocumentWindow.this.runtime)
-                                                                        .requestFocus();
+                                                                ((Window) SingleDocumentWindow.this.runtime).toFront();
+                                                                ((Window) SingleDocumentWindow.this.runtime).requestFocus();
                                                             }
                                                         }
                                                     });
                                                 }
+                                                
                                                 this.editors.push(d);
                                             } else {
-                                                final Graph origGraph
-                                                        = SingleDocumentWindow.this.getMainView().getGraph();
+                                                final Graph origGraph = SingleDocumentWindow.this.getMainView().getGraph();
                                                 SingleDocumentWindow.this.setMainView(g);
                                                 this.editors.push(new GraphEditor() {
 
@@ -810,14 +806,12 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                                                     public boolean isShowing() {
 
-                                                        return SingleDocumentWindow.this.getMainView() == this
-                                                                .getGraphUI();
+                                                        return SingleDocumentWindow.this.getMainView() == this.getGraphUI();
                                                     }
 
                                                     public GraphOwner getGraphOwner() {
 
-                                                        return SingleDocumentWindow.this
-                                                                .getGraphOwner();
+                                                        return SingleDocumentWindow.this.getGraphOwner();
                                                     }
 
                                                     public GraphUI getGraphUI() {
@@ -842,64 +836,43 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                                     public void run() {
 
                                         try {
-                                            ExecutionResult r = doc.run(SingleDocumentWindow.this,
-                                                                        SingleDocumentWindow.this.runtime);
+                                            ExecutionResult r = doc.run(SingleDocumentWindow.this, SingleDocumentWindow.this.runtime);
 
                                             if (r.getNode() == null) {
                                                 if (r.getType() == ExecutionResult.INFORMATION) {
-                                                    OptionPane.timedMessage(SingleDocumentWindow.this,
-                                                                            r.getMessage(), Resources
-                                                                            .getString("Message"),
-                                                                            OptionPane.INFORMATION, 5000);
+                                                    OptionPane.timedMessage(SingleDocumentWindow.this, r.getMessage(), 
+                                                            Resources.getString("Message"), OptionPane.INFORMATION, 5000);
                                                 } else {
-                                                    OptionPane.message(SingleDocumentWindow.this, r
-                                                                       .getMessage(),
-                                                                       Resources.getString("Error"),
-                                                                       OptionPane.ERROR);
+                                                    OptionPane.message(SingleDocumentWindow.this, r.getMessage(),
+                                                            Resources.getString("Error"), OptionPane.ERROR);
                                                 }
                                             } else {
-                                                int result
-                                                        = OptionPane
-                                                                .showOptionDialog(
-                                                                        SingleDocumentWindow.this,
-                                                                        r.getMessage(),
-                                                                        r.getType() == ExecutionResult.INFORMATION
-                                                                        ? Resources
-                                                                                .getString("Message")
-                                                                        : Resources.getString("Error"),
-                                                                        OptionPane.DEFAULT_OPTION,
-                                                                        r.getType() == ExecutionResult.INFORMATION
-                                                                        ? OptionPane.INFORMATION
-                                                                        : OptionPane.ERROR,
-                                                                        null,
-                                                                        new String[]{GUI.getString("OK"),
-                                                                            Resources.getString("ShowNode")},
-                                                                        GUI.getString("OK"));
+                                                int result = OptionPane.showOptionDialog(SingleDocumentWindow.this, r.getMessage(),
+                                                        r.getType() == ExecutionResult.INFORMATION ? Resources.getString("Message") : Resources.getString("Error"),
+                                                        OptionPane.DEFAULT_OPTION, r.getType() == ExecutionResult.INFORMATION ? OptionPane.INFORMATION : OptionPane.ERROR,
+                                                        null, new String[]{GUI.getString("OK"), Resources.getString("ShowNode")}, GUI.getString("OK"));
+                                                
                                                 if (result == 1) {
-                                                    GraphOwner owner = r.getNode().getGraph()
-                                                            .getOwner();
-                                                    if ((owner == doc)
-                                                            && (SingleDocumentWindow.this.mainView != null)) {
-                                                        SingleDocumentWindow.this.mainView
-                                                                .getSelectionModel().clear();
+                                                    GraphOwner owner = r.getNode().getGraph().getOwner();
+                                                    
+                                                    if ((owner == doc) && (SingleDocumentWindow.this.mainView != null)) {
+                                                        SingleDocumentWindow.this.mainView.getSelectionModel().clear();
                                                     }
+                                                    
                                                     GraphEditor editor = GraphEditorFactory.show(owner);
-                                                    editor.getGraphUI().getSelectionModel().add(
-                                                            r.getNode());
+                                                    editor.getGraphUI().getSelectionModel().add(r.getNode());
                                                 }
                                             }
-
                                         } catch (InvocationTargetException exn) {
                                             if (exn.getTargetException() instanceof UserCanceledException) {
-                                                OptionPane.message(SingleDocumentWindow.this, Resources
-                                                                   .getString("ExecutionStopped"));
+                                                OptionPane.message(SingleDocumentWindow.this, Resources.getString("ExecutionStopped"));
                                             } else {
-                                                OptionPane.error(SingleDocumentWindow.this, exn
-                                                                 .getTargetException());
+                                                OptionPane.error(SingleDocumentWindow.this, exn.getTargetException());
                                             }
                                         } catch (Exception exn) {
                                             OptionPane.error(SingleDocumentWindow.this, exn);
                                         }
+                                        
                                         synchronized (SingleDocumentWindow.this.runtime) {
                                             SingleDocumentWindow.this.runtime = null;
                                             SingleDocumentWindow.this.executionThread = null;
@@ -919,10 +892,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                     break;
 
                 case cmdDelay:
-                    String s
-                            = OptionPane.edit(null, Resources.getString("PleaseEnterDelay"),
-                                              Resources
-                                                      .getString("SetDelay"), String.valueOf(this.delay));
+                    String s = OptionPane.edit(null, Resources.getString("PleaseEnterDelay"),
+                                              Resources.getString("SetDelay"), String.valueOf(this.delay));
                     if (s != null) {
                         try {
                             this.delay = Integer.parseInt(s);
@@ -937,12 +908,9 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                 case cmdValidate:
                     try {
-                        final Collection<SearchResult> errors
-                                = new LinkedList<SearchResult>();
+                        final Collection<SearchResult> errors = new LinkedList<SearchResult>();
 
-                        new ProgressDialog(this, 1000).run(new DefaultLongAction(Resources
-                                .format(
-                                        "ValidatingX", doc.getGraphName())) {
+                        new ProgressDialog(this, 1000).run(new DefaultLongAction(Resources.format("ValidatingX", doc.getGraphName())) {
 
                             @Override
                             public void run(ProgressListener l) {
@@ -950,6 +918,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                                 doc.validate(errors, l);
                             }
                         });
+                        
                         if (errors.size() > 0) {
                             SearchResultsDialog.show(this, Resources
                                                      .getString("DocumentProblems"),
@@ -960,6 +929,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                     } catch (InvocationTargetException exn) {
                         OptionPane.error(this, exn.getTargetException());
                     }
+                    
                     break;
 
                 default:
@@ -971,11 +941,14 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             }
         } catch (ThreadDeath d) {
             throw d;
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception t) {
+            // This is the global exception handler for all the commands that
+            // can be handled in this method.
+            
+            OptionPane.error(SingleDocumentWindow.this, t);
+
             System.gc();
             System.gc();
-            OptionPane.error(this, "Unexpected error: " + t.toString());
         }
         this.updateMenus();
         return cmdHandled;

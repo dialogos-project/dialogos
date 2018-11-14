@@ -104,6 +104,7 @@ import com.clt.diamant.gui.GraphEditorFactory;
 import com.clt.diamant.gui.GroovyScriptEditorDialog;
 import com.clt.diamant.gui.GroovyVariableDialog;
 import com.clt.diamant.gui.InputHandlerDialog;
+import com.clt.diamant.gui.SingleDocumentWindow;
 import com.clt.diamant.gui.Toolbox;
 import com.clt.diamant.gui.VariableDialog;
 import com.clt.diamant.undo.CanvasEdit;
@@ -130,9 +131,7 @@ import javax.swing.UIManager;
  * GraphUI is a JPanel which displays the nodes and the edges of a DialogOS
  * automaton. It supports undo and redo functionality.
  */
-public class GraphUI
-        extends JPanel
-        implements MenuCommander, Commands, Printable, PropertyChangeListener, ClipboardOwner, GraphListener {
+public class GraphUI extends JPanel implements MenuCommander, Commands, Printable, PropertyChangeListener, ClipboardOwner, GraphListener {
 
     private static final Clipboard clipboard = new Clipboard("Graph");
 
@@ -339,8 +338,8 @@ public class GraphUI
                             return;
                         }
                     }
-                } catch (Throwable t) {
-                    t.printStackTrace();
+                } catch (Exception exn) {
+                    OptionPane.error(GraphUI.this, exn);
                 }
                 // Ein Problem ist aufgetreten
                 e.rejectDrop();

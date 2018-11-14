@@ -565,8 +565,7 @@ abstract public class AbstractInputNode extends Node {
                             }
                         } catch (ThreadDeath d) {
                             throw d;
-                        } catch (Throwable exn) {
-                            exn.printStackTrace();
+                        } catch (Exception exn) {
                             OptionPane.error(test, exn);
                         }
                     }
@@ -732,7 +731,7 @@ abstract public class AbstractInputNode extends Node {
                     public void newAudio(byte[] audio) {
                         try {
                             levelMeter.getStream().write(audio);
-                        } catch (IOException e) {
+                        } catch (IOException e) {                            
                             e.printStackTrace();
                         }
                     }
@@ -1173,14 +1172,11 @@ abstract public class AbstractInputNode extends Node {
 
     @Override
     public String getDescription(Edge selectedEdge) {
+        StringBuilder buffer = new StringBuilder(super.getDescription(selectedEdge));
 
-        StringBuilder buffer = new StringBuilder(super
-                .getDescription(selectedEdge));
-
-        buffer.append("<p><b>" + this.html(Resources.getString("Keywords"))
-                + ":</b>");
-        buffer
-                .append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+        buffer.append("<p><b>" + this.html(Resources.getString("Keywords")) + ":</b>");
+        buffer.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+        
         for (int i = 0; i < this.numEdges(); i++) {
             Edge e = this.getEdge(i);
             buffer.append("<tr>");
@@ -1211,7 +1207,7 @@ abstract public class AbstractInputNode extends Node {
     @Override
     public void setGraph(Graph g) {
         super.setGraph(g);
-
+        
         if (g != null) {
             this.setProperty(LANGUAGE, getDefaultLanguage());
         }
