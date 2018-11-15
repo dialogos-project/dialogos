@@ -4,6 +4,8 @@ plugins {
   id 'com.github.hierynomus.license' version '0.14.0'
 }
 
+apply plugin: 'maven-publish' // to provide "gradlew publishToMavenLocal"
+
 allprojects {
   repositories {
     mavenCentral()
