@@ -21,7 +21,7 @@ public class Version {
 
     public static final int MAJOR_VERSION = 2;
     public static final int MINOR_VERSION = 0;
-    public static final int BUGFIX_VERSION = 2;
+    public static final int BUGFIX_VERSION = 3;
 //    public static final String NONRELEASE = "beta1";
     public static final boolean IS_NONRELEASE = true;
 
@@ -36,7 +36,7 @@ public class Version {
             return null;
         }
     }
-    
+
     public static String getBuildTimestamp() {
         InputStream is = Version.class.getResourceAsStream("/VERSION");
         Properties props = new Properties();
@@ -48,7 +48,7 @@ public class Version {
             return null;
         }
     }
-    
+
     public static String[] getVersionLines() {
         StringBuffer b = new StringBuffer();
 
@@ -65,7 +65,7 @@ public class Version {
             b.append(" rev ");
             b.append(getShortGitRevision());
         }
-        
+
         if( Version.IS_NONRELEASE ) {
             String line2 = getBuildTimestamp();
             return new String[] { b.toString(), line2 };
@@ -76,7 +76,7 @@ public class Version {
 
     public static String getVersion() {
         String[] lines = getVersionLines();
-        
+
         if( lines.length > 1 ) {
             String s = String.join("<br/>", lines);
             return "<html>" + s + "</html>";
@@ -84,7 +84,7 @@ public class Version {
             return lines[0];
         }
     }
-    
+
     public static String getVersionNoLinebreaks() {
         String[] lines = getVersionLines();
         return String.join(" ", lines);
