@@ -8,3 +8,4 @@ dependencies {
   implementation group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2' //Französisch,männlich
 
 }
+

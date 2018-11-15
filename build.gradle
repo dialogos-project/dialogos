@@ -13,7 +13,8 @@ allprojects {
     mavenCentral()
     jcenter()
     maven { url "https://jitpack.io/" }
-  }
+    mavenLocal()
+}
 
   apply plugin: 'java'
   sourceCompatibility = '1.8'
@@ -45,8 +46,19 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.github.dialogos-project'
             artifactId = 'dialogos'
-
             from components.java
+        }
+    }
+}
+
+subprojects{
+    publishing {
+        publications {
+            "$project.name"(MavenPublication) {
+                groupId = 'com.github.dialogos-project'
+                artifactId = project.name
+                from components.java
+            }
         }
     }
 }
