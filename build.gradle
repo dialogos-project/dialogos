@@ -7,9 +7,9 @@ plugins {
 apply plugin: 'maven-publish' // to provide "gradlew publishToMavenLocal"
 
 allprojects {
-  version = '2.0.2-SNAPSHOT'  // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
+  version = '2.0.2'  // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
   group = 'com.github.dialogos-project'
-  
+
   repositories {
     mavenCentral()
     jcenter()
@@ -39,7 +39,7 @@ run {
   systemProperties System.getProperties()
 }
 
-def version = '2.0.2-SNAPSHOT' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
+def version = '2.0.2' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
 def group = "com.github.dialogos-project"
 
 
@@ -88,10 +88,10 @@ task clean_all {
 
 task clientLibrary(type:Jar) {
     manifest {
-        attributes 'Implementation-Title': 'DialogOS Client Library',  
+        attributes 'Implementation-Title': 'DialogOS Client Library',
         'Implementation-Version': version
     }
-    
+
     baseName = 'dialogos-client-' + version
 
     // collect dependencies from subprojects
@@ -116,9 +116,9 @@ task clientLibrary(type:Jar) {
                   "com.clt.script/build/libs/com.clt.script.jar",
                   "ClientInterface/build/libs/ClientInterface.jar"
                  ]).collect { zipTree(it) } }
-    
+
     // generate Jar file
-    with jar  
+    with jar
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
