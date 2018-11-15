@@ -8,6 +8,7 @@ apply plugin: 'maven-publish' // to provide "gradlew publishToMavenLocal"
 
 allprojects {
   version = '2.0.2-SNAPSHOT'  // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
+  group = 'com.github.dialogos-project'
   
   repositories {
     mavenCentral()
@@ -39,6 +40,8 @@ run {
 }
 
 def version = '2.0.2-SNAPSHOT' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
+def group = "com.github.dialogos-project"
+
 
 // configuration for maven-publish plugin
 publishing {
@@ -50,6 +53,8 @@ publishing {
         }
     }
 }
+
+
 
 subprojects{
     publishing {
