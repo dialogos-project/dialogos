@@ -7,6 +7,8 @@ plugins {
 apply plugin: 'maven-publish' // to provide "gradlew publishToMavenLocal"
 
 allprojects {
+  version = '2.0.2-SNAPSHOT'  // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
+  
   repositories {
     mavenCentral()
     jcenter()
@@ -35,8 +37,19 @@ run {
   systemProperties System.getProperties()
 }
 
-def version = '2.0.2-SNAPSHOT'
+def version = '2.0.2-SNAPSHOT' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT
 
+// configuration for maven-publish plugin
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.github.dialogos-project'
+            artifactId = 'dialogos'
+
+            from components.java
+        }
+    }
+}
 
 task allJavadoc(type: Javadoc) {
     source subprojects.collect { it.sourceSets.main.allJava }
