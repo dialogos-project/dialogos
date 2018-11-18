@@ -1292,8 +1292,8 @@ public class Grammar implements NamedEntity {
             case TEMIC:
             case JSGF:
             case JSGFwithGarbage:
-                w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "ISO-8859-1")));
-                w.println("#JSGF V1.0 ISO-8859-1;");
+                w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "UTF-8")));
+                w.println("#JSGF V1.0 UTF-8;");
                 w.println();
                 break;
             case VOCON:
@@ -1357,7 +1357,7 @@ public class Grammar implements NamedEntity {
                 } else {
                     w = new PrintWriter(new BufferedWriter(out));
                 }
-                w.println("#JSGF V1.0;");
+                w.println("#JSGF V1.0 UTF-8;");
                 w.println();
                 break;
             case LH:
