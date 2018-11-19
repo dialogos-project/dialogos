@@ -15,7 +15,7 @@ import com.clt.script.exp.Value;
 import com.clt.script.exp.types.StructType;
 
 /**
- * A feature structure, consisting of a mapping from labels to values.
+ * A dictionary, consisting of a mapping from labels to values.
  *
  * @author Daniel Bobbert
  * @version 1.0

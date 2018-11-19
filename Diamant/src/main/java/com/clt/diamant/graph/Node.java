@@ -57,11 +57,47 @@ import com.clt.util.StringTools;
 import com.clt.xml.AbstractHandler;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
+import javax.swing.JTabbedPane;
 
 /**
- * To retrieve the NodeUI class, which handles the drawing of the node, use the
- * createUI method. Contains Edges. The first edge can be retrieved with
- * <code>getEdge(0)</code>
+ * A node of a dialog graph. Each node has a list of ports through which
+ * it connects to outgoing edges. You can add outgoing ports by calling
+ * the {@link #addEdge() } method. The incoming and outgoing edges of
+ * the node are then created by dragging edges in the GUI.<p>
+ * 
+ * Node is an abstract base class. To implement your own node class,
+ * you need to implement the methods {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger) }
+ * and {@link #createEditorComponent(java.util.Map) }, which see below.
+ * You can then define any behavior that you want within the execute
+ * method.<p>
+ * 
+ * Nodes of your class have a <i>name</i>, which appears
+ * both in the node palette on the right of the DialogOS window and as
+ * default labels of new nodes of your class. The name is determined in a somewhat
+ * complex way, see {@link #getLocalizedNodeTypeName(java.lang.Class) }.
+ * Node types may also have an <i>icon</i>, which appears
+ * next to the node name in DialogOS. For the icon, DialogOS looks for a
+ * PNG file in the classpath. If the fully qualified name of a node class
+ * is com.myproject.MyNode, then the pathname of this file must be
+ * com/myproject/MyNode.png. Under normal circumstances, "com" would then
+ * be a subdirectory of src/main/resources.<p>
+ * 
+ * Nodes also have <i>properties</i>, i.e. values which can be edited
+ * in the GUI and will be saved with the dialog (e.g. the text a TTS
+ * node should speak). 
+ * A node class will typically declare some properties using {@link #setProperty(java.lang.String, java.lang.Object) }.
+ * {@link #createEditorComponent(java.util.Map) } will create Swing
+ * components for editing them using the methods in {@link NodePropertiesDialog}.
+ * {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger) } will
+ * then read out the values of properties using {@link #getProperty(java.lang.String) }.<p>
+ * 
+ * 
+ * A node is not useful by itself. It usually comes as part of a
+ * <a href="https://github.com/dialogos-project/dialogos/wiki/Plugins">plugin</a>.
+ * When the plugin is loaded, it can register its node types
+ * by calling {@link #registerNodeTypes(java.lang.Object, java.util.Collection) }.<p>
+ * 
+ * The UI for the node is handled by {@link com.clt.diamant.graph.ui.NodeUI}.
  */
 public abstract class Node extends VisualGraphElement implements IdentityObject {
 
@@ -401,7 +437,10 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * Adds an edge to the node.
+     * Adds an edge to the node. The "edge" has this node
+     * as the source and a null target. It is visually represented
+     * as an outgoing port (little triangle) of the node in the GUI,
+     * and can be connected to an actual target node by drawing an edge.
      *
      * @return Return the reference to that edge.
      */
@@ -460,7 +499,8 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * Get an edge at the stated index
+     * Retrieves an outgoing edge of this node. The edge at the first
+     * outgoing port is index 0, and so on.
      *
      * @param index
      * @return reference to the edge
@@ -625,7 +665,17 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * DialogOS calls this function when this node becomes the "active" node.
+     * This method is called by DialogOS whenever this node becomes the
+     * "active" node during a run of the dialog graph. It thus performs the
+     * main functionality of the node class. The method is expected to return
+     * the node that should become active next. These nodes can be found
+     * by calling {@link #getEdge(int) } for the chosen outgoing port and
+     * retrieving its {@link Edge#getTarget() }.<p>
+     * 
+     * An implementation of execute will typically want to access the
+     * value of a node property that was set in the properties window
+     * of the node (e.g., the text that a TTS system should speak).
+     * You can access the node properties by name using {@link #getProperty(java.lang.String) }.<p>
      *
      * @param comm
      * @param input
@@ -635,15 +685,24 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     abstract public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger);
 
     /**
-     * Creates a JComponent to change the setting of this node. DialogOS wraps
-     * this Editor-Component in a JTabbedPane, and puts it in the
-     * Property-window, with which the user can configure attributes like the
-     * name of the node, its color, etc.
-     *
-     * This is called every time when the settings of a node are opened (i.e., the editor component is never cached).
-     *
-     * Make sure that your code within this method only edits what's in the local properties map, not this.properties!
-     * This is necessary for proper functioning of the "Cancel" button and proper propagation to propertyChangeListeners
+     * Creates a Swing component for editing the properties of this node.
+     * This method is called whenever the user opens the node's properties
+     * window (by double-clicking on the node or by right-clicking and
+     * selecting "Properties..."). By default, the properties window contains
+     * one tab with title "General". The component returned by createEditorComponent
+     * should be a {@link JTabbedPane}, which is added as another tab to the right of the
+     * "General" tab.<p>
+     * 
+     * The JTabbedPane will typically contain Swing components for editing
+     * the properties of the node. Properties are initially created 
+     * by {@link #setProperty(java.lang.String, java.lang.Object) }.
+     * You can create Swing components for properties by calling the methods
+     * of {@link NodePropertiesDialog}. The values of such properties
+     * are automatically updated when you close the properties window
+     * by clicking "Ok". You can also update the values of properties by
+     * changing the entries in the "properties" argument. (Do <i>not</i>
+     * change the values of this.properties directly; this is necessary for proper 
+     * functioning of the "Cancel" button and proper propagation to propertyChangeListeners.
      *
      * @return A reference on the created JComponent.
      */
