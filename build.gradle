@@ -78,6 +78,7 @@ task allJavadoc(type: Javadoc) {
 // package Javadoc into one Jar file in build/libs
 task javadocJar(type: Jar, dependsOn: allJavadoc) {
     classifier = 'javadoc'
+    archiveName = 'javadoc.jar'
     from javadoc.destinationDir
 }
 
