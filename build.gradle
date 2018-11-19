@@ -83,11 +83,6 @@ task javadocJar(type: Jar, dependsOn: allJavadoc) {
     from javadoc.destinationDir
 }
 
-// ensure that Javadoc is generated and archived on Jitpack
-publishToMavenLocal {
-  dependsOn(javadocJar)
-}
-
 artifacts {
     archives javadocJar
 }
