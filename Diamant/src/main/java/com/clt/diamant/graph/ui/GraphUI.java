@@ -692,8 +692,7 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
         }
 
         Map<Object, List<Class<Node>>> allNodeTypes = Node.getAvailableNodeTypes();
-        for (Iterator<Object> keys = allNodeTypes.keySet().iterator(); keys
-                .hasNext();) {
+        for (Iterator<Object> keys = allNodeTypes.keySet().iterator(); keys.hasNext();) {
             Object key = keys.next();
             if (structured) {
                 nodeMenu = new JMenu(key.toString());

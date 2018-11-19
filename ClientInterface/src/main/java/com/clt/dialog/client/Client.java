@@ -35,9 +35,9 @@ import com.clt.script.exp.Value;
  * connector with the port number that the client passed to {@link #open(int) }
  * .<p>
  *
- * Clients can send data back to the server. This data may include results of a
+ * Clients can send data back to DialogOS. This data may include results of a
  * speech recognizer, sensor input etc. Simply call {@link #send(java.lang.Object)
- * } to send data to the server. The server will internally queue and filter
+ * } to send data to DialogOS. DialogOS will internally queue and filter
  * your data, so you can call <code>send</code> at any time.<p>
  *
  * "Output" messages that are sent to the client are internally queued, and
@@ -60,7 +60,7 @@ import com.clt.script.exp.Value;
  * this case you should abort the currently playing sample).
  * <p>
  *
- * <code>waitUntilDone</code> is called when the server wants to make sure that
+ * <code>waitUntilDone</code> is called when DialogOS wants to make sure that
  * the client has finished processing all pending output events. If you do not
  * start any new threads from your <code>output</code> callback you do not have
  * to implement <code>waitUntilDone</code>. But if you have started new threads,
@@ -105,7 +105,7 @@ public abstract class Client {
      * setup its internal state for the beginning of a new dialog session.<p>
      *
      * This callback should not be used for initialization actions that takes
-     * more than a second because the server expects the client to be active
+     * more than a second because DialogOS expects the client to be active
      * immediately.
      */
     public abstract void sessionStarted();
@@ -192,7 +192,7 @@ public abstract class Client {
     public abstract String getName();
 
     /**
-     * Notification that the server is waiting for the client to finish all
+     * Notification that DialogOS is waiting for the client to finish all
      * output. The default implementation assumes that you haven't started any
      * new threads from your <code>output</code> handler so it simply returns.
      * If you start your own threads from <code>output</code> you need to
@@ -238,7 +238,7 @@ public abstract class Client {
     }
 
     /**
-     * Send data to the server.
+     * Send data to DialogOS.<p>
      *
      * This should be an instance of {@link com.clt.script.exp.Value}.
      * <code>Client</code> tries to automatically map instances of other classes
@@ -294,7 +294,7 @@ public abstract class Client {
     }
 
     /**
-     * Send a log message to the server.
+     * Send a log message to DialogOS.
      */
     public void log(String message) throws IOException {
         synchronized (this.lock) {
@@ -308,7 +308,7 @@ public abstract class Client {
 
     /**
      * Start the client using a randomly chosen free port. The client will
-     * advertise its service to any server on the local network using the name
+     * advertise its service to any DialogOS on the local network using the name
      * that is returned by {@link #getName}. When a connection is lost or
      * terminated the client will immediately try to reopen it. The client will
      * select a free port automatically.
@@ -323,7 +323,7 @@ public abstract class Client {
 
     /**
      * Start the client on the given port. The client will advertise its service
-     * to any server on the local network using the name that is returned by
+     * to any DialogOS on the local network using the name that is returned by
      * {@link #getName}. When a connection is lost or terminated the client will
      * immediately try to reopen it. The client will use the given port.
      *
@@ -331,8 +331,7 @@ public abstract class Client {
      *
      * @see #close
      */
-    public void open(int port)
-            throws IOException {
+    public void open(int port) throws IOException {
 
         synchronized (this.lock) {
             if (this.device != null) {
@@ -408,9 +407,8 @@ public abstract class Client {
     /**
      * Return whether this client should be <em>publicly</em> advertised using
      * Rendezvous. The default returns true. Override to make your client
-     * private (i.e. only visible by servers running on the same machine). The
-     * client will still be accessible for servers that connect directly to the
-     * client's port.
+     * private (i.e. only visible by DialogOS instances running on the same machine). The
+     * client will still be accessible to the "Fixed Server" connector.
      *
      * @see #useRendezvous()
      */

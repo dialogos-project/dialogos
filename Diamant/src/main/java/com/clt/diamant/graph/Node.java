@@ -165,6 +165,18 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
         Node.NODE_TYPES.put(key, classes);
     }
 
+    /**
+     * Registers the given node types with DialogOS, making them appear
+     * in the node palette.<p>
+     * 
+     * The "key" is an ID for a group of nodes. Nodes with the same key
+     * are kept together in the node palette, and a separator line is
+     * drawn between nodes with different keys. A good choice for the
+     * key is the plugin ID.
+     * 
+     * @param key
+     * @param nodeTypes 
+     */
     @SuppressWarnings("unchecked")
     public static void registerNodeTypes(Object key, Collection<Class<?>> nodeTypes) {
         if (Node.NODE_TYPES == null) {
