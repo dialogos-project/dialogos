@@ -68,11 +68,28 @@ subprojects{
     }
 }
 
+// generate Javadoc for all subprojects and collect them together
 task allJavadoc(type: Javadoc) {
     source subprojects.collect { it.sourceSets.main.allJava }
     classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
     destinationDir = file("${buildDir}/docs/javadoc")
 }
+
+// package Javadoc into one Jar file in build/libs
+task javadocJar(type: Jar, dependsOn: allJavadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// ensure that Javadoc is generated and archived on Jitpack
+publishToMavenLocal {
+  dependsOn(javadocJar)
+}
+
+artifacts {
+    archives javadocJar
+}
+
 
 
 task clean_all {
