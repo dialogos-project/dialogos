@@ -50,6 +50,8 @@ publishing {
             groupId = 'com.github.dialogos-project'
             artifactId = 'dialogos'
             from components.java
+
+	    artifact javadocJar
         }
     }
 }
