@@ -12,7 +12,7 @@ import com.clt.script.exp.Value;
  * to DialogOS as "devices". Clients receive data from DialogOS
  * <a href="https://github.com/dialogos-project/dialogos/wiki/Nodes#output-node">Output
  * nodes</a>, and can send data to DialogOS, to be received by
- * <a href="https://github.com/dialogos-project/dialogos/wiki/Nodes#input-1>Input
+ * <a href="https://github.com/dialogos-project/dialogos/wiki/Nodes#input-1">Input
  * nodes</a>.<p>
  *
  * Implementing a client requires three steps:
