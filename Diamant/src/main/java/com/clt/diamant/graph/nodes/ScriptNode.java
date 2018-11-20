@@ -81,7 +81,7 @@ public class ScriptNode extends Node {
         } catch (EvaluationException exn) {
             throw new NodeExecutionException(this, "", exn, logger);
         } catch (Exception exn) {
-            throw new NodeExecutionException(this, Resources.getString("IllegalScript"), exn, logger);
+            throw new NodeExecutionException(this, Resources.getString("ScriptExecutionError"), exn, logger);
         }
 
         s.execute(comm);
@@ -101,13 +101,10 @@ public class ScriptNode extends Node {
                     this.getGraph().getEnvironment(true)).check(
                     warnings);
             for (String warning : warnings) {
-                this.reportError(errors, false, Resources
-                        .getString("containsProblematicExpression")
-                        + ". " + warning);
+                this.reportError(errors, false, Resources.getString("containsProblematicExpression") + ". " + warning);
             }
         } catch (Exception exn) {
-            this.reportError(errors, false, Resources.getString("IllegalScript") + ": "
-                    + exn.getLocalizedMessage());
+            this.reportError(errors, false, Resources.getString("ScriptValidationError") + ": " + exn.getLocalizedMessage());
         }
     }
 

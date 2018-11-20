@@ -524,11 +524,8 @@ public class SingleDocument extends Document implements GraphOwner {
 
     }
 
-    public void validate(Collection<SearchResult> errors,
-            ProgressListener progress) {
-
+    public void validate(Collection<SearchResult> errors, ProgressListener progress) {
         super.validate(errors, progress);
-
         this.graph.validate(errors, progress);
     }
 
