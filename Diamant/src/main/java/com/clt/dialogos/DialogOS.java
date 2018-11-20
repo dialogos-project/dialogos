@@ -17,6 +17,10 @@ import com.clt.util.Misc;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author dabo, 2mfriedr
@@ -47,12 +51,31 @@ public class DialogOS {
 
         return null;
     }
+    
+    // Enforce that the character encoding is UTF-8.
+    // This is a trick from http://araklefeistel.blogspot.com/2015/10/set-fileencoding-in-jvm.html
+    private static void enforceUtf8() {
+        try {
+            System.setProperty("file.encoding", "UTF-8");
+            Field cs = Charset.class.getDeclaredField("defaultCharset");
+            cs.setAccessible(true);
+            cs.set(null, null);
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+            System.err.println("An exception occurred while trying to set the character encoding to UTF-8:");
+            System.err.println(ex);
+            System.exit(1);
+        } 
+    }
 
     public static void main(String[] args) {
         boolean execute = false;
         boolean headless = false;
         boolean loadClients = false;
         File model = null;
+        
+         enforceUtf8();        
+//        System.out.println("file.encoding          = " + System.getProperty("file.encoding"));
+//        System.out.println("defaultCharset         = " + Charset.defaultCharset());
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-execute")) {
