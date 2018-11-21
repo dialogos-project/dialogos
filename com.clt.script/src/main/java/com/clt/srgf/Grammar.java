@@ -1294,9 +1294,6 @@ public class Grammar implements NamedEntity {
             case TEMIC:
             case JSGF:
             case JSGFwithGarbage:
-                // AKAKAK #108
-                System.err.println("printing grammar into JSGF, with default encoding " + Charset.defaultCharset());
-                        
                 w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "UTF-8")));
                 w.println("#JSGF V1.0 UTF-8;");
                 w.println();
@@ -1357,15 +1354,9 @@ public class Grammar implements NamedEntity {
             case TEMIC:
             case JSGF:
             case JSGFwithGarbage:
-                // AK #108
-                System.err.println("xxxxx");
-                System.err.println(Charset.defaultCharset());
-                
                 if (out instanceof PrintWriter) {
-                    System.err.println("(printwriter)");
                     w = (PrintWriter) out;
                 } else {
-                    System.err.println("wrapping in printwriter; original writer class is " + out.getClass());
                     w = new PrintWriter(new BufferedWriter(out));
                 }
                 

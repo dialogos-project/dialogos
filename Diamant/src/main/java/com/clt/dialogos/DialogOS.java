@@ -52,7 +52,8 @@ public class DialogOS {
         return null;
     }
     
-    // Enforce that the character encoding is UTF-8.
+    // Enforce that the character encoding is UTF-8,
+    // even on Windows, where the default is CP1252.
     // This is a trick from http://araklefeistel.blogspot.com/2015/10/set-fileencoding-in-jvm.html
     private static void enforceUtf8() {
         try {
@@ -74,8 +75,6 @@ public class DialogOS {
         File model = null;
         
         enforceUtf8();      
-//        System.out.println("file.encoding          = " + System.getProperty("file.encoding"));
-//        System.out.println("defaultCharset         = " + Charset.defaultCharset());
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-execute")) {
