@@ -29,6 +29,7 @@ import com.clt.script.Script;
 import com.clt.script.exp.Value;
 import com.clt.script.parser.ParseException;
 import com.clt.util.NamedEntity;
+import java.nio.charset.Charset;
 
 /**
  * A context free grammar parser.
@@ -1292,6 +1293,7 @@ public class Grammar implements NamedEntity {
             case TEMIC:
             case JSGF:
             case JSGFwithGarbage:
+                System.err.println("printing grammar into JSGF, with default encoding " + Charset.defaultCharset());
                 w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(out, "UTF-8")));
                 w.println("#JSGF V1.0 UTF-8;");
                 w.println();
