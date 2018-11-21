@@ -421,8 +421,7 @@ public class SingleDocument extends Document implements GraphOwner {
                 message = Resources.getString("ExecutionStopped");
                 type = ExecutionResult.INFORMATION;
             } else {
-                message
-                        = new String[]{Resources.getString("ExecutionError"), exn.toString()};
+                message = new String[]{Resources.getString("ExecutionError"), exn.toString()};
                 type = ExecutionResult.ERROR;
                 if (exn instanceof NodeExecutionException) {
                     node = ((NodeExecutionException) exn).getNode();
@@ -450,8 +449,7 @@ public class SingleDocument extends Document implements GraphOwner {
         return new ExecutionResult(type, message, node);
     }
 
-    public void execute(Component parent, final WozInterface transition)
-            throws Exception {
+    public void execute(Component parent, final WozInterface transition) throws Exception {
 
         final InputCenter input = new InputCenter(this.getDevices());
         final ExecutionLogger logger = new ExecutionLogger(graph, getGraphName(), Preferences.getPrefs().loggingEnabled.getValue());
@@ -481,8 +479,7 @@ public class SingleDocument extends Document implements GraphOwner {
                     if (exn.getException() instanceof ExecutionStoppedException) {
                         transition.error("abort", "Execution stopped by user");
                     } else {
-                        transition.error(exn.getClass().getName(), exn
-                                .getLocalizedMessage());
+                        transition.error(exn.getClass().getName(), exn.getLocalizedMessage());
                     }
                     throw exn;
                 } catch (Exception exn) {

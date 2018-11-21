@@ -341,10 +341,9 @@ public class Graph implements IdentityObject {
                 } catch (NodeExecutionException exn) {
                     throw exn;
                 } catch (Exception exn) {
-                    throw new NodeExecutionException(node, Resources
-                            .getString("UnexpectedError"),
-                            exn, logger);
+                    throw new NodeExecutionException(node, Resources.getString("UnexpectedError"), exn, logger);
                 }
+                
                 time = System.currentTimeMillis() - time;
 
                 try {

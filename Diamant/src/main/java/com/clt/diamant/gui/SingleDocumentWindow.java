@@ -840,19 +840,28 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                                             if (r.getNode() == null) {
                                                 if (r.getType() == ExecutionResult.INFORMATION) {
-                                                    OptionPane.timedMessage(SingleDocumentWindow.this, r.getMessage(), 
-                                                            Resources.getString("Message"), OptionPane.INFORMATION, 5000);
+                                                    OptionPane.timedMessage(SingleDocumentWindow.this, r.getMessage(), Resources.getString("Message"), OptionPane.INFORMATION, 5000);
                                                 } else {
-                                                    OptionPane.message(SingleDocumentWindow.this, r.getMessage(),
-                                                            Resources.getString("Error"), OptionPane.ERROR);
+                                                    OptionPane.message(SingleDocumentWindow.this, r.getMessage(), Resources.getString("Error"), OptionPane.ERROR);
                                                 }
                                             } else {
-                                                int result = OptionPane.showOptionDialog(SingleDocumentWindow.this, r.getMessage(),
+                                                int result = OptionPane.showOptionDialog(SingleDocumentWindow.this, 
+                                                        r.getMessage(),
                                                         r.getType() == ExecutionResult.INFORMATION ? Resources.getString("Message") : Resources.getString("Error"),
-                                                        OptionPane.DEFAULT_OPTION, r.getType() == ExecutionResult.INFORMATION ? OptionPane.INFORMATION : OptionPane.ERROR,
-                                                        null, new String[]{GUI.getString("OK"), Resources.getString("ShowNode")}, GUI.getString("OK"));
+                                                        OptionPane.DEFAULT_OPTION, 
+                                                        r.getType() == ExecutionResult.INFORMATION ? OptionPane.INFORMATION : OptionPane.ERROR,
+                                                        null, 
+                                                        new String[] { GUI.getString("OK"), Resources.getString("ShowNode") }, 
+                                                        GUI.getString("OK"));
+                                                
+//                                                System.err.println(result); // debugging for https://github.com/dialogos-project/dialogos/issues/117
                                                 
                                                 if (result == 1) {
+//                                                    System.err.println(r.getNode());
+//                                                    System.err.println(r.getNode().getGraph());
+//                                                    System.err.println(r.getNode().getGraph().getOwner());
+//                                                    System.exit(0);
+                                                    
                                                     GraphOwner owner = r.getNode().getGraph().getOwner();
                                                     
                                                     if ((owner == doc) && (SingleDocumentWindow.this.mainView != null)) {
