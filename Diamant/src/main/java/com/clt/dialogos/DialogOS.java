@@ -73,7 +73,7 @@ public class DialogOS {
         boolean loadClients = false;
         File model = null;
         
-//         enforceUtf8();        
+        enforceUtf8();      
 //        System.out.println("file.encoding          = " + System.getProperty("file.encoding"));
 //        System.out.println("defaultCharset         = " + Charset.defaultCharset());
 
