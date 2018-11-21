@@ -1,3 +1,12 @@
+**Version 2.0.3, 21 November 2018**
+
+Released by @alexanderkoller
+
+- Can now use umlauts in the speech recognizer under Windows (see #108).
+- The recognizer properties window is now correctly localized (see #109).
+- Better error reporting from various parts of DialogOS.
+
+
 **Version 2.0.2, 15 November 2018**
 
 Released by @alexanderkoller
