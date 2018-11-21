@@ -1,3 +1,8 @@
+**Version 2.0.4, unreleased**
+
+Released by ...
+
+
 **Version 2.0.3, 21 November 2018**
 
 Released by @alexanderkoller
