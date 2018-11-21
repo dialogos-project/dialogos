@@ -159,7 +159,7 @@ public class SphinxTest {
     }
 
     @Test(timeout = 10000) // 10 seconds should be enough to fail
-    public void grammarRecognitionTest() throws ParseException, IOException, SpeechException {
+    public void grammarRecognitionTest() throws ParseException, SpeechException {
         Sphinx sphinx = new Sphinx();
         Grammar grammar = Grammar.create(new InputStreamReader(SphinxTest.class.getResourceAsStream("onetwo.gram")));
         grammar.setRoot("main"); // -> it would be nice if Grammar.create would itself keep the public marker for the root rule
@@ -169,6 +169,20 @@ public class SphinxTest {
         sphinx.setContext(context);
         RecognitionResult rr = sphinx.startImpl();
         "one".equals(rr.getAlternative(0).getWords());
+    }
+
+    @Test(timeout = 10000)
+    public void plusOperatorInGrammarTest() throws ParseException, SpeechException {
+        Sphinx sphinx = new Sphinx();
+        Grammar grammar = Grammar.create(new InputStreamReader(SphinxTest.class.getResourceAsStream("yes+no.gram")));
+        grammar.setRoot("main"); // -> it would be nice if Grammar.create would itself keep the public marker for the root rule
+        grammar.setLanguage("english");
+        SphinxContext context = sphinx.createTemporaryContext(grammar, null);
+        context.setAudioSource(SphinxTest.class.getResourceAsStream("one.wav"));
+        sphinx.setContext(context);
+        RecognitionResult rr = sphinx.startImpl();
+        "yes yes yes no".equals(rr.getAlternative(0).getWords());
+
     }
 
 
