@@ -1295,7 +1295,7 @@ public class Grammar implements NamedEntity {
             case JSGF:
             case JSGFwithGarbage:
                 // AKAKAK #108
-                File f = new File("debuglog.txt");
+                File f = new File("d:\\debuglog.txt");
                 PrintWriter fw = new PrintWriter(f);
                 fw.println("printing grammar into JSGF, with default encoding " + Charset.defaultCharset());
                 fw.close();
