@@ -1,7 +1,6 @@
 **Version 2.0.4, unreleased**
 
-Released by ...
-
+- enable use of Kleene plus (positive closure, +) operator in grammars (see #121).
 
 **Version 2.0.3, 21 November 2018**
 
@@ -27,3 +26,8 @@ Released by @alexanderkoller
 
 Changed the visibility of all abstract methods of Node, AbstractInputNode, and AbstractOutputNode to public. This will break Node implementations in which these methods have "protected" visibility. You can make your own Node implementations compatible with DialogOS 2.0.1 by changing their visibility to "public".
 
+**Version 2.0.0, 14 August 2018**
+
+Released by @timobaumann
+
+too many changes to list.
