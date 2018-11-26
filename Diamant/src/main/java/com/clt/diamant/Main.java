@@ -137,17 +137,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
         if (Main.projectStartupWindow == null) {
             JFrame projectStartupFrame = new JFrame(Version.PRODUCT_NAME);
             projectStartupFrame.setIconImage(Images.load("logo/DialogOS.png").getImage());
-            @SuppressWarnings("unused")
-            AbstractAction newEmptyProject = new AbstractAction(Resources
-                    .getString("EmptyDialog"), Images.load("NewFile.png")) {
-
-                @Override
-                public void run() {
-
-                    Main.this.createNewDocument(false);
-                    Main.this.closeProjectFrameOnSuccess();
-                }
-            };
             AbstractAction newProject = new AbstractAction(Resources
                     .getString("CreateNewDialog")
                     + "...", Images.load("NewFileWizard.png")) {
@@ -204,7 +193,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
             // update menu bar each time
             CmdMenuBar mbar = new CmdMenuBar();
             JMenu menu = new JMenu(Resources.getString("File"));
-            // menu.add(new JMenuItem(newEmptyProject));
             menu.add(new JMenuItem(newProject));
             menu.add(new JMenuItem(openProject));
 
@@ -218,7 +206,8 @@ public class Main implements MenuCommander, MenuOwner, Commands {
             }
             mbar.add(menu);
 
-            MenuUtils.addHelpMenu(mbar);
+            // TODO: it would be much better if we could already set up locale switching for the startup window
+            MenuUtils.addHelpMenu(mbar, false);
 
             mbar.updateMenus();
 

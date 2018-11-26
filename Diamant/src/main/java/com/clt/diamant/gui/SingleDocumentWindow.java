@@ -195,21 +195,17 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             }
         };
 
-        this.preferenceListener = new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-
-                if ((e.getSource() == Preferences.getPrefs().showGrid)
-                        || (e.getSource() == Preferences.getPrefs().gridColor)
-                        || (e.getSource() == Preferences.getPrefs().gridSize)) {
-                    SingleDocumentWindow.this.mainView.repaint();
-                } else if ((e.getSource() == Preferences.getPrefs().showToolbox)
-                        || (e.getSource() == Preferences.getPrefs().showProcedureTree)
-                        || (e.getSource() == Preferences.getPrefs().showNodePanel)
-                        || (e.getSource() == Preferences.getPrefs().lastUsedFile)
-                        ) {
-                    SingleDocumentWindow.this.initUI(systemEventHandler);
-                }
+        this.preferenceListener = e -> {
+            if ((e.getSource() == Preferences.getPrefs().showGrid)
+                    || (e.getSource() == Preferences.getPrefs().gridColor)
+                    || (e.getSource() == Preferences.getPrefs().gridSize)) {
+                SingleDocumentWindow.this.mainView.repaint();
+            } else if ((e.getSource() == Preferences.getPrefs().showToolbox)
+                    || (e.getSource() == Preferences.getPrefs().showProcedureTree)
+                    || (e.getSource() == Preferences.getPrefs().showNodePanel)
+                    || (e.getSource() == Preferences.getPrefs().lastUsedFile)
+                    || (e.getSource() == Preferences.getPrefs().locale)) {
+                SingleDocumentWindow.this.initUI(systemEventHandler);
             }
         };
 

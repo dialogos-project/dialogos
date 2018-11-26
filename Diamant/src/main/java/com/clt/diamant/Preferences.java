@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JColorChooser;
@@ -34,6 +35,7 @@ import com.clt.properties.DefaultBooleanProperty;
 import com.clt.properties.DefaultColorProperty;
 import com.clt.properties.DefaultFileProperty;
 import com.clt.properties.DefaultIntegerProperty;
+import com.clt.properties.EnumProperty;
 import com.clt.properties.FileProperty;
 import com.clt.properties.IntegerProperty;
 import com.clt.properties.Property;
@@ -73,6 +75,9 @@ public class Preferences {
     public final FileProperty loggingDirectory;
     public final List<File> additional_mru;
 
+    public final EnumProperty<Locale> locale;
+    private final BooleanProperty startWithDefaultLocale;
+
     private final Map<String, Color> defaultNodeColors;
 
     private final List<ChangeListener> changeListeners = new ArrayList<ChangeListener>();
@@ -105,7 +110,6 @@ public class Preferences {
     }
 
     private Preferences() {
-
         this.showSubgraphPath = this.createBooleanProperty("showSubgraphPath", true);
         this.showEdgeLabels = this.createBooleanProperty("showEdgeLabels", false);
         this.showSelectionNeighbours = this.createBooleanProperty("showSelectionNeighbours", false);
@@ -127,7 +131,6 @@ public class Preferences {
 
             @Override
             public String getName() {
-
                 return Resources.getString(this.getID());
             }
         };
@@ -136,6 +139,37 @@ public class Preferences {
         this.neighbourColor = this.createColorProperty("neighbourColor", new Color(255, 192, 40));
         this.gridColor = this.createColorProperty("gridColor", new Color(224, 224, 255));
 
+        this.locale = new EnumProperty<Locale>("locale") {
+
+            private Locale[] locales = Locale.getAvailableLocales();
+
+            @Override
+            protected void setValueImpl(Locale locale) {
+                Locale.setDefault(locale);
+            }
+
+            @Override
+            public Locale getValue() {
+                return Locale.getDefault();
+            }
+
+            @Override
+            public String getName() {
+                return Resources.getString("locale");
+            }
+
+            @Override
+            public String getDescription() {
+                return null;
+            }
+
+            @Override
+            public Locale[] getPossibleValues() {
+                return this.locales;
+            }
+        };
+        this.startWithDefaultLocale = this.createBooleanProperty("startWithDefaultLocale", true);
+
         File logDirectory = new File(defaultDirectory.getPath() + "/logs");
         if (!logDirectory.exists()) {
             logDirectory.mkdirs();
@@ -143,77 +177,56 @@ public class Preferences {
         this.loggingDirectory = new DefaultFileProperty("loggingDirectory", null, null, logDirectory);
 
         this.lastUsedFile = new DefaultFileProperty("lastUsedFile1", null, null, defaultDirectory);
-        this.additional_mru = new ArrayList<File>();
+        this.additional_mru = new ArrayList<>();
 
-        ChangeListener listener = new ChangeListener() {
+        ChangeListener listener = Preferences.this::firePropertyChange;
 
-            public void stateChanged(ChangeEvent evt) {
-
-                Preferences.this.firePropertyChange(evt);
-            }
-        };
         for (Property<?> p : this.getProperties()) {
             p.addChangeListener(listener);
         }
 
-        this.defaultNodeColors = new HashMap<String, Color>();
+        this.defaultNodeColors = new HashMap<>();
     }
 
     private BooleanProperty createBooleanProperty(String name, boolean value) {
-
-        BooleanProperty property = new DefaultBooleanProperty(name, name, null, value) {
-
+        return new DefaultBooleanProperty(name, name, null, value) {
             @Override
             public String getName() {
-
                 return Resources.getString(this.getID());
             }
         };
-
-        return property;
     }
 
     private ColorProperty createColorProperty(String name, Color value) {
-
-        ColorProperty property = new DefaultColorProperty(name, name, null, value) {
-
+        return new DefaultColorProperty(name, name, null, value) {
             @Override
             public String getName() {
-
                 return Resources.getString(this.getID());
             }
         };
-
-        return property;
     }
 
     public int getConnectionTimeout() {
-
         return 10000;
     }
 
     public boolean getShowToolboxIcons() {
-
         return true;
     }
 
     public boolean getShowToolboxText() {
-
         return true;
     }
 
     public File getLastUsedFile() {
-
         return this.lastUsedFile.getValue();
     }
 
     public File getLoggingDirectory() {
-
         return this.loggingDirectory.getValue();
     }
 
     public void setLastUsedFile(File f) {
-
         if ((f != null) && !f.equals(this.lastUsedFile.getValue())) {
             // remove the file, if it was in the list already
             this.additional_mru.remove(f);
@@ -246,7 +259,6 @@ public class Preferences {
     }
 
     private PropertySet<Property<?>> getProperties() {
-
         PropertySet<Property<?>> ps = new PropertySet<Property<?>>();
         ps.add(this.showSubgraphPath);
         ps.add(this.showEdgeLabels);
@@ -266,6 +278,9 @@ public class Preferences {
         ps.add(this.selectionColor);
         ps.add(this.neighbourColor);
 
+        ps.add(this.locale);
+        ps.add(this.startWithDefaultLocale);
+
         ps.add(this.lastUsedFile);
 
         ps.add(this.loggingEnabled);
@@ -278,8 +293,7 @@ public class Preferences {
     private static Preferences prefs = null;
 
     private static File getPrefsFile() {
-        File userPrefs = new File(defaultDirectory, "Preferences.prf");
-        return userPrefs;
+        return new File(defaultDirectory, "Preferences.prf");
     }
 
     public static Preferences getPrefs() {
@@ -305,6 +319,7 @@ public class Preferences {
                     }
                 }
 
+                Locale systemDefaultLocale = Locale.getDefault();
                 FileInputStream in = new FileInputStream(Preferences.getPrefsFile());
                 ps.read(in);
                 in.close();
@@ -324,6 +339,10 @@ public class Preferences {
                     }
                 }
 
+                if (Preferences.prefs.startWithDefaultLocale.getValue()) {
+                    Preferences.prefs.locale.setValue(systemDefaultLocale);
+                }
+
             } catch (Exception ignore) {
             }
         }
@@ -331,19 +350,16 @@ public class Preferences {
     }
 
     public static void edit(Component parent) {
-
         final Preferences prefs = Preferences.getPrefs();
-
         try {
             final JTabbedPane tp = new JTabbedPane();
 
-            JPanel p = new PropertySet<Property<?>>(
-                    new Property[]{prefs.showGrid, prefs.snapToGrid, prefs.gridSize, prefs.gridColor})
+            JPanel p = new PropertySet<Property<?>>(prefs.showGrid, prefs.snapToGrid, prefs.gridSize, prefs.gridColor)
                     .createPropertyPanel(false);
             tp.addTab(Resources.getString("Grid"), p);
 
-            p = new PropertySet<Property<?>>(new Property[]{prefs.showToolbox, prefs.showProcedureTree,
-                prefs.showNodePanel, prefs.groupNodeToolbox}).createPropertyPanel(false);
+            p = new PropertySet<Property<?>>(prefs.showToolbox, prefs.showProcedureTree,
+                prefs.showNodePanel, prefs.groupNodeToolbox).createPropertyPanel(false);
             tp.addTab(Resources.getString("Toolbars"), p);
 
             p = new JPanel(new GridBagLayout());
@@ -387,7 +403,6 @@ public class Preferences {
 
                 @Override
                 public Dimension getPreferredSize() {
-
                     return new Dimension(super.getPreferredSize().width, 200);
                 }
             });
@@ -399,7 +414,6 @@ public class Preferences {
     }
 
     public static void save(Component parent) {
-
         Preferences prefs = Preferences.getPrefs();
 
         try {
@@ -422,24 +436,20 @@ public class Preferences {
     }
 
     private void firePropertyChange(ChangeEvent evt) {
-
         for (ChangeListener l : this.changeListeners) {
             l.stateChanged(evt);
         }
     }
 
     public void addPropertyChangeListener(ChangeListener listener) {
-
         this.changeListeners.add(listener);
     }
 
     public void removePropertyChangeListener(ChangeListener listener) {
-
         this.changeListeners.remove(listener);
     }
 
     public Color getDefaultNodeColor(Class<? extends Node> nodeType) {
-
         Color color = this.defaultNodeColors.get(nodeType.getName());
         if (color == null) {
             try {
@@ -453,37 +463,6 @@ public class Preferences {
             return color;
         } else {
             return Color.lightGray;
-        }
-    }
-
-    public static List<String> getModelUrls() {
-        File modelUrlsFile = new File(getSettingsDirectory(), "model_urls.json");
-
-        try {
-            // create file with default values if necessary
-            if (!modelUrlsFile.exists()) {
-                JSONArray list = new JSONArray();
-                list.put("http://www.coli.uni-saarland.de/~koller/dialogos/models/pocketsphinx.json");
-
-                FileWriter w = new FileWriter(modelUrlsFile);
-                list.write(w);
-                w.flush();
-                w.close();
-            }
-
-            // read URLs from config file
-            JSONTokener tokener = new JSONTokener(new FileReader(modelUrlsFile));
-            JSONArray array = new JSONArray(tokener);
-            List<String> ret = StreamSupport.stream(array.spliterator(), true)
-                                    .map(Object::toString)
-                                    .collect(Collectors.toList());
-            return ret;
-
-        } catch (Exception ex) {
-            System.err.println("A fatal error occurred while attempting to read the configuration files:");
-            System.err.println(ex);
-            System.exit(1);
-            return null;
         }
     }
 }
