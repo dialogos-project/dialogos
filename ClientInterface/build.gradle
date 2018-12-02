@@ -1,12 +1,8 @@
 dependencies {
-  // The project uses an ancient version of JRendezvous (now named JmDNS) that
-  // is not compatible with the current version, i.e. it tries to instantiate
-  // the JmDNS class that is now abstract.
-  // TODO: Switch to the maven package
-  // compile group: 'javax.jmdns', name: 'jmdns', version: '3.4.1'
-//  compile name: 'JRendezvous'
-  
-  implementation group: 'org.jmdns', name: 'jmdns', version: '3.5.3'
+  // When we switch to Gradle 5, this dependency needs to become
+  // an "api" and not an "implementation" dependency, so the
+  // clientLibrary task in ../build.gradle can still find it.
+  compile 'org.jmdns:jmdns:3.5.3'
 
   compile project(':com.clt.base')
   compile project(':com.clt.script')

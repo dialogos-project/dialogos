@@ -100,13 +100,15 @@ task clean_all {
     }
 }
 
+
+
 task clientLibrary(type:Jar) {
     manifest {
         attributes 'Implementation-Title': 'DialogOS Client Library',
         'Implementation-Version': version
     }
 
-    baseName = 'dialogos-client-' + version
+    baseName = 'dialogos-client'
 
     // collect dependencies from subprojects
     evaluationDependsOnChildren()
@@ -125,15 +127,17 @@ task clientLibrary(type:Jar) {
     }
 
     // collect Jar files of subprojects
-    from { files(["com.clt.base/build/libs/com.clt.base.jar",
-                  "com.clt.xml/build/libs/com.clt.xml.jar",
-                  "com.clt.script/build/libs/com.clt.script.jar",
-                  "ClientInterface/build/libs/ClientInterface.jar"
+    from { files(["com.clt.base/build/libs/com.clt.base-" + version + ".jar",
+                  "com.clt.xml/build/libs/com.clt.xml-" + version + ".jar",
+                  "com.clt.script/build/libs/com.clt.script-" + version + ".jar",
+                  "ClientInterface/build/libs/ClientInterface-" + version + ".jar"
                  ]).collect { zipTree(it) } }
 
     // generate Jar file
     with jar
 }
+
+
 
 task sourcesJar(type: Jar, dependsOn: classes) {
   classifier = 'sources'
@@ -144,13 +148,14 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 
 /****************************************
- * Collect all submodules and external dependencies into a single build/libs/dialogos.jar
- *
- https://discuss.gradle.org/t/how-to-get-gradle-install-to-actually-bundle-all-project-subproject-classes-resources-etc/12070/4
+ * Collect all submodules and external dependencies into a single build/libs/dialogos-with-dependencies-<VERSION>.jar
+ * https://discuss.gradle.org/t/how-to-get-gradle-install-to-actually-bundle-all-project-subproject-classes-resources-etc/12070/4
  ****************************************/
 
 // This should not interfere with the distribution process, but let's
 // keep an eye on it. - AK
+
+
 
 configurations {
     childJars
@@ -162,7 +167,15 @@ dependencies {
     }
 }
 
-jar {
+task shadowJar(type:Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'DialogOS',
+        'Implementation-Version': version,
+	'Main-Class': mainClassName
+    }
+
+    baseName = 'dialogos-with-dependencies'
+
     dependsOn configurations.childJars
     from { configurations.childJars.collect { zipTree(it) } }
 }
