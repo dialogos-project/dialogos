@@ -129,6 +129,9 @@ public class DialogOS {
             }
         }
 
+        // initialize preferences
+        Preferences.getPrefs();
+
         // Add the number of plugins to the progress bar size
         if (startupScreen != null) {
             startupScreen.addNumClients(PluginLoader.getNumberOfPlugins());
@@ -154,9 +157,6 @@ public class DialogOS {
             });
         });
 
-        // initialize preferences
-        Preferences.getPrefs();
-        
         // Start built-in clients.
         try {
             final Main app = new Main(appDir);
@@ -253,13 +253,11 @@ public class DialogOS {
 
     private static GUIClientFactory loadBuiltinClients(final Main app, File appDir,
             GUIClientStartupScreen startupScreen) throws IOException {
-
         String[] clientArgs = new String[0];
         GUIClientFactory clients = new GUIClientFactory() {
 
             @Override
             protected void terminate(boolean explicit) {
-
                 if (explicit) {
                     Main.clientInitiatedExit(app);
                 }
@@ -267,16 +265,13 @@ public class DialogOS {
 
             @Override
             protected GUIClientWindow createWindow(String name) {
-
                 GUIClientWindow window = new GUIClientWindow(name);
                 window.setDisposeOnClose(false);
                 return window;
             }
 
         };
-
         clients.startup(appDir, clientArgs, startupScreen, startupScreen != null);
-
         return clients;
     }
 }
