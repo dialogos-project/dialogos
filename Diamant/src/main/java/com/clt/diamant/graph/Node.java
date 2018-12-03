@@ -700,10 +700,10 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
      * Creates a Swing component for editing the properties of this node.
      * This method is called whenever the user opens the node's properties
      * window (by double-clicking on the node or by right-clicking and
-     * selecting "Properties..."). By default, the properties window contains
-     * one tab with title "General". The component returned by createEditorComponent
-     * should be a {@link JTabbedPane}, which is added as another tab to the right of the
-     * "General" tab.<p>
+     * selecting "Properties..."). The component returned by createEditorComponent
+     * should be a {@link JTabbedPane}, which is added as tabs to the component.
+     * By default, the properties window contains one tab with title "General" which
+     * is added to the right of the implementation-specific tabs.<p>
      * 
      * The JTabbedPane will typically contain Swing components for editing
      * the properties of the node. Properties are initially created 

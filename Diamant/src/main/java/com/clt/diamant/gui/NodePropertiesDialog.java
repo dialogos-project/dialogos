@@ -82,8 +82,6 @@ import com.clt.util.StringTools;
  * map and a string (a key) returns a GUI element (ComboBox, TextField, etc).
  * Each GUI element will change the respective entry in the property
  * datastructure whenever a change (ActionListener, CaretListener, etc) occurs.
- *
- *
  */
 public class NodePropertiesDialog extends JDialog {
 
@@ -113,7 +111,6 @@ public class NodePropertiesDialog extends JDialog {
      */
     public NodePropertiesDialog(Node node, final Component parent, final Map<String, Object> properties,
             Container editor) {
-
         super(GUI.getFrameForComponent(parent), true);
 
         this.node = node;
@@ -145,45 +142,36 @@ public class NodePropertiesDialog extends JDialog {
         }
 
         this.addComponentListener(new ComponentAdapter() {
-
             @Override
             public void componentMoved(ComponentEvent evt) {
-
                 properties.put(NodePropertiesDialog.LAST_POSITION, NodePropertiesDialog.this.getLocation());
             }
 
             @Override
             public void componentResized(ComponentEvent evt) {
-
                 properties.put(NodePropertiesDialog.LAST_SIZE, NodePropertiesDialog.this.getSize());
             }
         });
     }
 
-    public static final ActionListener okAction = new ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-
-            if (e.getSource() instanceof Component) {
-                Component c = (Component) e.getSource();
-                while ((c != null) && !(c instanceof RootPaneContainer)) {
-                    c = c.getParent();
-                }
-                if (c != null) {
-                    JButton b = ((RootPaneContainer) c).getRootPane().getDefaultButton();
-                    if (b != null) {
-                        b.doClick();
-                    }
+    public static final ActionListener okAction = evt -> {
+        if (evt.getSource() instanceof Component) {
+            Component c = (Component) evt.getSource();
+            while ((c != null) && !(c instanceof RootPaneContainer)) {
+                c = c.getParent();
+            }
+            if (c != null) {
+                JButton b = ((RootPaneContainer) c).getRootPane().getDefaultButton();
+                if (b != null) {
+                    b.doClick();
                 }
             }
         }
     };
 
     public static final KeyListener cancelAction = new KeyAdapter() {
-
         @Override
         public void keyPressed(KeyEvent e) {
-
             if ((e.getSource() instanceof Component) && (e.getKeyCode() == KeyEvent.VK_ESCAPE)) {
                 Component c = (Component) e.getSource();
                 Window w = GUI.getWindowForComponent(c);
@@ -221,7 +209,6 @@ public class NodePropertiesDialog extends JDialog {
     }
 
     public static JScrollPane createTextArea(final Map<String, Object> properties, final String key) {
-
         final JTextArea f = createTextAreaWithoutJScrollPane(properties, key);
 
         JScrollPane jsp = new JScrollPane(f, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -239,7 +226,6 @@ public class NodePropertiesDialog extends JDialog {
      * @return the editor component
      */
     public static JComponent createScriptEditor(final Map<String, Object> properties, final String key) {
-
         final JEditorPane f = new ScriptEditor(ScriptEditor.Type.SCRIPT);
         final UndoRedoTextComponent scriptEditor = new UndoRedoTextComponent(f);
 
@@ -250,12 +236,9 @@ public class NodePropertiesDialog extends JDialog {
             f.setText("");
         }
 
-        f.addCaretListener(new CaretListener() {
-
-            public void caretUpdate(CaretEvent e) {
-                _propertiesChanged = true;
-                properties.put(key, f.getText());
-            }
+        f.addCaretListener(evt -> {
+            _propertiesChanged = true;
+            properties.put(key, f.getText());
         });
         f.addKeyListener(NodePropertiesDialog.cancelAction);
 
@@ -270,7 +253,6 @@ public class NodePropertiesDialog extends JDialog {
      * @return the editor component
      */
     public static JComponent createGroovyScriptEditor(final Map<String, Object> properties, final String key) {
-
         RSyntaxTextArea textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
         textArea.setCodeFoldingEnabled(true);
@@ -291,7 +273,6 @@ public class NodePropertiesDialog extends JDialog {
         });
         textArea.addKeyListener(NodePropertiesDialog.cancelAction);
         return scriptEditor;
-
     }
 
     /**
@@ -363,13 +344,9 @@ public class NodePropertiesDialog extends JDialog {
         });
         TableRowDragger.addDragHandler(table);
 
-        model.addTableModelListener(new TableModelListener() {
-
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                _propertiesChanged = true;
-                node.setProperty("temp edges", model.getEdges());
-            }
+        model.addTableModelListener(evt -> {
+            _propertiesChanged = true;
+            node.setProperty("temp edges", model.getEdges());
         });
 
         // adding the table to a ScrollPane
@@ -378,31 +355,20 @@ public class NodePropertiesDialog extends JDialog {
 
         // creating a panel for the "delete" and "new" buttons
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        final JButton deleteButton = new CmdButton(new Runnable() {
-
-            public void run() {
-
-                model.deleteRows(table.getSelectedRows());
-            }
-        }, Resources.getString("Delete"));
+        final JButton deleteButton = new CmdButton(() ->
+                model.deleteRows(table.getSelectedRows()), Resources.getString("Delete")
+        );
         buttons.add(deleteButton);
         deleteButton.setEnabled(table.getSelectedRow() >= 0);
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-                // if the first row (default) is selected, the delete button is
-                // disabled
-                deleteButton.setEnabled(table.getSelectedRow() >= 1);
-            }
+        table.getSelectionModel().addListSelectionListener(evt -> {
+            // if the first row (default) is selected, the delete button is
+            // disabled
+            deleteButton.setEnabled(table.getSelectedRow() >= 1);
         });
 
-        final JButton newButton = new CmdButton(new Runnable() {
-
-            public void run() {
-
-                int row = model.addRow();
-                table.setRowSelectionInterval(row, row);
-            }
+        final JButton newButton = new CmdButton(() -> {
+            int row = model.addRow();
+            table.setRowSelectionInterval(row, row);
         }, Resources.getString("New"));
         buttons.add(newButton);
 
@@ -414,7 +380,6 @@ public class NodePropertiesDialog extends JDialog {
     }
 
     public static JTextField createTextField(final Map<String, Object> properties, final String key) {
-
         final JTextField f = new JTextField(20);
         f.setMinimumSize(f.getPreferredSize());
         Object o = properties.get(key);
@@ -422,25 +387,16 @@ public class NodePropertiesDialog extends JDialog {
             f.setText((String) o);
         }
         f.addActionListener(NodePropertiesDialog.okAction);
-        f.addCaretListener(new CaretListener() {
-
-            public void caretUpdate(CaretEvent e) {
-                _propertiesChanged = true;
-                properties.put(key, f.getText());
-            }
+        f.addCaretListener(evt -> {
+            _propertiesChanged = true;
+            properties.put(key, f.getText());
         });
         f.addKeyListener(NodePropertiesDialog.cancelAction);
         return f;
     }
 
-    public static JTextField createLongField(final Map<String, Object> properties, final String key) {
-
-        return NodePropertiesDialog.createLongField(properties, key, Long.MIN_VALUE, Long.MAX_VALUE);
-    }
-
     public static JTextField createLongField(final Map<String, Object> properties, final String key, final long min,
             final long max) {
-
         final JTextField f = new JTextField(20);
         f.setMinimumSize(f.getPreferredSize());
         Object o = properties.get(key);
@@ -480,14 +436,7 @@ public class NodePropertiesDialog extends JDialog {
     }
 
     public static JComboBox createComboBox(final Map<String, Object> properties, final String key,
-            final Object[] values) {
-
-        return NodePropertiesDialog.createComboBox(properties, key, Arrays.asList(values));
-    }
-
-    public static JComboBox createComboBox(final Map<String, Object> properties, final String key,
             final Collection<?> values) {
-
         final JComboBox cb = new JComboBox(new Vector<Object>(values));
         int minWidth = 120;
         int width = Math.min(240, Math.max(minWidth, cb.getPreferredSize().width));
@@ -500,43 +449,28 @@ public class NodePropertiesDialog extends JDialog {
             cb.setSelectedItem(null);
         }
 
-        cb.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-
-                Object o = cb.getSelectedItem(); // may be null if "values"
-                // is empty
-                if (o != null) {
-                    properties.put(key, o);
-                }
+        cb.addActionListener(evt -> {
+            Object o = cb.getSelectedItem(); // may be null if "values"
+            // is empty
+            if (o != null) {
+                properties.put(key, o);
             }
         });
-
         return cb;
     }
 
-//	public static JCheckBox createCheckBox(final Map<String, Object> properties, final String key)
-//	{
-//
-//		return NodePropertiesDialog.createCheckBox(properties, key, null);
-//	}
     public static JCheckBox createCheckBox(final Map<String, Object> properties, final String key, final String title) {
-
         final JCheckBox cb = new JCheckBox(title != null ? title : key);
         Object o = properties.get(key);
         cb.setSelected(o == null ? false : ((Boolean) o).booleanValue());
-        cb.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent e) {
-                _propertiesChanged = true;
-                properties.put(key, cb.isSelected() ? Boolean.TRUE : Boolean.FALSE);
-            }
+        cb.addItemListener(evt -> {
+            _propertiesChanged = true;
+            properties.put(key, cb.isSelected() ? Boolean.TRUE : Boolean.FALSE);
         });
         return cb;
     }
 
     public static JRadioButton[] createRadioButtons(Map<String, Object> properties, String key, Object[] values) {
-
         ButtonGroup group = new ButtonGroup();
         JRadioButton[] buttons = new JRadioButton[values.length];
         for (int i = 0; i < values.length; i++) {
@@ -548,23 +482,18 @@ public class NodePropertiesDialog extends JDialog {
 
     public static JRadioButton createRadioButton(final Map<String, Object> properties, final String key,
             final Object value) {
-
         final JRadioButton b = new JRadioButton(value.toString());
         b.setSelected(value.equals(properties.get(key)));
-        b.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent e) {
-                _propertiesChanged = true;
-                if (b.isSelected()) {
-                    properties.put(key, value);
-                }
+        b.addItemListener(evt -> {
+            _propertiesChanged = true;
+            if (b.isSelected()) {
+                properties.put(key, value);
             }
         });
         return b;
     }
 
     private Container createEditor(Node node, final Map<String, Object> properties, Container editor) {
-
         JPanel general = new JPanel(new GridBagLayout());
         general.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         // general.setMinimumSize(new Dimension(300, 200));
@@ -593,25 +522,21 @@ public class NodePropertiesDialog extends JDialog {
 
             @Override
             public Dimension getMinimumSize() {
-
                 return this.getPreferredSize();
             }
 
             @Override
             public Dimension getPreferredSize() {
-
                 return new Dimension(30, 16);
             }
 
             @Override
             public boolean isOpaque() {
-
                 return true;
             }
 
             @Override
             public void paintComponent(Graphics g) {
-
                 g.setColor((Color) properties.get("color"));
                 g.fillRect(0, 0, this.getWidth(), this.getHeight());
                 g.setColor(Color.black);
@@ -619,10 +544,8 @@ public class NodePropertiesDialog extends JDialog {
             }
         };
         swatch.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
-
                 Color c = JColorChooser.showDialog(swatch, Resources.getString("ChooseColor"),
                         (Color) properties.get("color"));
                 if (c != null) {
@@ -634,17 +557,13 @@ public class NodePropertiesDialog extends JDialog {
         general.add(swatch, gbc);
         gbc.gridx++;
         final JButton change = new JButton(Resources.getString("Change") + "...");
-        change.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-
-                Color c = JColorChooser.showDialog(change, Resources.getString("ChooseColor"),
-                        (Color) properties.get("color"));
-                if (c != null) {
-                    properties.put("color", c);
-                }
-                swatch.repaint();
+        change.addActionListener(evt -> {
+            Color c = JColorChooser.showDialog(change, Resources.getString("ChooseColor"),
+                    (Color) properties.get("color"));
+            if (c != null) {
+                properties.put("color", c);
             }
+            swatch.repaint();
         });
         general.add(change, gbc);
 
@@ -669,7 +588,6 @@ public class NodePropertiesDialog extends JDialog {
         gbc.gridwidth = 1;
 
         final JTabbedPane tabs = GUI.createTabbedPane();
-        tabs.addTab(Resources.getString("General"), general);
 
         if (editor instanceof JTabbedPane) {
             JTabbedPane tp = (JTabbedPane) editor;
@@ -677,18 +595,16 @@ public class NodePropertiesDialog extends JDialog {
                 String title = tp.getTitleAt(i);
                 Component c = tp.getComponentAt(i);
                 tp.removeTabAt(i);
-                tabs.insertTab(title, null, c, null, 1);
+                tabs.insertTab(title, null, c, null, 0);
             }
         } else if (editor != null) {
             tabs.addTab(Node.getLocalizedNodeTypeName(node), editor);
         }
 
-        tabs.addChangeListener(new ChangeListener() {
+        tabs.addTab(Resources.getString("General"), general);
 
-            public void stateChanged(ChangeEvent evt) {
-                // _propertiesChanged = true;
-                properties.put(NodePropertiesDialog.LAST_TAB, tabs.getTitleAt(tabs.getSelectedIndex()));
-            }
+        tabs.addChangeListener(evt -> {
+            properties.put(NodePropertiesDialog.LAST_TAB, tabs.getTitleAt(tabs.getSelectedIndex()));
         });
 
         String tab = (String) properties.get(NodePropertiesDialog.LAST_TAB);
@@ -702,12 +618,10 @@ public class NodePropertiesDialog extends JDialog {
         } else {
             tabs.setSelectedIndex(0);
         }
-
         return tabs;
     }
 
     private void init(final Container node_editor) {
-
         Container c = this.getContentPane();
         c.setLayout(new BorderLayout());
 
@@ -715,44 +629,32 @@ public class NodePropertiesDialog extends JDialog {
 
         JPanel ButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         this.cancelButton = new JButton(Resources.getString("Cancel"));
-        this.cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                node_editor.setVisible(false);
-                NodePropertiesDialog.this.approved = false;
-                NodePropertiesDialog.this.dispose();
-            }
+        this.cancelButton.addActionListener(evt -> {
+            node_editor.setVisible(false);
+            NodePropertiesDialog.this.approved = false;
+            NodePropertiesDialog.this.dispose();
         });
 
         ButtonPanel.add(this.cancelButton);
         final JButton okButton = new JButton(Resources.getString("OK"));
-        okButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-
-                if (NodePropertiesDialog.this.finishEditing(node_editor)) {
-
-                    if (node.acceptableToSave()) {
-                        node_editor.setVisible(false);
-                        NodePropertiesDialog.this.approved = true;
-                        NodePropertiesDialog.this.dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(GUI.getFrameForComponent(getParent()),
-                                Resources.getString("CannotSaveEdges"), Resources.getString("Error"),
-                                JOptionPane.WARNING_MESSAGE);
-                    }
+        okButton.addActionListener(evt -> {
+            if (NodePropertiesDialog.this.finishEditing(node_editor)) {
+                if (node.acceptableToSave()) {
+                    node_editor.setVisible(false);
+                    NodePropertiesDialog.this.approved = true;
+                    NodePropertiesDialog.this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(GUI.getFrameForComponent(getParent()),
+                            Resources.getString("CannotSaveEdges"), Resources.getString("Error"),
+                            JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
 
         this.addWindowListener(new WindowListener() {
+            public void windowActivated(WindowEvent e) { }
 
-            public void windowActivated(WindowEvent e) {
-
-            }
-
-            public void windowClosed(WindowEvent e) {
-
-            }
+            public void windowClosed(WindowEvent e) { }
 
             public void windowClosing(WindowEvent e) {
                 if (_propertiesChanged) {
@@ -783,21 +685,13 @@ public class NodePropertiesDialog extends JDialog {
                 }
             }
 
-            public void windowDeactivated(WindowEvent e) {
+            public void windowDeactivated(WindowEvent e) { }
 
-            }
+            public void windowDeiconified(WindowEvent e) { }
 
-            public void windowDeiconified(WindowEvent e) {
+            public void windowIconified(WindowEvent e) { }
 
-            }
-
-            public void windowIconified(WindowEvent e) {
-
-            }
-
-            public void windowOpened(WindowEvent e) {
-
-            }
+            public void windowOpened(WindowEvent e) { }
         });
 
         GUI.setDefaultButtons(this, okButton, this.cancelButton);
@@ -808,7 +702,6 @@ public class NodePropertiesDialog extends JDialog {
     }
 
     private boolean finishEditing(Component c) {
-
         if (c instanceof JTable) {
             JTable table = (JTable) c;
             return table.isEditing() ? table.getCellEditor().stopCellEditing() : true;
@@ -825,22 +718,14 @@ public class NodePropertiesDialog extends JDialog {
     }
 
     /**
-     *
      * @return true if the changes in the dialog where approved
      */
     public boolean approved() {
-
         return this.approved;
     }
 
     public JButton getCancelButton() {
-
         return this.cancelButton;
-    }
-
-    public JButton getDefaultButton() {
-
-        return this.getRootPane().getDefaultButton();
     }
 
 }
