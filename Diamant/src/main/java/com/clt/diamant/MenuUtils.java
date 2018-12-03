@@ -57,7 +57,6 @@ public class MenuUtils {
     private static JFrame helpWindow = null;
 
     public static CmdMenu addFileMenu(CmdMenuBar mbar, final RequiredEventHandler systemEventHandler) {
-
         CmdMenu m = mbar.addMenu(Resources.getString("FileMenu"));
 
         m.addItem(Resources.getString("New"), Commands.cmdNew, KeyEvent.VK_N);
@@ -104,7 +103,6 @@ public class MenuUtils {
 
     public static void addMRU(JMenu mru,
             final RequiredEventHandler systemEventHandler) {
-
         final File lastUsedFile = Preferences.getPrefs().lastUsedFile.getValue();
         if (lastUsedFile != null) {
             mru.add(new CmdMenuItem(lastUsedFile.getName(), new Runnable() {
@@ -127,7 +125,6 @@ public class MenuUtils {
     }
 
     public static CmdMenu addEditMenu(CmdMenuBar mbar) {
-
         CmdMenu m = mbar.addMenu(Resources.getString("EditMenu"));
         m.addItem(Resources.getString("Undo"), Commands.cmdUndo, KeyEvent.VK_Z);
         m.addItem(Resources.getString("Redo"), Commands.cmdRedo, KeyStroke
@@ -159,7 +156,6 @@ public class MenuUtils {
     private static void addLanguageItem(CmdMenu m, final String language,
             final Locale locale,
             final MenuOwner owner) {
-
         Icon icon = null;
         try {
             icon = Images.load(language + ".png");
@@ -170,17 +166,14 @@ public class MenuUtils {
                         new MenuCommander() {
 
                     public boolean menuItemState(int cmd) {
-
                         return Preferences.getPrefs().locale.getValue().equals(locale);
                     }
 
                     public String menuItemName(int cmd, String oldName) {
-
                         return Resources.getString(language);
                     }
 
                     public boolean doCommand(int cmd) {
-
                         Preferences.getPrefs().locale.setValue(locale);
                         owner.updateMenus();
                         return true;
@@ -191,16 +184,9 @@ public class MenuUtils {
     }
 
     public static CmdMenu addHelpMenu(final CmdMenuBar mbar) {
-        // by default, include language switcher
-        return addHelpMenu(mbar, true);
-    }
-
-    public static CmdMenu addHelpMenu(final CmdMenuBar mbar, boolean includeLanguageSwitcher) {
 
         MenuOwner owner = new MenuOwner() {
-
             public void updateMenus() {
-
                 mbar.updateMenus();
             }
         };
@@ -208,17 +194,14 @@ public class MenuUtils {
         MenuCommander commander = new MenuCommander() {
 
             public boolean menuItemState(int cmd) {
-
                 return true;
             }
 
             public String menuItemName(int cmd, String oldName) {
-
                 return oldName;
             }
 
             public boolean doCommand(int cmd) {
-
                 switch (cmd) {
                     case cmdAbout:
                         Version.showAboutDialog();
@@ -266,12 +249,10 @@ public class MenuUtils {
         }
 
         // language switching
-        if (includeLanguageSwitcher) {
-            MenuUtils.addLanguageItem(m, "German", Locale.GERMANY, owner);
-            MenuUtils.addLanguageItem(m, "English", Locale.US, owner);
-            //MenuUtils.addLanguageItem(m, "French", Locale.FRANCE, owner);
-            m.addSeparator();
-        }
+        MenuUtils.addLanguageItem(m, "German", Locale.GERMANY, owner);
+        MenuUtils.addLanguageItem(m, "English", Locale.US, owner);
+        //MenuUtils.addLanguageItem(m, "French", Locale.FRANCE, owner);
+        m.addSeparator();
 
         m.addItem(Resources.getString("BuiltinFunctions"), Main.cmdHelpFunctions);
 
@@ -300,7 +281,6 @@ public class MenuUtils {
     }
 
     private static void showHelp() {
-
         if (MenuUtils.helpWindow == null) {
             JPanel labels = new JPanel(new GridLayout(0, 1));
 
@@ -368,7 +348,6 @@ public class MenuUtils {
     }
 
     static void hideHelp() {
-
         if (MenuUtils.helpWindow != null) {
             MenuUtils.helpWindow.setVisible(false);
         }

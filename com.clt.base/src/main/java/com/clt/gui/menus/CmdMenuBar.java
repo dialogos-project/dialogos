@@ -19,19 +19,16 @@ public class CmdMenuBar extends JMenuBar implements MenuOwner {
     }
 
     public CmdMenu addMenu(String name) {
-
         return this.addMenu(name, Commands.cmdMenu);
     }
 
     public CmdMenu addMenu(String name, int cmdNum) {
-
         CmdMenu menu = new CmdMenu(name, cmdNum, this.commander);
         this.add(menu);
         return menu;
     }
 
     public void updateMenus() {
-
         for (int i = this.getMenuCount() - 1; i >= 0; i--) {
             JMenu m = this.getMenu(i); // may return null
             if (m != null) {
@@ -41,7 +38,6 @@ public class CmdMenuBar extends JMenuBar implements MenuOwner {
     }
 
     static void updateMenu(JMenu menu) {
-
         for (int i = menu.getItemCount() - 1; i >= 0; i--) {
             JMenuItem item = menu.getItem(i);
 

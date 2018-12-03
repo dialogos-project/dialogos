@@ -62,21 +62,15 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         this.addWindowListener(new WindowAdapter() {
-
             @Override
             public void windowActivated(WindowEvent evt) {
-
                 WindowUtils.activateModals();
             }
         });
 
-        this.documentPropertyListener = new PropertyChangeListener() {
-
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                if (evt.getPropertyName().equals("title")) {
-                    DocumentWindow.this.setTitle(DocumentWindow.this.document.getTitle());
-                }
+        this.documentPropertyListener = evt -> {
+            if (evt.getPropertyName().equals("title")) {
+                DocumentWindow.this.setTitle(DocumentWindow.this.document.getTitle());
             }
         };
 
@@ -86,33 +80,26 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
 
     @Override
     public void addNotify() {
-
         super.addNotify();
-
         this.document.addPropertyChangeListener(this.documentPropertyListener);
         this.setTitle(this.document.getTitle());
     }
 
     @Override
     public void removeNotify() {
-
         this.document.removePropertyChangeListener(this.documentPropertyListener);
-
         super.removeNotify();
     }
 
     public DocType getDocument() {
-
         return this.document;
     }
 
     protected void setupMenus(Collection<CmdMenuBar> mbars) {
-
         this.mbars = mbars;
     }
 
     protected Collection<CmdMenuBar> getMenus() {
-
         return this.mbars;
     }
 
@@ -140,20 +127,16 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
 
     @Override
     public void setTitle(String title) {
-
         super.setTitle(title);
-
         // trigger reconstruction of Window menu for managed frames
         this.processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_ACTIVATED));
     }
 
     public boolean isDirty() {
-
         return this.document.isDirty();
     }
 
     public void setDirty(boolean dirty) {
-
         if (dirty != this.isDirty()) {
             this.document.setDirty(dirty);
             this.updateMenus();
@@ -162,19 +145,16 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public File getFile() {
-
         return this.document.getFile();
     }
 
     @Override
     public JMenu getWindowMenu() {
-
         return this.windowMenu;
     }
 
     @Override
     protected void rebuildWindowMenu() {
-
         super.rebuildWindowMenu();
 
         JMenu menu = this.getWindowMenu();
@@ -184,7 +164,6 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public boolean readyToClose(Saving saving) {
-
         if (this.isDirty() && (saving != Saving.DONT_SAVE_CHANGES)) {
             int result;
             if (saving == Saving.SAVE_CHANGES) {
@@ -208,7 +187,6 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public boolean saveAs() {
-
         File f = new FileChooser(this.document.getFile() != null ? this.document.getFile()
                 .getParent() : null).standardPutFile(
                 this, this.document.getFile() != null ? this.document.getFile()
@@ -221,7 +199,6 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public boolean save(final File f) {
-
         if (this.getDocument().isReadOnly()) {
             return true;
         }
@@ -276,20 +253,17 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public boolean menuItemState(int cmd) {
-
         switch (cmd) {
             case cmdSave:
                 return this.isDirty() || (this.getFile() == null);
             case cmdSaveAs:
                 return true;
-
             default:
                 return false;
         }
     }
 
     public String menuItemName(int cmd, String old_name) {
-
         return old_name;
     }
 
@@ -300,7 +274,6 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
      * @return true if the command was handled
      */
     public boolean doCommand(int cmd) {
-
         boolean cmdHandled = true;
         switch (cmd) {
             case cmdClose:
@@ -323,7 +296,6 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public void updateMenus() {
-
         if (this.mbars != null) {
             for (CmdMenuBar mbar : this.mbars) {
                 mbar.updateMenus();
@@ -335,14 +307,12 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
 
     @Override
     public void toFront() {
-
         super.toFront();
         this.requestFocus();
     }
 
     @Override
     public String toString() {
-
         return this.getTitle();
     }
 

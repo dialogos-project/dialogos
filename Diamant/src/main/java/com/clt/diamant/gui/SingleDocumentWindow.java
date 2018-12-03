@@ -144,13 +144,9 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         this.superCommander = superCommander;
         this.contentPanel = new JPanel(new GridLayout(1, 1));
         this.header = new Header();
-        this.header.addLinkListener(new Header.LinkListener() {
-
-            public void linkClicked(Object link) {
-
-                if (link instanceof Graph) {
-                    SingleDocumentWindow.this.setMainView((Graph) link);
-                }
+        this.header.addLinkListener(link -> {
+            if (link instanceof Graph) {
+                SingleDocumentWindow.this.setMainView((Graph) link);
             }
         });
 
@@ -163,10 +159,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         this.initUI(systemEventHandler);
 
         this.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyPressed(KeyEvent e) {
-
                 if ((e.getKeyCode() == KeyEvent.VK_ALT)
                         && (SingleDocumentWindow.this.mainView != null)) {
                     SingleDocumentWindow.this.mainView.adjustCursor(DefaultToolbox.HAND);
@@ -175,7 +169,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
             @Override
             public void keyReleased(KeyEvent e) {
-
                 if ((e.getKeyCode() == KeyEvent.VK_ALT)
                         && (SingleDocumentWindow.this.mainView != null)
                         && (SingleDocumentWindow.this.toolbox != null)) {
@@ -185,26 +178,22 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             }
         });
 
-        this.documentPropertyListener = new PropertyChangeListener() {
-
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                if (evt.getPropertyName().equals("graph")) {
-                    SingleDocumentWindow.this.updateGraph(true);
-                }
+        this.documentPropertyListener = evt -> {
+            if (evt.getPropertyName().equals("graph")) {
+                SingleDocumentWindow.this.updateGraph(true);
             }
         };
 
-        this.preferenceListener = e -> {
-            if ((e.getSource() == Preferences.getPrefs().showGrid)
-                    || (e.getSource() == Preferences.getPrefs().gridColor)
-                    || (e.getSource() == Preferences.getPrefs().gridSize)) {
+        this.preferenceListener = evt -> {
+            if ((evt.getSource() == Preferences.getPrefs().showGrid)
+                    || (evt.getSource() == Preferences.getPrefs().gridColor)
+                    || (evt.getSource() == Preferences.getPrefs().gridSize)) {
                 SingleDocumentWindow.this.mainView.repaint();
-            } else if ((e.getSource() == Preferences.getPrefs().showToolbox)
-                    || (e.getSource() == Preferences.getPrefs().showProcedureTree)
-                    || (e.getSource() == Preferences.getPrefs().showNodePanel)
-                    || (e.getSource() == Preferences.getPrefs().lastUsedFile)
-                    || (e.getSource() == Preferences.getPrefs().locale)) {
+            } else if ((evt.getSource() == Preferences.getPrefs().showToolbox)
+                    || (evt.getSource() == Preferences.getPrefs().showProcedureTree)
+                    || (evt.getSource() == Preferences.getPrefs().showNodePanel)
+                    || (evt.getSource() == Preferences.getPrefs().lastUsedFile)
+                    || (evt.getSource() == Preferences.getPrefs().locale)) {
                 SingleDocumentWindow.this.initUI(systemEventHandler);
             }
         };
@@ -227,7 +216,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     }
 
     private void initUI(RequiredEventHandler systemEventHandler) {
-
         for (CmdMenuBar mbar : this.getMenus()) {
             mbar.getParent().remove(mbar);
         }
@@ -344,38 +332,32 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     }
 
     private void updateGraph(boolean show) {
-
         if (show) {
             Graph graph = this.getDocument().getOwnedGraph();
             if (this.procTree != null) {
                 this.procTree.setMainGraph(graph);
             }
-
             this.setMainView(graph);
         } else {
             if (this.procTree != null) {
                 this.procTree.setMainGraph(null);
             }
-
             // setMainView(null);
         }
     }
 
     public void showEditor() {
-
         Graph graph = this.getGraphOwner().getOwnedGraph();
         if (graph != null) {
             GraphUI ui = this.getMainView();
             if ((ui == null) || (ui.getGraph() != graph)) {
                 ui = this.setMainView(graph);
             }
-
             ui.repaint();
         }
     }
 
     public void closeEditor() {
-
         if (this.isShowing()) {
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
@@ -383,8 +365,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     private Collection<CmdMenuBar> initMenus(
             RequiredEventHandler systemEventHandler) {
-
-        Collection<CmdMenuBar> mbars = new ArrayList<CmdMenuBar>();
+        Collection<CmdMenuBar> mbars = new ArrayList<>();
 
         MenuCommander commander = this.superCommander;
         if (commander == null) {
@@ -392,18 +373,15 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         }
 
         CmdMenuBar mbar = new CmdMenuBar(commander) {
-
             private final boolean allowBlending = false;
 
             private boolean blendWithToolbar() {
-
                 return this.allowBlending
                         && Preferences.getPrefs().showToolbox.getValue();
             }
 
             @Override
             protected void paintComponent(Graphics g) {
-
                 if (this.blendWithToolbar()) {
                     int width = this.getWidth();
                     int height = this.getHeight();
@@ -424,7 +402,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
             @Override
             public boolean isBorderPainted() {
-
                 if (this.blendWithToolbar()) {
                     return false;
                 } else {
@@ -434,19 +411,16 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
             @Override
             public JMenu add(final JMenu m) {
-
                 if (this.allowBlending) {
                     m.addMouseListener(new MouseAdapter() {
 
                         @Override
                         public void mouseEntered(MouseEvent e) {
-
                             m.setOpaque(true);
                         }
 
                         @Override
                         public void mouseExited(MouseEvent e) {
-
                             m.setOpaque(false);
                         }
                     });
@@ -499,12 +473,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             m.add(new CmdMenuItem(plugin.getName(), 1, null, new MenuCommander() {
 
                               public String menuItemName(int cmd, String oldName) {
-
                                   return plugin.getName() + "...";
                               }
 
                               public boolean menuItemState(int cmd) {
-
                                   if (SingleDocumentWindow.this.runtime != null) {
                                       return false;
                                   } else {
@@ -513,11 +485,9 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                               }
 
                               public boolean doCommand(int cmd) {
-
                                   SingleDocumentWindow.this.showSetupDialog(plugin.getName());
                                   return true;
                               }
-
                           }));
         }
 
@@ -600,12 +570,10 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     }
 
     public boolean openSubWindows() {
-
         return this.openSubWindows;
     }
 
     private void setupColorMenu(GraphUI view) {
-
         if (this.colorMenu != null) {
             this.colorMenu.removeAll();
             ButtonGroup group = new ButtonGroup();
@@ -630,7 +598,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     @Override
     public boolean menuItemState(int cmd) {
-
         if (this.runtime != null) {
             if (cmd == SingleDocumentWindow.cmdRun) {
                 return true;
@@ -666,7 +633,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     @Override
     public String menuItemName(int cmd, String oldName) {
-
         switch (cmd) {
             case cmdRun:
                 return this.runtime != null ? Resources.getString("Stop") : Resources
@@ -683,7 +649,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     @Override
     public boolean doCommand(int cmd) {
-
         boolean cmdHandled = true;
 
         final SingleDocument doc = this.getDocument();
@@ -766,7 +731,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                                                         @Override
                                                         public void windowOpened(WindowEvent e) {
-
                                                             if (SingleDocumentWindow.this.runtime instanceof Window) {
                                                                 ((Window) SingleDocumentWindow.this.runtime).toFront();
                                                                 ((Window) SingleDocumentWindow.this.runtime).requestFocus();
@@ -775,7 +739,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                                                         @Override
                                                         public void windowClosed(WindowEvent e) {
-
                                                             if (SingleDocumentWindow.this.runtime instanceof Window) {
                                                                 ((Window) SingleDocumentWindow.this.runtime).toFront();
                                                                 ((Window) SingleDocumentWindow.this.runtime).requestFocus();
@@ -961,7 +924,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     @Override
     public void updateMenus() {
-
         super.updateMenus();
 
         if (this.toolbox != null) {
@@ -974,7 +936,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     }
 
     private void showSetupDialog(String selectedTab) {
-
         final SingleDocument doc = this.getDocument();
 
         JDialog setupDialog = new JDialog(this, Resources.getString("DialogSetup"), true);
@@ -1019,7 +980,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
                        @Override
                        public boolean removeElement(Component parent, int index) {
-
                            Device d = this.devices.remove(index);
                            doc.getDevices().remove(d);
                            return true;
@@ -1068,18 +1028,15 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
     @Override
     public boolean readyToClose(Saving saving) {
-
         // stop execution first
         if (this.runtime != null) {
             this.runtime.abort();
             this.getDocument().closeDevices();
         }
-
         return super.readyToClose(saving);
     }
 
     public GraphUI setMainView(Graph graph) {
-
         if (((graph == null) || (this.getMainView() == null)) ? true : graph != this.getMainView().getGraph()) {
             if (this.getMainView() != null) {
                 this.contentPanel.removeAll();
@@ -1127,32 +1084,26 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 this.repaint();
             }
         }
-
         return this.mainView;
     }
 
     public GraphUI getGraphUI() {
-
         return this.getMainView();
     }
 
     public GraphOwner getGraphOwner() {
-
         return this.getDocument();
     }
 
     public GraphUI getMainView() {
-
         return this.mainView;
     }
 
     public void addViewListener(ComponentListener l) {
-
         this.viewListeners.add(l);
     }
 
     public void removeViewListener(ComponentListener l) {
-
         this.viewListeners.remove(l);
     }
 

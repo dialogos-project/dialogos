@@ -33,7 +33,6 @@ public class ManagedFrame extends JFrame {
 
         @Override
         public void windowActivated(WindowEvent evt) {
-
             if (evt.getWindow() instanceof ManagedFrame) {
                 ManagedFrame.activeWindow = (ManagedFrame) evt.getWindow();
                 ManagedFrame.activeWindow.rebuildWindowMenu();
@@ -44,7 +43,6 @@ public class ManagedFrame extends JFrame {
 
         @Override
         public void windowDeactivated(WindowEvent evt) {
-
             if (ManagedFrame.activeWindow == evt.getWindow()) {
                 ManagedFrame.activeWindow = null;
             }
@@ -52,18 +50,15 @@ public class ManagedFrame extends JFrame {
     };
 
     public ManagedFrame() {
-
         super();
     }
 
     public ManagedFrame(String title) {
-
         super(title);
     }
 
     @Override
     public void addNotify() {
-
         super.addNotify();
 
         this.addWindowListener(ManagedFrame.windowUpdate);
@@ -88,7 +83,6 @@ public class ManagedFrame extends JFrame {
 
     @Override
     public void removeNotify() {
-
         // System.out.println("removeNotify() for " + this);
         synchronized (ManagedFrame.gMainWindows) {
             ManagedFrame mainWindow = ManagedFrame.gWindows.get(this);
@@ -115,18 +109,15 @@ public class ManagedFrame extends JFrame {
 
     @Override
     public final int hashCode() {
-
         return System.identityHashCode(this);
     }
 
     @Override
     public final boolean equals(Object o) {
-
         return this == o;
     }
 
     protected void rebuildWindowMenu() {
-
         JMenu m = this.getWindowMenu();
         if (m != null) {
             m.removeAll();
@@ -158,18 +149,15 @@ public class ManagedFrame extends JFrame {
 
     // override to group windows
     protected ManagedFrame getMainWindow() {
-
         return this;
     }
 
     // override to have an automatic window menu
     protected JMenu getWindowMenu() {
-
         return null;
     }
 
     public static void fillWindowMenu(JMenu m) {
-
         synchronized (ManagedFrame.gMainWindows) {
             Set<ManagedFrame> sortedFrames = new TreeSet<ManagedFrame>(
                     new Comparator<ManagedFrame>() {

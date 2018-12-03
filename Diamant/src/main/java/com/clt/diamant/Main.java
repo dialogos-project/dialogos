@@ -1,45 +1,33 @@
 package com.clt.diamant;
 
 import java.awt.Window;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 import com.clt.dialog.client.GUIClientWindow;
 import com.clt.dialogos.plugin.PluginLoader;
-import com.clt.diamant.gui.DocumentWindow;
-import com.clt.diamant.gui.LogDocumentWindow;
-import com.clt.diamant.gui.MultiDocumentWindow;
-import com.clt.diamant.gui.SingleDocumentWindow;
+import com.clt.diamant.gui.*;
 import com.clt.event.ProgressListener;
-import com.clt.gui.ApplicationMenuPanel;
 import com.clt.gui.Commands;
 import com.clt.gui.FileChooser;
 import com.clt.gui.GUI;
-import com.clt.gui.Images;
 import com.clt.gui.OptionPane;
 import com.clt.gui.WindowUtils;
 import com.clt.gui.menus.AbstractMenuCommander;
 import com.clt.gui.menus.CmdCheckBoxMenuItem;
-import com.clt.gui.menus.CmdMenuBar;
 import com.clt.gui.menus.MenuCommander;
 import com.clt.gui.menus.MenuOwner;
 import com.clt.io.FileFormatException;
 import com.clt.mac.ApplicationUtils;
 import com.clt.mac.RequiredEventHandler;
-import com.clt.util.AbstractAction;
 import com.clt.util.Misc;
-import com.clt.util.Platform;
 import com.clt.xml.XMLFormatException;
 
 public class Main implements MenuCommander, MenuOwner, Commands {
@@ -58,10 +46,8 @@ public class Main implements MenuCommander, MenuOwner, Commands {
     private final FileChooser fileChooser = new FileChooser(Preferences.getPrefs().getLastUsedFile());
 
     private RequiredEventHandler systemEventHandler = new RequiredEventHandler(true, true) {
-
         @Override
         public boolean handleQuit() {
-
             if (Main.this.menuItemState(Commands.cmdQuit) == true) {
                 if (Main.this.doCommand(Commands.cmdQuit)) {
                     return Main.documents.size() == 0;
@@ -72,7 +58,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
         @Override
         public boolean handleAbout() {
-
             if (Main.this.menuItemState(Commands.cmdAbout) == true) {
                 return Main.this.doCommand(Commands.cmdAbout);
             }
@@ -81,7 +66,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
         @Override
         public boolean handleReOpenApplication() {
-
             if (Main.documents.size() == 0) {
                 Main.this.openApp(null);
             }
@@ -90,7 +74,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
         @Override
         public boolean handleOpenFile(File f) {
-
             boolean result = false;
             if (Main.this.menuItemState(Commands.cmdOpen) == true) {
                 result = Main.this.openDocument(f) != null;
@@ -101,7 +84,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
         @Override
         public boolean handlePrintFile(File f) {
-
             if (Main.this.menuItemState(Commands.cmdOpen) == true) {
                 DocumentWindow<?> d = Main.this.openDocument(f);
                 if ((d != null) && (Main.this.menuItemState(Commands.cmdPrint) == true)) {
@@ -114,115 +96,34 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
         @Override
         public boolean handlePreferences() {
-
             return Main.this.doCommand(Commands.cmdPreferences);
         }
     };
 
     public Main(File appDir) {
-
         ApplicationUtils.registerEventHandler(this.systemEventHandler);
 
     }
 
     private void closeProjectFrameOnSuccess() {
-
         if ((Main.documents.size() > 0) && (Main.projectStartupWindow != null)) {
             Main.projectStartupWindow.setVisible(false);
         }
     }
 
     public Window getProjectStartupWindow() {
-
         if (Main.projectStartupWindow == null) {
-            JFrame projectStartupFrame = new JFrame(Version.PRODUCT_NAME);
-            projectStartupFrame.setIconImage(Images.load("logo/DialogOS.png").getImage());
-            AbstractAction newProject = new AbstractAction(Resources
-                    .getString("CreateNewDialog")
-                    + "...", Images.load("NewFileWizard.png")) {
-
-                @Override
-                public void run() {
-
-                    Main.this.createNewDocument(false);
-                    Main.this.closeProjectFrameOnSuccess();
-                }
-            };
-            newProject.setAccelerator(KeyEvent.VK_N);
-            AbstractAction openProject = new AbstractAction(Resources
-                    .getString("OpenDialog")
-                    + "...", Images.load("OpenFile.png")) {
-
-                @Override
-                public void run() {
-
-                    Main.this.doCommand(Commands.cmdOpen);
-                    Main.this.closeProjectFrameOnSuccess();
-                }
-            };
-            openProject.setAccelerator(KeyEvent.VK_O);
-            final AbstractAction quit = new AbstractAction(Resources
-                    .getString("Quit")) {
-
-                @Override
-                public void run() {
-
-                    Main.this.doCommand(Commands.cmdQuit);
-                }
-            };
-            quit.setAccelerator(KeyEvent.VK_Q);
-
-            projectStartupFrame.setContentPane(new ApplicationMenuPanel(
-                    Version.PRODUCT_NAME, Images.load("AppIconLarge.png")
-                            .getImage(), new Action[]{ /* newEmptyProject, */
-                        newProject, openProject}, new Action[]{quit}));
-
-            projectStartupFrame
-                    .setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            projectStartupFrame.addWindowListener(new WindowAdapter() {
-
-                @Override
-                public void windowClosing(WindowEvent evt) {
-
-                    Main.this.doCommand(Commands.cmdQuit);
-                }
-            });
-            projectStartupFrame.setResizable(false);
-            projectStartupFrame.pack();
-
-            // update menu bar each time
-            CmdMenuBar mbar = new CmdMenuBar();
-            JMenu menu = new JMenu(Resources.getString("File"));
-            menu.add(new JMenuItem(newProject));
-            menu.add(new JMenuItem(openProject));
-
             Main.projectStartupMRU = new JMenu(Resources.getString("MRU"));
-            menu.add(Main.projectStartupMRU);
             MenuUtils.addMRU(Main.projectStartupMRU, this.systemEventHandler);
-
-            if (Platform.showQuitMenuItem()) {
-                menu.addSeparator();
-                menu.add(new JMenuItem(quit));
-            }
-            mbar.add(menu);
-
-            // TODO: it would be much better if we could already set up locale switching for the startup window
-            MenuUtils.addHelpMenu(mbar, false);
-
-            mbar.updateMenus();
-
-            projectStartupFrame.setJMenuBar(mbar);
-            Main.projectStartupWindow = projectStartupFrame;
+            Main.projectStartupWindow = new ProjectStartupFrame(Main.this, projectStartupMRU, this.systemEventHandler);
         }
 
         Main.projectStartupMRU.removeAll();
         MenuUtils.addMRU(Main.projectStartupMRU, this.systemEventHandler);
-
         return Main.projectStartupWindow;
     }
 
     public void openApp(final File model) {
-
         SwingUtilities.invokeLater(new Runnable() {
 
             private void openInitialWindow() {
@@ -231,7 +132,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
             }
 
             public void run() {
-
                 synchronized (Main.this) {
                     if (Main.this.currentDocument == null) {
                         if ((model != null) && model.isFile()) {
@@ -255,12 +155,9 @@ public class Main implements MenuCommander, MenuOwner, Commands {
      * @return The document window passed as argument
      */
     private DocumentWindow<?> addDocument(DocumentWindow<?> d) {
-
         d.addWindowListener(new WindowAdapter() {
-
             @Override
             public void windowActivated(final WindowEvent e) {
-
                 if (e.getWindow() instanceof DocumentWindow) {
                     Main.this.currentDocument = (DocumentWindow) e.getWindow();
                     Main.this.updateMenus();
@@ -269,7 +166,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
             @Override
             public void windowDeactivated(WindowEvent evt) {
-
                 if (Main.this.currentDocument == evt.getWindow()) {
                     Main.this.currentDocument = null;
                 }
@@ -277,21 +173,17 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
             @Override
             public void windowClosing(WindowEvent evt) {
-
                 if (evt.getWindow() instanceof DocumentWindow) {
                     Main.this.closeDocument((DocumentWindow) evt.getWindow(),
                             DocumentWindow.Saving.ASK_SAVE_CHANGES, false);
                 }
             }
         });
-
         Main.documents.add(d);
-
         return d;
     }
 
     private DocumentWindow<?> openDocument() {
-
         File f = this.fileChooser.standardGetFile(getProjectStartupWindow());
         if (f != null) {
             Preferences.getPrefs().setLastUsedFile(f);
@@ -300,13 +192,11 @@ public class Main implements MenuCommander, MenuOwner, Commands {
     }
 
     private DocumentWindow<?> openDocument(File f) {
-
         return this.openDocument(null, f, null);
     }
 
     private DocumentWindow<?> openDocument(final DocumentWindow<?> d,
             final File f) {
-
         return this.openDocument(d, f, null);
     }
 
@@ -320,9 +210,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
      */
     public DocumentWindow<?> openDocument(final DocumentWindow<?> d,
             final File f, ProgressListener progress) {
-
         DocumentWindow<?> theDoc = null;
-
         if (f != null) {
             if (d == null) {
                 for (DocumentWindow<?> doc : Main.documents) {
@@ -381,7 +269,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
                 }
             }
         }
-
         return theDoc;
     }
 
