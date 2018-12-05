@@ -113,7 +113,8 @@ task clientLibrary(type:Jar) {
     // collect dependencies from subprojects
     evaluationDependsOnChildren()
     subprojects.each { p ->
-      if( p.name == "ClientInterface" ) {
+
+     if( p.name == "ClientInterface" ) {
         p.configurations.each { c ->
           if( c.name == "compile" ) {
             c.dependencies.each { d ->
@@ -124,6 +125,20 @@ task clientLibrary(type:Jar) {
           }
         }
       }
+
+     if( p.name == "com.clt.script" ) {
+        p.configurations.each { c ->
+          if( c.name == "compile" ) {
+            c.dependencies.each { d ->
+              if( d.name == "json" ) {
+                from { c.files(d).collect { zipTree(it) } }
+              }
+            }
+          }
+        }
+      }
+
+
     }
 
     // collect Jar files of subprojects

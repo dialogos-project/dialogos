@@ -363,28 +363,19 @@ public class SingleDocument extends Document implements GraphOwner {
             d = null;
         }
 
-        LongAction init
-                = new DefaultLongAction(Resources.getString("InitializingModel")) {
-
+        LongAction init = new DefaultLongAction(Resources.getString("InitializingModel")) {
             @Override
-            protected void run(ProgressListener l)
-                    throws Exception {
-
+            protected void run(ProgressListener l) throws Exception {
                 for (Plugin plugin : PluginLoader.getPlugins()) {
                     Class<? extends Plugin> c = plugin.getClass();
-                    SingleDocument.this.getPluginSettings(c).initializeRuntime(d,
-                            transition);
+                    SingleDocument.this.getPluginSettings(c).initializeRuntime(d, transition);
                 }
             }
         };
 
-        LongAction uninit
-                = new DefaultLongAction(Resources.getString("UninitializingModel")) {
-
+        LongAction uninit = new DefaultLongAction(Resources.getString("UninitializingModel")) {
             @Override
-            protected void run(ProgressListener l)
-                    throws Exception {
-
+            protected void run(ProgressListener l) throws Exception {
                 for (Plugin plugin : PluginLoader.getPlugins()) {
                     Class<? extends Plugin> c = plugin.getClass();
                     SingleDocument.this.getPluginSettings(c).disposeRuntime(transition);
@@ -450,17 +441,14 @@ public class SingleDocument extends Document implements GraphOwner {
     }
 
     public void execute(Component parent, final WozInterface transition) throws Exception {
-
         final InputCenter input = new InputCenter(this.getDevices());
         final ExecutionLogger logger = new ExecutionLogger(graph, getGraphName(), Preferences.getPrefs().loggingEnabled.getValue());
 
         try {
-            transition.startDocument(SingleDocument.this, SingleDocument.this
-                    .getTitle(), input);
+            transition.startDocument(SingleDocument.this, SingleDocument.this.getTitle(), input);
 
             try {
                 transition.setState(WozInterface.State.INSTRUCT);
-
                 transition.setState(WozInterface.State.RUN);
 
                 for (Device device : this.getDevices()) {
