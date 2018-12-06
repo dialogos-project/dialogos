@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * @author dabo, 2mfriedr
@@ -72,7 +73,10 @@ public class DialogOS {
         boolean loadClients = false;
         File model = null;
         
-        enforceUtf8();      
+        enforceUtf8();
+        
+        // AKAKAK
+        System.err.println("args: " + Arrays.toString(args));
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-execute")) {
