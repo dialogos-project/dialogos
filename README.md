@@ -1,5 +1,7 @@
 # The DialogOS Dialog System
 
+[![Release](https://jitpack.io/v/dialogos-project/dialogos.svg)](https://jitpack.io/#dialogos-project/dialogos)
+
 This is the source-code repository for the DialogOS dialog system. DialogOS was originally developed by CLT Sprachtechnologie GmbH. The rights were purchased by [Saarland University](https://www.uni-saarland.de/) in 2017, and DialogOS was subsequently open-sourced.
 
 DialogOS has been used in a variety of projects for university and high-school students, see e.g. [here](http://www.debacher.de/wiki/DialogOS) and [here](http://www.coli.uni-saarland.de/courses/lego-04/). It combines a very intuitive graphical interface with out-of-the-box speech recognition and synthesis (using [PocketSphinx](https://github.com/cmusphinx/pocketsphinx) and [MaryTTS](http://mary.dfki.de/)), and is seamlessly integrated with Lego Mindstorms.
