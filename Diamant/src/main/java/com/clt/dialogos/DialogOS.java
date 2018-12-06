@@ -16,7 +16,9 @@ import com.clt.util.Misc;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -67,7 +69,7 @@ public class DialogOS {
         } 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         boolean execute = false;
         boolean headless = false;
         boolean loadClients = false;
@@ -76,7 +78,10 @@ public class DialogOS {
         enforceUtf8();
         
         // AKAKAK
-        System.err.println("args: " + Arrays.toString(args));
+        PrintWriter w = new PrintWriter(new FileWriter("/tmp/dialogos-log.txt"));
+        w.println("args: " + Arrays.toString(args));
+        w.flush();
+        w.close();
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-execute")) {
