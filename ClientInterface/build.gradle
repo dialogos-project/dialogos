@@ -2,18 +2,7 @@ plugins {
   id 'com.github.johnrengelman.shadow' version '4.0.3'
 }
 
-//configuration.create('shadow')
-//artifacts {
-//   shadow shadowJar.outputFile
-//}
-
-// build Shadow Jar by default
-//tasks.jar.dependsOn tasks.shadowJar
-
 dependencies {
-  // When we switch to Gradle 5, this dependency needs to become
-  // an "api" and not an "implementation" dependency, so the
-  // clientLibrary task in ../build.gradle can still find it.
   compile 'org.jmdns:jmdns:3.5.3'
 
   compile project(':com.clt.base')
@@ -24,7 +13,8 @@ dependencies {
 
 
 shadowJar {
-//   archiveName = "dialogos-client-${version}.jar"
+   // overwrite the original ClientInterface-<VERSION>.jar
+   // with the shadow version
    archiveName = "ClientInterface-${version}.jar"
    
    dependencies {

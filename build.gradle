@@ -31,7 +31,6 @@ allprojects {
 
 dependencies {
   compile subprojects
-//  compile project(":ClientLibrary@shadow") // AKAKAK
 }
 
 mainClassName = 'com.clt.dialogos.DialogOS'
@@ -44,7 +43,8 @@ def version = '2.0.4-SNAPSHOT' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE S
 def group = "com.github.dialogos-project"
 
 
-
+// Overwrite lean jar for the ClientInterface by the shadow Jar
+// just before publishing the artifacts.
 tasks.publishToMavenLocal.dependsOn("ClientInterface:shadowJar")
 
 // configuration for maven-publish plugin
@@ -56,12 +56,9 @@ publishing {
             from components.java
 
 	    artifact javadocJar
-//	    artifact clientLibrary
         }
     }
 }
-
-
 
 subprojects{
     publishing {
@@ -99,61 +96,6 @@ task clean_all {
     }
 }
 
-
-/*
-task clientLibrary(type:Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'DialogOS Client Library',
-        'Implementation-Version': version
-    }
-
-    baseName = 'dialogos-client'
-    classifier = 'client'
-
-    // collect dependencies from subprojects
-    evaluationDependsOnChildren()
-    subprojects.each { p ->
-
-     if( p.name == "ClientInterface" ) {
-        p.configurations.each { c ->
-          if( c.name == "compile" ) {
-            c.dependencies.each { d ->
-              if( d.name == "jmdns" ) {
-                from { c.files(d).collect { zipTree(it) } }
-              }
-            }
-          }
-        }
-      }
-
-     if( p.name == "com.clt.script" ) {
-        p.configurations.each { c ->
-          if( c.name == "compile" ) {
-            c.dependencies.each { d ->
-              if( d.name == "json" ) {
-                from { c.files(d).collect { zipTree(it) } }
-              }
-            }
-          }
-        }
-      }
-
-
-    }
-
-    // collect Jar files of subprojects
-    from { files(["com.clt.base/build/libs/com.clt.base-" + version + ".jar",
-                  "com.clt.xml/build/libs/com.clt.xml-" + version + ".jar",
-                  "com.clt.script/build/libs/com.clt.script-" + version + ".jar",
-                  "ClientInterface/build/libs/ClientInterface-" + version + ".jar"
-                 ]).collect { zipTree(it) } }
-
-    // generate Jar file
-    with jar
-}
-*/
-
-
 task sourcesJar(type: Jar, dependsOn: classes) {
   classifier = 'sources'
   from sourceSets.main.allSource
@@ -163,7 +105,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 // appear on Jitpack, they also need to be declared in "publishing" above.
 artifacts {
     archives javadocJar
-//    archives clientLibrary
 }
 
 
