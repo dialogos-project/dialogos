@@ -284,8 +284,9 @@ public class MaryTTS
   }
 
   @Override
-  public void stop() {
-    audioPlayer.cancel();
+  synchronized public void stop() {
+    if (audioPlayer != null)
+      audioPlayer.cancel();
   }
 
   @Override
