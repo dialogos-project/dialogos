@@ -22,3 +22,8 @@ shadowJar {
    }
 }
 
+// The "assemble" task is executed as part of the main project's
+// "build" task, and after the ClientInterface:jar has been executed.
+// We make it depend on shadowJar to overwrite the lean jar with a
+// shadow jar.
+tasks.assemble.dependsOn(tasks.shadowJar)
