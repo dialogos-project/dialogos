@@ -38,6 +38,8 @@ dependencies {
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
 
+  // NB When you update to a newer version of Groovy here, also change
+  // the shadowJar#dependencies#exclude entry for Groovy in ../ClientInterface/build.gradle.
   compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
 
   implementation project(':com.clt.base')

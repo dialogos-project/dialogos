@@ -31,6 +31,7 @@ allprojects {
 
 dependencies {
   compile subprojects
+//  compile project(":ClientLibrary@shadow") // AKAKAK
 }
 
 mainClassName = 'com.clt.dialogos.DialogOS'
@@ -43,6 +44,8 @@ def version = '2.0.4-SNAPSHOT' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE S
 def group = "com.github.dialogos-project"
 
 
+
+
 // configuration for maven-publish plugin
 publishing {
     publications {
@@ -52,7 +55,7 @@ publishing {
             from components.java
 
 	    artifact javadocJar
-	    artifact clientLibrary
+//	    artifact clientLibrary
         }
     }
 }
@@ -96,7 +99,7 @@ task clean_all {
 }
 
 
-
+/*
 task clientLibrary(type:Jar) {
     manifest {
         attributes 'Implementation-Title': 'DialogOS Client Library',
@@ -147,7 +150,7 @@ task clientLibrary(type:Jar) {
     // generate Jar file
     with jar
 }
-
+*/
 
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -159,7 +162,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 // appear on Jitpack, they also need to be declared in "publishing" above.
 artifacts {
     archives javadocJar
-    archives clientLibrary
+//    archives clientLibrary
 }
 
 
