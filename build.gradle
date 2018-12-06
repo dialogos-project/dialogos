@@ -45,6 +45,7 @@ def group = "com.github.dialogos-project"
 
 
 
+tasks.publishToMavenLocal.dependsOn("ClientInterface:shadowJar")
 
 // configuration for maven-publish plugin
 publishing {

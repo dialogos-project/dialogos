@@ -8,7 +8,7 @@ plugins {
 //}
 
 // build Shadow Jar by default
-tasks.jar.dependsOn tasks.shadowJar
+//tasks.jar.dependsOn tasks.shadowJar
 
 dependencies {
   // When we switch to Gradle 5, this dependency needs to become
@@ -24,7 +24,8 @@ dependencies {
 
 
 shadowJar {
-   archiveName = "dialogos-client-${version}.jar"
+//   archiveName = "dialogos-client-${version}.jar"
+   archiveName = "ClientInterface-${version}.jar"
    
    dependencies {
        exclude(dependency('org.codehaus.groovy:groovy-all:2.4.10'))
