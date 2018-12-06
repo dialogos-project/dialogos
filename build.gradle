@@ -83,12 +83,6 @@ task javadocJar(type: Jar, dependsOn: allJavadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives javadocJar
-}
-
-
-
 task clean_all {
     subprojects.each {
         it.afterEvaluate {
@@ -159,6 +153,11 @@ task sourcesJar(type: Jar, dependsOn: classes) {
   from sourceSets.main.allSource
 }
 
+artifacts {
+    archives javadocJar
+    archives clientLibrary
+    archives sourcesJar
+}
 
 
 
