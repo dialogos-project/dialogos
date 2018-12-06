@@ -1,6 +1,7 @@
 **Version 2.0.4, unreleased**
 
-- enable use of Kleene plus (positive closure, +) operator in grammars (see #121).
+- Enable use of Kleene plus (positive closure, +) operator in grammars (see #121).
+- Reordered tabs in node properties windows: useful tabs are now on the left (see #122).
 
 **Version 2.0.3, 21 November 2018**
 
