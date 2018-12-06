@@ -434,6 +434,10 @@ public class NodePropertiesDialog extends JDialog {
         f.addKeyListener(NodePropertiesDialog.cancelAction);
         return f;
     }
+    
+    public static JComboBox createComboBox(final Map<String, Object> properties, final String key, final Object[] values) {
+         return NodePropertiesDialog.createComboBox(properties, key, Arrays.asList(values));
+    }
 
     public static JComboBox createComboBox(final Map<String, Object> properties, final String key,
             final Collection<?> values) {
