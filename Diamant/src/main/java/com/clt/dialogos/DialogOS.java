@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author dabo, 2mfriedr
@@ -28,7 +26,7 @@ import java.util.logging.Logger;
 public class DialogOS {
 
     private static void usage() {
-        System.err.println("Usage: " + Version.PRODUCT_NAME.toLowerCase() + " [-headless] [-clients] [-execute] [-model <model>]");
+        System.err.println("Usage: " + Version.PRODUCT_NAME.toLowerCase() + " [-headless] [-clients] [-execute] [<model>]");
         System.exit(1);
     }
 
@@ -83,11 +81,11 @@ public class DialogOS {
                 headless = true;
             } else if (args[i].equals("-clients")) {
                 loadClients = true;
-            } else if (args[i].equals("-model")) {
-                if (i >= args.length - 1) {
-                    DialogOS.usage();
-                }
-                model = new File(args[++i]);
+//            } else if (args[i].equals("-model")) {
+//                if (i >= args.length - 1) {
+//                    DialogOS.usage();
+//                }
+//                model = new File(args[++i]);
             } else if (args[i].equals("-summarize")) {
                 if (i >= args.length - 2) {
                     DialogOS.usage();
@@ -101,6 +99,8 @@ public class DialogOS {
                     exn.printStackTrace();
                 }
                 System.exit(0);
+            } else if( model == null && ! args[i].startsWith("-")) {
+                model = new File(args[i]);
             } else {
                 DialogOS.usage();
             }

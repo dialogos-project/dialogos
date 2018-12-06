@@ -43,12 +43,6 @@ def version = '2.0.4-SNAPSHOT' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE S
 def group = "com.github.dialogos-project"
 
 
-// Overwrite lean jar for the ClientInterface by the shadow Jar
-// just before publishing the artifacts.
-//tasks.publishToMavenLocal.dependsOn("ClientInterface:shadowJar")
-//tasks.publishClientInterfacePublicationToMavenLocal.dependsOn("ClientInterface:shadowJar")
-
-
 // configuration for maven-publish plugin
 publishing {
     publications {
