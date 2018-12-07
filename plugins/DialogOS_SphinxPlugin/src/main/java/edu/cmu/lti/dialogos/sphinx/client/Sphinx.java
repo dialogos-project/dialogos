@@ -17,7 +17,6 @@ import edu.cmu.sphinx.frontend.endpoint.SpeechClassifiedData;
  *
  * List of TODOs:
  * handle multiple languages (configurable for more than DE/EN?),
- * exhibit a "default" language through Plugin
  *
  */
 public class Sphinx extends SphinxBaseRecognizer {
@@ -25,9 +24,13 @@ public class Sphinx extends SphinxBaseRecognizer {
     private SphinxContext context;
     ConfigurableSpeechRecognizer csr;
     private boolean vadInSpeech = false;
+    private boolean stopping = false;
 
     public Sphinx() {
         languageSettings = SphinxLanguageSettings.createDefault();
+        /* addRecognizerListener(evt -> {
+            System.err.println("DialogOS recognizer listener defined in Sphinx.java: " + evt.toString());
+        }); */
     }
 
     public SphinxLanguageSettings getLanguageSettings(Language l) {
@@ -42,8 +45,9 @@ public class Sphinx extends SphinxBaseRecognizer {
         vadInSpeech = false;
         SpeechResult speechResult;
         boolean isMatch;
+        stopping = false;
+        csr.startRecognition();
         do {
-            csr.startRecognition();
             fireRecognizerEvent(RecognizerEvent.RECOGNIZER_READY);
             speechResult = csr.getResult();
             if (speechResult == null)
@@ -51,9 +55,9 @@ public class Sphinx extends SphinxBaseRecognizer {
             isMatch = isMatch(speechResult);
             if (!isMatch)
                 fireRecognizerEvent(new RecognizerEvent(this, RecognizerEvent.INVALID_RESULT, sphinx2DOSResult(speechResult)));
-        } while (!isMatch);
+        } while (!isMatch && !stopping && isActive());
         csr.stopRecognition();
-        if (speechResult != null) {
+        if (speechResult != null && !stopping) {
             RecognitionResult sphinxResult = sphinx2DOSResult(speechResult);
             fireRecognizerEvent(sphinxResult);
             return sphinxResult;
@@ -73,6 +77,7 @@ public class Sphinx extends SphinxBaseRecognizer {
     }
 
     @Override protected void stopImpl() {
+        stopping = true;
         if (csr != null)
             csr.stopRecognition();
         vadInSpeech = false;

@@ -112,15 +112,11 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
     }
 
     public final RecognitionResult startLiveRecognition(final Object lock) throws SpeechException {
-        RecognitionResult result = null;
-        RecognizerListener startupListener = new RecognizerListener() {
-
-            public void recognizerStateChanged(RecognizerEvent evt) {
-
-                synchronized (lock) {
-                    if (evt.getType() == RecognizerEvent.RECOGNIZER_ACTIVATED) {
-                        lock.notifyAll();
-                    }
+        RecognitionResult result;
+        RecognizerListener startupListener = evt -> {
+            synchronized (lock) {
+                if (evt.getType() == RecognizerEvent.RECOGNIZER_ACTIVATED) {
+                    lock.notifyAll();
                 }
             }
         };
@@ -164,15 +160,11 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
     public final RecognitionResult startOfflineRecognition(final Object lock,
             File file)
             throws SpeechException, IOException, UnsupportedAudioFileException {
-        RecognitionResult result = null;
-        RecognizerListener startupListener = new RecognizerListener() {
-
-            public void recognizerStateChanged(RecognizerEvent evt) {
-
-                synchronized (lock) {
-                    if (evt.getType() == RecognizerEvent.RECOGNIZER_ACTIVATED) {
-                        lock.notifyAll();
-                    }
+        RecognitionResult result;
+        RecognizerListener startupListener = evt -> {
+            synchronized (lock) {
+                if (evt.getType() == RecognizerEvent.RECOGNIZER_ACTIVATED) {
+                    lock.notifyAll();
                 }
             }
         };
@@ -217,6 +209,7 @@ public abstract class AbstractRecognizer implements Recognizer, G2P {
                 this.wait();
             }
         } catch (InterruptedException ignore) {
+            throw new SpeechException(ignore);
         }
     }
 

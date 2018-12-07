@@ -237,7 +237,7 @@ public class Microphone extends BaseDataProcessor {
     @Override
     public void initialize() {
         super.initialize();
-        audioList = new LinkedBlockingQueue<Data>();
+        audioList = new LinkedBlockingQueue<>();
 
         DataLine.Info info
                 = new DataLine.Info(TargetDataLine.class, desiredFormat);

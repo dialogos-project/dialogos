@@ -215,7 +215,7 @@ abstract public class AbstractInputNode extends Node {
                 properties, com.clt.diamant.Resources
                         .getString("InputPatterns"));
 
-        Vector<Object> grammars = new Vector<Object>();
+        Vector<Object> grammars = new Vector<>();
         grammars.add(DIRECT_GRAMMAR);
         if (supportDynamicGrammars) {
             grammars.add(DYNAMIC_GRAMMAR);
@@ -238,97 +238,93 @@ abstract public class AbstractInputNode extends Node {
          * expression
          */
         final JButton editGrammar = new CmdButton(com.clt.diamant.Resources
-                .getString("Edit"), new Runnable() {
-            public void run() {
-                Object selection = grammar.getSelectedItem();
-                if (selection instanceof Grammar) {
-                    Grammar g = (Grammar) selection;
-                    ScriptEditorDialog.editGrammar(p, g);
-                } // this case happens if "generate from expression" was chosen.
-                // should a script-editor be used there?
-                else if (selection == DYNAMIC_GRAMMAR) {
-                    String g = (String) properties.get(GRAMMAR_EXPRESSION);
+                .getString("Edit"), () -> {
+                    Object selection = grammar.getSelectedItem();
+                    if (selection instanceof Grammar) {
+                        Grammar g = (Grammar) selection;
+                        ScriptEditorDialog.editGrammar(p, g);
+                    } // this case happens if "generate from expression" was chosen.
+                    // should a script-editor be used there?
+                    else if (selection == DYNAMIC_GRAMMAR) {
+                        String g = (String) properties.get(GRAMMAR_EXPRESSION);
 
-                    JTextArea a = new JTextArea();
-                    a.setWrapStyleWord(true);
-                    a.setLineWrap(true);
-                    a.setText(g);
-                    a.setEditable(true);
+                        JTextArea a = new JTextArea();
+                        a.setWrapStyleWord(true);
+                        a.setLineWrap(true);
+                        a.setText(g);
+                        a.setEditable(true);
 
-                    JScrollPane jsp = new JScrollPane(a,
-                            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                    jsp.setPreferredSize(new Dimension(400, 200));
-                    OptionPane.message(p, jsp, com.clt.diamant.Resources
-                            .getString("Expression"), OptionPane.PLAIN);
-                    properties.put(GRAMMAR_EXPRESSION, a.getText());
-                }
-            }
-        });
+                        JScrollPane jsp = new JScrollPane(a,
+                                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                        jsp.setPreferredSize(new Dimension(400, 200));
+                        OptionPane.message(p, jsp, Resources
+                                .getString("Expression"), OptionPane.PLAIN);
+                        properties.put(GRAMMAR_EXPRESSION, a.getText());
+                    }
+                });
 
-        grammar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                language.setEnabled(true);
-                // A normal grammar is used.
-                if (grammar.getSelectedItem() instanceof Grammar) {
-                    Grammar g = (Grammar) grammar.getSelectedItem();
-                    properties.put(GRAMMAR, g);
-                    try {
-                        String lang = compileGrammar(properties, null)
-                                .getLanguage();
-                        if (lang != null) {
-                            LanguageName grammarLanguage = null;
-                            Language l = new Language(lang);
-                            List<LanguageName> languages = getAvailableLanguages();
-                            // first try exact locale matches
-                            for (LanguageName ln : languages) {
-                                if (ln.getLanguage().equals(l)) {
+        grammar.addActionListener(evt -> {
+            language.setEnabled(true);
+            // A normal grammar is used.
+            if (grammar.getSelectedItem() instanceof Grammar) {
+                Grammar g = (Grammar) grammar.getSelectedItem();
+                properties.put(GRAMMAR, g);
+                try {
+                    String lang = compileGrammar(properties, null)
+                            .getLanguage();
+                    if (lang != null) {
+                        LanguageName grammarLanguage = null;
+                        Language l = new Language(lang);
+                        List<LanguageName> languages1 = getAvailableLanguages();
+                        // first try exact locale matches
+                        for (LanguageName ln : languages1) {
+                            if (ln.getLanguage().equals(l)) {
+                                grammarLanguage = ln;
+                                break;
+                            }
+                        }
+                        if (grammarLanguage == null) {
+                            // then try language only matches
+                            for (LanguageName ln : languages1) {
+                                if (ln
+                                        .getLanguage()
+                                        .getLocale()
+                                        .getLanguage()
+                                        .equals(l.getLocale().getLanguage())) {
                                     grammarLanguage = ln;
                                     break;
                                 }
                             }
-                            if (grammarLanguage == null) {
-                                // then try language only matches
-                                for (LanguageName ln : languages) {
-                                    if (ln
-                                            .getLanguage()
-                                            .getLocale()
-                                            .getLanguage()
-                                            .equals(l.getLocale().getLanguage())) {
-                                        grammarLanguage = ln;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (grammarLanguage != null) {
-                                language.setSelectedItem(grammarLanguage);
-                            }
-                            language.setEnabled(false);
                         }
-                    } catch (Exception exn) {
-                        // ignore: exception was thrown because grammar could not be compiled (and hence lang can't be set)
+                        if (grammarLanguage != null) {
+                            language.setSelectedItem(grammarLanguage);
+                        }
+                        language.setEnabled(false);
                     }
-                    editGrammar.setText(Resources.getString("EditGrammar"));
-                    editGrammar.setEnabled(true);
-                    edgeModel.setName(com.clt.diamant.Resources.getString("InputPatterns"));
-                } // The words/sentences to be recognized is given as a list
-                // of words are sentences
-                else if (grammar.getSelectedItem() == DIRECT_GRAMMAR) {
-                    properties.remove(GRAMMAR);
-                    properties.remove(GRAMMAR_EXPRESSION);
-                    editGrammar.setText(com.clt.diamant.Resources.getString("Edit"));
-                    editGrammar.setEnabled(false);
-                    edgeModel.setName(Resources.getString("InputWords"));
-                } // The grammar is given as an expression (to be evaluated).
-                else if (grammar.getSelectedItem() == DYNAMIC_GRAMMAR) {
-                    properties.remove(GRAMMAR);
-                    properties.putIfAbsent(GRAMMAR_EXPRESSION, "");
-                    editGrammar.setText(Resources.getString("EditExpression"));
-                    editGrammar.setEnabled(true);
-                    edgeModel.setName(com.clt.diamant.Resources
-                            .getString("InputPatterns"));
-                    // editGrammar.doClick();
+                } catch (Exception exn) {
+                    // ignore: exception was thrown because grammar could not be compiled (and hence lang can't be set)
                 }
+                editGrammar.setText(Resources.getString("EditGrammar"));
+                editGrammar.setEnabled(true);
+                edgeModel.setName(Resources.getString("InputPatterns"));
+            } // The words/sentences to be recognized is given as a list
+            // of words are sentences
+            else if (grammar.getSelectedItem() == DIRECT_GRAMMAR) {
+                properties.remove(GRAMMAR);
+                properties.remove(GRAMMAR_EXPRESSION);
+                editGrammar.setText(Resources.getString("Edit"));
+                editGrammar.setEnabled(false);
+                edgeModel.setName(Resources.getString("InputWords"));
+            } // The grammar is given as an expression (to be evaluated).
+            else if (grammar.getSelectedItem() == DYNAMIC_GRAMMAR) {
+                properties.remove(GRAMMAR);
+                properties.putIfAbsent(GRAMMAR_EXPRESSION, "");
+                editGrammar.setText(Resources.getString("EditExpression"));
+                editGrammar.setEnabled(true);
+                edgeModel.setName(Resources
+                        .getString("InputPatterns"));
+                // editGrammar.doClick();
             }
         });
 
@@ -406,27 +402,19 @@ abstract public class AbstractInputNode extends Node {
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        final JButton deleteButton = new CmdButton(new Runnable() {
-            public void run() {
-                if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
-                    edgeModel.deleteRows(table.getSelectedRows());
-                }
+        final JButton deleteButton = new CmdButton(() -> {
+            if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
+                edgeModel.deleteRows(table.getSelectedRows());
             }
         }, com.clt.diamant.Resources.getString("Delete"));
         buttons.add(deleteButton);
         deleteButton.setEnabled(table.getSelectedRow() >= 0);
         table.getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                deleteButton.setEnabled(table.getSelectedRow() >= 0);
-            }
-        });
-        final JButton newButton = new CmdButton(new Runnable() {
-            public void run() {
-                if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
-                    int row = edgeModel.addRow();
-                    table.setRowSelectionInterval(row, row);
-                }
+                evt -> deleteButton.setEnabled(table.getSelectedRow() >= 0));
+        final JButton newButton = new CmdButton(() -> {
+            if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
+                int row = edgeModel.addRow();
+                table.setRowSelectionInterval(row, row);
             }
         }, com.clt.diamant.Resources.getString("New"));
         buttons.add(newButton);
@@ -441,16 +429,14 @@ abstract public class AbstractInputNode extends Node {
         final JCheckBox forceTimeout = NodePropertiesDialog.createCheckBox(
                 properties, FORCE_TIMEOUT, com.clt.diamant.Resources.getString(FORCE_TIMEOUT));
 
-        timeout.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent evt) {
-                tf.setEnabled(timeout.isSelected());
-                forceTimeout.setEnabled(timeout.isSelected());
-                if (timeout.isSelected()) {
-                    tf.selectAll();
-                } else {
-                    properties.remove(TIMEOUT);
-                    forceTimeout.setSelected(false);
-                }
+        timeout.addItemListener(evt -> {
+            tf.setEnabled(timeout.isSelected());
+            forceTimeout.setEnabled(timeout.isSelected());
+            if (timeout.isSelected()) {
+                tf.selectAll();
+            } else {
+                properties.remove(TIMEOUT);
+                forceTimeout.setSelected(false);
             }
         });
         timeout.setSelected(properties.get(TIMEOUT) != null);
@@ -488,27 +474,23 @@ abstract public class AbstractInputNode extends Node {
         gbc.gridwidth = 2;
         JCheckBox background = NodePropertiesDialog.createCheckBox(properties,
                 BACKGROUND, Resources.getString(BACKGROUND));
-        final Runnable updater = new Runnable() {
-            public void run() {
-                boolean bg = (Boolean) properties.get(BACKGROUND);
-                table.setEnabled(!bg);
-                newButton.setEnabled(!bg);
-                if (bg) {
-                    deleteButton.setEnabled(false);
-                }
+        final Runnable updater = () -> {
+            boolean bg = (Boolean) properties.get(BACKGROUND);
+            table.setEnabled(!bg);
+            newButton.setEnabled(!bg);
+            if (bg) {
+                deleteButton.setEnabled(false);
             }
         };
-        background.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                boolean bg = e.getStateChange() == ItemEvent.SELECTED;
-                if (bg) {
-                    // if in background mode, patterns are located at an input
-                    // node
-                    edgeModel.clear();
-                    edgeModel.addRow();
-                }
-                updater.run();
+        background.addItemListener(evt -> {
+            boolean bg = evt.getStateChange() == ItemEvent.SELECTED;
+            if (bg) {
+                // if in background mode, patterns are located at an input
+                // node
+                edgeModel.clear();
+                edgeModel.addRow();
             }
+            updater.run();
         });
         updater.run();
         options.add(background, gbc);
@@ -543,35 +525,30 @@ abstract public class AbstractInputNode extends Node {
          * try out recognition
          */
         final JButton test = new JButton(Resources.getString("TryRecognition"));
-        test.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    public void run() {
-                        if (table.getCellEditor() != null) {
-                            table.getCellEditor().stopCellEditing();
-                        }
-                        RootPaneContainer rpc = GUI.getParent(test, RootPaneContainer.class);
-                        try {
-                            recognizeExec(rpc.getLayeredPane(),
-                                    new DefaultDebugger(), null, properties,
-                                    true);
-                        } catch (ExecutionStoppedException exn) {
-                            // aborted by user
-                        } catch (NodeExecutionException exn) {
-                            if (exn.getException() != null) {
-                                OptionPane.error(test, exn.getException());
-                            } else {
-                                OptionPane.error(test, exn);
-                            }
-                        } catch (ThreadDeath d) {
-                            throw d;
-                        } catch (Exception exn) {
-                            OptionPane.error(test, exn);
-                        }
-                    }
-                }).start();
+        test.addActionListener(evt -> new Thread(() -> {
+            if (table.getCellEditor() != null) {
+                table.getCellEditor().stopCellEditing();
             }
-        });
+            RootPaneContainer rpc = GUI.getParent(test, RootPaneContainer.class);
+            try {
+                recognizeExec(rpc.getLayeredPane(),
+                        new DefaultDebugger(), null, properties,
+                        true);
+            } catch (ExecutionStoppedException exn) {
+                // aborted by user
+                System.err.println("execution aborted by user");
+            } catch (NodeExecutionException exn) {
+                if (exn.getException() != null) {
+                    OptionPane.error(test, exn.getException());
+                } else {
+                    OptionPane.error(test, exn);
+                }
+            } catch (ThreadDeath d) {
+                throw d;
+            } catch (Exception exn) {
+                OptionPane.error(test, exn);
+            }
+        }).start());
 
         JPanel mainPage = new JPanel(new BorderLayout(6, 0));
 
@@ -662,12 +639,10 @@ abstract public class AbstractInputNode extends Node {
         RecognitionExecutor recExecutor = createRecognitionExecutor(recGrammar);
 
         final JButton stop = new JButton(GUI.getString("Cancel"));
-        stop.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                recExecutor.stop();
-                synchronized (stop) {
-                    stop.notifyAll();
-                }
+        stop.addActionListener(evt -> {
+            recExecutor.stop();
+            synchronized (stop) {
+                stop.notifyAll();
             }
         });
         final JLabel micState = new JLabel("", micOff, SwingConstants.LEFT);
@@ -768,6 +743,8 @@ abstract public class AbstractInputNode extends Node {
                                 micState.setIcon(micOff);
                                 result.setText(evt.getResult().getAlternative(0).getWords());
                                 break;
+                            //default:
+                                //System.err.println(evt.toString());
                         }
                     }
                 };

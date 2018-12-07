@@ -54,7 +54,7 @@ public class SimpleRecognizerUtterance implements Utterance {
 
     @Override
     public String toString() {
-        return "DummyRecognizerUtterance{"
+        return "SimpleRecognizerUtterance{"
                 + "words=" + words
                 + ", logConfidence=" + logConfidence
                 + ", confidence=" + getConfidence()

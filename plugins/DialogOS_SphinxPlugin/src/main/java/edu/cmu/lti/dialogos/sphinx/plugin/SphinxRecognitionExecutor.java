@@ -38,7 +38,7 @@ public class SphinxRecognitionExecutor implements RecognitionExecutor {
             if (stateListener != null) {
                 recognizer.addRecognizerListener(stateListener);
             }
-            RecognitionResult recognitionResult = null;
+            RecognitionResult recognitionResult;
             try {
                 recognitionResult = recognizer.startLiveRecognition();
                 if (recognitionResult == null) {
@@ -54,7 +54,6 @@ public class SphinxRecognitionExecutor implements RecognitionExecutor {
             // TODO unlocalized string
             if (mr == null)
                 throw new RecognizerException("No match for recognition result '" + utterance.getWords() + "'");
-//                throw new RecognizerException(Resources.format("NoMatchFor", r));
             return mr;
         });
 

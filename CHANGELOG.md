@@ -4,7 +4,7 @@
 - Reordered tabs in node properties windows: useful tabs are now on the left (see #122).
 - GUI language can now be changed from the Help menu (#95).
 - fix issue when discarding TTS node property window without ever using it first (#128).
-
+- fix issue with ASR becoming unresponsive if aborted on the very first run (#123).
 
 **Version 2.0.3, 21 November 2018**
 
