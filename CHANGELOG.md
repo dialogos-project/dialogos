@@ -10,6 +10,7 @@ Released by @alexanderkoller
 - GUI language can now be changed from the Help menu (see #95).
 - Discarding TTS node property window without ever using it first no longer causes an exception (see #128).
 - ASR no longer becomes unresponsive if aborted on the very first run (see #123).
+- Library for building clients is now automatically released on Jitpack (see #127).
 
 **Version 2.0.3, 21 November 2018**
 
