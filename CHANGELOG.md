@@ -11,6 +11,7 @@ Released by @alexanderkoller
 - Discarding TTS node property window without ever using it first no longer causes an exception (see #128).
 - ASR no longer becomes unresponsive if aborted on the very first run (see #123).
 - Library for building clients is now automatically released on Jitpack (see #127).
+- Dialog files (`*.dos`) can now be opened by double-click on Windows (see #83).
 
 **Version 2.0.3, 21 November 2018**
 
