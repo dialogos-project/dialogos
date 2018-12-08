@@ -5,7 +5,7 @@
 
 Released by @alexanderkoller
 
-- Enable use of Kleene plus (positive closure, +) operator in grammars (see #121).
+- Enabled use of Kleene plus (positive closure, +) operator in grammars (see #121).
 - Reordered tabs in node properties windows: useful tabs are now on the left (see #122).
 - GUI language can now be changed from the Help menu (see #95).
 - Discarding TTS node property window without ever using it first no longer causes an exception (see #128).
