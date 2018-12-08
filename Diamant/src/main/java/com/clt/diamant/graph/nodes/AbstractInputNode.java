@@ -101,6 +101,8 @@ abstract public class AbstractInputNode extends Node {
 
     private static final boolean supportDynamicGrammars = true;
 
+    private EdgeManager edgeManager = new EdgeManager(this, TIMEOUT);
+
     public AbstractInputNode() {
         /* important that some value is set (must not be one of Boolean values, not null later) */
         this.setProperty(BACKGROUND, Boolean.FALSE);
@@ -134,55 +136,92 @@ abstract public class AbstractInputNode extends Node {
         }
     }
 
-    @Override
-    public void updateEdges() {
-        List<Edge> patternEdges = new ArrayList<Edge>();
-        TimeoutEdge timeoutEdge = null;
-        for (int i = 0; i < this.numEdges(); i++) {
-            Edge e = this.getEdge(i);
-            if (e instanceof TimeoutEdge) {
-                timeoutEdge = (TimeoutEdge) e;
-            } else {
-                patternEdges.add(e);
+    /**
+     * Manages the outgoing edges of a node based on the edges in its associated
+     * EdgeConditionModel.<p>
+     *
+     * To use correctly, you will need to override the updateEdges and
+     * editProperties methods as in the AbstractInputNode class.
+     */
+    public static class EdgeManager {
+        private Node managedNode;
+        private String timeoutPropertyName;
+
+        public EdgeManager(Node managedNode, String timeoutPropertyName) {
+            this.managedNode = managedNode;
+            this.timeoutPropertyName = timeoutPropertyName;
+        }
+
+        public void updateEdges() {
+            List<Edge> patternEdges = new ArrayList<Edge>();
+            TimeoutEdge timeoutEdge = null;
+            for (int i = 0; i < managedNode.numEdges(); i++) {
+                Edge e = managedNode.getEdge(i);
+                if (e instanceof TimeoutEdge) {
+                    timeoutEdge = (TimeoutEdge) e;
+                } else {
+                    patternEdges.add(e);
+                }
+            }
+
+            if ((timeoutEdge == null) && (managedNode.getProperty(timeoutPropertyName) != null)) {
+                // Convert old style node: last edge is timeout edge.
+                Edge e = managedNode.getEdge(managedNode.numEdges() - 1);
+                timeoutEdge = new TimeoutEdge(e.getSource(), e.getTarget());
+                patternEdges.remove(e);
+            }
+
+            this.reinstallEdges(patternEdges, timeoutEdge);
+        }
+
+        private void reinstallEdges(List<? extends Edge> patternEdges, TimeoutEdge timeoutEdge) {
+            managedNode.removeAllEdges();
+            for (Edge e : patternEdges) {
+                managedNode.addEdge(e);
+            }
+            String timeout = (String) managedNode.getProperty(timeoutPropertyName);
+            if (timeout != null) {
+                managedNode.addEdge(timeoutEdge != null ? timeoutEdge : new TimeoutEdge(managedNode));
             }
         }
-        if ((timeoutEdge == null) && (this.getProperty(TIMEOUT) != null)) {
-            // Convert old style node: last edge is timeout edge.
-            Edge e = this.getEdge(this.numEdges() - 1);
-            timeoutEdge = new TimeoutEdge(e.getSource(), e.getTarget());
-            patternEdges.remove(e);
+
+        public TimeoutEdge updateEdgeProperty() {
+            // collect the current out-edges and save them
+            // in the EDGE_PROPERTY property of this node
+            TimeoutEdge timeoutEdge = null;
+            List<Edge> explicitEdges = new ArrayList<Edge>();
+
+            for (int i = 0; i < managedNode.numEdges(); i++) {
+                Edge e = managedNode.getEdge(i);
+                if (e instanceof TimeoutEdge) {
+                    timeoutEdge = (TimeoutEdge) e;
+                } else {
+                    explicitEdges.add(e);
+                }
+            }
+
+            managedNode.setProperty(EdgeConditionModel.EDGE_PROPERTY, explicitEdges);
+            return timeoutEdge;
         }
-        this.reinstallEdges(patternEdges, timeoutEdge);
+
+        public void reinstallEdgesFromProperty(TimeoutEdge timeoutEdge) {
+            List<Edge> es = (List<Edge>) managedNode.getProperty(EdgeConditionModel.EDGE_PROPERTY);
+            this.reinstallEdges(es, timeoutEdge);
+        }
     }
 
-    private void reinstallEdges(List<? extends Edge> patternEdges, TimeoutEdge timeoutEdge) {
-        this.removeAllEdges();
-        for (Edge e : patternEdges) {
-            this.addEdge(e);
-        }
-        String timeout = (String) this.getProperty(TIMEOUT);
-        if (timeout != null) {
-            this.addEdge(timeoutEdge != null ? timeoutEdge : new TimeoutEdge(this));
-        }
+    @Override
+    public void updateEdges() {
+        edgeManager.updateEdges();
     }
 
     @Override
     public boolean editProperties(Component parent) {
-        TimeoutEdge timeoutEdge = null;
-        List<Edge> explicitEdges = new ArrayList<Edge>();
-        for (int i = 0; i < this.numEdges(); i++) {
-            Edge e = this.getEdge(i);
-            if (e instanceof TimeoutEdge) {
-                timeoutEdge = (TimeoutEdge) e;
-            } else {
-                explicitEdges.add(e);
-            }
-        }
-        this.setProperty(EdgeConditionModel.EDGE_PROPERTY, explicitEdges);
-        if (super.editProperties(parent)) {
-            @SuppressWarnings("unchecked")
-            List<Edge> es = (List<Edge>) this.getProperty(EdgeConditionModel.EDGE_PROPERTY);
-            this.reinstallEdges(es, timeoutEdge);
+        TimeoutEdge timeoutEdge = edgeManager.updateEdgeProperty();
+        boolean approved = super.editProperties(parent);
+
+        if (approved) {
+            edgeManager.reinstallEdgesFromProperty(timeoutEdge);
             return true;
         } else {
             return false;
@@ -194,8 +233,107 @@ abstract public class AbstractInputNode extends Node {
         super.update(map);
         if (this.getProperty(GRAMMAR) != null) {
             this.setProperty(GRAMMAR, map.getGrammar((Grammar) this
-                    .getProperty(GRAMMAR)));
+                             .getProperty(GRAMMAR)));
         }
+    }
+
+    /**
+     * The table for editing patterns for recognition results that is displayed
+     * in the center of the "Recognition" tab of an ASR node.
+     *
+     */
+    public static class PatternTable extends JPanel {
+        private JTable table;
+        private EdgeConditionModel edgeModel;
+        private JButton newButton, deleteButton;
+
+        public PatternTable(EdgeConditionModel edgeModel) {
+            super(new BorderLayout());
+
+            this.edgeModel = edgeModel;
+
+            // set up table
+            table = new JTable(edgeModel);
+            final JScrollPane jsp = GUI.createScrollPane(table, new Dimension(300, 150));
+            table.getTableHeader().setReorderingAllowed(false);
+
+            TableRowDragger.addDragHandler(table);
+            TableColumn column = table.getColumnModel().getColumn(0);
+            column.setCellRenderer(new TextRenderer() {
+
+                @Override
+                public Component getTableCellRendererComponent(JTable table,
+                        Object value, boolean isSelected, boolean hasFocus,
+                        int row, int column) {
+
+                    JLabel label = (JLabel) super.getTableCellRendererComponent(
+                            table, value, isSelected, hasFocus, row, column);
+                    if (!table.isEnabled()) {
+                        label.setForeground(jsp.getBackground());
+                        label.setBackground(jsp.getBackground());
+                    } else if (!edgeModel.isCellEditable(row, column)) {
+                        label.setForeground(Color.lightGray);
+                    }
+                    return label;
+                }
+            });
+
+            JPanel center = new JPanel(new BorderLayout());
+            center.add(jsp, BorderLayout.CENTER);
+            add(center, BorderLayout.CENTER);
+
+            // set up "New" and "Delete" buttons for editing the table
+            JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+            deleteButton = new CmdButton(new Runnable() {
+                public void run() {
+                    if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
+                        edgeModel.deleteRows(table.getSelectedRows());
+                    }
+                }
+            }, com.clt.diamant.Resources.getString("Delete"));
+            buttons.add(deleteButton);
+            deleteButton.setEnabled(table.getSelectedRow() >= 0);
+            table.getSelectionModel().addListSelectionListener(
+                    new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    deleteButton.setEnabled(table.getSelectedRow() >= 0);
+                }
+            });
+
+            newButton = new CmdButton(new Runnable() {
+                public void run() {
+                    if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
+                        int row = edgeModel.addRow();
+                        table.setRowSelectionInterval(row, row);
+                    }
+                }
+            }, com.clt.diamant.Resources.getString("New"));
+            buttons.add(newButton);
+
+            add(buttons, BorderLayout.SOUTH);
+            add(Box.createHorizontalStrut(8), BorderLayout.WEST);
+            add(Box.createHorizontalStrut(8), BorderLayout.EAST);
+        }
+
+        public void setEnabled(boolean bg) {
+            table.setEnabled(!bg);
+            newButton.setEnabled(!bg);
+            if (bg) {
+                deleteButton.setEnabled(false);
+            }
+        }
+
+        private void stopCellEditing() {
+            if (table.getCellEditor() != null) {
+                table.getCellEditor().stopCellEditing();
+            }
+        }
+
+        private void setHeader(JComponent header) {
+            add(header, BorderLayout.NORTH);
+        }
+
     }
 
     @Override
@@ -209,11 +347,12 @@ abstract public class AbstractInputNode extends Node {
 
         JTabbedPane tabs = GUI.createTabbedPane();
 
-        final JPanel p = new JPanel(new BorderLayout());
-
+//        final JPanel p = new JPanel(new BorderLayout());
         final EdgeConditionModel edgeModel = new EdgeConditionModel(this,
-                properties, com.clt.diamant.Resources
-                        .getString("InputPatterns"));
+                                                                    properties, com.clt.diamant.Resources
+                                                                            .getString("InputPatterns"));
+
+        final PatternTable patternTable = new PatternTable(edgeModel);
 
         Vector<Object> grammars = new Vector<>();
         grammars.add(DIRECT_GRAMMAR);
@@ -239,30 +378,30 @@ abstract public class AbstractInputNode extends Node {
          */
         final JButton editGrammar = new CmdButton(com.clt.diamant.Resources
                 .getString("Edit"), () -> {
-                    Object selection = grammar.getSelectedItem();
-                    if (selection instanceof Grammar) {
-                        Grammar g = (Grammar) selection;
-                        ScriptEditorDialog.editGrammar(p, g);
-                    } // this case happens if "generate from expression" was chosen.
-                    // should a script-editor be used there?
-                    else if (selection == DYNAMIC_GRAMMAR) {
-                        String g = (String) properties.get(GRAMMAR_EXPRESSION);
+                                              Object selection = grammar.getSelectedItem();
+                                              if (selection instanceof Grammar) {
+                                                  Grammar g = (Grammar) selection;
+                                                  ScriptEditorDialog.editGrammar(tabs, g);
+                                              } // this case happens if "generate from expression" was chosen.
+                                              // should a script-editor be used there?
+                                              else if (selection == DYNAMIC_GRAMMAR) {
+                                                  String g = (String) properties.get(GRAMMAR_EXPRESSION);
 
-                        JTextArea a = new JTextArea();
-                        a.setWrapStyleWord(true);
-                        a.setLineWrap(true);
-                        a.setText(g);
-                        a.setEditable(true);
+                                                  JTextArea a = new JTextArea();
+                                                  a.setWrapStyleWord(true);
+                                                  a.setLineWrap(true);
+                                                  a.setText(g);
+                                                  a.setEditable(true);
 
-                        JScrollPane jsp = new JScrollPane(a,
-                                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                        jsp.setPreferredSize(new Dimension(400, 200));
-                        OptionPane.message(p, jsp, Resources
-                                .getString("Expression"), OptionPane.PLAIN);
-                        properties.put(GRAMMAR_EXPRESSION, a.getText());
-                    }
-                });
+                                                  JScrollPane jsp = new JScrollPane(a,
+                                                                                    ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                                                                                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                                                  jsp.setPreferredSize(new Dimension(400, 200));
+                                                  OptionPane.message(tabs, jsp, Resources
+                                                                     .getString("Expression"), OptionPane.PLAIN);
+                                                  properties.put(GRAMMAR_EXPRESSION, a.getText());
+                                              }
+                                          });
 
         grammar.addActionListener(evt -> {
             language.setEnabled(true);
@@ -364,12 +503,16 @@ abstract public class AbstractInputNode extends Node {
         gbc.gridx++;
         gbc.weightx = 1.0;
         header.add(language, gbc);
+        
+        patternTable.setHeader(header);
 
-        p.add(header, BorderLayout.NORTH);
+//        p.add(header, BorderLayout.NORTH); // AK
+
+/*
 
         final JTable table = new JTable(edgeModel);
         final JScrollPane jsp = GUI.createScrollPane(table, new Dimension(300,
-                150));
+                                                                          150));
         // table.setRowSelectionAllowed(false);
         // table.setColumnSelectionAllowed(false);
         table.getTableHeader().setReorderingAllowed(false);
@@ -422,6 +565,8 @@ abstract public class AbstractInputNode extends Node {
         p.add(buttons, BorderLayout.SOUTH);
         p.add(Box.createHorizontalStrut(8), BorderLayout.WEST);
         p.add(Box.createHorizontalStrut(8), BorderLayout.EAST);
+*/
+
 
         final JTextField tf = NodePropertiesDialog.createTextField(properties, TIMEOUT);
         final JCheckBox timeout = new JCheckBox(com.clt.diamant.Resources
@@ -464,7 +609,7 @@ abstract public class AbstractInputNode extends Node {
         gbc.gridwidth = 2;
         Insets insets = gbc.insets;
         gbc.insets = new Insets(0, insets.left + 12, insets.bottom,
-                insets.right);
+                                insets.right);
         options.add(forceTimeout, gbc);
         gbc.insets = insets;
 
@@ -473,15 +618,12 @@ abstract public class AbstractInputNode extends Node {
         gbc.weightx = 1.0;
         gbc.gridwidth = 2;
         JCheckBox background = NodePropertiesDialog.createCheckBox(properties,
-                BACKGROUND, Resources.getString(BACKGROUND));
+                                                                   BACKGROUND, Resources.getString(BACKGROUND));
         final Runnable updater = () -> {
             boolean bg = (Boolean) properties.get(BACKGROUND);
-            table.setEnabled(!bg);
-            newButton.setEnabled(!bg);
-            if (bg) {
-                deleteButton.setEnabled(false);
-            }
+            patternTable.setEnabled(bg);
         };
+        
         background.addItemListener(evt -> {
             boolean bg = evt.getStateChange() == ItemEvent.SELECTED;
             if (bg) {
@@ -500,7 +642,7 @@ abstract public class AbstractInputNode extends Node {
         gbc.weightx = 1.0;
         gbc.gridwidth = 2;
         JCheckBox robustness = NodePropertiesDialog.createCheckBox(properties,
-                ENABLE_GARBAGE, Resources.getString(ENABLE_GARBAGE));
+                                                                   ENABLE_GARBAGE, Resources.getString(ENABLE_GARBAGE));
         options.add(robustness, gbc);
 
         gbc.gridy++;
@@ -526,14 +668,15 @@ abstract public class AbstractInputNode extends Node {
          */
         final JButton test = new JButton(Resources.getString("TryRecognition"));
         test.addActionListener(evt -> new Thread(() -> {
-            if (table.getCellEditor() != null) {
-                table.getCellEditor().stopCellEditing();
-            }
+            patternTable.stopCellEditing();
+//            if (table.getCellEditor() != null) {
+//                table.getCellEditor().stopCellEditing();
+//            }
             RootPaneContainer rpc = GUI.getParent(test, RootPaneContainer.class);
             try {
                 recognizeExec(rpc.getLayeredPane(),
-                        new DefaultDebugger(), null, properties,
-                        true);
+                              new DefaultDebugger(), null, properties,
+                              true);
             } catch (ExecutionStoppedException exn) {
                 // aborted by user
                 System.err.println("execution aborted by user");
@@ -552,7 +695,7 @@ abstract public class AbstractInputNode extends Node {
 
         JPanel mainPage = new JPanel(new BorderLayout(6, 0));
 
-        mainPage.add(p, BorderLayout.CENTER);
+        mainPage.add(patternTable, BorderLayout.CENTER);
 
         JPanel tryRec = new JPanel(new FlowLayout(FlowLayout.CENTER));
         tryRec.setBorder(BorderFactory.createEmptyBorder(0, 6, 6, 6));
@@ -706,7 +849,7 @@ abstract public class AbstractInputNode extends Node {
                     public void newAudio(byte[] audio) {
                         try {
                             levelMeter.getStream().write(audio);
-                        } catch (IOException e) {                            
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
@@ -744,7 +887,7 @@ abstract public class AbstractInputNode extends Node {
                                 result.setText(evt.getResult().getAlternative(0).getWords());
                                 break;
                             //default:
-                                //System.err.println(evt.toString());
+                            //System.err.println(evt.toString());
                         }
                     }
                 };
@@ -781,12 +924,12 @@ abstract public class AbstractInputNode extends Node {
 //            return null; // null is the proper return value for timeouts
         } catch (ExecutionException exn) {
             throw new NodeExecutionException(this, Resources
-                    .getString("RecognizerError")
-                    + ".", exn.getCause());
+                                             .getString("RecognizerError")
+                                             + ".", exn.getCause());
         } catch (Throwable exn) {
             throw new NodeExecutionException(this, Resources
-                    .getString("RecognizerError")
-                    + ".", exn);
+                                             .getString("RecognizerError")
+                                             + ".", exn);
         }
         return mr;
     }
@@ -846,8 +989,8 @@ abstract public class AbstractInputNode extends Node {
                         }
                     } catch (Exception exn) {
                         throw new NodeExecutionException(this,
-                                com.clt.diamant.Resources.getString("IllegalPattern")
-                                + ": " + e.getCondition(), exn);
+                                                         com.clt.diamant.Resources.getString("IllegalPattern")
+                                                         + ": " + e.getCondition(), exn);
                     }
                     n++;
                 }
@@ -865,15 +1008,15 @@ abstract public class AbstractInputNode extends Node {
                 timeout = ((IntValue) this.parseExpression(t).evaluate(dbg)).getInt();
             } catch (Exception exn) {
                 throw new NodeExecutionException(this,
-                        com.clt.diamant.Resources
-                                .getString("IllegalTimeoutValue")
-                        + " " + t, exn);
+                                                 com.clt.diamant.Resources
+                                                         .getString("IllegalTimeoutValue")
+                                                 + " " + t, exn);
             }
             if (timeout < 0) {
                 throw new NodeExecutionException(this,
-                        com.clt.diamant.Resources
-                                .getString("IllegalTimeoutValue")
-                        + " " + t);
+                                                 com.clt.diamant.Resources
+                                                         .getString("IllegalTimeoutValue")
+                                                 + " " + t);
             }
         }
         return timeout;
@@ -941,7 +1084,7 @@ abstract public class AbstractInputNode extends Node {
                 v.setValue(match.get(name));
             } else {
                 throw new NodeExecutionException(this,
-                        "Attempt to bind non existing variable " + name);
+                                                 "Attempt to bind non existing variable " + name);
             }
         }
     }
@@ -1009,8 +1152,8 @@ abstract public class AbstractInputNode extends Node {
 
             if (this.properties.get(GRAMMAR_EXPRESSION) != null) {
                 Type.unify(Type.String, this.parseExpression(
-                        (String) this.properties.get(GRAMMAR_EXPRESSION))
-                        .getType());
+                           (String) this.properties.get(GRAMMAR_EXPRESSION))
+                           .getType());
             }
 
             for (int i = 0; i < this.numEdges(); i++) {
@@ -1018,22 +1161,22 @@ abstract public class AbstractInputNode extends Node {
                 if (!(e instanceof SpecialEdge)) {
                     if (e.getCondition().trim().length() == 0) {
                         this.reportError(errors, false, com.clt.diamant.Resources
-                                .getString("containsEmptyInputPattern"));
+                                         .getString("containsEmptyInputPattern"));
                     } else if (patterns) {
                         try {
                             this.parsePattern(e.getCondition());
                         } catch (Exception exn) {
                             this.reportError(errors, false,
-                                    com.clt.diamant.Resources.format(
-                                            "containsIllegalInputPattern", exn
-                                                    .getLocalizedMessage()));
+                                             com.clt.diamant.Resources.format(
+                                                     "containsIllegalInputPattern", exn
+                                                             .getLocalizedMessage()));
                         }
                     }
                 }
             }
         } catch (Exception exn) {
             this.reportError(errors, false, com.clt.diamant.Resources.format(
-                    "containsIllegalInputPattern", exn.getLocalizedMessage()));
+                             "containsIllegalInputPattern", exn.getLocalizedMessage()));
         }
 
         String timeout = (String) this.getProperty(TIMEOUT);
@@ -1043,8 +1186,8 @@ abstract public class AbstractInputNode extends Node {
                 Type.unify(t, Type.Int);
             } catch (Exception exn) {
                 this.reportError(errors, false, com.clt.diamant.Resources.format(
-                        "containsIllegalTimeoutExpression", exn
-                                .getLocalizedMessage()));
+                                 "containsIllegalTimeoutExpression", exn
+                                         .getLocalizedMessage()));
             }
         }
 
@@ -1137,7 +1280,7 @@ abstract public class AbstractInputNode extends Node {
         }
         if (this.getProperty(GRAMMAR_EXPRESSION) != null) {
             Graph.printAtt(out, GRAMMAR_EXPRESSION,
-                    (String) this.getProperty(GRAMMAR_EXPRESSION));
+                           (String) this.getProperty(GRAMMAR_EXPRESSION));
         }
     }
 
@@ -1153,7 +1296,7 @@ abstract public class AbstractInputNode extends Node {
 
         buffer.append("<p><b>" + this.html(Resources.getString("Keywords")) + ":</b>");
         buffer.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-        
+
         for (int i = 0; i < this.numEdges(); i++) {
             Edge e = this.getEdge(i);
             buffer.append("<tr>");
@@ -1184,7 +1327,7 @@ abstract public class AbstractInputNode extends Node {
     @Override
     public void setGraph(Graph g) {
         super.setGraph(g);
-        
+
         if (g != null) {
             this.setProperty(LANGUAGE, getDefaultLanguage());
         }
