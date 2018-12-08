@@ -1,10 +1,15 @@
-**Version 2.0.4, unreleased**
+**Version 2.0.5, unreleased**
+
+
+**Version 2.0.4, 8 December 2018**
+
+Released by @alexanderkoller
 
 - Enable use of Kleene plus (positive closure, +) operator in grammars (see #121).
 - Reordered tabs in node properties windows: useful tabs are now on the left (see #122).
-- GUI language can now be changed from the Help menu (#95).
-- fix issue when discarding TTS node property window without ever using it first (#128).
-- fix issue with ASR becoming unresponsive if aborted on the very first run (#123).
+- GUI language can now be changed from the Help menu (see #95).
+- Discarding TTS node property window without ever using it first no longer causes an exception (see #128).
+- ASR no longer becomes unresponsive if aborted on the very first run (see #123).
 
 **Version 2.0.3, 21 November 2018**
 
