@@ -12,12 +12,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -54,12 +51,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -109,8 +100,7 @@ public class NodePropertiesDialog extends JDialog {
      * @param editor the editor component of the node (if the editor is a
      * JTabbedpane, all tabs get added to the dialog)
      */
-    public NodePropertiesDialog(Node node, final Component parent, final Map<String, Object> properties,
-            Container editor) {
+    public NodePropertiesDialog(Node node, final Component parent, final Map<String, Object> properties, Container editor) {
         super(GUI.getFrameForComponent(parent), true);
 
         this.node = node;

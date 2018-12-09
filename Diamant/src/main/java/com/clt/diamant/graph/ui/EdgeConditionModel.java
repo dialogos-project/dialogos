@@ -12,8 +12,24 @@ import javax.swing.table.AbstractTableModel;
 import com.clt.diamant.graph.Edge;
 import com.clt.diamant.graph.InputHandler;
 import com.clt.diamant.graph.Node;
+import com.clt.diamant.graph.nodes.AbstractInputNode;
 import com.clt.gui.table.MovableRowsTableModel;
 
+/**
+ * A model for the outgoing edges of a node. Objects of this class are
+ * meant to be constructed as part of the {@link Node#createEditorComponent(java.util.Map) }
+ * method of a specialized Node class, and can then be used to update
+ * the actual outgoing edges of a node using an {@link AbstractInputNode.EdgeManager}.<p>
+ * 
+ * One crucial detail is that the "properties" argument that is passed to the constructor
+ * of the EdgeConditionModel must be the "properties" argument which is passed to the
+ * createEditorComponent method. This is because createEditorComponent is called with
+ * a copy of the Node's original properties, so that changes can be undone if the
+ * properties window is closed by clicking the "Cancel" button.
+ * 
+ * 
+ * @author koller
+ */
 public class EdgeConditionModel extends AbstractTableModel implements MovableRowsTableModel {
 
     public static final String EDGE_PROPERTY = "tmp_edges";
@@ -52,8 +68,7 @@ public class EdgeConditionModel extends AbstractTableModel implements MovableRow
         this.addTableModelListener(new TableModelListener() {
 
             public void tableChanged(TableModelEvent e) {
-                EdgeConditionModel.this.p.put(EdgeConditionModel.EDGE_PROPERTY,
-                        EdgeConditionModel.this.v);
+                EdgeConditionModel.this.p.put(EdgeConditionModel.EDGE_PROPERTY, EdgeConditionModel.this.v);
             }
         });
     }
@@ -61,8 +76,7 @@ public class EdgeConditionModel extends AbstractTableModel implements MovableRow
     public void setName(String name) {
 
         this.name = name;
-        this
-                .fireTableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+        this.fireTableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
     }
 
     public void showPreAndPostfix(boolean showPreAndPostfix) {
@@ -99,6 +113,7 @@ public class EdgeConditionModel extends AbstractTableModel implements MovableRow
         this.v.add(new Edge(this.source, null, ""));
         int row = this.getPrefixSize() + this.v.size() - 1;
         this.fireTableRowsInserted(row, row);
+        
         return row;
     }
 

@@ -647,7 +647,6 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
      * @return true if the changes in the NodePropertiesDialog got approved
      */
     public boolean editProperties(Component parent) {
-        @SuppressWarnings("unchecked")
         Map<String, Object> props = (Map<String, Object>) this.deep_copy(this.properties);
 
         NodePropertiesDialog d = new NodePropertiesDialog(this, parent, props, this.createEditorComponent(props));
@@ -670,6 +669,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
                     it.remove();
                 }
             }
+            
             return true;
         } else {
             return false;

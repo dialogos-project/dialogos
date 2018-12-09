@@ -37,8 +37,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
@@ -179,6 +177,7 @@ abstract public class AbstractInputNode extends Node {
             for (Edge e : patternEdges) {
                 managedNode.addEdge(e);
             }
+            
             String timeout = (String) managedNode.getProperty(timeoutPropertyName);
             if (timeout != null) {
                 managedNode.addEdge(timeoutEdge != null ? timeoutEdge : new TimeoutEdge(managedNode));
@@ -201,6 +200,7 @@ abstract public class AbstractInputNode extends Node {
             }
 
             managedNode.setProperty(EdgeConditionModel.EDGE_PROPERTY, explicitEdges);
+            
             return timeoutEdge;
         }
 
@@ -244,13 +244,10 @@ abstract public class AbstractInputNode extends Node {
      */
     public static class PatternTable extends JPanel {
         private JTable table;
-        private EdgeConditionModel edgeModel;
         private JButton newButton, deleteButton;
 
         public PatternTable(EdgeConditionModel edgeModel) {
             super(new BorderLayout());
-
-            this.edgeModel = edgeModel;
 
             // set up table
             table = new JTable(edgeModel);
@@ -285,30 +282,26 @@ abstract public class AbstractInputNode extends Node {
             // set up "New" and "Delete" buttons for editing the table
             JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-            deleteButton = new CmdButton(new Runnable() {
-                public void run() {
-                    if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
-                        edgeModel.deleteRows(table.getSelectedRows());
-                    }
+            deleteButton = new CmdButton(() -> {
+                if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
+                    edgeModel.deleteRows(table.getSelectedRows());
                 }
             }, com.clt.diamant.Resources.getString("Delete"));
+            
             buttons.add(deleteButton);
             deleteButton.setEnabled(table.getSelectedRow() >= 0);
-            table.getSelectionModel().addListSelectionListener(
-                    new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e) {
-                    deleteButton.setEnabled(table.getSelectedRow() >= 0);
-                }
+            
+            table.getSelectionModel().addListSelectionListener((e) -> {
+                deleteButton.setEnabled(table.getSelectedRow() >= 0);
             });
 
-            newButton = new CmdButton(new Runnable() {
-                public void run() {
-                    if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
-                        int row = edgeModel.addRow();
-                        table.setRowSelectionInterval(row, row);
-                    }
+            newButton = new CmdButton(() -> {
+                if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
+                    int row = edgeModel.addRow();
+                    table.setRowSelectionInterval(row, row);
                 }
             }, com.clt.diamant.Resources.getString("New"));
+            
             buttons.add(newButton);
 
             add(buttons, BorderLayout.SOUTH);
@@ -347,10 +340,9 @@ abstract public class AbstractInputNode extends Node {
 
         JTabbedPane tabs = GUI.createTabbedPane();
 
-//        final JPanel p = new JPanel(new BorderLayout());
-        final EdgeConditionModel edgeModel = new EdgeConditionModel(this,
-                                                                    properties, com.clt.diamant.Resources
-                                                                            .getString("InputPatterns"));
+        final EdgeConditionModel edgeModel 
+                = new EdgeConditionModel(this, properties, 
+                        com.clt.diamant.Resources.getString("InputPatterns"));
 
         final PatternTable patternTable = new PatternTable(edgeModel);
 
@@ -366,8 +358,7 @@ abstract public class AbstractInputNode extends Node {
             grammars.addAll(definedGrammars);
         }
 
-        final JComboBox language = NodePropertiesDialog.createComboBox(
-                properties, LANGUAGE, languages);
+        final JComboBox language = NodePropertiesDialog.createComboBox(properties, LANGUAGE, languages);
 
         final JComboBox grammar = new JComboBox(grammars);
         grammar.setRenderer(new com.clt.gui.ComponentRenderer());
@@ -376,8 +367,7 @@ abstract public class AbstractInputNode extends Node {
          * button to open a new window to edit the selected grammar/grammar
          * expression
          */
-        final JButton editGrammar = new CmdButton(com.clt.diamant.Resources
-                .getString("Edit"), () -> {
+        final JButton editGrammar = new CmdButton(com.clt.diamant.Resources.getString("Edit"), () -> {
                                               Object selection = grammar.getSelectedItem();
                                               if (selection instanceof Grammar) {
                                                   Grammar g = (Grammar) selection;
@@ -461,8 +451,7 @@ abstract public class AbstractInputNode extends Node {
                 properties.putIfAbsent(GRAMMAR_EXPRESSION, "");
                 editGrammar.setText(Resources.getString("EditExpression"));
                 editGrammar.setEnabled(true);
-                edgeModel.setName(Resources
-                        .getString("InputPatterns"));
+                edgeModel.setName(Resources.getString("InputPatterns"));
                 // editGrammar.doClick();
             }
         });
@@ -505,68 +494,7 @@ abstract public class AbstractInputNode extends Node {
         header.add(language, gbc);
         
         patternTable.setHeader(header);
-
-//        p.add(header, BorderLayout.NORTH); // AK
-
-/*
-
-        final JTable table = new JTable(edgeModel);
-        final JScrollPane jsp = GUI.createScrollPane(table, new Dimension(300,
-                                                                          150));
-        // table.setRowSelectionAllowed(false);
-        // table.setColumnSelectionAllowed(false);
-        table.getTableHeader().setReorderingAllowed(false);
-
-        TableRowDragger.addDragHandler(table);
-        TableColumn column = table.getColumnModel().getColumn(0);
-        // column.setCellEditor(new TableCellEditor()
-        column.setCellRenderer(new TextRenderer() {
-
-            @Override
-            public Component getTableCellRendererComponent(JTable table,
-                    Object value, boolean isSelected, boolean hasFocus,
-                    int row, int column) {
-
-                JLabel label = (JLabel) super.getTableCellRendererComponent(
-                        table, value, isSelected, hasFocus, row, column);
-                if (!table.isEnabled()) {
-                    label.setForeground(jsp.getBackground());
-                    label.setBackground(jsp.getBackground());
-                } else if (!edgeModel.isCellEditable(row, column)) {
-                    label.setForeground(Color.lightGray);
-                }
-                return label;
-            }
-        });
-
-        JPanel center = new JPanel(new BorderLayout());
-        center.add(jsp, BorderLayout.CENTER);
-        p.add(center, BorderLayout.CENTER);
-
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        final JButton deleteButton = new CmdButton(() -> {
-            if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
-                edgeModel.deleteRows(table.getSelectedRows());
-            }
-        }, com.clt.diamant.Resources.getString("Delete"));
-        buttons.add(deleteButton);
-        deleteButton.setEnabled(table.getSelectedRow() >= 0);
-        table.getSelectionModel().addListSelectionListener(
-                evt -> deleteButton.setEnabled(table.getSelectedRow() >= 0));
-        final JButton newButton = new CmdButton(() -> {
-            if (!table.isEditing() || table.getCellEditor().stopCellEditing()) {
-                int row = edgeModel.addRow();
-                table.setRowSelectionInterval(row, row);
-            }
-        }, com.clt.diamant.Resources.getString("New"));
-        buttons.add(newButton);
-
-        p.add(buttons, BorderLayout.SOUTH);
-        p.add(Box.createHorizontalStrut(8), BorderLayout.WEST);
-        p.add(Box.createHorizontalStrut(8), BorderLayout.EAST);
-*/
-
+        
 
         final JTextField tf = NodePropertiesDialog.createTextField(properties, TIMEOUT);
         final JCheckBox timeout = new JCheckBox(com.clt.diamant.Resources
@@ -669,9 +597,6 @@ abstract public class AbstractInputNode extends Node {
         final JButton test = new JButton(Resources.getString("TryRecognition"));
         test.addActionListener(evt -> new Thread(() -> {
             patternTable.stopCellEditing();
-//            if (table.getCellEditor() != null) {
-//                table.getCellEditor().stopCellEditing();
-//            }
             RootPaneContainer rpc = GUI.getParent(test, RootPaneContainer.class);
             try {
                 recognizeExec(rpc.getLayeredPane(),
@@ -923,13 +848,13 @@ abstract public class AbstractInputNode extends Node {
             throw exn;
 //            return null; // null is the proper return value for timeouts
         } catch (ExecutionException exn) {
-            throw new NodeExecutionException(this, Resources
-                                             .getString("RecognizerError")
-                                             + ".", exn.getCause());
+            throw new NodeExecutionException(this, 
+                    Resources.getString("RecognizerError") + ".", 
+                    exn.getCause());
         } catch (Throwable exn) {
-            throw new NodeExecutionException(this, Resources
-                                             .getString("RecognizerError")
-                                             + ".", exn);
+            throw new NodeExecutionException(this, 
+                    Resources.getString("RecognizerError") + ".", 
+                    exn);
         }
         return mr;
     }
