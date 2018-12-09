@@ -31,8 +31,7 @@ public class DocumentLoader {
      * @param progress ProgressListener
      * @return The document obtained by loading the file.
      */
-    public Document load(final File f, ProgressListener progress)
-            throws IOException {
+    public Document load(final File f, ProgressListener progress) throws IOException {
 
         final XMLReader r = new XMLReader(Document.validateXML);
         try {
@@ -82,9 +81,7 @@ public class DocumentLoader {
         }
 
         @Override
-        public void run(final ProgressListener l)
-                throws IOException {
-
+        public void run(final ProgressListener l) throws IOException {
             if (l != null) {
                 final ProgressEvent evt
                         = new ProgressEvent(DocumentLoader.this, this.getDescription()
@@ -99,11 +96,10 @@ public class DocumentLoader {
                 };
                 this.r.addProgressListener(progress);
             }
+            
             this.r.parse(this.f, new AbstractHandler() {
-
                 @Override
-                public void start(String name, Attributes atts)
-                        throws SAXException {
+                public void start(String name, Attributes atts) throws SAXException {
 
                     if (name.equals("wizard")) {
                         if (DocumentLoader.this.d == null) {

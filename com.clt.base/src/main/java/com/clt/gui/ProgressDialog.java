@@ -139,8 +139,7 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
         });
     }
 
-    public void run(LongAction a)
-            throws InvocationTargetException {
+    public void run(LongAction a) throws InvocationTargetException {
 
         this.run(a, null);
     }

@@ -106,9 +106,7 @@ public class XMLReader {
      *
      * @throws IOException
      */
-    public void parse(File f, XMLHandler handler)
-            throws IOException {
-
+    public void parse(File f, XMLHandler handler) throws IOException {
         this.parse(f, handler, new DefaultErrorHandler());
     }
 
@@ -142,9 +140,7 @@ public class XMLReader {
      *
      * @throws IOException
      */
-    public void parse(InputStream in, XMLHandler handler)
-            throws IOException {
-
+    public void parse(InputStream in, XMLHandler handler) throws IOException {
         this.parse(in, handler, new DefaultErrorHandler());
     }
 

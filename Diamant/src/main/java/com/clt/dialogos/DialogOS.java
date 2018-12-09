@@ -16,12 +16,9 @@ import com.clt.util.Misc;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 /**
  * @author dabo, 2mfriedr
@@ -76,12 +73,6 @@ public class DialogOS {
         File model = null;
         
         enforceUtf8();
-        
-        // AKAKAK
-//        PrintWriter w = new PrintWriter(new FileWriter("/tmp/dialogos-log.txt"));
-//        w.println("args: " + Arrays.toString(args));
-//        w.flush();
-//        w.close();
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-execute")) {
@@ -90,11 +81,6 @@ public class DialogOS {
                 headless = true;
             } else if (args[i].equals("-clients")) {
                 loadClients = true;
-//            } else if (args[i].equals("-model")) {
-//                if (i >= args.length - 1) {
-//                    DialogOS.usage();
-//                }
-//                model = new File(args[++i]);
             } else if (args[i].equals("-summarize")) {
                 if (i >= args.length - 2) {
                     DialogOS.usage();
@@ -117,6 +103,10 @@ public class DialogOS {
 
         AppleLookAndFeel.setIfAppropriate();
 
+        run(model, execute, headless, loadClients, null);
+    }
+    
+    public static void run(File model, boolean execute, boolean headless, boolean loadClients, InputOutputSynchronizer synchronizer) throws Exception {
         File appDir = Misc.getApplicationDirectory();
 
         final File initialModel;
@@ -169,6 +159,7 @@ public class DialogOS {
         // Start built-in clients.
         try {
             final Main app = new Main(appDir);
+            
             try {
                 if (loadClients) {
                     DialogOS.loadBuiltinClients(app, appDir, startupScreen);
@@ -190,7 +181,8 @@ public class DialogOS {
 
                     boolean error = true;
                     try {
-                        Document doc = Document.load(initialModel);
+                        Document doc = Document.load(initialModel);                        
+                        
                         if (doc instanceof SingleDocument) {
                             final SingleDocument d = (SingleDocument) doc;
 

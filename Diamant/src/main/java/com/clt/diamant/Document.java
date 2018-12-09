@@ -178,8 +178,7 @@ public abstract class Document {
         this.pcs.firePropertyChange(property, oldValue, newValue);
     }
 
-    public static Document load(File f)
-            throws IOException {
+    public static Document load(File f) throws IOException {
 
         return new DocumentLoader(null).load(f, null);
     }

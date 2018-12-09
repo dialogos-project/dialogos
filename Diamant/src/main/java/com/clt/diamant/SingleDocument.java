@@ -74,6 +74,7 @@ import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 
 public class SingleDocument extends Document implements GraphOwner {
+    private InputOutputSynchronizer synchronizer = null;
 
     private final class DeviceXMLHandler extends AbstractHandler {
 
@@ -289,13 +290,11 @@ public class SingleDocument extends Document implements GraphOwner {
     public SingleDocument() {
 
         this.devices = new ArrayList<Device>();
-        this.pluginSettings
-                = new HashMap<Class<? extends Plugin>, PluginSettings>();
+        this.pluginSettings = new HashMap<Class<? extends Plugin>, PluginSettings>();
         this.localizationBundles = new HashMap<String, TemplateBundle>();
 
         for (Plugin plugin : PluginLoader.getPlugins()) {
-            this.pluginSettings
-                    .put(plugin.getClass(), plugin.createDefaultSettings());
+            this.pluginSettings.put(plugin.getClass(), plugin.createDefaultSettings());
         }
 
         Graph g = new Graph(this);
@@ -355,7 +354,7 @@ public class SingleDocument extends Document implements GraphOwner {
         Object message = null;
         Node node = null;
         int type = ExecutionResult.INFORMATION;
-
+        
         final ProgressDialog d;
         if (parent != null) {
             d = new ProgressDialog(parent, 0);
@@ -1233,5 +1232,9 @@ public class SingleDocument extends Document implements GraphOwner {
     public Collection<SearchResult> find(NodeSearchFilter filter) {
 
         return this.graph.find(filter);
+    }
+    
+    public void setSynchronizer(InputOutputSynchronizer synchronizer) {
+        getOwnedGraph().setSynchronizer(synchronizer);
     }
 }
