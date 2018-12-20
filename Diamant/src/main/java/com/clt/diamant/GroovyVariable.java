@@ -10,7 +10,7 @@ import com.clt.xml.XMLWriter;
  *
  * @author Bri Burr
  */
-public class GroovyVariable extends AbstractVariable {
+public class GroovyVariable extends AbstractVariable<Object,String> {
 
     private final String _type;
     private Object _value;

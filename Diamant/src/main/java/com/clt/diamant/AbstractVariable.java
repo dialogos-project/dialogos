@@ -12,7 +12,7 @@ import com.clt.xml.XMLWriter;
  *
  * @author Till Kollenda
  */
-public abstract class AbstractVariable implements IdentityObject {
+public abstract class AbstractVariable<ValueClass,TypeClass> implements IdentityObject {
 
     protected String _id;
     protected String _name;
@@ -94,19 +94,19 @@ public abstract class AbstractVariable implements IdentityObject {
      *
      * @param v new value of the variable
      */
-    public abstract void setValue(Object v);
+    public abstract void setValue(ValueClass v);
 
     /**
      * Gets the Value of the Variable.
      *
      * @return value of the variable
      */
-    public abstract Object getValue();
+    public abstract ValueClass getValue();
 
     /**
      * Gets the type of the variable.
      *
      * @return Type of the variable
      */
-    public abstract Object getType();
+    public abstract TypeClass getType();
 }

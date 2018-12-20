@@ -23,7 +23,7 @@ import com.clt.xml.XMLWriter;
  *
  * @author tillk
  */
-public class Slot extends AbstractVariable {
+public class Slot extends AbstractVariable<Value,Type> {
 
     public static final Type[] supportedTypes = {Type.Bool, Type.Int, Type.Real, Type.String, new ListType(), new StructType()};
 
@@ -112,13 +112,7 @@ public class Slot extends AbstractVariable {
     }
 
     @Override
-    public void setValue(Object value) {
-        if (value instanceof Value) {
-            setValue((Value) value);
-        }
-    }
-
-    private void setValue(Value value) {
+    public void setValue(Value value) {
         if (this.instances.empty()) {
             throw new EvaluationException("Slot not instantiated");
         } else {
