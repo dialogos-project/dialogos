@@ -44,8 +44,7 @@ public interface GraphOwner {
 
     public void setDirty(boolean dirty);
 
-    public void export(Graph g, File f)
-            throws IOException;
+    public void export(Graph g, File f) throws IOException;
 
     public String getGraphName();
 

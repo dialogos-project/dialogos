@@ -77,7 +77,6 @@ public class DialogOS {
         
         enforceUtf8();
         
-        // AKAKAK
 //        PrintWriter w = new PrintWriter(new FileWriter("/tmp/dialogos-log.txt"));
 //        w.println("args: " + Arrays.toString(args));
 //        w.flush();

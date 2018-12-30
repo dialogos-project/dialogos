@@ -1,6 +1,7 @@
 package com.clt.speech.recognition;
 
 import com.clt.script.exp.Pattern;
+import com.clt.speech.SpeechException;
 import com.clt.srgf.Grammar;
 
 import java.util.concurrent.ExecutionException;
@@ -25,7 +26,7 @@ public interface RecognitionExecutor {
      */
     public MatchResult start(final Grammar grammar, final Pattern[] patterns, long timeout,
                              final RecognizerListener stateListener, final float recognitionThreshold)
-            throws InterruptedException, ExecutionException, TimeoutException;
+            throws InterruptedException, ExecutionException, TimeoutException, SpeechException;
 
     /**
      * should interrupt any ongoing recognition

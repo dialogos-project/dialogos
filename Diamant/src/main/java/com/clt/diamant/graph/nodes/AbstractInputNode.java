@@ -27,6 +27,7 @@ import com.clt.script.exp.values.IntValue;
 import com.clt.script.exp.values.StringValue;
 import com.clt.script.parser.ParseException;
 import com.clt.speech.Language;
+import com.clt.speech.SpeechException;
 import com.clt.speech.recognition.*;
 import com.clt.util.StringTools;
 import com.clt.xml.XMLReader;
@@ -37,8 +38,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
@@ -212,8 +211,7 @@ abstract public class AbstractInputNode extends Node {
         final JPanel p = new JPanel(new BorderLayout());
 
         final EdgeConditionModel edgeModel = new EdgeConditionModel(this,
-                properties, com.clt.diamant.Resources
-                        .getString("InputPatterns"));
+                properties, com.clt.diamant.Resources.getString("InputPatterns"));
 
         Vector<Object> grammars = new Vector<>();
         grammars.add(DIRECT_GRAMMAR);
@@ -890,7 +888,8 @@ abstract public class AbstractInputNode extends Node {
                     Value result = mr.getMatch().get(backgroundPattern.getVariableName());
                     input.put(new DialogInput<Object>(getDevice(), result));
                 }
-            } catch (InterruptedException | ExecutionException | TimeoutException exn) {
+            } catch (InterruptedException | ExecutionException | TimeoutException | SpeechException exn) {
+                // TODO - better exception handling #100
                 exn.printStackTrace();
             }
         }).start();

@@ -88,8 +88,7 @@ public class Graph implements IdentityObject {
     private StartNode startNode = null;
     private GraphOwner owner;
 
-    private Collection<GraphListener> graphListeners
-            = new ArrayList<GraphListener>();
+    private Collection<GraphListener> graphListeners = new ArrayList<GraphListener>();
 
     private int width = 0;
     private int height = 0;

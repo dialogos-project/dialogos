@@ -289,13 +289,11 @@ public class SingleDocument extends Document implements GraphOwner {
     public SingleDocument() {
 
         this.devices = new ArrayList<Device>();
-        this.pluginSettings
-                = new HashMap<Class<? extends Plugin>, PluginSettings>();
+        this.pluginSettings = new HashMap<Class<? extends Plugin>, PluginSettings>();
         this.localizationBundles = new HashMap<String, TemplateBundle>();
 
         for (Plugin plugin : PluginLoader.getPlugins()) {
-            this.pluginSettings
-                    .put(plugin.getClass(), plugin.createDefaultSettings());
+            this.pluginSettings.put(plugin.getClass(), plugin.createDefaultSettings());
         }
 
         Graph g = new Graph(this);

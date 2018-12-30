@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
 
@@ -31,7 +30,8 @@ import com.clt.util.Misc;
 import com.clt.xml.XMLFormatException;
 
 public class Main implements MenuCommander, MenuOwner, Commands {
-
+    private static Main singletonInstance;
+    
     static final int cmdNewEx = Commands.cmdApplication + 1;
     static final int cmdHelpFunctions = Commands.cmdApplication + 2;
     static final int cmdTest = Commands.cmdApplication + 3;
@@ -103,6 +103,11 @@ public class Main implements MenuCommander, MenuOwner, Commands {
     public Main(File appDir) {
         ApplicationUtils.registerEventHandler(this.systemEventHandler);
 
+        if( singletonInstance != null ) {
+            throw new RuntimeException("Attempting to open a second instance of singleton class Main.");
+        } else {
+            singletonInstance = this;
+        }
     }
 
     private void closeProjectFrameOnSuccess() {
@@ -195,8 +200,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
         return this.openDocument(null, f, null);
     }
 
-    private DocumentWindow<?> openDocument(final DocumentWindow<?> d,
-            final File f) {
+    private DocumentWindow<?> openDocument(final DocumentWindow<?> d, final File f) {
         return this.openDocument(d, f, null);
     }
 
@@ -208,8 +212,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
      * @param f File to be opened.
      * @return A new document window displaying the opened file.
      */
-    public DocumentWindow<?> openDocument(final DocumentWindow<?> d,
-            final File f, ProgressListener progress) {
+    public DocumentWindow<?> openDocument(final DocumentWindow<?> d, final File f, ProgressListener progress) {
         DocumentWindow<?> theDoc = null;
         if (f != null) {
             if (d == null) {
@@ -590,5 +593,21 @@ public class Main implements MenuCommander, MenuOwner, Commands {
             Main.clients.runEventLoop(true);
         }
     }
-
+    
+    public static Main getInstance() {
+        return singletonInstance;
+    }
+    
+    /**
+     * Returns the current document window. Note that this method is
+     * not entirely reliable. For instance, if the user opened the
+     * properties window of a node, the document window gets deactivated,
+     * and this method will return null until the properties window
+     * is closed again.
+     * 
+     * @return 
+     */
+    public DocumentWindow getCurrentWindow() {
+        return currentDocument;
+    }
 }
