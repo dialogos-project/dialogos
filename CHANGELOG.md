@@ -1,5 +1,7 @@
 **Version 2.0.5, unreleased**
 
+- Added "silent mode" to speech recognizer again (see #132).
+- Fixed a bug where Slot#setValue would sometimes not change the value of a variable (see #137).
 
 **Version 2.0.4, 8 December 2018**
 
