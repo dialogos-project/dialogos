@@ -24,6 +24,7 @@ public class SilentInputWindow extends javax.swing.JDialog {
         super(parent, true);
         initComponents();
         
+        // set up hotkeys
         getRootPane().setDefaultButton(bOk);
         
         getRootPane().registerKeyboardAction((e) ->  bOkActionPerformed(e),
@@ -33,6 +34,12 @@ public class SilentInputWindow extends javax.swing.JDialog {
         getRootPane().registerKeyboardAction((e) ->  bCancelActionPerformed(e),
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
+        
+        // localize labels
+        jLabel1.setText(Resources.getString("Input"));
+        bOk.setText(Resources.getString("Ok"));
+        bCancel.setText(Resources.getString("Cancel"));
+        setTitle(Resources.getString("SilentInputWindow"));
     }
 
     public String getInput() {
