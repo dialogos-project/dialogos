@@ -4,6 +4,7 @@ import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
 import com.clt.diamant.graph.Graph;
+import com.clt.properties.DefaultBooleanProperty;
 import com.clt.properties.DefaultEnumProperty;
 import com.clt.properties.Property;
 import com.clt.properties.PropertySet;
@@ -26,26 +27,34 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Stores settings relevant to the recognition plugin:
- * - language-specific settings (path to AM, path to background LM?)
- * - exception dictionary to add/fix pronunciations
- * -
+ * Stores settings relevant to the recognition plugin: - language-specific
+ * settings (path to AM, path to background LM?) - exception dictionary to
+ * add/fix pronunciations -
  */
 public class Settings extends PluginSettings {
 
     private DefaultEnumProperty<LanguageName> defaultLanguage;
     private static final String LANGUAGE = "language";
-
+    
+    private static final String SILENT = "silent";
+    private Property<Boolean> silentMode;
 
     public Settings() {
+        silentMode = new DefaultBooleanProperty(SILENT,
+                Resources.getString("SilentMode"),
+                Resources.getString("SilentModeTooltip"));
+        
         List<LanguageName> languages = Plugin.getAvailableLanguages();
         this.defaultLanguage = new DefaultEnumProperty<LanguageName>(LANGUAGE,
                 Resources.getString("DefaultLanguage"), null,
                 languages.toArray(new LanguageName[languages.size()])) {
-            @Override public String getName() {
+            @Override
+            public String getName() {
                 return Resources.getString("DefaultLanguage");
             }
-            @Override public void setValueFromString(String value) {
+
+            @Override
+            public void setValueFromString(String value) {
                 for (LanguageName n : this.getPossibleValues()) {
                     if (n.toString().equals(value) || n.getName().equals(value)) {
                         this.setValue(n);
@@ -62,6 +71,10 @@ public class Settings extends PluginSettings {
     public LanguageName getDefaultLanguage() {
         return this.defaultLanguage.getValue();
     }
+    
+    public boolean getSilentMode() {
+        return silentMode.getValueAsObject();
+    }
 
     @Override
     public void writeAttributes(XMLWriter out, IdMap uidMap) {
@@ -71,9 +84,9 @@ public class Settings extends PluginSettings {
         for (LanguageName ln : getLanguages()) {
             SphinxLanguageSettings sls = Plugin.getRecognizer().getLanguageSettings(ln.getLanguage());
             if (!sls.getG2PList().isEmpty()) {
-                out.openElement("g2p", new String[] {LANGUAGE}, new Locale[] {ln.getLanguage().getLocale()});
+                out.openElement("g2p", new String[]{LANGUAGE}, new Locale[]{ln.getLanguage().getLocale()});
                 for (G2PEntry entry : sls.getG2PList()) {
-                    out.printElement("entry", new String[] {"g", "p"}, new String[] {entry.getGraphemes(), entry.getPhonemes()});
+                    out.printElement("entry", new String[]{"g", "p"}, new String[]{entry.getGraphemes(), entry.getPhonemes()});
                 }
                 out.closeElement("g2p");
             }
@@ -103,7 +116,8 @@ public class Settings extends PluginSettings {
             SphinxLanguageSettings sls = Plugin.getRecognizer().getLanguageSettings(ln.getLanguage());
             assert sls != null;
             r.setHandler(new AbstractHandler("g2p") {
-                @Override protected void start(String name, Attributes atts) throws SAXException {
+                @Override
+                protected void start(String name, Attributes atts) throws SAXException {
                     sls.getG2PList().add(new G2PEntry(atts.getValue("g"), atts.getValue("p")));
                 }
             });
@@ -123,19 +137,33 @@ public class Settings extends PluginSettings {
 
     @Override
     public JComponent createEditor() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new PropertySet<Property<?>>(defaultLanguage).createPropertyPanel(false),
-                BorderLayout.NORTH);
-        p.add(new JButton(new AbstractAction(Resources.getString("EditPronunciationDict")) { 
+        JPanel p = new JPanel(new GridBagLayout());
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(2, 3, 2, 3);
+        
+        defaultLanguage.addToPanel(p, gbc, false);        
+        silentMode.addToPanel(p, gbc, false);
+
+        // add neater "edit" button
+        JLabel editDictLabel = new JLabel(Resources.getString("EditPronunciationDict"));
+        JButton editDictButton = new JButton(new AbstractAction(Resources.getString("EditPronunciationDictButton")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                PronDictDialog.showDialog(p, Plugin.getRecognizer().getLanguageSettings(defaultLanguage.getValue().getLanguage()).getG2PList(), 
+                PronDictDialog.showDialog(p, Plugin.getRecognizer().getLanguageSettings(defaultLanguage.getValue().getLanguage()).getG2PList(),
                         Resources.getString("PronunciationDict"));
                 Plugin.getRecognizer().getLanguageSettings(defaultLanguage.getValue().getLanguage()).g2pListUpdate();
             }
-        }), BorderLayout.CENTER);
-        p.add(new JLabel(""), BorderLayout.SOUTH);
-        return p;
+        });
+        PropertySet.addLabelAndEditorComponent(p, editDictLabel, editDictButton, gbc, false);
+
+        // make editor components stick to top of window
+        JPanel superpanel = new JPanel(new BorderLayout());
+        superpanel.add(p, BorderLayout.NORTH);
+        
+        return superpanel;
     }
 
 }

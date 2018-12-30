@@ -992,8 +992,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             p.add(new JLabel(plugin.getName() + ", " + Resources.getString("Version")
                     + " "
                     + plugin.getVersion()), BorderLayout.NORTH);
-            p.add(this.getDocument().getPluginSettings(plugin.getClass())
-                    .createEditor(),
+            p.add(this.getDocument().getPluginSettings(plugin.getClass()).createEditor(),
                   BorderLayout.CENTER);
             jtp.addTab(plugin.getName(), plugin.getIcon(), p);
         }

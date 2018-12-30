@@ -9,6 +9,14 @@ public class DefaultBooleanProperty extends BooleanProperty {
     private String name;
     private String description;
 
+    /**
+     * Creates a Boolean property. It will be represented in the GUI
+     * as a checkbox.
+     * 
+     * @param id a unique identifier for this property
+     * @param name the label which will be displayed in the GUI
+     * @param description the tooltip which will be displayed in the GUI
+     */
     public DefaultBooleanProperty(String id, String name, String description) {
         this(id, name, description, false);
     }

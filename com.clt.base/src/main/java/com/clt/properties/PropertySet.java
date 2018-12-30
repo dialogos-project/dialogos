@@ -108,7 +108,6 @@ public class PropertySet<T extends Property<?>> extends UniqueList<T> {
      * @return a Reference on the created JPanel.
      */
     public JPanel createPropertyPanel(boolean fillHorizontally) {
-
         JPanel p = new JPanel(new GridBagLayout());
 
         boolean onlyCheckboxes = true;
@@ -123,9 +122,18 @@ public class PropertySet<T extends Property<?>> extends UniqueList<T> {
         return p;
     }
 
-    public void fillPropertyPanel(JPanel p, GridBagConstraints gbc,
-            boolean fillHorizontally) {
-
+    /**
+     * Adds the properties in this PropertySet to an existing JPanel.
+     * The gridbag constraints are automatically updated, so subsequent
+     * calls to this method simply put the next properties below the
+     * previous ones. 
+     * 
+     * @param p
+     * @param gbc
+     * @param fillHorizontally If true, the components will fill the horizontal
+     * space.
+     */
+    public void fillPropertyPanel(JPanel p, GridBagConstraints gbc, boolean fillHorizontally) {
         this.fillPropertyPanelImpl(p, gbc, fillHorizontally, false);
     }
 
@@ -150,35 +158,51 @@ public class PropertySet<T extends Property<?>> extends UniqueList<T> {
                 gbc.gridy++;
             } else {
                 JComponent c = property.createEditor(false);
-
-                gbc.gridx = 0;
-                if (fillHorizontally) {
-                    gbc.weightx = 0.0;
-                } else {
-                    gbc.weightx = 1.0;
-                }
-                gbc.anchor = GridBagConstraints.EAST;
                 JLabel l = new JLabel(property.getName());
-                gbc.fill = GridBagConstraints.NONE;
-                l.setLabelFor(c);
-                l.setToolTipText(c.getToolTipText());
-                p.add(l, gbc);
-
-                gbc.gridx++;
-                gbc.weightx = 1.0;
-                if (fillHorizontally) {
-                    gbc.fill = GridBagConstraints.HORIZONTAL;
-                }
-                gbc.anchor = GridBagConstraints.WEST;
-                p.add(c, gbc);
-                gbc.gridy++;
+                
+                addLabelAndEditorComponent(p, l, c, gbc, fillHorizontally);
             }
         }
     }
 
-    public static PropertySet<Property<?>> createFromBean(Object object)
-            throws IntrospectionException {
+    /**
+     * Adds an editor component and its label to a JPanel.
+     * This is done in exactly the same way as {@link #fillPropertyPanel(javax.swing.JPanel, java.awt.GridBagConstraints, boolean) }
+     * does it, so custom Swing components can be laid out alongside
+     * the editor components of DialogOS properties.
+     * 
+     * @param p
+     * @param label
+     * @param editor
+     * @param gbc
+     * @param fillHorizontally 
+     */
+    public static void addLabelAndEditorComponent(JPanel p, JLabel label, JComponent editor, GridBagConstraints gbc, boolean fillHorizontally) {
+        gbc.gridx = 0;
+        if (fillHorizontally) {
+            gbc.weightx = 0.0;
+        } else {
+            gbc.weightx = 1.0;
+        }
+        
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.fill = GridBagConstraints.NONE;
+        label.setLabelFor(editor);
+        label.setToolTipText(editor.getToolTipText());
+        p.add(label, gbc);
 
+        gbc.gridx++;
+        gbc.weightx = 1.0;
+        if (fillHorizontally) {
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+        }
+        gbc.anchor = GridBagConstraints.WEST;
+        p.add(editor, gbc);
+        
+        gbc.gridy++;
+    }
+
+    public static PropertySet<Property<?>> createFromBean(Object object) throws IntrospectionException {
         return PropertySet.createFromBean(object, null);
     }
 
