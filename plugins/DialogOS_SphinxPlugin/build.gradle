@@ -1,7 +1,8 @@
 dependencies {
+  implementation project(':com.clt.base')
   implementation project(':com.clt.speech')
-  implementation project(':RecognizerClient')
-
+  implementation project(':com.clt.xml')
+  implementation project(':com.clt.script')
   implementation project(':Diamant')
 
   implementation group: 'commons-codec', name: 'commons-codec', version: '1.10'
