@@ -3,52 +3,79 @@ package com.clt.srgf;
 import com.clt.script.exp.Type;
 import com.clt.script.exp.Value;
 import com.clt.script.exp.values.IntValue;
+import com.clt.script.exp.values.StringValue
 import com.clt.script.parser.ParseException;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
 class GrammarTest {
-    @Ignore // this test fails. It's sad: Sphinx supports left-recursive rules, just the DialogOS parser fails here.
+    /*
+    // this test fails. It's sad: Sphinx supports left-recursive rules, just the DialogOS parser fails here.
+    
+    // AK commented this out instead of using @Ignore, because @Ignore causes Netbeans to
+    // fold together all tests of this class as "skipped". Commenting out has the same effect.
     @Test public void testLeftRecursion() throws ParseException {
-        InputStream stream = is(LEFT_RECURSIVE);
-        Grammar g = Grammar.create(new InputStreamReader(stream));
+        Grammar g = gr(RIGHT_RECURSIVE);
+        Value v = g.match("one minus two plus three", null);
+        assertNotNull(v);
+        assert v.getType().equals(Type.Int);
+        assertEquals(2, ((IntValue) v).getInt());
+    }
+    */
+
+    @Test
+    public void testRightRecursion() throws ParseException {
+        Grammar g = gr(RIGHT_RECURSIVE);
         Value v = g.match("one minus two plus three", null);
         assertNotNull(v);
         assert v.getType().equals(Type.Int);
         assertEquals(2, ((IntValue) v).getInt());
     }
 
-    @Test public void testRightRecursion() throws ParseException {
-        InputStream stream = is(RIGHT_RECURSIVE);
-        Grammar g = Grammar.create(new InputStreamReader(stream));
-        Value v = g.match("one minus two plus three", null);
-        assertNotNull(v);
-        assert v.getType().equals(Type.Int);
-        assertEquals(2, ((IntValue) v).getInt());
+    // this test does not automatically check its output. You'll have to do that yourself.
+    @Test
+    public void testJSGFwithGarbage() throws ParseException {
+        Grammar g = gr(RIGHT_RECURSIVE);
+        //System.err.println(g.toString(Grammar.Format.JSGFwithGarbage));
+    }
+    
+    @Test
+    public void test131b() {
+        Grammar g = gr(GRAMMAR_131_B);
+        Value v = g.match("Wie viel Milch brauche ich", null)
+        assertEquals "Wie viel Milch brauche ich", ((StringValue) v).getString()
+    }
+    
+    @Test
+    public void test131bFixed() {
+        Grammar g = gr(GRAMMAR_131_B_FIXED);
+        Value v = g.match("Wie viel Milch brauche ich", null)
+        assertEquals "Milch", ((StringValue) v).getString()
     }
 
-    @Ignore // this test does not automatically check its output. You'll have to do that yourself.
-    @Test public void testJSGFwithGarbage() throws ParseException {
-        InputStream stream = is(RIGHT_RECURSIVE);
-        Grammar g = Grammar.create(new InputStreamReader(stream));
-        System.err.println(g.toString(Grammar.Format.JSGFwithGarbage));
-    }
     
+    private static final String GRAMMAR_131_B = '''\n\
+root $input;
+$input = $zutaten | Hallo Welt ;
+$zutaten = Wie viel $term_z brauche ich {$=$term_z} ;
+$term_z = Milch | Zucker ;\n\
+''';
     
+    private static final String GRAMMAR_131_B_FIXED = '''\n\
+root $input;
+ $input = $zutaten {$ = $zutaten} | Hallo Welt ;
+$zutaten = Wie viel $term_z brauche ich {$=$term_z} ;
+$term_z = Milch | Zucker ;\n\
+''';
+
     
-    
-    // returns an InputStream for the given string
-    private static InputStream is(String s) {
-        return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
-    }
     
     
     private static final String LEFT_RECURSIVE = '''
@@ -113,5 +140,29 @@ $zahl =
  | nine { 9 }
 ;
     ''';
+ 
+    private static final String ABNF_HEADER = '''    #ABNF 1.0;
+
+language "English (US)";
+tag-format <semantics/1.0>;
+''';
+    
+    
+    
+    // returns a Grammar for the given string
+    private static Grammar gr(String s) {
+        return Grammar.create(new StringReader(s));
+    }
+    
+    // Returns a Grammar for the given string, prefixed with
+    // #ABNF 1.0 etc. This is for copy & pasting a grammar from
+    // a DialogOS window, which would also get prefixed like this
+    // automatically.
+    private static Grammar gra(String s) {
+        String completeGrammar = ABNF_HEADER + s;
+        return gr(completeGrammar);
+    }
+    
+    
     
 }

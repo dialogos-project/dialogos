@@ -57,9 +57,7 @@ public class Parse {
     }
 
     Parse(Grammar grammar, Rule start, Input input, ParseOptions options) {
-
         this(grammar, input, options, 1);
-
         this.push(new RuleItem(start, 1, 1));
     }
 
