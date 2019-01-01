@@ -2,6 +2,8 @@
 
 - Added "silent mode" to speech recognizer again (see #132).
 - Fixed a bug where Slot#setValue would sometimes not change the value of a variable (see #137).
+- "Keywords" in the speech recognizer window are now called "alternatives" (see #109).
+
 
 **Version 2.0.4, 8 December 2018**
 
