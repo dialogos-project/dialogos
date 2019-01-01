@@ -59,7 +59,33 @@ class GrammarTest {
         Value v = g.match("Wie viel Milch brauche ich", null)
         assertEquals "Milch", ((StringValue) v).getString()
     }
+    
+    @Test
+    public void testDocsIncorrect() {
+        Grammar g = gr(DOCS_INCORRECT);
+        Value v = g.match("one", null)
+        assertEquals "one", ((StringValue) v).getString()
+    }
+    
+    @Test
+    public void testDocsCorrect() {
+        Grammar g = gr(DOCS_CORRECT);
+        Value v = g.match("one", null)
+        assertEquals "1", ((StringValue) v).getString()
+    }
+    
 
+    private static final String DOCS_INCORRECT = '''
+root $input;\n\
+$input = $number;\n\
+$number = one {$ = "1"};
+''';
+    
+    private static final String DOCS_CORRECT = '''
+root $input;\n\
+$input = $number { $ = $number };\n\
+$number = one {$ = "1"};
+''';
     
     private static final String GRAMMAR_131_B = '''\n\
 root $input;
