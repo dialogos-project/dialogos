@@ -1,3 +1,5 @@
+apply plugin: 'groovy' // for tests
+
 task 'parser' {
   doLast {
     ant.taskdef classname: "java_cup.anttask.CUPTask", name: "cup", classpath: configurations.javaCup.asPath
@@ -41,5 +43,8 @@ dependencies {
 
   implementation project(':com.clt.base')
   implementation project(':com.clt.xml')
+  
+  // for testing
+  testCompileOnly 'junit:junit:4.12'
 }
 
