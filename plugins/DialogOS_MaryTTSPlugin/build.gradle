@@ -1,7 +1,10 @@
 dependencies {
   implementation project(':Diamant')
+  implementation project(':com.clt.base')
+  implementation project(':com.clt.speech')
+  implementation project(':com.clt.xml')
+  implementation project(':com.clt.script')
 
-  implementation project(':TTSClient')
   implementation group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'     //Englisch,männlich
   implementation group: 'de.dfki.mary', name: 'voice-bits1-hsmm', version: '5.2'       //Deutsch,weiblich
   implementation group: 'de.dfki.mary', name: 'voice-bits3-hsmm', version: '5.2'       //Deutsch,männlich

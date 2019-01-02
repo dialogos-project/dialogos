@@ -30,6 +30,14 @@ class RuleItem extends Item implements ParserState {
     private Rule rule;
     private boolean automatic = false;
 
+    @Override
+    public String toString() {
+        String v = (result == null) ? "[null]" : result.toString();
+        return String.format("<%s@%d:%d %s>", rule.toString(), start, end, v);
+    }
+    
+    
+
     static RuleItem automaticRule(Rule rule) {
 
         RuleItem ri = new RuleItem(rule, 1, 1);
@@ -38,7 +46,6 @@ class RuleItem extends Item implements ParserState {
     }
 
     public RuleItem(Rule rule, int repeatMin, int repeatMax) {
-
         super(repeatMin, repeatMax);
         if (rule == null) {
             throw new IllegalArgumentException("null Rule for RuleItem");
@@ -55,7 +62,6 @@ class RuleItem extends Item implements ParserState {
     }
 
     private RuleItem(RuleItem item) {
-
         super(item);
 
         this.rule = item.rule;
@@ -176,12 +182,12 @@ class RuleItem extends Item implements ParserState {
 
     public Value getResult() {
 
-        return this.getValue() instanceof Unassigned ? new StringValue(this
-                .getText()) : this.getValue();
+        return this.getValue() instanceof Unassigned 
+                ? new StringValue(this.getText()) 
+                : this.getValue();
     }
 
     public void setValue(Value result) {
-
         this.result = result;
     }
 

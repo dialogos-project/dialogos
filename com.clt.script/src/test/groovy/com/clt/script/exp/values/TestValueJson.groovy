@@ -1,13 +1,21 @@
-package com.clt.script.exp.values;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.clt.script.exp.values
 
 import com.clt.script.exp.Value;
 import org.junit.Assert;
 import org.junit.Test;
 
+
 /**
- * Created by timo on 06.10.17.
+ *
+ * @author koller
  */
-public class TestValueJson {
+class TestValueJson {
     @Test
     public void testSimpleJson() {
         StructValue sv = new StructValue();
@@ -32,3 +40,4 @@ public class TestValueJson {
         Assert.assertEquals("ouch", sv, sv2);
     }
 }
+

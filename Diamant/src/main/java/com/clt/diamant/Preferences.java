@@ -40,13 +40,6 @@ import com.clt.properties.FileProperty;
 import com.clt.properties.IntegerProperty;
 import com.clt.properties.Property;
 import com.clt.properties.PropertySet;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import org.json.JSONArray;
-import org.json.JSONTokener;
 
 public class Preferences {
 

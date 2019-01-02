@@ -895,9 +895,7 @@ public class Grammar implements NamedEntity {
      *
      * @return The result of the evaluation of the grammars semantic tags
      */
-    public Value match(String input, String rulename)
-            throws SemanticException {
-
+    public Value match(String input, String rulename) throws SemanticException {
         return this.match(input, rulename, null);
     }
 
@@ -907,17 +905,17 @@ public class Grammar implements NamedEntity {
      *
      * @return The result of the evaluation of the grammars semantic tags
      */
-    public Value match(String input, String rulename, ParseOptions optns)
-            throws SemanticException {
-
+    public Value match(String input, String rulename, ParseOptions optns) throws SemanticException {
         ParseOptions options;
         if (optns == null) {
             options = new ParseOptions();
         } else {
             options = optns.clone();
         }
+        
         options.maxParses = ParseOptions.BEST_PARSE;
         options.buildParseTree = false;
+        
         Parse[] p = this.parse(new Input(input), rulename, options);
         if (p.length == 0) {
             return null;

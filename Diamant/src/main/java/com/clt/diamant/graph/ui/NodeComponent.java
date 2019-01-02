@@ -209,13 +209,16 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
             if (!this.label.isEnabled()) {
                 return;
             }
+            
             this.label.setOpaque(false);
             this.label.setEditable(false);
             this.label.setEnabled(false);
             this.label.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+                        
             if (!this.n.getTitle().equals(this.label.getText()) && acceptChanges) {
                 this.graph.renameNode(this.n, this.label.getText());
             }
+            
             this.setLabel(this.n.getTitle());
         }
     }
@@ -229,10 +232,9 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
             this.label.setEditable(true);
             this.label.setOpaque(true);
             this.label.setBackground(Color.WHITE);
-            this.label.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-                    .createLineBorder(
-                            Color.BLACK, 1), BorderFactory.createLineBorder(this.label
-                            .getBackground(), 1)));
+            this.label.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK, 1), 
+                    BorderFactory.createLineBorder(label.getBackground(), 1)));
             this.label.setText(this.n.getTitle());
             this.label.selectAll();
             this.label.requestFocus();
@@ -318,17 +320,21 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
         return null;
     }
 
-    private void init() {
+    private void init() {        
         this.setForeground(Color.BLACK);
+        
         Color c = this.n.getColor();
         if (c != null) {
             this.setBackColor(c);
         }
+        
         this.hideEditor(false);
+        
         String s = this.n.getTitle();
         if (s != null) {
             this.setLabel(s);
         }
+        
         this.n.addPropertyChangeListener(this);
     }
 
@@ -418,13 +424,27 @@ public class NodeComponent<NodeType extends Node> extends JComponent implements 
     }
 
     private void setLabel(String s) {
+        Dimension oldPrefsize = getPreferredSize();
+        
         if (s.length() <= 16) {
-            this.label.setText(s);
+            label.setText(s);
         } else {
-            this.label.setText(s.substring(0, 13) + "...");
+            label.setText(s.substring(0, 13) + "...");
         }
-        this.label.setCaretPosition(0);
-        this.invalidate();
+        
+        label.setCaretPosition(0);
+        invalidate();
+        
+        // For some reason that I (AK) don't understand, changing the node label
+        // sometimes (not always) increases the preferred height of the Swing component. 
+        // This caused nodes to be moved down when handling componentResized events in
+        // the NodeUI class, causing issue #134.
+        // 
+        // Forcing the height of the Swing component to
+        // remain as it was before the label was modified fixes this problem.
+        Dimension newPreferredSize = new Dimension(getPreferredSize().width, oldPrefsize.height);
+        setPreferredSize(newPreferredSize);
+        
         this.setSize(this.getPreferredSize());
     }
 

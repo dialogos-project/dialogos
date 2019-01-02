@@ -31,7 +31,6 @@ import com.clt.diamant.Grammar;
 import com.clt.diamant.IdMap;
 import com.clt.diamant.IdentityObject;
 import com.clt.diamant.InputCenter;
-import com.clt.diamant.InputOutputSynchronizer;
 import com.clt.diamant.Mapping;
 import com.clt.diamant.Resources;
 import com.clt.diamant.SingleDocument;
@@ -90,8 +89,6 @@ public class Graph implements IdentityObject {
     private GraphOwner owner;
 
     private Collection<GraphListener> graphListeners = new ArrayList<GraphListener>();
-    
-    private InputOutputSynchronizer synchronizer = null;
 
     private int width = 0;
     private int height = 0;
@@ -116,7 +113,7 @@ public class Graph implements IdentityObject {
     }
 
     /**
-     * Initalizes the graph: a new start node is created an added into the
+     * Initializes the graph: a new start node is created an added into the
      * graph.
      */
     public Graph init() {
@@ -1667,13 +1664,4 @@ public class Graph implements IdentityObject {
         return vars;
     }
 
-    public InputOutputSynchronizer getSynchronizer() {
-        return synchronizer;
-    }
-
-    public void setSynchronizer(InputOutputSynchronizer synchronizer) {
-        this.synchronizer = synchronizer;
-    }
-    
-    
 }

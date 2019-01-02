@@ -66,10 +66,8 @@ public class DynamicResourceBundle extends ResourceBundle {
                 this.resources = this.loadResources(new Locale("", ""));
             }
             if (this.resources == null) {
-                this.resources
-                        = new PropertyResourceBundle(
-                                ClassLoader.getSystemResourceAsStream(this.basename
-                                        + ".properties"));
+                this.resources = new PropertyResourceBundle(
+                                ClassLoader.getSystemResourceAsStream(this.basename + ".properties"));
             }
             if (this.resources == null) {
                 throw new MissingResourceException(this.basename,
@@ -86,7 +84,6 @@ public class DynamicResourceBundle extends ResourceBundle {
     }
 
     private ResourceBundle loadResources(Locale locale) {
-
         try {
             if (locale == null) {
                 locale = Locale.getDefault();
@@ -95,8 +92,7 @@ public class DynamicResourceBundle extends ResourceBundle {
             if (this.classLoader == null) {
                 return ResourceBundle.getBundle(this.basename, locale);
             } else {
-                return ResourceBundle
-                        .getBundle(this.basename, locale, this.classLoader);
+                return ResourceBundle.getBundle(this.basename, locale, this.classLoader);
             }
         } catch (Exception exn) {
             return null;

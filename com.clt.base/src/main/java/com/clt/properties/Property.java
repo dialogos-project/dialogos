@@ -508,19 +508,12 @@ public abstract class Property<T> {
         });
     }
 
-    public static JPanel createPropertyPanel(Property<?>[] properties,
-            boolean fillHorizontally) {
-
-        return new PropertySet<Property<?>>(properties)
-                .createPropertyPanel(fillHorizontally);
+    public static JPanel createPropertyPanel(Property<?>[] properties, boolean fillHorizontally) {
+        return new PropertySet<Property<?>>(properties).createPropertyPanel(fillHorizontally);
     }
 
-    public static JPanel createPropertyPanel(
-            Collection<? extends Property<?>> properties,
-            boolean fillHorizontally) {
-
-        return new PropertySet<Property<?>>(properties)
-                .createPropertyPanel(fillHorizontally);
+    public static JPanel createPropertyPanel(Collection<? extends Property<?>> properties, boolean fillHorizontally) {
+        return new PropertySet<Property<?>>(properties).createPropertyPanel(fillHorizontally);
     }
 
     public static void fillPropertyPanel(JPanel p, GridBagConstraints gbc,
@@ -530,8 +523,11 @@ public abstract class Property<T> {
             throw new IllegalArgumentException();
         }
 
-        new PropertySet<Property<?>>(properties).fillPropertyPanel(p, gbc,
-                fillHorizontally);
+        new PropertySet<Property<?>>(properties).fillPropertyPanel(p, gbc, fillHorizontally);
     }
 
+    public void addToPanel(JPanel p, GridBagConstraints gbc, boolean fillHorizontally) {
+        Property<?>[] properties = new Property[] { this };
+        fillPropertyPanel(p, gbc, properties, fillHorizontally);
+    }
 }

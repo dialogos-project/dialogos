@@ -74,8 +74,6 @@ import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 
 public class SingleDocument extends Document implements GraphOwner {
-    private InputOutputSynchronizer synchronizer = null;
-
     private final class DeviceXMLHandler extends AbstractHandler {
 
         private final Graph graph;
@@ -1232,9 +1230,5 @@ public class SingleDocument extends Document implements GraphOwner {
     public Collection<SearchResult> find(NodeSearchFilter filter) {
 
         return this.graph.find(filter);
-    }
-    
-    public void setSynchronizer(InputOutputSynchronizer synchronizer) {
-        getOwnedGraph().setSynchronizer(synchronizer);
     }
 }

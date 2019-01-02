@@ -161,10 +161,7 @@ public class MenuUtils {
             icon = Images.load(language + ".png");
         } catch (Exception ignore) {
         }
-        JMenuItem item
-                = new CmdCheckBoxMenuItem(Resources.getString(language), 1, null,
-                        new MenuCommander() {
-
+        JMenuItem item = new CmdCheckBoxMenuItem(Resources.getString(language), 1, null, new MenuCommander() {
                     public boolean menuItemState(int cmd) {
                         return Preferences.getPrefs().locale.getValue().equals(locale);
                     }

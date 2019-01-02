@@ -48,7 +48,6 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
     private Map<Edge, EdgeUI> ui = new Hashtable<Edge, EdgeUI>();
 
     public NodeUI(GraphUI graph, N node, final MouseInputListener scroller) {
-
         this.setLayout(new GridBagLayout());
         this.setOpaque(false);
 
@@ -136,13 +135,9 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
 
     @Override
     public void setLocation(int x, int y) {
-
         if (this.getParent() != null) {
-            x
-                    = Math.max(0, Math.min(x, this.getParent().getWidth() - this.getWidth()));
-            y
-                    = Math.max(0, Math
-                            .min(y, this.getParent().getHeight() - this.getHeight()));
+            x = Math.max(0, Math.min(x, this.getParent().getWidth() - this.getWidth()));
+            y = Math.max(0, Math.min(y, this.getParent().getHeight() - this.getHeight()));
         }
 
         if ((x != this.getX()) || (y != this.getY())) {
@@ -151,6 +146,7 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
             // getNode().setProperty("location", new Point(x + getWidth()/2, y +
             // getHeight()/2));
             this.getNode().setLocation(x, y);
+
         }
     }
 
@@ -168,23 +164,22 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
         return this.body;
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
-
         String property = evt.getPropertyName();
+        
         if (property.equals("numEdges")) {
             this.init();
         } else if (property.equals("active")) {
             boolean active = evt.getNewValue().equals(Boolean.TRUE);
             this.initBorder(active);
-            this.firePropertyChange("nodeActive", evt.getOldValue(), evt
-                    .getNewValue());
+            this.firePropertyChange("nodeActive", evt.getOldValue(), evt.getNewValue());
         } else if (property.equals("location")) {
             // __location
             Point p = (Point) evt.getNewValue();
             // setLocation(p.x - getWidth()/2, p.y - getHeight()/2);
             this.setLocation(p);
-            this
-                    .firePropertyChange("nodeMoved", evt.getOldValue(), evt.getNewValue());
+            this.firePropertyChange("nodeMoved", evt.getOldValue(), evt.getNewValue());
         } else if (property.equals("selected")) {
             if (Preferences.getPrefs().supportMultiView.getValue()) {
                 if (this.getParent() != null) {
@@ -280,15 +275,12 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
         }
 
         @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width,
-                int height) {
-
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             super.paintBorder(c, g, x, y, width, height);
         }
     }
 
     protected void init() {
-
         this.removeAll();
 
         for (EdgeUI eui : this.ui.values()) {
@@ -306,7 +298,7 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
          */
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
-        this.body = this.createBody(this.graph, this.getNode());
+        this.body = createBody(this.graph, this.getNode());
         this.add(this.body, gbc);
 
         gbc.gridx = 0;
@@ -339,27 +331,26 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
         this.revalidate();
 
         this.body.addComponentListener(new ComponentAdapter() {
-
             @Override
             public void componentResized(ComponentEvent e) {
-
                 int w = NodeUI.this.getWidth();
                 int h = NodeUI.this.getHeight();
+
+                int oldY = NodeUI.this.getY();
+
                 NodeUI.this.setSize(NodeUI.this.getPreferredSize());
-                NodeUI.this.setLocation(NodeUI.this.getX()
-                        + (w - NodeUI.this.getWidth()) / 2, NodeUI.this.getY()
-                        + (h - NodeUI.this.getHeight()) / 2);
+                NodeUI.this.setLocation(
+                        NodeUI.this.getX() + (w - NodeUI.this.getWidth()) / 2,
+                        NodeUI.this.getY() + (h - NodeUI.this.getHeight()) / 2);
                 NodeUI.this.revalidate();
             }
         });
     }
 
     protected NodeComponent<N> createBody(GraphUI graph, N node) {
-
         NodeComponent<N> body = new NodeComponent<N>(graph, node);
 
         body.setFont(this.getFont());
-
         return body;
     }
 
@@ -380,8 +371,7 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
                     int height) {
 
                 int d
-                        = NodeUI.this.node.getSelectionDistance(NodeUI.this.graph
-                                .getSelectionModel(), 1);
+                        = NodeUI.this.node.getSelectionDistance(NodeUI.this.graph.getSelectionModel(), 1);
                 if (Preferences.getPrefs().showSelectionNeighbours.getValue() ? d <= 1
                         : d == 0) {
                     Color color;
@@ -390,15 +380,13 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
                     } else {
                         color = Preferences.getPrefs().neighbourColor.getValue();
                     }
-                    color
-                            = new Color(color.getRed(), color.getGreen(), color.getBlue(), 238);
+                    color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 238);
                     g.setColor(color);
                     int n = Math.min(NodeUI.BORDER_WIDTH, 2);
                     for (int i = 0; i < n; i++) {
                         g.drawRect(x + i, y + i, width - 2 * i - 1, height - 2 * i - 1);
                     }
-                    g.setColor(new Color(color.getRed(), color.getGreen(), color
-                            .getBlue(), 60));
+                    g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 60));
                     g.fillRect(x + n, y + n, width - 2 * n, height - 2 * n);
                 }
             }
@@ -480,4 +468,11 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
         return ui.getOutputRelativeTo(parent);
     }
 
+    @Override
+    public String toString() {
+        String id = getClass().getName() + '@' + Integer.toHexString(hashCode());
+        return id + "::" + super.toString();
+    }
+
+    
 }

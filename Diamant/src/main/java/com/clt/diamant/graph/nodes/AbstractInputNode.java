@@ -27,6 +27,7 @@ import com.clt.script.exp.values.IntValue;
 import com.clt.script.exp.values.StringValue;
 import com.clt.script.parser.ParseException;
 import com.clt.speech.Language;
+import com.clt.speech.SpeechException;
 import com.clt.speech.recognition.*;
 import com.clt.util.StringTools;
 import com.clt.xml.XMLReader;
@@ -340,10 +341,8 @@ abstract public class AbstractInputNode extends Node {
 
         JTabbedPane tabs = GUI.createTabbedPane();
 
-        final EdgeConditionModel edgeModel 
-                = new EdgeConditionModel(this, properties, 
-                        com.clt.diamant.Resources.getString("InputPatterns"));
-
+        final EdgeConditionModel edgeModel = new EdgeConditionModel(this,
+                properties, com.clt.diamant.Resources.getString("InputPatterns"));
         final PatternTable patternTable = new PatternTable(edgeModel);
 
         Vector<Object> grammars = new Vector<>();
@@ -958,7 +957,8 @@ abstract public class AbstractInputNode extends Node {
                     Value result = mr.getMatch().get(backgroundPattern.getVariableName());
                     input.put(new DialogInput<Object>(getDevice(), result));
                 }
-            } catch (InterruptedException | ExecutionException | TimeoutException exn) {
+            } catch (InterruptedException | ExecutionException | TimeoutException | SpeechException exn) {
+                // TODO - better exception handling #100
                 exn.printStackTrace();
             }
         }).start();

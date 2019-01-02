@@ -103,10 +103,10 @@ public class DialogOS {
 
         AppleLookAndFeel.setIfAppropriate();
 
-        run(model, execute, headless, loadClients, null);
+        run(model, execute, headless, loadClients);
     }
     
-    public static void run(File model, boolean execute, boolean headless, boolean loadClients, InputOutputSynchronizer synchronizer) throws Exception {
+    public static void run(File model, boolean execute, boolean headless, boolean loadClients) throws Exception {
         File appDir = Misc.getApplicationDirectory();
 
         final File initialModel;
