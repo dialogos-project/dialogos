@@ -6,24 +6,25 @@ import java.util.List;
 import javax.swing.event.ChangeListener;
 
 import com.clt.xml.XMLWriter;
+import javax.swing.event.ChangeEvent;
 
 /**
  * Abstract variable class to combine Slots and Groovy-only variables
  *
  * @author Till Kollenda
  */
-public abstract class AbstractVariable<ValueClass,TypeClass> implements IdentityObject {
+public abstract class AbstractVariable<ValueClass, TypeClass> implements IdentityObject {
 
-    protected String _id;
-    protected String _name;
-    public boolean _export;
+    private String id;
+    private String name;
+    private boolean export;
 
-    protected List<ChangeListener> _listeners;
+    private List<ChangeListener> listeners;
 
     protected AbstractVariable(String name, boolean export) {
-        _name = name;
-        _export = export;
-        _listeners = new ArrayList<ChangeListener>();
+        this.name = name;
+        this.export = export;
+        listeners = new ArrayList<ChangeListener>();
     }
 
     /**
@@ -33,7 +34,7 @@ public abstract class AbstractVariable<ValueClass,TypeClass> implements Identity
      * @param c the ChangeLister to be added
      */
     public void addChangeListener(ChangeListener c) {
-        _listeners.add(c);
+        listeners.add(c);
     }
 
     /**
@@ -42,7 +43,7 @@ public abstract class AbstractVariable<ValueClass,TypeClass> implements Identity
      * @param c the ChangeListener to be removed
      */
     public void removeChangeListener(ChangeListener c) {
-        _listeners.remove(c);
+        listeners.remove(c);
     }
 
     /**
@@ -51,7 +52,7 @@ public abstract class AbstractVariable<ValueClass,TypeClass> implements Identity
      * @return name of the variable
      */
     public String getName() {
-        return _name;
+        return name;
     }
 
     /**
@@ -60,7 +61,7 @@ public abstract class AbstractVariable<ValueClass,TypeClass> implements Identity
      * @param name of the variable
      */
     public void setName(String name) {
-        _name = name;
+        this.name = name;
     }
 
     @Override
@@ -70,12 +71,26 @@ public abstract class AbstractVariable<ValueClass,TypeClass> implements Identity
 
     @Override
     public String getId() {
-        return _id;
+        return id;
     }
 
     @Override
     public void setId(String id) {
-        _id = id;
+        this.id = id;
+    }
+
+    public boolean isExport() {
+        return export;
+    }
+
+    public void setExport(boolean _export) {
+        this.export = _export;
+    }
+
+    protected void notifyChangeListeners() {
+        for (ChangeListener l : listeners) {
+            l.stateChanged(new ChangeEvent(this));
+        }
     }
 
     public abstract AbstractVariable clone();

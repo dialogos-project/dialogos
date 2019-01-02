@@ -37,6 +37,7 @@ import com.clt.diamant.graph.Graph;
 import com.clt.diamant.graph.GraphOwner;
 import com.clt.diamant.graph.Node;
 import com.clt.diamant.graph.Procedure;
+import com.clt.diamant.graph.nodes.DialogSuspendedException;
 import com.clt.diamant.graph.nodes.NodeExecutionException;
 import com.clt.diamant.graph.nodes.ProcNode;
 import com.clt.diamant.graph.search.NodeSearchFilter;
@@ -74,6 +75,7 @@ import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 
 public class SingleDocument extends Document implements GraphOwner {
+
     private final class DeviceXMLHandler extends AbstractHandler {
 
         private final Graph graph;
@@ -352,7 +354,7 @@ public class SingleDocument extends Document implements GraphOwner {
         Object message = null;
         Node node = null;
         int type = ExecutionResult.INFORMATION;
-        
+
         final ProgressDialog d;
         if (parent != null) {
             d = new ProgressDialog(parent, 0);
@@ -401,6 +403,9 @@ public class SingleDocument extends Document implements GraphOwner {
             type = ExecutionResult.INFORMATION;
         } catch (ThreadDeath death) {
             throw death;
+        } catch (DialogSuspendedException exn) {
+            // pass DialogSuspendedExceptions through to caller
+            throw exn;
         } catch (Throwable exn) {
             if (exn instanceof InvocationTargetException) {
                 exn = ((InvocationTargetException) exn).getTargetException();
@@ -423,16 +428,16 @@ public class SingleDocument extends Document implements GraphOwner {
                     exn.printStackTrace();
                 }
             }
-        }
+        } finally {
+            if (d != null) {
+                d.run(uninit);
+            } else {
+                uninit.run();
+            }
 
-        if (d != null) {
-            d.run(uninit);
-        } else {
-            uninit.run();
+            transition.disposeInterface(type == ExecutionResult.ERROR);
+            this.closeDevices();
         }
-
-        transition.disposeInterface(type == ExecutionResult.ERROR);
-        this.closeDevices();
 
         return new ExecutionResult(type, message, node);
     }
@@ -466,6 +471,9 @@ public class SingleDocument extends Document implements GraphOwner {
                     } else {
                         transition.error(exn.getClass().getName(), exn.getLocalizedMessage());
                     }
+                    throw exn;
+                } catch(DialogSuspendedException exn) {
+                    // pass through
                     throw exn;
                 } catch (Exception exn) {
                     // exn.printStackTrace();

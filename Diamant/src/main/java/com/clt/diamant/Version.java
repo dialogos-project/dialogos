@@ -15,7 +15,7 @@ public class Version {
 
     public static boolean HICOLOR = false;
     public static boolean ANIMATE = false;
-    public static boolean DEBUG = false;
+    public static final boolean DEBUG = false;
 
     public static final String PRODUCT_NAME = "DialogOS";
 

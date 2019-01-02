@@ -38,6 +38,7 @@ import com.clt.diamant.Slot;
 import com.clt.diamant.Version;
 import com.clt.diamant.WozInterface;
 import com.clt.diamant.graph.nodes.CatchAllEdge;
+import com.clt.diamant.graph.nodes.DialogSuspendedException;
 import com.clt.diamant.graph.nodes.EndNode;
 import com.clt.diamant.graph.nodes.GraphNode;
 import com.clt.diamant.graph.nodes.InputNode;
@@ -76,12 +77,13 @@ public class Graph implements IdentityObject {
     private List<Grammar> grammars = null;
     private List<InputHandler> handlers = null;
     private Collection<Node> nodes = null;
-    private List<Slot> variables = null;
+
+    private List<Slot> variables = null;                      // variables for use in DialogOS or Groovy scripts
     private List<Functions> functions = null;
+
     private String groovyFunctions = null;
-    // A list of global variables that should only be used in Groovy code, and not 
-    // the other script.
-    private List<GroovyVariable> groovyOnlyVariables = null;
+    private List<GroovyVariable> groovyOnlyVariables = null;  // variables for use in Groovy scripts
+
     private Collection<Comment> comments = null;
     private Script compiledScript = null;
 
@@ -303,6 +305,19 @@ public class Graph implements IdentityObject {
             v.uninstantiate();
         }
     }
+    
+    /**
+     * Suspends execution of this dialog by throwing a
+     * {@link DialogSuspendedException} with the current
+     * dialog state.
+     * 
+     * @param currentNode 
+     */
+    public void suspend(Node currentNode) throws DialogSuspendedException {
+        DialogState state = new DialogState(currentNode, variables, groovyOnlyVariables);
+        DialogSuspendedException ex = new DialogSuspendedException(state);
+        throw ex;
+    }
 
     /**
      * Iterates over all nodes of the graph and executes them. Returns the
@@ -337,7 +352,7 @@ public class Graph implements IdentityObject {
                 try {
                     comm.preExecute(node);
                     next = node.execute(comm, input, logger);
-                } catch (NodeExecutionException exn) {
+                } catch (NodeExecutionException|DialogSuspendedException exn) {
                     throw exn;
                 } catch (Exception exn) {
                     throw new NodeExecutionException(node, Resources.getString("UnexpectedError"), exn, logger);
@@ -560,7 +575,7 @@ public class Graph implements IdentityObject {
         }
 
         for (Slot v : this.variables) {
-            if (v._export || (scope == Graph.LOCAL)) {
+            if (v.isExport() || (scope == Graph.LOCAL)) {
                 vars.add(v);
             }
         }
@@ -1656,7 +1671,7 @@ public class Graph implements IdentityObject {
         }
 
         for (GroovyVariable v : groovyOnlyVariables) {
-            if (v._export) {
+            if (v.isExport()) {
                 vars.add(v);
             }
         }

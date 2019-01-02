@@ -107,13 +107,13 @@ public class Procedure extends Graph {
         List<Slot> vars = super.getAllVariables(scope);
 
         for (Slot v : this.parameters) {
-            if (v._export || (scope == Graph.LOCAL)) {
+            if (v.isExport() || (scope == Graph.LOCAL)) {
                 vars.add(v);
             }
         }
 
         for (Slot v : this.returnvars) {
-            if (v._export || (scope == Graph.LOCAL)) {
+            if (v.isExport() || (scope == Graph.LOCAL)) {
                 vars.add(v);
             }
         }
@@ -278,7 +278,7 @@ public class Procedure extends Graph {
                             } else if (name.equals("value")) {
                                 v.setInitValue(this.getValue());
                             } else if (name.equals("export")) {
-                                v._export = true;
+                                v.setExport(true);
                             }
                         }
                     });

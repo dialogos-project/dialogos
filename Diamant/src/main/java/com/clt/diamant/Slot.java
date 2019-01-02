@@ -2,8 +2,6 @@ package com.clt.diamant;
 
 import java.util.Stack;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.clt.script.Environment;
 import com.clt.script.debug.Debugger;
@@ -24,10 +22,9 @@ import com.clt.xml.XMLWriter;
  * @author tillk
  */
 public class Slot extends AbstractVariable<Value,Type> {
-
     public static final Type[] supportedTypes = {Type.Bool, Type.Int, Type.Real, Type.String, new ListType(), new StructType()};
 
-    private Type _type;
+    private Type type;
     private String initValue;
 
     private Stack<Value> instances;
@@ -38,7 +35,7 @@ public class Slot extends AbstractVariable<Value,Type> {
 
     public Slot(String name, Type type, String initValue, boolean export) {
         super(name, export);
-        this._type = type;
+        this.type = type;
         this.initValue = initValue;
 
         this.instances = new Stack<Value>();
@@ -48,7 +45,7 @@ public class Slot extends AbstractVariable<Value,Type> {
 
     @Override
     public Type getType() {
-        return _type;
+        return type;
     }
 
     /**
@@ -57,18 +54,18 @@ public class Slot extends AbstractVariable<Value,Type> {
      * @param type Type of the variable
      */
     public void setType(Type type) {
-        _type = type;
+        this.type = type;
     }
 
     public Slot clone(Mapping map) {
-        Slot v = new Slot(this._name, this._type, this.getValue().toString(), this._export);
+        Slot v = new Slot(this.getName(), this.type, this.getValue().toString(), this.isExport());
         map.addVariable(this, v);
         return v;
     }
 
     @Override
     public Slot clone() {
-        Slot v = new Slot(this._name, this._type, this.getValue().toString(), this._export);
+        Slot v = new Slot(this.getName(), this.type, this.getValue().toString(), this.isExport());
         return v;
     }
 
@@ -122,9 +119,8 @@ public class Slot extends AbstractVariable<Value,Type> {
             }
             this.instances.pop();
             this.instances.push(value);
-            for (ChangeListener l : _listeners) {
-                l.stateChanged(new ChangeEvent(this));
-            }
+            
+            notifyChangeListeners();
         }
     }
 
@@ -139,7 +135,7 @@ public class Slot extends AbstractVariable<Value,Type> {
 
     public void setInitValue(String initValue) {
         this.initValue = initValue;
-        this.setType(_type);
+        this.setType(type);
     }
 
     public String getInitValue() {
@@ -163,10 +159,16 @@ public class Slot extends AbstractVariable<Value,Type> {
 
         out.printElement("type", typename);
         out.printElement("value", this.initValue);
-        if (this._export) {
+        if (isExport()) {
             out.printElement("export", null);
         }
 
         out.closeElement(tag);
     }
+
+    public String toDetailedString() {
+        return String.format("<Slot[%s:%s:%s]: %s>", getId(), getName(), type, getValue());
+    }
+    
+    
 }

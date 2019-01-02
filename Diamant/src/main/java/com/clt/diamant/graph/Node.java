@@ -907,8 +907,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     public String toString() {
-        return "Node:" + "\n  class = " + this.getClassName() + "\n  title = " + this.getTitle() + "\n  adr   = "
-                + super.toString();
+        return String.format("<%s id=%s title=%s>", super.toString(), getId(), getTitle());
     }
 
     public Collection<? extends SearchResult> find(NodeSearchFilter filter) {

@@ -207,7 +207,7 @@ public class GroovyVariableDialog extends TableEditor<GroovyVariable> {
                     case 1:
                         return v.getType();
                     case 2:
-                        return v._export ? Boolean.TRUE : Boolean.FALSE;
+                        return v.isExport() ? Boolean.TRUE : Boolean.FALSE;
                 }
                 return null;
             }
@@ -240,7 +240,7 @@ public class GroovyVariableDialog extends TableEditor<GroovyVariable> {
                         v.setName((String) aValue);
                         break;
                     case 2:
-                        v._export = ((Boolean) aValue).booleanValue();
+                        v.setExport((Boolean) aValue);
                         break;
                 }
             }

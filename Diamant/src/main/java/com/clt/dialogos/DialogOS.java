@@ -6,6 +6,7 @@ import com.clt.dialog.client.GUIClientWindow;
 import com.clt.dialog.client.StdIOConnectionChooser;
 import com.clt.dialogos.plugin.PluginLoader;
 import com.clt.diamant.*;
+import com.clt.diamant.graph.nodes.DialogSuspendedException;
 import com.clt.diamant.gui.DocumentWindow;
 import com.clt.diamant.gui.SingleDocumentWindow;
 import com.clt.diamant.log.LogPlayer;
@@ -32,15 +33,15 @@ public class DialogOS {
 
     public static File getDefaultModel(File appDir) {
         File file = new File(appDir, "Model.xml");
-        
+
         if (file.isFile()) {
             return file;
         } else {
             file = new File(appDir, "Model");
-            
+
             if (file.isDirectory()) {
                 file = new File(file, "Model.xml");
-                
+
                 if (file.isFile()) {
                     return file;
                 }
@@ -49,7 +50,7 @@ public class DialogOS {
 
         return null;
     }
-    
+
     // Enforce that the character encoding is UTF-8,
     // even on Windows, where the default is CP1252.
     // This is a trick from http://araklefeistel.blogspot.com/2015/10/set-fileencoding-in-jvm.html
@@ -63,7 +64,7 @@ public class DialogOS {
             System.err.println("An exception occurred while trying to set the character encoding to UTF-8:");
             System.err.println(ex);
             System.exit(1);
-        } 
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -71,7 +72,7 @@ public class DialogOS {
         boolean headless = false;
         boolean loadClients = false;
         File model = null;
-        
+
         enforceUtf8();
 
         for (int i = 0; i < args.length; i++) {
@@ -94,7 +95,7 @@ public class DialogOS {
                     exn.printStackTrace();
                 }
                 System.exit(0);
-            } else if( model == null && ! args[i].startsWith("-")) {
+            } else if (model == null && !args[i].startsWith("-")) {
                 model = new File(args[i]);
             } else {
                 DialogOS.usage();
@@ -105,7 +106,7 @@ public class DialogOS {
 
         run(model, execute, headless, loadClients);
     }
-    
+
     public static void run(File model, boolean execute, boolean headless, boolean loadClients) throws Exception {
         File appDir = Misc.getApplicationDirectory();
 
@@ -115,7 +116,7 @@ public class DialogOS {
         } else {
             initialModel = DialogOS.getDefaultModel(appDir);
         }
-        
+
         final GUIClientStartupScreen startupScreen;
 
         if (headless) {
@@ -159,7 +160,7 @@ public class DialogOS {
         // Start built-in clients.
         try {
             final Main app = new Main(appDir);
-            
+
             try {
                 if (loadClients) {
                     DialogOS.loadBuiltinClients(app, appDir, startupScreen);
@@ -181,8 +182,8 @@ public class DialogOS {
 
                     boolean error = true;
                     try {
-                        Document doc = Document.load(initialModel);                        
-                        
+                        Document doc = Document.load(initialModel);
+
                         if (doc instanceof SingleDocument) {
                             final SingleDocument d = (SingleDocument) doc;
 
@@ -196,6 +197,10 @@ public class DialogOS {
                                         d.run(null, executer);
 
                                         System.out.println(Resources.getString("ExecutionComplete"));
+                                        System.exit(0);
+                                    } catch (DialogSuspendedException exn) {
+                                        System.err.println("dialog suspended!");
+                                        System.err.println(exn.getDialogState());
                                         System.exit(0);
                                     } catch (Exception exn) {
                                         System.err.println(exn);
@@ -252,8 +257,7 @@ public class DialogOS {
         }
     }
 
-    private static GUIClientFactory loadBuiltinClients(final Main app, File appDir,
-            GUIClientStartupScreen startupScreen) throws IOException {
+    private static GUIClientFactory loadBuiltinClients(final Main app, File appDir, GUIClientStartupScreen startupScreen) throws IOException {
         String[] clientArgs = new String[0];
         GUIClientFactory clients = new GUIClientFactory() {
 

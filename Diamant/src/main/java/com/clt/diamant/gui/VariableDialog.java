@@ -218,7 +218,7 @@ public class VariableDialog extends TableEditor<Slot> {
                     case 2:
                         return v.getInitValue();
                     case 3:
-                        return v._export ? Boolean.TRUE : Boolean.FALSE;
+                        return v.isExport() ? Boolean.TRUE : Boolean.FALSE;
                 }
                 return null;
             }
@@ -257,7 +257,7 @@ public class VariableDialog extends TableEditor<Slot> {
                         v.setInitValue((String) aValue);
                         break;
                     case 3:
-                        v._export = ((Boolean) aValue).booleanValue();
+                        v.setExport((Boolean) aValue);
                         break;
                 }
             }

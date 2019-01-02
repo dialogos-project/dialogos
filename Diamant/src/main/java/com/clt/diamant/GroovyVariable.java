@@ -1,7 +1,5 @@
 package com.clt.diamant;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.clt.xml.XMLWriter;
 
@@ -11,9 +9,8 @@ import com.clt.xml.XMLWriter;
  * @author Bri Burr
  */
 public class GroovyVariable extends AbstractVariable<Object,String> {
-
-    private final String _type;
-    private Object _value;
+    private final String type;
+    private Object value;
 
     /**
      * Creates a untitled GroovyVariable with a undefined value.
@@ -31,28 +28,25 @@ public class GroovyVariable extends AbstractVariable<Object,String> {
      */
     public GroovyVariable(String name, Object initValue, boolean export) {
         super(name, export);
-        this._value = initValue;
-        this._export = export;
-        this._type = "GroovyObject";
+        this.value = initValue;
+        this.type = "GroovyObject";
     }
 
     @Override
     public GroovyVariable clone() {
-        GroovyVariable v = new GroovyVariable(_name, this.getValue().toString(), this._export);
+        GroovyVariable v = new GroovyVariable(getName(), this.getValue().toString(), this.isExport());
         return v;
     }
 
     @Override
     public void setValue(Object v) {
-        _value = v;
-        for (ChangeListener l : _listeners) {
-            l.stateChanged(new ChangeEvent(this));
-        }
+        value = v;
+        notifyChangeListeners();
     }
 
     @Override
     public Object getValue() {
-        return _value;
+        return value;
     }
 
     @Override
@@ -60,8 +54,8 @@ public class GroovyVariable extends AbstractVariable<Object,String> {
         out.openElement(tag, new String[]{"uid"}, new Object[]{uid_map.groovyVariables.put(this)});
 
         out.printElement("name", this.getName());
-        out.printElement("value", this._value);
-        if (this._export) {
+        out.printElement("value", this.value);
+        if (isExport()) {
             out.printElement("export", null);
         }
 
@@ -70,6 +64,10 @@ public class GroovyVariable extends AbstractVariable<Object,String> {
 
     @Override
     public String getType() {
-        return _type;
+        return type;
+    }
+
+    public String toDetailedString() {
+        return String.format("<GroovyVar[%s:%s:%s] %s>", getId(), getName(), type, getValue());
     }
 }

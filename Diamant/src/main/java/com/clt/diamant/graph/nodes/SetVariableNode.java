@@ -76,11 +76,8 @@ public class SetVariableNode extends Node {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<VarAssignment> getAssignments(Map<String, Object> properties,
-            boolean create) {
-
-        List<VarAssignment> assignments
-                = (List<VarAssignment>) properties.get(SetVariableNode.ASSIGNMENTS);
+    protected List<VarAssignment> getAssignments(Map<String, Object> properties, boolean create) {
+        List<VarAssignment> assignments = (List<VarAssignment>) properties.get(SetVariableNode.ASSIGNMENTS);
         if ((assignments == null) && create) {
             assignments = new Vector<VarAssignment>();
             properties.put(SetVariableNode.ASSIGNMENTS, assignments);
@@ -425,16 +422,15 @@ public class SetVariableNode extends Node {
     @Override
     public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger) {
         logNode(logger);
-        List<VarAssignment> assignments
-                = this.getAssignments(this.properties, false);
+        List<VarAssignment> assignments = this.getAssignments(this.properties, false);
+        
         if (assignments != null) {
             List<Value> values = new Vector<Value>(assignments.size());
             for (VarAssignment va : assignments) {
                 if ((va.getVariable() != null) || !StringTools.isEmpty(va.getValue())) {
                     Slot v = va.getVariable();
                     if (v == null) {
-                        throw new NodeExecutionException(this,
-                                Resources.getString("NoVariableAssigned"), logger);
+                        throw new NodeExecutionException(this, Resources.getString("NoVariableAssigned"), logger);
                     }
 
                     Expression e = null;

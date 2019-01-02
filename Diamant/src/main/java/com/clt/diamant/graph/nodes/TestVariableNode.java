@@ -322,8 +322,7 @@ public class TestVariableNode extends Node {
         logNode(logger);
         Slot v = (Slot) this.getProperty(TestVariableNode.VAR_NAME);
         if (v == null) {
-            throw new NodeExecutionException(this, Resources
-                    .getString("NoVariableAssigned"), logger);
+            throw new NodeExecutionException(this, Resources.getString("NoVariableAssigned"), logger);
         }
 
         boolean others = this.getBooleanProperty(TestVariableNode.ELSE_EDGE);
