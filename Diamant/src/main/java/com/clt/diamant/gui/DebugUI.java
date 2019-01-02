@@ -408,9 +408,7 @@ class DebugUI extends JDialog implements WozInterface, MenuCommander, MenuOwner 
         }
     }
 
-    public void transition(Node source, Node destination, int index,
-            String condition) {
-
+    public void transition(Node source, Node destination, int index, String condition) {
         if (this.mode == Mode.STOPPED) {
             throw new ExecutionStoppedException();
         }
@@ -436,8 +434,7 @@ class DebugUI extends JDialog implements WozInterface, MenuCommander, MenuOwner 
 
         if (enter) {
             this.callHierarchy.push(owner);
-            this.variables.push(owner, owner.getOwnedGraph().getAllVariables(
-                    Graph.LOCAL));
+            this.variables.push(owner, owner.getOwnedGraph().getAllVariables(Graph.LOCAL));
         } else {
             this.variables.pop();
             this.callHierarchy.pop();
@@ -589,8 +586,7 @@ class DebugUI extends JDialog implements WozInterface, MenuCommander, MenuOwner 
             case cmdStepOver:
                 return (this.mode != Mode.RUN) && (this.callHierarchy.size() > 0);
             case cmdStepInto:
-                return (this.mode != Mode.RUN)
-                        && (this.currentNode instanceof GraphOwner);
+                return (this.mode != Mode.RUN) && (this.currentNode instanceof GraphOwner);
             case cmdStepOut:
                 return (this.mode != Mode.RUN) && (this.callHierarchy.size() > 1);
             case cmdStop:
