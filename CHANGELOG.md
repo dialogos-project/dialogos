@@ -5,6 +5,7 @@ Released by @alexanderkoller
 - Added "silent mode" to speech recognizer again (see #132).
 - Fixed a bug where Slot#setValue would sometimes not change the value of a variable (see #137).
 - "Keywords" in the speech recognizer window are now called "alternatives" (see #109).
+- Removed obsolete clients from the DialogOS codebase (see #129).
 - Fixed a bug where nodes would sometimes randomly move down (see #134).
 
 
