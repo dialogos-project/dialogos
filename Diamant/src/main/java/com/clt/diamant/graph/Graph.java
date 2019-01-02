@@ -68,6 +68,7 @@ import com.clt.xml.AbstractHandler;
 import com.clt.xml.XMLHandler;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
+import java.util.HashMap;
 
 public class Graph implements IdentityObject {
 
@@ -87,7 +88,8 @@ public class Graph implements IdentityObject {
     private Collection<Comment> comments = null;
     private Script compiledScript = null;
 
-    private StartNode startNode = null;
+    private StartNode startNode = null;          // the unique start node of the entire graph
+    private Node nextExecutedNode = null;        // the node at which the next call to execute() will start
     private GraphOwner owner;
 
     private Collection<GraphListener> graphListeners = new ArrayList<GraphListener>();
@@ -262,7 +264,7 @@ public class Graph implements IdentityObject {
 
     public void rename(Component parent) {
 
-        String s = OptionPane.edit(parent, Resources.getString("EnterName"), 
+        String s = OptionPane.edit(parent, Resources.getString("EnterName"),
                 Resources.getString("GraphName"), this.getOwner().getGraphName());
         if (s != null) {
             this.getOwner().setGraphName(s);
@@ -270,7 +272,6 @@ public class Graph implements IdentityObject {
     }
 
     public Collection<SearchResult> find(NodeSearchFilter filter) {
-
         Collection<SearchResult> matches = new ArrayList<SearchResult>();
         for (Node n : this.nodes) {
             matches.addAll(n.find(filter));
@@ -281,6 +282,16 @@ public class Graph implements IdentityObject {
         }
 
         return matches;
+    }
+
+    public Node findNodeById(String nodeId) {
+        for (Node node : nodes) {
+            if (node.getId().equals(nodeId)) {
+                return node;
+            }
+        }
+
+        return null;
     }
 
     protected void initVariables(WozInterface comm) {
@@ -305,18 +316,47 @@ public class Graph implements IdentityObject {
             v.uninstantiate();
         }
     }
-    
+
     /**
      * Suspends execution of this dialog by throwing a
-     * {@link DialogSuspendedException} with the current
-     * dialog state.
-     * 
-     * @param currentNode 
+     * {@link DialogSuspendedException} with the current dialog state.
+     *
+     * @param currentNode
      */
     public void suspend(Node currentNode) throws DialogSuspendedException {
-        DialogState state = new DialogState(currentNode, variables, groovyOnlyVariables);
+        DialogState state = new DialogState(currentNode);
+        state.addVariables(variables);
+        state.addVariables(groovyOnlyVariables);
         DialogSuspendedException ex = new DialogSuspendedException(state);
         throw ex;
+    }
+
+    /**
+     * Returns the dialog graph into the state in which it was before a previous
+     * call to {@link #suspend(com.clt.diamant.graph.Node) }. Execution of the
+     * dialog can then be resumed by calling
+     * {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger) }.
+     *
+     * @param state
+     */
+    public void resume(DialogState state) {
+        Map<String, AbstractVariable> varsById = new HashMap<>();
+        
+        for (AbstractVariable x : getVariables()) {
+            varsById.put(x.getId(), x);
+        }
+
+        for( GroovyVariable x : getGroovyVariables() ) {
+            varsById.put(x.getId(), x);
+        }
+        
+        for( AbstractVariable varInState : state.getVariables() ) {
+            AbstractVariable varInGraph = varsById.get(varInState.getId());
+            varInGraph.setValue(varInState.getValue());
+        }
+        
+        
+        nextExecutedNode = state.getSuspendedNode();
     }
 
     /**
@@ -326,66 +366,79 @@ public class Graph implements IdentityObject {
      * @return The end-note that was reached at the end of the execution.
      */
     public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger) {
+        Node node = nextExecutedNode;
 
-        Node node = this.startNode;
-
-        for (Node n : this.getNodes()) {
-            n.setActive(false);
+        // We are starting execution of the graph at the start node
+        // (and not resuming execution from a previously suspended dialog).
+        // Thus, initialize variables to their initial values.
+        if (node == null) {
+            node = startNode;
+            this.initVariables(comm);
         }
 
-        this.initVariables(comm);
-        if (!(this instanceof SubGraph)) {
-            // We don't want to add the global variables of a subgraph to be
-            // added to the global variables of the project.S
-            List<AbstractVariable> allVariables = new ArrayList<AbstractVariable>(variables);
-            allVariables.addAll(groovyOnlyVariables);
-            logger.logInitialVariables(allVariables);
-        }
-        Node next;
-        Node end = null;
-
-        do {
-            node.setActive(true);
-
-            long time = System.currentTimeMillis();
-            try {
-                try {
-                    comm.preExecute(node);
-                    next = node.execute(comm, input, logger);
-                } catch (NodeExecutionException|DialogSuspendedException exn) {
-                    throw exn;
-                } catch (Exception exn) {
-                    throw new NodeExecutionException(node, Resources.getString("UnexpectedError"), exn, logger);
-                }
-                
-                time = System.currentTimeMillis() - time;
-
-                try {
-                    Thread.sleep(Math.max(comm.getDelay() - time, 0));
-                } catch (InterruptedException exn) {
-                }
-            } finally {
-                node.setActive(false);
+        try {
+            for (Node n : this.getNodes()) {
+                n.setActive(false);
             }
 
-            if (next == null) {
-                if (node instanceof EndNode) {
-                    end = node;
+            if (!(this instanceof SubGraph)) {
+                // We don't want to add the global variables of a subgraph to be
+                // added to the global variables of the project.S
+                List<AbstractVariable> allVariables = new ArrayList<AbstractVariable>(variables);
+                allVariables.addAll(groovyOnlyVariables);
+                logger.logInitialVariables(allVariables);
+            }
+            
+            Node next;
+            Node end = null;
+
+            do {
+                node.setActive(true);
+
+                long time = System.currentTimeMillis();
+                try {
+                    try {
+                        comm.preExecute(node);
+                        next = node.execute(comm, input, logger);
+                    } catch (NodeExecutionException | DialogSuspendedException exn) {
+                        throw exn;
+                    } catch (Exception exn) {
+                        throw new NodeExecutionException(node, Resources.getString("UnexpectedError"), exn, logger);
+                    }
+
+                    time = System.currentTimeMillis() - time;
+
+                    try {
+                        Thread.sleep(Math.max(comm.getDelay() - time, 0));
+                    } catch (InterruptedException exn) {
+                    }
+                } finally {
+                    node.setActive(false);
+                }
+
+                if (next == null) {
+                    if (node instanceof EndNode) {
+                        end = node;
+                    } else {
+                        throw new NodeExecutionException(node, Resources.getString("EdgeNotConnected"), logger);
+                    }
                 } else {
-                    throw new NodeExecutionException(node, Resources
-                            .getString("EdgeNotConnected"), logger);
+                    node = next;
+                    if (node.getGraph() != this) {
+                        return node;
+                    }
                 }
-            } else {
-                node = next;
-                if (node.getGraph() != this) {
-                    return node;
-                }
-            }
-        } while (next != null);
+            } while (next != null);
 
-        this.uninitVariables();
+            this.uninitVariables();
 
-        return end;
+            return end;
+        } finally {
+            // Before we return from execute (even through an exception),
+            // reset the nextExecutedNode, so that the next execution of the
+            // graph restarts at the start node.
+            nextExecutedNode = null;
+        }
     }
 
     public void setOwner(GraphOwner owner) {
@@ -1207,7 +1260,9 @@ public class Graph implements IdentityObject {
         Graph.printAtt(out, "boolean", name, value ? "1" : "0", true);
     }
 
-    /** check for existance of class with the given name */
+    /**
+     * check for existance of class with the given name
+     */
     private static boolean existsClass(String clss) {
         try {
             Class.forName(clss);
@@ -1218,21 +1273,24 @@ public class Graph implements IdentityObject {
     }
 
     private static Class getNodeClassForName(String clss) throws ClassNotFoundException {
-        if (existsClass(clss))
+        if (existsClass(clss)) {
             return Class.forName(clss);
-        if (existsClass("com.clt.diamant." + clss))
+        }
+        if (existsClass("com.clt.diamant." + clss)) {
             return Class.forName("com.clt.diamant." + clss);
-        if (existsClass("com.clt.diamant.graph.nodes." + clss))
+        }
+        if (existsClass("com.clt.diamant.graph.nodes." + clss)) {
             return Class.forName("com.clt.diamant.graph.nodes." + clss);
+        }
         System.err.println("Attempting to substitute class " + clss);
-        if ("com.clt.dialogos.tts.TTSNode".equals(clss))
+        if ("com.clt.dialogos.tts.TTSNode".equals(clss)) {
             return Class.forName("de.saar.coli.dialogos.marytts.plugin.TTSNode");
-        if ("com.clt.dialogos.vocon.VoconNode".equals(clss))
+        }
+        if ("com.clt.dialogos.vocon.VoconNode".equals(clss)) {
             return Class.forName("edu.cmu.lti.dialogos.sphinx.plugin.SphinxNode");
+        }
         return null;
     }
-
-    
 
     protected class GraphHandler extends AbstractHandler {
 

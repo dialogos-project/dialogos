@@ -5,8 +5,9 @@
  */
 package com.clt.diamant.graph;
 
-import com.clt.diamant.GroovyVariable;
-import com.clt.diamant.Slot;
+import com.clt.diamant.AbstractVariable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -16,25 +17,27 @@ import java.util.List;
  */
 public class DialogState {
     private Node suspendedNode;
-    private List<Slot> variables;
-    private List<GroovyVariable> groovyVariables;
+    private List<AbstractVariable> variables;
 
-    public DialogState(Node suspendedNode, List<Slot> variables, List<GroovyVariable> groovyVariables) {
+    public DialogState(Node suspendedNode) {
         this.suspendedNode = suspendedNode;
-        this.variables = variables;
-        this.groovyVariables = groovyVariables;
+        variables = new ArrayList<>();
+    }
+    
+    public void addVariable(AbstractVariable var) {
+        variables.add(var);
+    }
+    
+    public void addVariables(Collection<? extends AbstractVariable> vars) {
+        variables.addAll(vars);
     }
 
     public Node getSuspendedNode() {
         return suspendedNode;
     }
 
-    public List<Slot> getVariables() {
+    public List<AbstractVariable> getVariables() {
         return variables;
-    }
-
-    public List<GroovyVariable> getGroovyVariables() {
-        return groovyVariables;
     }
 
     @Override
@@ -43,16 +46,8 @@ public class DialogState {
         
         buf.append(String.format("Suspended dialog at node %s\n", suspendedNode));
         
-        for( Slot var : variables ) {
-            buf.append("  ");
-            buf.append(var.toDetailedString());
-            buf.append("\n");
-        }
-        
-        for( GroovyVariable var : groovyVariables ) {
-            buf.append("  ");
-            buf.append(var.toDetailedString());
-            buf.append("\n");
+        for( AbstractVariable var : variables ) {
+            buf.append(String.format("  <%s %s:%s:%s>\n", var.getClass().getSimpleName(), var.getName(), var.getType(), var.getValue()));
         }
         
         return buf.toString();
