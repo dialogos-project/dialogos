@@ -1,7 +1,8 @@
 package com.clt.diamant;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
-
 
 import com.clt.script.Environment;
 import com.clt.script.debug.Debugger;
@@ -12,16 +13,19 @@ import com.clt.script.exp.TypeException;
 import com.clt.script.exp.Value;
 import com.clt.script.exp.types.ListType;
 import com.clt.script.exp.types.StructType;
+import com.clt.script.exp.values.StringValue;
 import com.clt.script.exp.values.Undefined;
 import com.clt.util.StringTools;
 import com.clt.xml.XMLWriter;
+import org.json.JSONObject;
 
 /**
  * A class to save variables.
  *
  * @author tillk
  */
-public class Slot extends AbstractVariable<Value,Type> {
+public class Slot extends AbstractVariable<Value, Type> {
+
     public static final Type[] supportedTypes = {Type.Bool, Type.Int, Type.Real, Type.String, new ListType(), new StructType()};
 
     private Type type;
@@ -119,7 +123,7 @@ public class Slot extends AbstractVariable<Value,Type> {
             }
             this.instances.pop();
             this.instances.push(value);
-            
+
             notifyChangeListeners();
         }
     }
@@ -169,6 +173,44 @@ public class Slot extends AbstractVariable<Value,Type> {
     public String toDetailedString() {
         return String.format("<Slot[%s:%s:%s]: %s>", getId(), getName(), type, getValue());
     }
-    
-    
+
+    @Override
+    public Map<String, String> encodeForSerialization() {
+        Map<String, String> ret = new HashMap<>();
+
+        ret.put("id", getId());
+        ret.put("name", getName());
+        ret.put("variable_class", getClass().getSimpleName());
+        ret.put("type", getValue().getClass().getSimpleName());
+//        ret.put("type", getType().)
+        ret.put("value", getValue().getReadableValue().toString());
+
+        // TODO encode initValue; export
+        return ret;
+    }
+
+    private static Type decodeType(String typeName) {
+        if ("StringValue".equals(typeName)) {
+            return Type.String;
+        }
+
+        return null; // TODO others - actually, they are irrelevant
+    }
+
+    private static Value decodeValue(String string, Type type) {
+        if( type.equals(Type.String) ) {
+            return new StringValue(string);
+        } 
+        
+        return null; // TODO others 
+    }
+
+    public static AbstractVariable decodeJson(JSONObject jsonObject) {
+        Type type = decodeType(jsonObject.getString("type"));
+        Slot ret = new Slot(jsonObject.getString("name"), type, null, true);
+        Value value = decodeValue(jsonObject.getString("value"), type);
+        ret.setValue(value);
+        ret.setId(jsonObject.getString("id"));
+        return ret;
+    }
 }

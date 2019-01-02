@@ -3,6 +3,9 @@ package com.clt.diamant;
 
 import com.clt.xml.XMLWriter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Class for the Groovy-only variables
  *
@@ -65,6 +68,19 @@ public class GroovyVariable extends AbstractVariable<Object,String> {
     @Override
     public String getType() {
         return type;
+    }
+
+    @Override
+    public Map<String, String> encodeForSerialization() {
+        Map<String,String> ret = new HashMap<>();
+
+        ret.put("id", getId());
+        ret.put("name", getName());
+        ret.put("variable_class", getClass().getSimpleName());
+        ret.put("type", getType().getClass().getSimpleName());
+        ret.put("value", getValue().toString());
+
+        return ret;
     }
 
     public String toDetailedString() {

@@ -49,7 +49,8 @@ public abstract class Value {
     }
 
     /**
-     * Gives back an Object with the actual value of this object
+     * Converts this Value into a Java object (IntValue -> Integer;
+     * StringValue -> String; etc.).
      *
      * @return object with readable value
      */

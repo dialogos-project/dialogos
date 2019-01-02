@@ -6,9 +6,10 @@
 package com.clt.diamant.graph;
 
 import com.clt.diamant.AbstractVariable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.*;
 
 /**
  * A state from which execution of a dialog graph can be resumed.
@@ -16,6 +17,7 @@ import java.util.List;
  * @author koller
  */
 public class DialogState {
+
     private Node suspendedNode;
     private List<AbstractVariable> variables;
 
@@ -23,11 +25,11 @@ public class DialogState {
         this.suspendedNode = suspendedNode;
         variables = new ArrayList<>();
     }
-    
+
     public void addVariable(AbstractVariable var) {
         variables.add(var);
     }
-    
+
     public void addVariables(Collection<? extends AbstractVariable> vars) {
         variables.addAll(vars);
     }
@@ -43,16 +45,40 @@ public class DialogState {
     @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        
+
         buf.append(String.format("Suspended dialog at node %s\n", suspendedNode));
-        
-        for( AbstractVariable var : variables ) {
+
+        for (AbstractVariable var : variables) {
             buf.append(String.format("  <%s %s:%s:%s>\n", var.getClass().getSimpleName(), var.getName(), var.getType(), var.getValue()));
         }
-        
+
         return buf.toString();
     }
 
-    
-    
+    public JSONObject toJson() {
+        JSONObject ret = new JSONObject();
+        ret.put("nodeId", suspendedNode.getId());
+
+        JSONArray jsonVariables = new JSONArray();
+        for (AbstractVariable v : variables) {
+            jsonVariables.put(v.encodeForSerialization());
+        }
+
+        ret.put("variables", jsonVariables);
+
+        return ret;
+    }
+
+    public static DialogState fromJson(JSONObject json, Graph graph) {
+        Node suspendedNode = graph.findNodeById(json.getString("nodeId"));
+        DialogState ret = new DialogState(suspendedNode);
+
+        JSONArray varlist = json.getJSONArray("variables");
+        for (Object jsonVar : varlist) {
+            AbstractVariable v = AbstractVariable.decodeJson((JSONObject) jsonVar);
+            ret.addVariable(v);
+        }
+
+        return ret;
+    }
 }

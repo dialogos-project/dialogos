@@ -346,7 +346,7 @@ public class Graph implements IdentityObject {
             varsById.put(x.getId(), x);
         }
 
-        for( GroovyVariable x : getGroovyVariables() ) {
+        for( AbstractVariable x : getGroovyVariables() ) {
             varsById.put(x.getId(), x);
         }
         

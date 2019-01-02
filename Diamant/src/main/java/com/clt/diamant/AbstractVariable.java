@@ -2,11 +2,13 @@ package com.clt.diamant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.event.ChangeListener;
 
 import com.clt.xml.XMLWriter;
 import javax.swing.event.ChangeEvent;
+import org.json.JSONObject;
 
 /**
  * Abstract variable class to combine Slots and Groovy-only variables
@@ -124,4 +126,27 @@ public abstract class AbstractVariable<ValueClass, TypeClass> implements Identit
      * @return Type of the variable
      */
     public abstract TypeClass getType();
+
+    /**
+     * Encodes information about this variable in a format that is suitable for
+     * serialization (e.g. with Json).
+     *
+     * @return
+     */
+    public abstract Map<String, String> encodeForSerialization();
+
+    public static AbstractVariable decodeJson(JSONObject jsonObject) {
+        String clazz = jsonObject.getString("variable_class");
+        
+        if( "Slot".equals(clazz) ) {
+            return Slot.decodeJson(jsonObject);
+        } else if ( "GroovyVariable".equals(clazz) ) {
+            return GroovyVariable.decodeJson(jsonObject);
+        } else {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+        
+    }
+
 }
