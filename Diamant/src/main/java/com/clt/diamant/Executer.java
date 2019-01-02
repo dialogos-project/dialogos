@@ -90,9 +90,7 @@ public class Executer implements WozInterface {
 
         // System.out.println("Device " + d + " says: " + s);
         if (this.log != null) {
-            this.log.printEvent("prompt", new String[]{"name"}, new Object[]{d
-                .getName()},
-                    value.toString());
+            this.log.printEvent("prompt", new String[]{"name"}, new Object[]{d.getName()}, value.toString());
         }
     }
 

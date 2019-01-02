@@ -18,10 +18,10 @@ import java.util.*;
  */
 public class DialogState {
 
-    private Node suspendedNode;
+    private SuspendingNode suspendedNode;
     private List<AbstractVariable> variables;
 
-    public DialogState(Node suspendedNode) {
+    public DialogState(SuspendingNode suspendedNode) {
         this.suspendedNode = suspendedNode;
         variables = new ArrayList<>();
     }
@@ -34,7 +34,7 @@ public class DialogState {
         variables.addAll(vars);
     }
 
-    public Node getSuspendedNode() {
+    public SuspendingNode getSuspendedNode() {
         return suspendedNode;
     }
 
@@ -68,9 +68,19 @@ public class DialogState {
 
         return ret;
     }
+    
+    public SuspendingNode lookupNode(Graph graph) {
+        Node n = graph.findNodeById(getSuspendedNode().getId());
+        
+        if( n == null ) {
+            return null;
+        } else {
+            return (SuspendingNode) n;
+        }        
+    }
 
     public static DialogState fromJson(JSONObject json, Graph graph) {
-        Node suspendedNode = graph.findNodeById(json.getString("nodeId"));
+        SuspendingNode suspendedNode = (SuspendingNode) graph.findNodeById(json.getString("nodeId"));
         DialogState ret = new DialogState(suspendedNode);
 
         JSONArray varlist = json.getJSONArray("variables");

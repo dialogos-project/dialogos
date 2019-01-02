@@ -324,11 +324,15 @@ public class Graph implements IdentityObject {
      * @param currentNode
      */
     public void suspend(Node currentNode) throws DialogSuspendedException {
-        DialogState state = new DialogState(currentNode);
-        state.addVariables(variables);
-        state.addVariables(groovyOnlyVariables);
-        DialogSuspendedException ex = new DialogSuspendedException(state);
-        throw ex;
+        if (currentNode instanceof SuspendingNode) {
+            DialogState state = new DialogState((SuspendingNode) currentNode);
+            state.addVariables(variables);
+            state.addVariables(groovyOnlyVariables);
+            DialogSuspendedException ex = new DialogSuspendedException(state);
+            throw ex;
+        } else {
+            throw new UnsupportedOperationException("Attempting to suspend from non-suspending node " + currentNode);
+        }
     }
 
     /**
@@ -341,21 +345,20 @@ public class Graph implements IdentityObject {
      */
     public void resume(DialogState state) {
         Map<String, AbstractVariable> varsById = new HashMap<>();
-        
+
         for (AbstractVariable x : getVariables()) {
             varsById.put(x.getId(), x);
         }
 
-        for( AbstractVariable x : getGroovyVariables() ) {
+        for (AbstractVariable x : getGroovyVariables()) {
             varsById.put(x.getId(), x);
         }
-        
-        for( AbstractVariable varInState : state.getVariables() ) {
+
+        for (AbstractVariable varInState : state.getVariables()) {
             AbstractVariable varInGraph = varsById.get(varInState.getId());
             varInGraph.setValue(varInState.getValue());
         }
-        
-        
+
         nextExecutedNode = state.getSuspendedNode();
     }
 
@@ -388,7 +391,7 @@ public class Graph implements IdentityObject {
                 allVariables.addAll(groovyOnlyVariables);
                 logger.logInitialVariables(allVariables);
             }
-            
+
             Node next;
             Node end = null;
 
