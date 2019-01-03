@@ -74,8 +74,6 @@ import com.clt.xml.Base64;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SingleDocument extends Document implements GraphOwner {
 

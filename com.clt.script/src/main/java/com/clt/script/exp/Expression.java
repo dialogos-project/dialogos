@@ -69,18 +69,15 @@ public abstract class Expression {
         return functions.toArray(new String[] {});
     }
 
-    public static Expression parseExpression(String exp)
-            throws Exception {
+    public static Expression parseExpression(String exp) throws Exception {
         return parseExpression(exp, new DefaultEnvironment());
     }
 
-    public static Expression parseExpression(String exp, Environment env)
-            throws Exception {
+    public static Expression parseExpression(String exp, Environment env) throws Exception {
         return Parser.parseExpression(exp, env);
     }
 
-    public static Pattern parsePattern(String exp)
-            throws Exception {
+    public static Pattern parsePattern(String exp) throws Exception {
         return Parser.parsePattern(exp);
     }
 

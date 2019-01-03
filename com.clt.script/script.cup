@@ -346,7 +346,7 @@ parser code {:
 	}
 	
 	Variable createIdExpression(final String id, final Block currentBlock) {
-		if (currentBlock != null && currentBlock.containsVariable(id)) {
+		 if (currentBlock != null && currentBlock.containsVariable(id)) {
 			return new Variable() {
 				public String getName() {
 					return id;

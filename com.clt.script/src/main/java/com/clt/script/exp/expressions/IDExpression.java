@@ -20,7 +20,6 @@ public class IDExpression extends Expression {
     private Variable v;
 
     public IDExpression(Variable v) {
-
         this.v = v;
     }
 

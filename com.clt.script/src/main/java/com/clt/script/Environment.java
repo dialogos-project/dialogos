@@ -22,8 +22,7 @@ public interface Environment {
 
     public Expression createFunctionCall(String name, Expression[] arguments);
 
-    public Reader include(String name)
-            throws IOException;
+    public Reader include(String name) throws IOException;
 
     public class NoSuchFunctionException extends TypeException {
 
