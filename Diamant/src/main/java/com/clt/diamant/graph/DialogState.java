@@ -17,15 +17,14 @@ import java.util.*;
  * @author koller
  */
 public class DialogState {
+    private final String suspendedNodeId;
+    private final List<AbstractVariable> variables;
 
-    private SuspendingNode suspendedNode;
-    private List<AbstractVariable> variables;
-
-    public DialogState(SuspendingNode suspendedNode) {
-        this.suspendedNode = suspendedNode;
+    public DialogState(String suspendedNodeId) {
+        this.suspendedNodeId = suspendedNodeId;
         variables = new ArrayList<>();
     }
-
+    
     public void addVariable(AbstractVariable var) {
         variables.add(var);
     }
@@ -34,9 +33,11 @@ public class DialogState {
         variables.addAll(vars);
     }
 
-    public SuspendingNode getSuspendedNode() {
-        return suspendedNode;
+    public String getSuspendedNodeId() {
+        return suspendedNodeId;
     }
+    
+    
 
     public List<AbstractVariable> getVariables() {
         return variables;
@@ -44,9 +45,9 @@ public class DialogState {
 
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
-        buf.append(String.format("Suspended dialog at node %s\n", suspendedNode));
+        buf.append(String.format("Suspended dialog at node %s\n", suspendedNodeId));
 
         for (AbstractVariable var : variables) {
             buf.append(String.format("  <%s %s:%s:%s>\n", var.getClass().getSimpleName(), var.getName(), var.getType(), var.getValue()));
@@ -57,7 +58,7 @@ public class DialogState {
 
     public JSONObject toJson() {
         JSONObject ret = new JSONObject();
-        ret.put("nodeId", suspendedNode.getId());
+        ret.put("nodeId", suspendedNodeId);
 
         JSONArray jsonVariables = new JSONArray();
         for (AbstractVariable v : variables) {
@@ -70,7 +71,7 @@ public class DialogState {
     }
     
     public SuspendingNode lookupNode(Graph graph) {
-        Node n = graph.findNodeById(getSuspendedNode().getId());
+        Node n = graph.findNodeById(suspendedNodeId);
         
         if( n == null ) {
             return null;
@@ -79,9 +80,8 @@ public class DialogState {
         }        
     }
 
-    public static DialogState fromJson(JSONObject json, Graph graph) {
-        SuspendingNode suspendedNode = (SuspendingNode) graph.findNodeById(json.getString("nodeId"));
-        DialogState ret = new DialogState(suspendedNode);
+    public static DialogState fromJson(JSONObject json) {
+        DialogState ret = new DialogState(json.getString("nodeId"));
 
         JSONArray varlist = json.getJSONArray("variables");
         for (Object jsonVar : varlist) {

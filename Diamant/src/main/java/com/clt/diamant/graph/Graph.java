@@ -60,6 +60,8 @@ import com.clt.script.Script;
 import com.clt.script.exp.Expression;
 import com.clt.script.exp.Pattern;
 import com.clt.script.exp.Type;
+import com.clt.script.exp.Value;
+import com.clt.script.exp.values.StringValue;
 import com.clt.undo.AbstractEdit;
 import com.clt.undo.Undo;
 import com.clt.util.StringTools;
@@ -325,7 +327,7 @@ public class Graph implements IdentityObject {
      */
     public <FromDialogos> void suspend(Node currentNode, FromDialogos prompt) throws DialogSuspendedException {
         if (currentNode instanceof SuspendingNode) {
-            DialogState state = new DialogState((SuspendingNode) currentNode);
+            DialogState state = new DialogState(currentNode.getId());
             state.addVariables(variables);
             state.addVariables(groovyOnlyVariables);
             DialogSuspendedException ex = new DialogSuspendedException(state,  prompt);
@@ -359,7 +361,7 @@ public class Graph implements IdentityObject {
             varInGraph.setValue(varInState.getValue());
         }
 
-        nextExecutedNode = state.getSuspendedNode();
+        nextExecutedNode = findNodeById(state.getSuspendedNodeId());
     }
 
     /**
@@ -1738,6 +1740,24 @@ public class Graph implements IdentityObject {
         }
 
         return vars;
+    }
+    
+    public Value getSlotValue(String slotName) {
+        for( Slot var : getVariables() ) {
+            if( var.getName().equals(slotName)) {
+                return var.getValue();
+            }
+        }
+        
+        return null;
+    }
+    
+    public void setSlotValue(String slotName, Value value) {
+        for( Slot var : getVariables() ) {
+            if( var.getName().equals(slotName)) {
+                var.setValue(value);
+            }
+        }
     }
 
 }

@@ -16,12 +16,9 @@ import com.clt.xml.XMLWriter;
 public class StartNode extends Node {
 
     public StartNode() {
-
         super();
-
-        this.addEdge();
-
-        this.setTitle(Resources.getString("Start"));
+        addEdge();
+        setTitle(Resources.getString("Start"));
     }
 
     public static Color getDefaultColor() {

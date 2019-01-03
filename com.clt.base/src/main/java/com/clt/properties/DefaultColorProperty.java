@@ -13,13 +13,12 @@ public class DefaultColorProperty extends ColorProperty {
     private String description;
 
     public DefaultColorProperty(String id, String name, String description) {
-
         this(id, name, description, Color.black);
     }
-
+    
     public DefaultColorProperty(String id, String name, String description, Color value) {
-
         super(id);
+        
         this.value = value;
         this.name = name;
         this.description = description;

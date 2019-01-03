@@ -14,7 +14,7 @@ import com.clt.diamant.graph.nodes.DialogSuspendedException;
  *
  * @author koller
  */
-public abstract class SuspendingNode<ToDialogos,FromDialogos> extends Node {
+public abstract class SuspendingNode<FromDialogos,ToDialogos> extends Node {
     private ToDialogos inputValue = null;
     
     

@@ -28,10 +28,9 @@ import com.clt.util.StringTools;
  * @author Daniel Bobbert
  * @version 1.0
  */
-public abstract class ColorProperty        extends Property<Color> {
+public abstract class ColorProperty extends Property<Color> {
 
     public ColorProperty(String id) {
-
         super(id, Property.EDIT_TYPE_COLOR_CHOOSER);
     }
 

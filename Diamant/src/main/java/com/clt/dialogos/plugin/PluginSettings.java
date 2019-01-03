@@ -63,8 +63,7 @@ public abstract class PluginSettings {
                             }
                         });
                     } else {
-            PluginSettings.this.readAttribute(r, n, atts
-                .getValue("value"), uid_map);
+            PluginSettings.this.readAttribute(r, n, atts.getValue("value"), uid_map);
           }
         } else {
           readOtherXML(r, name, atts, uid_map);

@@ -73,6 +73,9 @@ import com.clt.xml.AbstractHandler;
 import com.clt.xml.Base64;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SingleDocument extends Document implements GraphOwner {
 
@@ -90,8 +93,7 @@ public class SingleDocument extends Document implements GraphOwner {
             this.r = r;
         }
 
-        public void start(String name, Attributes atts)
-                throws SAXException {
+        public void start(String name, Attributes atts) throws SAXException {
 
             if (name.equals("att")) {
                 String n = atts.getValue("name");
@@ -174,16 +176,14 @@ public class SingleDocument extends Document implements GraphOwner {
                         }
                     }
 
-                    protected void end(String name)
-                            throws SAXException {
+                    protected void end(String name) throws SAXException {
 
                         if (name.equals("name")) {
                             d.setName(this.getValue());
                         } else if (name.equals("icon")) {
                             byte[] cdata = Base64.decode(this.getValue());
                             if (cdata.length % 4 != 0) {
-                                DeviceXMLHandler.this.r
-                                        .raiseException("Illegal icon data for device " + id);
+                                DeviceXMLHandler.this.r.raiseException("Illegal icon data for device " + id);
                             }
                             int data[] = SingleDocument.createIntArray(cdata);
                             if (this.iconWidth == 0) {
@@ -288,7 +288,6 @@ public class SingleDocument extends Document implements GraphOwner {
      * Constructs a new single document with one start node.
      */
     public SingleDocument() {
-
         this.devices = new ArrayList<Device>();
         this.pluginSettings = new HashMap<Class<? extends Plugin>, PluginSettings>();
         this.localizationBundles = new HashMap<String, TemplateBundle>();
@@ -296,7 +295,7 @@ public class SingleDocument extends Document implements GraphOwner {
         for (Plugin plugin : PluginLoader.getPlugins()) {
             this.pluginSettings.put(plugin.getClass(), plugin.createDefaultSettings());
         }
-
+        
         Graph g = new Graph(this);
         this.setGraph(g);
     }
@@ -472,7 +471,7 @@ public class SingleDocument extends Document implements GraphOwner {
                         transition.error(exn.getClass().getName(), exn.getLocalizedMessage());
                     }
                     throw exn;
-                } catch(DialogSuspendedException exn) {
+                } catch (DialogSuspendedException exn) {
                     // pass through
                     throw exn;
                 } catch (Exception exn) {
@@ -497,21 +496,45 @@ public class SingleDocument extends Document implements GraphOwner {
     }
 
     public void load(File f, XMLReader r) {
-
         this.load(f, r, new IdMap());
     }
 
     protected void load(final File f, final XMLReader r, final IdMap uid_map) {
-
         final Graph graph = new Graph(this);
-
         this.devices.clear();
-
-        r.setHandler(new DeviceXMLHandler(this.getDocumentType().toLowerCase(),
-                graph, uid_map, r));
-
+        r.setHandler(new DeviceXMLHandler(this.getDocumentType().toLowerCase(), graph, uid_map, r));
         this.setFile(f);
+    }
 
+    /**
+     * Loads a dialog model from an input stream. This is useful, for instance,
+     * when the dialog model is packaged in the Jar, and should be read from a
+     * resource and not a file (for headless use).
+     * 
+     * @param is
+     * @return
+     * @throws IOException 
+     */
+    public static SingleDocument loadFromStream(InputStream is) throws IOException {
+        final XMLReader r = new XMLReader(Document.validateXML);
+        SingleDocument ret = new SingleDocument();
+
+        r.parse(is, new AbstractHandler() {
+            @Override
+            public void start(String name, Attributes atts) throws SAXException {
+                if (name.equals("wizard")) {
+                    ret.setSubordinateHandler(r);
+                }
+            }
+        });
+
+        return ret;
+    }
+
+    private void setSubordinateHandler(XMLReader r) {
+        final Graph graph = new Graph(this);
+        this.devices.clear();
+        r.setHandler(new DeviceXMLHandler(this.getDocumentType().toLowerCase(), graph, new IdMap(), r));
     }
 
     public void validate(Collection<SearchResult> errors, ProgressListener progress) {

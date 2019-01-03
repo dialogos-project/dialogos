@@ -32,8 +32,8 @@ public class DocumentLoader {
      * @return The document obtained by loading the file.
      */
     public Document load(final File f, ProgressListener progress) throws IOException {
-
         final XMLReader r = new XMLReader(Document.validateXML);
+        
         try {
             String description = Resources.format("Loading", f.getName());
             LongAction loading = new LoadingAction(description, r, f);
@@ -42,8 +42,7 @@ public class DocumentLoader {
                 new ProgressDialog(null).run(loading);
             } else {
                 loading.addProgressListener(progress);
-                progress.progressChanged(new ProgressEvent(this, loading.getDescription(),
-                                0, 0, 0));
+                progress.progressChanged(new ProgressEvent(this, loading.getDescription(), 0, 0, 0));
                 try {
                     loading.run();
                 } finally {
@@ -83,9 +82,7 @@ public class DocumentLoader {
         @Override
         public void run(final ProgressListener l) throws IOException {
             if (l != null) {
-                final ProgressEvent evt
-                        = new ProgressEvent(DocumentLoader.this, this.getDescription()
-                        + "...", 0, 400, 0);
+                final ProgressEvent evt = new ProgressEvent(DocumentLoader.this, this.getDescription() + "...", 0, 400, 0);
                 XMLProgressListener progress = new XMLProgressListener() {
 
                     public void percentComplete(float percent) {
@@ -100,42 +97,36 @@ public class DocumentLoader {
             this.r.parse(this.f, new AbstractHandler() {
                 @Override
                 public void start(String name, Attributes atts) throws SAXException {
-
                     if (name.equals("wizard")) {
                         if (DocumentLoader.this.d == null) {
                             DocumentLoader.this.d = new SingleDocument();
                         } else if (!(DocumentLoader.this.d instanceof SingleDocument)) {
-                            LoadingAction.this.r.raiseException(Resources
-                                    .getString("DocumentTypeChanged"));
+                            LoadingAction.this.r.raiseException(Resources.getString("DocumentTypeChanged"));
                         }
+                        
                         // here a new start node is created
-                        DocumentLoader.this.d.load(LoadingAction.this.f,
-                                LoadingAction.this.r);
+                        DocumentLoader.this.d.load(LoadingAction.this.f, LoadingAction.this.r);
                     } else if (name.equals("log")) {
                         if (DocumentLoader.this.d == null) {
                             DocumentLoader.this.d = new LogDocument();
                         } else if (!(DocumentLoader.this.d instanceof LogDocument)) {
-                            LoadingAction.this.r.raiseException(Resources
-                                    .getString("DocumentTypeChanged"));
+                            LoadingAction.this.r.raiseException(Resources.getString("DocumentTypeChanged"));
                         }
-                        DocumentLoader.this.d.load(LoadingAction.this.f,
-                                LoadingAction.this.r);
+                        
+                        DocumentLoader.this.d.load(LoadingAction.this.f, LoadingAction.this.r);
                     } else if (name.equals("experiment")) {
                         if (DocumentLoader.this.d == null) {
                             DocumentLoader.this.d = new MultiDocument();
                         } else if (!(DocumentLoader.this.d instanceof MultiDocument)) {
-                            LoadingAction.this.r.raiseException(Resources
-                                    .getString("DocumentTypeChanged"));
+                            LoadingAction.this.r.raiseException(Resources.getString("DocumentTypeChanged"));
                         }
-                        DocumentLoader.this.d.load(LoadingAction.this.f,
-                                LoadingAction.this.r);
+                        
+                        DocumentLoader.this.d.load(LoadingAction.this.f, LoadingAction.this.r);
                     } else {
-                        LoadingAction.this.r.raiseException(Resources
-                                .getString("UnknownDocumentType"));
+                        LoadingAction.this.r.raiseException(Resources.getString("UnknownDocumentType"));
                     }
                 }
             });
         }
     }
-
 }

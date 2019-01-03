@@ -118,13 +118,12 @@ public class XMLReader {
      *
      * @throws IOException
      */
-    public void parse(File f, XMLHandler handler, ErrorHandler errHandler)
-            throws IOException {
+    public void parse(File f, XMLHandler handler, ErrorHandler errHandler) throws IOException {
 
-        InputStream in
-                = new CountingInputStream(new BufferedInputStream(new FileInputStream(f)),
-                        f
-                                .length());
+        InputStream in = new CountingInputStream(
+                new BufferedInputStream(new FileInputStream(f)),
+                f.length());
+
         try {
             this.parse(in, handler, errHandler);
         } finally {
@@ -152,9 +151,7 @@ public class XMLReader {
      *
      * @throws IOException
      */
-    public void parse(InputStream input, final XMLHandler handler,
-            ErrorHandler errHandler)
-            throws IOException {
+    public void parse(InputStream input, final XMLHandler handler, ErrorHandler errHandler) throws IOException {
 
         this.xmlReader = null;
 

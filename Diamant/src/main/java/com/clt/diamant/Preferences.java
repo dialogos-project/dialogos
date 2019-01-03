@@ -121,19 +121,20 @@ public class Preferences {
         this.loggingEnabled = this.createBooleanProperty("loggingEnabled", false);
 
         this.gridSize = new DefaultIntegerProperty("gridSize", "gridSize", null, 30) {
-
             @Override
             public String getName() {
                 return Resources.getString(this.getID());
             }
         };
 
+        // NB On MacOS, Java starts treating the program as a GUI application (i.e. displays
+        // the name of the main class in the menu bar) in the next line, presumably because
+        // the AWT class Color is loaded for the first time.
         this.selectionColor = this.createColorProperty("selectionColor", new Color(255, 40, 40));
         this.neighbourColor = this.createColorProperty("neighbourColor", new Color(255, 192, 40));
         this.gridColor = this.createColorProperty("gridColor", new Color(224, 224, 255));
 
         this.locale = new EnumProperty<Locale>("locale") {
-
             private Locale[] locales = Locale.getAvailableLocales();
 
             @Override
@@ -163,6 +164,9 @@ public class Preferences {
         };
         this.startWithDefaultLocale = this.createBooleanProperty("startWithDefaultLocale", true);
 
+        
+        
+        
         File logDirectory = new File(defaultDirectory.getPath() + "/logs");
         if (!logDirectory.exists()) {
             logDirectory.mkdirs();
@@ -171,6 +175,8 @@ public class Preferences {
 
         this.lastUsedFile = new DefaultFileProperty("lastUsedFile1", null, null, defaultDirectory);
         this.additional_mru = new ArrayList<>();
+
+        
 
         ChangeListener listener = Preferences.this::firePropertyChange;
 
@@ -293,6 +299,7 @@ public class Preferences {
 
         if (Preferences.prefs == null) {
             Preferences.prefs = new Preferences();
+
             try {
                 PropertySet<Property<?>> ps = Preferences.prefs.getProperties();
 
@@ -352,7 +359,7 @@ public class Preferences {
             tp.addTab(Resources.getString("Grid"), p);
 
             p = new PropertySet<Property<?>>(prefs.showToolbox, prefs.showProcedureTree,
-                prefs.showNodePanel, prefs.groupNodeToolbox).createPropertyPanel(false);
+                    prefs.showNodePanel, prefs.groupNodeToolbox).createPropertyPanel(false);
             tp.addTab(Resources.getString("Toolbars"), p);
 
             p = new JPanel(new GridBagLayout());

@@ -38,6 +38,7 @@ import com.clt.diamant.InputCenter;
 import com.clt.diamant.Mapping;
 import com.clt.diamant.Preferences;
 import com.clt.diamant.Resources;
+import com.clt.diamant.SingleDocument;
 import com.clt.diamant.Slot;
 import com.clt.diamant.WozInterface;
 import com.clt.diamant.graph.nodes.GraphNode;
@@ -247,10 +248,13 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     public Node() {
-        Color c = Preferences.getPrefs().getDefaultNodeColor(this.getClass());
+        Preferences prefs = Preferences.getPrefs();
+        Color c = prefs.getDefaultNodeColor(this.getClass());
+
         if (c == null) {
             c = Color.lightGray;
         }
+
         this.setProperty(VisualGraphElement.COLOR, c);
         this.setTitle(Node.getLocalizedNodeTypeName(this));
 
