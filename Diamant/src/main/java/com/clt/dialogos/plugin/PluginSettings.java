@@ -94,8 +94,7 @@ public abstract class PluginSettings {
      */
     public abstract JComponent createEditor();
 
-    public final PluginRuntime initializeRuntime(Component parent,
-            WozInterface comm)
+    public final PluginRuntime initializeRuntime(Component parent, WozInterface comm)
             throws Exception {
 
         PluginRuntime runtime = this.createRuntime(parent);
@@ -119,6 +118,5 @@ public abstract class PluginSettings {
         }
     }
 
-    protected abstract PluginRuntime createRuntime(Component parent)
-            throws Exception;
+    protected abstract PluginRuntime createRuntime(Component parent) throws Exception;
 }
