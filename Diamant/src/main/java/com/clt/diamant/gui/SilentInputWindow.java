@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.cmu.lti.dialogos.sphinx.plugin;
+package com.clt.diamant.gui;
 
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
@@ -11,42 +11,67 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 /**
+ * A window that allows the user to type some text.
  *
  * @author koller
  */
 public class SilentInputWindow extends javax.swing.JDialog {
+
     private String input;
-    
+
     /**
      * Creates new form SilentInputWindow
      */
     public SilentInputWindow(Frame parent) {
         super(parent, true);
         initComponents();
-        
+
         // set up hotkeys
         getRootPane().setDefaultButton(bOk);
-        
-        getRootPane().registerKeyboardAction((e) ->  bOkActionPerformed(e),
-            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-            JComponent.WHEN_IN_FOCUSED_WINDOW);
-        
-        getRootPane().registerKeyboardAction((e) ->  bCancelActionPerformed(e),
-            KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-            JComponent.WHEN_IN_FOCUSED_WINDOW);
-        
+
+        getRootPane().registerKeyboardAction((e) -> bOkActionPerformed(e),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        getRootPane().registerKeyboardAction((e) -> bCancelActionPerformed(e),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+
         // localize labels
-        jLabel1.setText(Resources.getString("Input"));
-        bOk.setText(Resources.getString("Ok"));
-        bCancel.setText(Resources.getString("Cancel"));
-        setTitle(Resources.getString("SilentInputWindow"));
+//        jLabel1.setText("Input"); // TODO - localize
+//        bOk.setText(Resources.getString("Ok"));
+//        bCancel.setText(Resources.getString("Cancel"));
+//        setTitle(Resources.getString("SilentInputWindow"));
     }
 
     public String getInput() {
         return input;
     }
     
-    
+    public static String getString(Frame parent) {
+        return getString(parent, null, null);
+    }
+
+    public static String getString(Frame parent, String title, String prompt) {
+        SilentInputWindow w = new SilentInputWindow(parent);
+
+        if (prompt != null) {
+            w.jLabel1.setText(prompt);
+        }
+
+        if (title != null) {
+            w.setTitle(title);
+        }
+
+        if (parent == null) {
+            // if parent unavailable (e.g. because recognizer called via
+            // "Try" button of properties window), center on screen
+            w.setLocationRelativeTo(null);
+        }
+
+        w.setVisible(true);
+        return w.getInput();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

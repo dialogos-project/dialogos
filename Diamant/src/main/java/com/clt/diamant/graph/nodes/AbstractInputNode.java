@@ -496,8 +496,7 @@ abstract public class AbstractInputNode extends Node {
         
 
         final JTextField tf = NodePropertiesDialog.createTextField(properties, TIMEOUT);
-        final JCheckBox timeout = new JCheckBox(com.clt.diamant.Resources
-                .getString("Timeout") + ':');
+        final JCheckBox timeout = new JCheckBox(com.clt.diamant.Resources.getString("Timeout") + ':');
         final JCheckBox forceTimeout = NodePropertiesDialog.createCheckBox(
                 properties, FORCE_TIMEOUT, com.clt.diamant.Resources.getString(FORCE_TIMEOUT));
 
@@ -872,7 +871,7 @@ abstract public class AbstractInputNode extends Node {
         return properties.get(TIMEOUT) != null;
     }
 
-    private List<Edge> getEdges(long timeout, Map<String, Object> properties, boolean interactiveTest) {
+    protected List<Edge> getEdges(long timeout, Map<String, Object> properties, boolean interactiveTest) {
         if (interactiveTest) {
             List<Edge> edges = new ArrayList<>((List<Edge>) properties.get(EdgeConditionModel.EDGE_PROPERTY));
             if (timeout > 0) {
@@ -985,33 +984,6 @@ abstract public class AbstractInputNode extends Node {
             }
         }
         return null;
-    }
-
-    /**
-     * sets variables according to a match; to be used by implementors of
-     * recognizeBlocking/recognizeInBackground
-     *
-     * @param match
-     */
-    private void setVariablesAccordingToMatch(Match match) {
-        List<Slot> accessible_vars = this.getGraph().getAllVariables(Graph.LOCAL);
-        for (Iterator<String> vars = match.variables(); vars.hasNext();) {
-            String name = vars.next();
-            Slot v = null;
-            for (int j = accessible_vars.size() - 1; (j >= 0)
-                    && (v == null); j--) {
-                Slot s = accessible_vars.get(j);
-                if (name.equals(s.getName())) {
-                    v = s;
-                }
-            }
-            if (v != null) {
-                v.setValue(match.get(name));
-            } else {
-                throw new NodeExecutionException(this,
-                                                 "Attempt to bind non existing variable " + name);
-            }
-        }
     }
 
     protected com.clt.srgf.Grammar compileGrammar(Map<String, Object> properties,

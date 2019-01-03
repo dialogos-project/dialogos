@@ -41,7 +41,9 @@ import com.clt.diamant.Resources;
 import com.clt.diamant.SingleDocument;
 import com.clt.diamant.Slot;
 import com.clt.diamant.WozInterface;
+import com.clt.diamant.graph.nodes.AbstractInputNode;
 import com.clt.diamant.graph.nodes.GraphNode;
+import com.clt.diamant.graph.nodes.NodeExecutionException;
 import com.clt.diamant.graph.nodes.ProcNode;
 import com.clt.diamant.graph.search.NodeSearchFilter;
 import com.clt.diamant.graph.search.NodeSearchResult;
@@ -52,6 +54,7 @@ import com.clt.diamant.graph.ui.NodeUI;
 import com.clt.diamant.graph.ui.UIElement;
 import com.clt.diamant.gui.NodePropertiesDialog;
 import com.clt.script.exp.Expression;
+import com.clt.script.exp.Match;
 import com.clt.script.exp.Pattern;
 import com.clt.script.exp.Type;
 import com.clt.util.StringTools;
@@ -1008,5 +1011,35 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
      */
     public boolean acceptableToSave() {
         return true;
+    }
+    
+    
+
+    /**
+     * Sets variables of the graph according to a Match.
+     * This is used in an input node (e.g. {@link AbstractInputNode})
+     * after the input or the recognition result have been 
+     * matched against a pattern.
+     *
+     * @param match
+     */
+    protected void setVariablesAccordingToMatch(Match match) {
+        List<Slot> accessible_vars = this.getGraph().getAllVariables(Graph.LOCAL);
+        for (Iterator<String> vars = match.variables(); vars.hasNext();) {
+            String name = vars.next();
+            Slot v = null;
+            for (int j = accessible_vars.size() - 1; (j >= 0)
+                    && (v == null); j--) {
+                Slot s = accessible_vars.get(j);
+                if (name.equals(s.getName())) {
+                    v = s;
+                }
+            }
+            if (v != null) {
+                v.setValue(match.get(name));
+            } else {
+                throw new NodeExecutionException(this, "Attempt to bind non existing variable " + name);  // TODO localize
+            }
+        }
     }
 }
