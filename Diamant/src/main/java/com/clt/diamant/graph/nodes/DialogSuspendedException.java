@@ -17,9 +17,15 @@ import com.clt.diamant.graph.DialogState;
  */
 public class DialogSuspendedException extends RuntimeException {
     private DialogState dialogState;
+    private Object prompt;
 
-    public DialogSuspendedException(DialogState dialogState) {
+    public DialogSuspendedException(DialogState dialogState, Object prompt) {
         this.dialogState = dialogState;
+        this.prompt = prompt;
+    }
+
+    public Object getPrompt() {
+        return prompt;
     }
 
     public DialogState getDialogState() {

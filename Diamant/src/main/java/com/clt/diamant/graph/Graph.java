@@ -323,12 +323,12 @@ public class Graph implements IdentityObject {
      *
      * @param currentNode
      */
-    public void suspend(Node currentNode) throws DialogSuspendedException {
+    public <FromDialogos> void suspend(Node currentNode, FromDialogos prompt) throws DialogSuspendedException {
         if (currentNode instanceof SuspendingNode) {
             DialogState state = new DialogState((SuspendingNode) currentNode);
             state.addVariables(variables);
             state.addVariables(groovyOnlyVariables);
-            DialogSuspendedException ex = new DialogSuspendedException(state);
+            DialogSuspendedException ex = new DialogSuspendedException(state,  prompt);
             throw ex;
         } else {
             throw new UnsupportedOperationException("Attempting to suspend from non-suspending node " + currentNode);
