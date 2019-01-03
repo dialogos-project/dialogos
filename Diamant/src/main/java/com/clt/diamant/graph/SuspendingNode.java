@@ -25,13 +25,22 @@ public abstract class SuspendingNode<E> extends Node {
         this.inputValue = inputValue;
     }
     
-    protected E consumeInputValue() {
+    private E consumeInputValue() {
         E ret = inputValue;
         inputValue = null;
         return ret;
     }
     
-    protected void suspend() {
+    private void suspend() throws DialogSuspendedException {
         getGraph().suspend(this);
+    }
+    
+    protected E receiveInput() throws DialogSuspendedException {
+        if( inputValue == null ) {
+            suspend();
+            return null; // unreachable
+        } else {
+            return consumeInputValue();
+        }
     }
 }
