@@ -37,7 +37,7 @@ import com.clt.diamant.graph.Graph;
 import com.clt.diamant.graph.GraphOwner;
 import com.clt.diamant.graph.Node;
 import com.clt.diamant.graph.Procedure;
-import com.clt.diamant.graph.nodes.DialogSuspendedException;
+import com.clt.diamant.graph.DialogSuspendedException;
 import com.clt.diamant.graph.nodes.NodeExecutionException;
 import com.clt.diamant.graph.nodes.ProcNode;
 import com.clt.diamant.graph.search.NodeSearchFilter;

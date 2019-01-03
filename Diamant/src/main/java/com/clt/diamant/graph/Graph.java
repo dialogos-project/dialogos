@@ -38,7 +38,6 @@ import com.clt.diamant.Slot;
 import com.clt.diamant.Version;
 import com.clt.diamant.WozInterface;
 import com.clt.diamant.graph.nodes.CatchAllEdge;
-import com.clt.diamant.graph.nodes.DialogSuspendedException;
 import com.clt.diamant.graph.nodes.EndNode;
 import com.clt.diamant.graph.nodes.GraphNode;
 import com.clt.diamant.graph.nodes.InputNode;

@@ -6,7 +6,7 @@ import com.clt.dialog.client.GUIClientWindow;
 import com.clt.dialog.client.StdIOConnectionChooser;
 import com.clt.dialogos.plugin.PluginLoader;
 import com.clt.diamant.*;
-import com.clt.diamant.graph.nodes.DialogSuspendedException;
+import com.clt.diamant.graph.DialogSuspendedException;
 import com.clt.diamant.gui.DocumentWindow;
 import com.clt.diamant.gui.SingleDocumentWindow;
 import com.clt.diamant.log.LogPlayer;

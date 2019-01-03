@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.clt.diamant.graph.nodes;
-
-import com.clt.diamant.graph.DialogState;
+package com.clt.diamant.graph;
 
 /**
  * An exception that indicates that the execution of a dialog
