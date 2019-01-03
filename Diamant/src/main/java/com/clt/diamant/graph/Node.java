@@ -64,43 +64,43 @@ import com.clt.xml.XMLWriter;
 import javax.swing.JTabbedPane;
 
 /**
- * A node of a dialog graph. Each node has a list of ports through which
- * it connects to outgoing edges. You can add outgoing ports by calling
- * the {@link #addEdge() } method. The incoming and outgoing edges of
- * the node are then created by dragging edges in the GUI.<p>
- * 
- * Node is an abstract base class. To implement your own node class,
- * you need to implement the methods {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger) }
- * and {@link #createEditorComponent(java.util.Map) }, which see below.
- * You can then define any behavior that you want within the execute
- * method.<p>
- * 
- * Nodes of your class have a <i>name</i>, which appears
- * both in the node palette on the right of the DialogOS window and as
- * default labels of new nodes of your class. The name is determined in a somewhat
- * complex way, see {@link #getLocalizedNodeTypeName(java.lang.Class) }.
- * Node types may also have an <i>icon</i>, which appears
- * next to the node name in DialogOS. For the icon, DialogOS looks for a
- * PNG file in the classpath. If the fully qualified name of a node class
- * is com.myproject.MyNode, then the pathname of this file must be
- * com/myproject/MyNode.png. Under normal circumstances, "com" would then
- * be a subdirectory of src/main/resources.<p>
- * 
- * Nodes also have <i>properties</i>, i.e. values which can be edited
- * in the GUI and will be saved with the dialog (e.g. the text a TTS
- * node should speak). 
- * A node class will typically declare some properties using {@link #setProperty(java.lang.String, java.lang.Object) }.
- * {@link #createEditorComponent(java.util.Map) } will create Swing
- * components for editing them using the methods in {@link NodePropertiesDialog}.
- * {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger) } will
- * then read out the values of properties using {@link #getProperty(java.lang.String) }.<p>
- * 
- * 
+ * A node of a dialog graph. Each node has a list of ports through which it
+ * connects to outgoing edges. You can add outgoing ports by calling the {@link #addEdge()
+ * } method. The incoming and outgoing edges of the node are then created by
+ * dragging edges in the GUI.<p>
+ *
+ * Node is an abstract base class. To implement your own node class, you need to
+ * implement the methods {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger)
+ * }
+ * and {@link #createEditorComponent(java.util.Map) }, which see below. You can
+ * then define any behavior that you want within the execute method.<p>
+ *
+ * Nodes of your class have a <i>name</i>, which appears both in the node
+ * palette on the right of the DialogOS window and as default labels of new
+ * nodes of your class. The name is determined in a somewhat complex way, see {@link #getLocalizedNodeTypeName(java.lang.Class)
+ * }. Node types may also have an <i>icon</i>, which appears next to the node
+ * name in DialogOS. For the icon, DialogOS looks for a PNG file in the
+ * classpath. If the fully qualified name of a node class is
+ * com.myproject.MyNode, then the pathname of this file must be
+ * com/myproject/MyNode.png. Under normal circumstances, "com" would then be a
+ * subdirectory of src/main/resources.<p>
+ *
+ * Nodes also have <i>properties</i>, i.e. values which can be edited in the GUI
+ * and will be saved with the dialog (e.g. the text a TTS node should speak). A
+ * node class will typically declare some properties using {@link #setProperty(java.lang.String, java.lang.Object)
+ * }. {@link #createEditorComponent(java.util.Map) } will create Swing
+ * components for editing them using the methods in
+ * {@link NodePropertiesDialog}.
+ * {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger) }
+ * will then read out the values of properties using {@link #getProperty(java.lang.String) }
+ * .<p>
+ *
+ *
  * A node is not useful by itself. It usually comes as part of a
  * <a href="https://github.com/dialogos-project/dialogos/wiki/Plugins">plugin</a>.
- * When the plugin is loaded, it can register its node types
- * by calling {@link #registerNodeTypes(java.lang.Object, java.util.Collection) }.<p>
- * 
+ * When the plugin is loaded, it can register its node types by calling {@link #registerNodeTypes(java.lang.Object, java.util.Collection) }
+ * .<p>
+ *
  * The UI for the node is handled by {@link com.clt.diamant.graph.ui.NodeUI}.
  */
 public abstract class Node extends VisualGraphElement implements IdentityObject {
@@ -119,32 +119,32 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     private static void registerBuiltinNodeTypes() {
         Node.NODE_TYPES = new LinkedHashMap<Object, List<Class<Node>>>();
 
-        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_DEFAULT"), 
-                new String[]{ 
-                    "OutputNode", 
-                    "InputNode", 
-                    "ConditionalNode", 
-                    "SetVariableNode", 
-                    "TestVariableNode", 
+        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_DEFAULT"),
+                new String[]{
+                    "OutputNode",
+                    "InputNode",
+                    "ConditionalNode",
+                    "SetVariableNode",
+                    "TestVariableNode",
                     "SleepNode",
-                    "ScriptNode", 
-                    "GroovyNode", 
+                    "ScriptNode",
+                    "GroovyNode",
                     "EndNode"
                 });
 
-        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_SUBGRAPH"), 
-                new String[] {
-                    "GraphNode", 
-                    "ProcNode", 
-                    "CallNode", 
-                    "ReturnNode", 
-                    "ContinueNode", 
+        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_SUBGRAPH"),
+                new String[]{
+                    "GraphNode",
+                    "ProcNode",
+                    "CallNode",
+                    "ReturnNode",
+                    "ContinueNode",
                     "LoopNode"
                 });
 
-        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_JUMP"), 
-                new String[] {
-                    "LabelNode", 
+        Node.registerBuiltinNodeTypes(Resources.getResources().createLocalizedString("NODEGROUP_JUMP"),
+                new String[]{
+                    "LabelNode",
                     "GotoNode"
                 });
 
@@ -170,16 +170,15 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * Registers the given node types with DialogOS, making them appear
-     * in the node palette.<p>
-     * 
-     * The "key" is an ID for a group of nodes. Nodes with the same key
-     * are kept together in the node palette, and a separator line is
-     * drawn between nodes with different keys. A good choice for the
-     * key is the plugin ID.
-     * 
+     * Registers the given node types with DialogOS, making them appear in the
+     * node palette.<p>
+     *
+     * The "key" is an ID for a group of nodes. Nodes with the same key are kept
+     * together in the node palette, and a separator line is drawn between nodes
+     * with different keys. A good choice for the key is the plugin ID.
+     *
      * @param key
-     * @param nodeTypes 
+     * @param nodeTypes
      */
     @SuppressWarnings("unchecked")
     public static void registerNodeTypes(Object key, Collection<Class<?>> nodeTypes) {
@@ -456,10 +455,10 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * Adds an edge to the node. The "edge" has this node
-     * as the source and a null target. It is visually represented
-     * as an outgoing port (little triangle) of the node in the GUI,
-     * and can be connected to an actual target node by drawing an edge.
+     * Adds an edge to the node. The "edge" has this node as the source and a
+     * null target. It is visually represented as an outgoing port (little
+     * triangle) of the node in the GUI, and can be connected to an actual
+     * target node by drawing an edge.
      *
      * @return Return the reference to that edge.
      */
@@ -518,8 +517,8 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * Retrieves an outgoing edge of this node. The edge at the first
-     * outgoing port is index 0, and so on.
+     * Retrieves an outgoing edge of this node. The edge at the first outgoing
+     * port is index 0, and so on.
      *
      * @param index
      * @return reference to the edge
@@ -676,7 +675,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
                     it.remove();
                 }
             }
-            
+
             return true;
         } else {
             return false;
@@ -684,17 +683,18 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * This method is called by DialogOS whenever this node becomes the
-     * "active" node during a run of the dialog graph. It thus performs the
-     * main functionality of the node class. The method is expected to return
-     * the node that should become active next. These nodes can be found
-     * by calling {@link #getEdge(int) } for the chosen outgoing port and
-     * retrieving its {@link Edge#getTarget() }.<p>
-     * 
-     * An implementation of execute will typically want to access the
-     * value of a node property that was set in the properties window
-     * of the node (e.g., the text that a TTS system should speak).
-     * You can access the node properties by name using {@link #getProperty(java.lang.String) }.<p>
+     * This method is called by DialogOS whenever this node becomes the "active"
+     * node during a run of the dialog graph. It thus performs the main
+     * functionality of the node class. The method is expected to return the
+     * node that should become active next. These nodes can be found by calling {@link #getEdge(int)
+     * } for the chosen outgoing port and retrieving its {@link Edge#getTarget() }
+     * .<p>
+     *
+     * An implementation of execute will typically want to access the value of a
+     * node property that was set in the properties window of the node (e.g.,
+     * the text that a TTS system should speak). You can access the node
+     * properties by name using {@link #getProperty(java.lang.String) }
+     * .<p>
      *
      * @param comm
      * @param input
@@ -704,24 +704,24 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     abstract public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger);
 
     /**
-     * Creates a Swing component for editing the properties of this node.
-     * This method is called whenever the user opens the node's properties
-     * window (by double-clicking on the node or by right-clicking and
-     * selecting "Properties..."). The component returned by createEditorComponent
-     * should be a {@link JTabbedPane}, which is added as tabs to the component.
-     * By default, the properties window contains one tab with title "General" which
-     * is added to the right of the implementation-specific tabs.<p>
-     * 
-     * The JTabbedPane will typically contain Swing components for editing
-     * the properties of the node. Properties are initially created 
-     * by {@link #setProperty(java.lang.String, java.lang.Object) }.
-     * You can create Swing components for properties by calling the methods
-     * of {@link NodePropertiesDialog}. The values of such properties
-     * are automatically updated when you close the properties window
-     * by clicking "Ok". You can also update the values of properties by
-     * changing the entries in the "properties" argument. (Do <i>not</i>
-     * change the values of this.properties directly; this is necessary for proper 
-     * functioning of the "Cancel" button and proper propagation to propertyChangeListeners.
+     * Creates a Swing component for editing the properties of this node. This
+     * method is called whenever the user opens the node's properties window (by
+     * double-clicking on the node or by right-clicking and selecting
+     * "Properties..."). The component returned by createEditorComponent should
+     * be a {@link JTabbedPane}, which is added as tabs to the component. By
+     * default, the properties window contains one tab with title "General"
+     * which is added to the right of the implementation-specific tabs.<p>
+     *
+     * The JTabbedPane will typically contain Swing components for editing the
+     * properties of the node. Properties are initially created by {@link #setProperty(java.lang.String, java.lang.Object)
+     * }. You can create Swing components for properties by calling the methods
+     * of {@link NodePropertiesDialog}. The values of such properties are
+     * automatically updated when you close the properties window by clicking
+     * "Ok". You can also update the values of properties by changing the
+     * entries in the "properties" argument. (Do <i>not</i>
+     * change the values of this.properties directly; this is necessary for
+     * proper functioning of the "Cancel" button and proper propagation to
+     * propertyChangeListeners.
      *
      * @return A reference on the created JComponent.
      */
@@ -892,11 +892,26 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
         });
     }
 
+    /**
+     * Reads a setting from a graph file. This method is called whenever
+     * DialogOS loads a previously saved graph from a file. It is called
+     * individually for each attribute of your node that you saved with the writeAttributes
+     * method. The name of the attribute is "name"; its value is "value".
+     */
     @SuppressWarnings("unused")
     protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
 
     }
 
+    /**
+     * Writes settings to the graph file. This method is called whenever
+     * DialogOS saves the graph to a file. You can implement this method to save
+     * persistent information for your node in this file. Use {@link Graph#printAtt(com.clt.xml.XMLWriter, java.lang.String, java.lang.Integer)
+     * }
+     * and its sister methods for writing to the XMLWriter conveniently.
+     *
+     * Write these settings to XML
+     */
     protected void writeAttributes(XMLWriter out, IdMap uid_map) {
 
     }
@@ -930,15 +945,15 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     }
 
     /**
-     * Writes a representation of this node into a VoiceXML
-     * dialog specification.<p>
-     * 
-     * This is very old code, and nobody can remember how exactly
-     * to use it. See issue #97. (AK, Oct 2018)
-     * 
+     * Writes a representation of this node into a VoiceXML dialog
+     * specification.<p>
+     *
+     * This is very old code, and nobody can remember how exactly to use it. See
+     * issue #97. (AK, Oct 2018)
+     *
      * @param w
      * @param uid_map
-     * @throws IOException 
+     * @throws IOException
      */
     abstract public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException;
 
@@ -1012,14 +1027,11 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
     public boolean acceptableToSave() {
         return true;
     }
-    
-    
 
     /**
-     * Sets variables of the graph according to a Match.
-     * This is used in an input node (e.g. {@link AbstractInputNode})
-     * after the input or the recognition result have been 
-     * matched against a pattern.
+     * Sets variables of the graph according to a Match. This is used in an
+     * input node (e.g. {@link AbstractInputNode}) after the input or the
+     * recognition result have been matched against a pattern.
      *
      * @param match
      */

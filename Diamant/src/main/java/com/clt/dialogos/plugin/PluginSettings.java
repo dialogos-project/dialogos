@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 
 import com.clt.diamant.IdMap;
 import com.clt.diamant.WozInterface;
+import com.clt.diamant.graph.Graph;
 import com.clt.xml.AbstractHandler;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
@@ -25,6 +26,11 @@ public abstract class PluginSettings {
     private Map<WozInterface, PluginRuntime> runtimes = new HashMap<WozInterface, PluginRuntime>();
 
     /**
+     * Writes settings to the graph file. This method is called whenever
+     * DialogOS saves the graph to a file. You can implement this method
+     * to save persistent information in this file. Use {@link Graph#printAtt(com.clt.xml.XMLWriter, java.lang.String, java.lang.Integer) }
+     * and its sister methods for writing to the XMLWriter conveniently.
+     * 
      * Write these settings to XML
      */
     public abstract void writeAttributes(XMLWriter out, IdMap uidMap);
@@ -74,10 +80,12 @@ public abstract class PluginSettings {
 
 
   /**
-   * use this operation to read previously stored name-value pairs
+   * Reads a setting from a graph file. This method is called whenever
+   * DialogOS loads a previously saved graph from a file. It is called
+   * individually for each attribute that you saved with the writeAttributes
+   * method. The name of the attribute is "name"; its value is "value".
    */
-  protected abstract void readAttribute(XMLReader r, String name,
-      String value, IdMap uid_map)
+  protected abstract void readAttribute(XMLReader r, String name, String value, IdMap uid_map)
       throws SAXException;
 
   /**
