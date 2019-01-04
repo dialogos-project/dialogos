@@ -13,7 +13,6 @@ import com.clt.diamant.Preferences;
 import com.clt.diamant.Resources;
 import com.clt.diamant.SingleDocument;
 import com.clt.diamant.WozInterface;
-import com.clt.diamant.suspend.SuspendedExecutionResult;
 import com.clt.gui.GUI;
 import com.clt.util.Misc;
 import java.io.File;
