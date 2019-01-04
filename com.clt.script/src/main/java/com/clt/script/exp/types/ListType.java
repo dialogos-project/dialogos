@@ -76,4 +76,9 @@ public class ListType  extends Type {
 
         return ListValue.class;
     }
+
+    @Override
+    public java.lang.String getName() {
+        return "list";
+    }
 }

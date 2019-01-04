@@ -48,6 +48,15 @@ public abstract class Type {
     }
 
     public abstract Class<? extends Value> getObjectClass();
+    
+    /**
+     * Returns the name of this type. This must be the same name
+     * that is entered in the Type.DATATYPES field in the source
+     * code of Type.
+     * 
+     * @return 
+     */
+    public abstract String getName();
 
     @Override
     public abstract boolean equals(Object type);
@@ -133,9 +142,7 @@ public abstract class Type {
         }
     }
 
-    private static class PrimitiveType
-            extends Type {
-
+    public static class PrimitiveType extends Type {
         String name;
         Class<? extends Value> objectClass;
 
@@ -143,6 +150,11 @@ public abstract class Type {
 
             this.name = name;
             this.objectClass = objectClass;
+        }
+
+        @Override
+        public java.lang.String getName() {
+            return name;
         }
 
         @Override

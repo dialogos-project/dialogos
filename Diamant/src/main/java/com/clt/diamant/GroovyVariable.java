@@ -2,9 +2,14 @@ package com.clt.diamant;
 
 
 import com.clt.xml.XMLWriter;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Class for the Groovy-only variables
@@ -71,19 +76,69 @@ public class GroovyVariable extends AbstractVariable<Object,String> {
     }
 
     @Override
-    public Map<String, String> encodeForSerialization() {
-        Map<String,String> ret = new HashMap<>();
-
-        ret.put("id", getId());
-        ret.put("name", getName());
-        ret.put("variable_class", getClass().getSimpleName());
-        ret.put("type", getType().getClass().getSimpleName());
-        ret.put("value", getValue().toString());
-
-        return ret;
-    }
-
     public String toDetailedString() {
         return String.format("<GroovyVar[%s:%s:%s] %s>", getId(), getName(), type, getValue());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final GroovyVariable other = (GroovyVariable) obj;
+        if (!Objects.equals(this.type, other.type)) {
+            return false;
+        }
+        if (!Objects.equals(this.value, other.value)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
+    @Override
+    public JsonElement toJsonElement() {
+        Gson gson = new Gson();
+        JsonObject ret = new JsonObject();
+
+        // first, encode entire GroovyVariable
+        JsonElement encodedGroovyVariable = gson.toJsonTree(this);
+        ret.add("groovy_variable", encodedGroovyVariable);
+        
+        // Then encode just the value itself again, with its class.
+        // This is needed to ints can be decoded correctly as ints, and not as doubles.
+        JsonElement encodedValue = gson.toJsonTree(value);
+        ret.add("value", encodedValue);
+        ret.add("value_class", new JsonPrimitive(value.getClass().getName()));
+        
+        // boilerplate for AbstractVariable#fromJson
+        ret.add(VARIABLE_CLASS_KEY, new JsonPrimitive(JSON_TYPE_GROOVY));
+        
+        return ret;
+    }
+    
+    public static GroovyVariable fromJsonImpl(JsonObject parsedJson) throws ClassNotFoundException {
+        Gson gson = new Gson();
+
+        // deserialize a first version of the GroovyVariable
+        JsonElement groovyVariableElement = parsedJson.get("groovy_variable");
+        GroovyVariable ret = gson.fromJson(groovyVariableElement, GroovyVariable.class);
+        
+        // then determine the actual class of the value and
+        // overwrite the GroovyVariable's value with it
+        String valueClassName = parsedJson.get("value_class").getAsString();
+        Class valueClazz = GroovyVariable.class.getClassLoader().loadClass(valueClassName);
+        JsonElement valueElement = parsedJson.get("value");
+        Object decodedValue = gson.fromJson(valueElement, valueClazz);
+        ret.setValue(decodedValue);
+        
+        return ret;
     }
 }

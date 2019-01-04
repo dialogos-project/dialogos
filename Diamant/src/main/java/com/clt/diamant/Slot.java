@@ -17,6 +17,17 @@ import com.clt.script.exp.values.StringValue;
 import com.clt.script.exp.values.Undefined;
 import com.clt.util.StringTools;
 import com.clt.xml.XMLWriter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.util.Objects;
 import org.json.JSONObject;
 
 /**
@@ -33,8 +44,10 @@ public class Slot extends AbstractVariable<Value, Type> {
 
     private Stack<Value> instances;
 
+    private static final String UNDEFINED = "undefined";
+
     public Slot() {
-        this(Resources.getString("UntitledIdentifier"), Type.String, "undefined", false);
+        this(Resources.getString("UntitledIdentifier"), Type.String, UNDEFINED, false);
     }
 
     public Slot(String name, Type type, String initValue, boolean export) {
@@ -170,47 +183,101 @@ public class Slot extends AbstractVariable<Value, Type> {
         out.closeElement(tag);
     }
 
+    @Override
     public String toDetailedString() {
         return String.format("<Slot[%s:%s:%s]: %s>", getId(), getName(), type, getValue());
     }
 
     @Override
-    public Map<String, String> encodeForSerialization() {
-        Map<String, String> ret = new HashMap<>();
-
-        ret.put("id", getId());
-        ret.put("name", getName());
-        ret.put("variable_class", getClass().getSimpleName());
-        ret.put("type", getValue().getClass().getSimpleName());
-//        ret.put("type", getType().)
-        ret.put("value", getValue().getReadableValue().toString());
-
-        // TODO encode initValue; export
-        return ret;
-    }
-
-    private static Type decodeType(String typeName) {
-        if ("StringValue".equals(typeName)) {
-            return Type.String;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-
-        return null; // TODO others - actually, they are irrelevant
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Slot other = (Slot) obj;
+        if (!Objects.equals(this.initValue, other.initValue)) {
+            return false;
+        }
+        if (!Objects.equals(this.type, other.type)) {
+            return false;
+        }
+        if (!Objects.equals(this.instances, other.instances)) {
+            return false;
+        }
+        return true;
     }
 
-    private static Value decodeValue(String string, Type type) {
-        if( type.equals(Type.String) ) {
-            return new StringValue(string);
-        } 
+    @Override
+    public JsonElement toJsonElement() {
+        GsonBuilder gb = new GsonBuilder();
+        gb.registerTypeAdapter(Type.class, new TypeSerializer());
+        gb.registerTypeAdapter(Value.class, new ValueSerializer());
+        Gson gson = gb.create();
+
+        JsonElement encodedObject = gson.toJsonTree(this);
+        JsonObject ret = new JsonObject();
+        ret.add("value", encodedObject);
+        ret.add(VARIABLE_CLASS_KEY, new JsonPrimitive(JSON_TYPE_SLOT));
         
-        return null; // TODO others 
+        return ret;
     }
 
-    public static AbstractVariable decodeJson(JSONObject jsonObject) {
-        Type type = decodeType(jsonObject.getString("type"));
-        Slot ret = new Slot(jsonObject.getString("name"), type, null, true);
-        Value value = decodeValue(jsonObject.getString("value"), type);
-        ret.setValue(value);
-        ret.setId(jsonObject.getString("id"));
+    public static Slot fromJsonImpl(JsonObject parsedJson) throws ClassNotFoundException {
+        GsonBuilder gb = new GsonBuilder();
+        gb.registerTypeAdapter(Type.class, new TypeDeserializer());
+        gb.registerTypeAdapter(Value.class, new ValueDeserializer());
+        Gson gson = gb.create();
+
+        JsonElement valueElement = parsedJson.get("value");
+        Slot ret = gson.fromJson(valueElement, Slot.class);
         return ret;
+    }
+    
+    
+    
+    /*****  Serializers and deserializers for Gson. ******/
+    
+    private static class TypeSerializer implements JsonSerializer<Type> {
+        @Override
+        public JsonElement serialize(Type t, java.lang.reflect.Type type, JsonSerializationContext jsc) {
+            return new JsonPrimitive(t.getName());
+        }
+    }
+    
+    private static class TypeDeserializer implements JsonDeserializer<Type> {
+        @Override
+        public Type deserialize(JsonElement je, java.lang.reflect.Type type, JsonDeserializationContext jdc) throws JsonParseException {
+            String typename = ((JsonPrimitive) je).getAsString();
+            return Type.getTypeForName(typename);
+        }
+    }
+
+    private static class ValueSerializer implements JsonSerializer<Value> {
+        @Override
+        public JsonElement serialize(Value t, java.lang.reflect.Type type, JsonSerializationContext jsc) {
+            return new JsonPrimitive(t.toString());
+        }
+    }
+
+    private static class ValueDeserializer implements JsonDeserializer<Value> {
+        @Override
+        public Value deserialize(JsonElement je, java.lang.reflect.Type type, JsonDeserializationContext jdc) throws JsonParseException {
+            String s = ((JsonPrimitive) je).getAsString();
+            
+            if (UNDEFINED.equals(s)) {
+                return new Undefined();
+            } else {
+                try {
+                    return Expression.parseExpression(s).evaluate();
+                } catch (Exception ex) {
+                    throw new JsonParseException(ex);
+                }
+            }
+        }
     }
 }

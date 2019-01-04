@@ -12,7 +12,7 @@ import com.clt.script.exp.values.StructValue;
  * @author Daniel Bobbert
  * @version 1.0
  */
-public class StructType extends Type        implements ReferenceType {
+public class StructType extends Type implements ReferenceType {
 
     // keep the elements sorted
     private Map<String, Type> slots = new TreeMap<String, Type>();
@@ -189,6 +189,11 @@ public class StructType extends Type        implements ReferenceType {
     public Class<StructValue> getObjectClass() {
 
         return StructValue.class;
+    }
+
+    @Override
+    public java.lang.String getName() {
+        return "struct";
     }
 
 }

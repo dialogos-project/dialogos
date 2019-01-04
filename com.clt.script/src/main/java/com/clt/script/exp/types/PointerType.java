@@ -66,4 +66,9 @@ public class PointerType extends Type {
 
         return PointerValue.class;
     }
+
+    @Override
+    public java.lang.String getName() {
+        return "pointer";
+    }
 }

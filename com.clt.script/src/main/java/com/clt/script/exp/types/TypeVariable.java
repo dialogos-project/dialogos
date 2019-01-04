@@ -97,4 +97,9 @@ public class TypeVariable extends Type {
 
         return Value.class;
     }
+
+    @Override
+    public java.lang.String getName() {
+        return "any";
+    }
 }

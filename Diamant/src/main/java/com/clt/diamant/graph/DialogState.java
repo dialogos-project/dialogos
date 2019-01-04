@@ -6,6 +6,12 @@
 package com.clt.diamant.graph;
 
 import com.clt.diamant.AbstractVariable;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -55,20 +61,6 @@ public class DialogState {
 
         return buf.toString();
     }
-
-    public JSONObject toJson() {
-        JSONObject ret = new JSONObject();
-        ret.put("nodeId", suspendedNodeId);
-
-        JSONArray jsonVariables = new JSONArray();
-        for (AbstractVariable v : variables) {
-            jsonVariables.put(v.encodeForSerialization());
-        }
-
-        ret.put("variables", jsonVariables);
-
-        return ret;
-    }
     
     public SuspendingNode lookupNode(Graph graph) {
         Node n = graph.findNodeById(suspendedNodeId);
@@ -79,16 +71,60 @@ public class DialogState {
             return (SuspendingNode) n;
         }        
     }
-
-    public static DialogState fromJson(JSONObject json) {
-        DialogState ret = new DialogState(json.getString("nodeId"));
-
-        JSONArray varlist = json.getJSONArray("variables");
-        for (Object jsonVar : varlist) {
-            AbstractVariable v = AbstractVariable.decodeJson((JSONObject) jsonVar);
-            ret.addVariable(v);
+//
+//    public static DialogState fromJson(JSONObject json) {
+//        DialogState ret = new DialogState(json.getString("nodeId"));
+//
+//        JSONArray varlist = json.getJSONArray("variables");
+//        for (Object jsonVar : varlist) {
+//            AbstractVariable v = AbstractVariable.decodeJson((JSONObject) jsonVar);
+//            ret.addVariable(v);
+//        }
+//
+//        return ret;
+//    }
+    
+    
+    public static DialogState fromJson(String jsonString) throws AbstractVariable.VariableParsingException {
+        JsonParser p = new JsonParser();
+        JsonObject json = (JsonObject) p.parse(jsonString);
+        
+        DialogState ret = new DialogState(json.get("nodeId").getAsString());
+        
+        JsonArray variables = (JsonArray) json.get("variables");
+        for( JsonElement var : variables ) {
+            ret.variables.add(AbstractVariable.fromJsonElement((JsonObject) var));
         }
-
+        
         return ret;
+    }
+
+    public String toJson() {
+        JsonObject json = new JsonObject();
+        
+        JsonArray variables = new JsonArray();
+        json.add("variables", variables);
+        for( AbstractVariable v : this.variables) {
+            variables.add(v.toJsonElement());
+        }
+        
+        json.add("nodeId", new JsonPrimitive(suspendedNodeId));
+        
+        return json.toString();
+        
+        
+//        
+//        
+//        JSONObject ret = new JSONObject();
+//        ret.put("nodeId", suspendedNodeId);
+//
+//        JSONArray jsonVariables = new JSONArray();
+//        for (AbstractVariable v : variables) {
+//            jsonVariables.put(v.encodeForSerialization());
+//        }
+//
+//        ret.put("variables", jsonVariables);
+//
+//        return ret;
     }
 }

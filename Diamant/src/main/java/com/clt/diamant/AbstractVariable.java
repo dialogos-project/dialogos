@@ -1,5 +1,7 @@
 package com.clt.diamant;
 
+import com.clt.script.exp.Type;
+import com.clt.script.exp.values.StringValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,9 @@ import java.util.Map;
 import javax.swing.event.ChangeListener;
 
 import com.clt.xml.XMLWriter;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javax.swing.event.ChangeEvent;
 import org.json.JSONObject;
 
@@ -22,6 +27,11 @@ public abstract class AbstractVariable<ValueClass, TypeClass> implements Identit
     private boolean export;
 
     private List<ChangeListener> listeners;
+
+    protected static final String VARIABLE_CLASS_KEY = "variable_class";
+    protected static final int JSON_TYPE_SLOT = 0;
+    protected static final int JSON_TYPE_GROOVY = 1;
+    protected static final String[] JSON_TYPENAMES = { "Slot", "GroovyVariable" };
 
     protected AbstractVariable(String name, boolean export) {
         this.name = name;
@@ -127,26 +137,74 @@ public abstract class AbstractVariable<ValueClass, TypeClass> implements Identit
      */
     public abstract TypeClass getType();
 
-    /**
-     * Encodes information about this variable in a format that is suitable for
-     * serialization (e.g. with Json).
-     *
-     * @return
-     */
-    public abstract Map<String, String> encodeForSerialization();
+    public abstract String toDetailedString();
 
-    public static AbstractVariable decodeJson(JSONObject jsonObject) {
-        String clazz = jsonObject.getString("variable_class");
-        
-        if( "Slot".equals(clazz) ) {
-            return Slot.decodeJson(jsonObject);
-        } else if ( "GroovyVariable".equals(clazz) ) {
-            return GroovyVariable.decodeJson(jsonObject);
-        } else {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-        
-        
+    /**
+     * Encodes this variable as a JSON element.
+     * 
+     * @return 
+     */
+    public abstract JsonElement toJsonElement();
+    
+    /**
+     * Encodes this variable as a JSON string.
+     * 
+     * @return 
+     */
+    public String toJson() {
+        return toJsonElement().toString();
     }
 
+    /**
+     * Decodes a JSON string representation back into an AbstractVariable.
+     * 
+     * @param jsonString
+     * @return
+     * @throws com.clt.diamant.AbstractVariable.VariableParsingException 
+     */
+    public static AbstractVariable fromJson(String jsonString) throws VariableParsingException {
+        JsonParser p = new JsonParser();
+
+        JsonObject el = (JsonObject) p.parse(jsonString);
+        return fromJsonElement(el);
+    }
+    
+    /**
+     * Decodes a (parsed) JSON element into an AbstractVariable.
+     * 
+     * @param el
+     * @return
+     * @throws com.clt.diamant.AbstractVariable.VariableParsingException 
+     */
+    public static AbstractVariable fromJsonElement(JsonObject el) throws VariableParsingException {
+        int variableType = el.get(VARIABLE_CLASS_KEY).getAsInt();
+
+        try {
+            switch (variableType) {
+                case JSON_TYPE_SLOT:
+                    return Slot.fromJsonImpl(el);
+                case JSON_TYPE_GROOVY:
+                    return GroovyVariable.fromJsonImpl(el);
+            }
+        } catch (ClassNotFoundException ex) {
+            throw new VariableParsingException("An error occurred while decoding a JSON representation into variable class " + JSON_TYPENAMES[variableType], ex);
+        }
+
+        throw new VariableParsingException("Could not determine class of AbstractVariable: " + variableType);
+    }
+
+    public static class VariableParsingException extends Exception {
+
+        public VariableParsingException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public VariableParsingException(Throwable cause) {
+            super(cause);
+        }
+
+        public VariableParsingException(String message) {
+            super(message);
+        }
+    }
 }
