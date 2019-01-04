@@ -1,10 +1,7 @@
 package com.clt.diamant;
 
-import com.clt.script.exp.Type;
-import com.clt.script.exp.values.StringValue;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.event.ChangeListener;
 
@@ -13,7 +10,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javax.swing.event.ChangeEvent;
-import org.json.JSONObject;
 
 /**
  * Abstract variable class to combine Slots and Groovy-only variables

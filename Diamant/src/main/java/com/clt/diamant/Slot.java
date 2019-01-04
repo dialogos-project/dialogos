@@ -1,7 +1,5 @@
 package com.clt.diamant;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 import com.clt.script.Environment;
@@ -13,7 +11,6 @@ import com.clt.script.exp.TypeException;
 import com.clt.script.exp.Value;
 import com.clt.script.exp.types.ListType;
 import com.clt.script.exp.types.StructType;
-import com.clt.script.exp.values.StringValue;
 import com.clt.script.exp.values.Undefined;
 import com.clt.util.StringTools;
 import com.clt.xml.XMLWriter;
@@ -28,7 +25,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.util.Objects;
-import org.json.JSONObject;
 
 /**
  * A class to save variables.

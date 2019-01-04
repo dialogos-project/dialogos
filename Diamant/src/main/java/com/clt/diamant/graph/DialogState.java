@@ -6,14 +6,11 @@
 package com.clt.diamant.graph;
 
 import com.clt.diamant.AbstractVariable;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.*;
 
@@ -42,8 +39,6 @@ public class DialogState {
     public String getSuspendedNodeId() {
         return suspendedNodeId;
     }
-    
-    
 
     public List<AbstractVariable> getVariables() {
         return variables;
@@ -71,19 +66,6 @@ public class DialogState {
             return (SuspendingNode) n;
         }        
     }
-//
-//    public static DialogState fromJson(JSONObject json) {
-//        DialogState ret = new DialogState(json.getString("nodeId"));
-//
-//        JSONArray varlist = json.getJSONArray("variables");
-//        for (Object jsonVar : varlist) {
-//            AbstractVariable v = AbstractVariable.decodeJson((JSONObject) jsonVar);
-//            ret.addVariable(v);
-//        }
-//
-//        return ret;
-//    }
-    
     
     public static DialogState fromJson(String jsonString) throws AbstractVariable.VariableParsingException {
         JsonParser p = new JsonParser();
