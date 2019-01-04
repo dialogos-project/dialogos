@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.clt.diamant.graph;
+package com.clt.diamant.suspend;
 
+import com.clt.diamant.suspend.DialogSuspendedException;
 import com.clt.diamant.ExecutionLogger;
 import com.clt.diamant.InputCenter;
 import com.clt.diamant.WozInterface;
+import com.clt.diamant.graph.Node;
 
 /**
  * A node at which the execution of the dialog can be suspended and then

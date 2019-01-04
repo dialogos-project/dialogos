@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.clt.diamant.graph;
+package com.clt.diamant.suspend;
 
 /**
  * An exception that indicates that the execution of a dialog

@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.clt.diamant.graph;
+package com.clt.diamant.suspend;
 
 import com.clt.diamant.AbstractVariable;
+import com.clt.diamant.graph.Graph;
+import com.clt.diamant.graph.Node;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

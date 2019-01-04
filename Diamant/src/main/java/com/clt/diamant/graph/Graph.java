@@ -1,5 +1,8 @@
 package com.clt.diamant.graph;
 
+import com.clt.diamant.suspend.SuspendingNode;
+import com.clt.diamant.suspend.DialogState;
+import com.clt.diamant.suspend.DialogSuspendedException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
