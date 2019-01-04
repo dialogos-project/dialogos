@@ -42,6 +42,8 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
     private DocumentWindow<?> currentDocument = null;
     private static Collection<DocumentWindow<?>> documents = new ArrayList<DocumentWindow<?>>();
+    
+    private DocumentWindow<?> mostRecentlyActivatedDocument = null;
 
     private final FileChooser fileChooser = new FileChooser(Preferences.getPrefs().getLastUsedFile());
 
@@ -165,6 +167,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
             public void windowActivated(final WindowEvent e) {
                 if (e.getWindow() instanceof DocumentWindow) {
                     Main.this.currentDocument = (DocumentWindow) e.getWindow();
+                    Main.this.mostRecentlyActivatedDocument = currentDocument;
                     Main.this.updateMenus();
                 }
             }
@@ -609,5 +612,9 @@ public class Main implements MenuCommander, MenuOwner, Commands {
      */
     public DocumentWindow getCurrentWindow() {
         return currentDocument;
+    }
+    
+    public DocumentWindow getMostRecentlyActivatedDocumentWindow() {
+        return mostRecentlyActivatedDocument;
     }
 }

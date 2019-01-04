@@ -96,12 +96,9 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
 
         gbc.gridy++;
 
-        this.progress
-                = new JProgressBar(SwingConstants.HORIZONTAL, 0, ProgressDialog.steps) {
-
+        this.progress = new JProgressBar(SwingConstants.HORIZONTAL, 0, ProgressDialog.steps) {
             @Override
             public Dimension getPreferredSize() {
-
                 return new Dimension(ProgressDialog.steps,
                         super.getPreferredSize().height);
             }
@@ -113,8 +110,7 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(5, 5, 10, 10);
 
-        this.cancelButton
-                = new CmdButton(this, ProgressDialog.cmdCancel, GUI.getString("Cancel"));
+        this.cancelButton = new CmdButton(this, ProgressDialog.cmdCancel, GUI.getString("Cancel"));
         content.add(this.cancelButton, gbc);
 
         this.addWindowListener(new WindowAdapter() {
@@ -137,6 +133,9 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
                 }
             }
         });
+        
+        pack();
+        validate();
     }
 
     public void run(LongAction a) throws InvocationTargetException {
@@ -310,7 +309,6 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
     // statusChanged wird von unserem eigenen Thread aufgerufen
     // daher muessen alle Swing-calls eingepackt werden in "invokeLater"
     public void progressChanged(final ProgressEvent e) {
-
         if (!this.dying) {
             int value;
             if (e.getEnd() - e.getStart() > 0) {
@@ -321,9 +319,7 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
                     current = e.getEnd();
                 }
 
-                value
-                        = (int) (((current - e.getStart()) * ProgressDialog.steps) / (e.getEnd() - e
-                        .getStart()));
+                value = (int) (((current - e.getStart()) * ProgressDialog.steps) / (e.getEnd() - e.getStart()));
                 this.indeterminate = false;
             } else {
                 value = 0;
@@ -340,24 +336,19 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
     private void update() {
 
         if (this.isShowing()
-                && ((this.lastMessage != this.message.getText()) || (this.lastValue != this.progress
-                .getValue()))) {
+                && ((this.lastMessage != this.message.getText()) || (this.lastValue != this.progress.getValue()))) {
             SwingUtilities.invokeLater(this.updater);
         }
     }
 
     private Runnable updater = new Runnable() {
-
         public void run() {
-
             ProgressDialog.this.message.setText(ProgressDialog.this.lastMessage);
-            ProgressDialog.this.progress
-                    .setIndeterminate(ProgressDialog.this.indeterminate);
+            ProgressDialog.this.progress.setIndeterminate(ProgressDialog.this.indeterminate);
             ProgressDialog.this.progress.setValue(ProgressDialog.this.lastValue);
 
             if (ProgressDialog.this.action instanceof Cancellable) {
-                ProgressDialog.this.cancelButton
-                        .setEnabled(((Cancellable) ProgressDialog.this.action).canCancel());
+                ProgressDialog.this.cancelButton.setEnabled(((Cancellable) ProgressDialog.this.action).canCancel());
             }
         }
     };
