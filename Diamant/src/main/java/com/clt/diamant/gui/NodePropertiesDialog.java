@@ -429,8 +429,7 @@ public class NodePropertiesDialog extends JDialog {
          return NodePropertiesDialog.createComboBox(properties, key, Arrays.asList(values));
     }
 
-    public static JComboBox createComboBox(final Map<String, Object> properties, final String key,
-            final Collection<?> values) {
+    public static JComboBox createComboBox(final Map<String, Object> properties, final String key, final Collection<?> values) {
         final JComboBox cb = new JComboBox(new Vector<Object>(values));
         int minWidth = 120;
         int width = Math.min(240, Math.max(minWidth, cb.getPreferredSize().width));
@@ -449,6 +448,35 @@ public class NodePropertiesDialog extends JDialog {
             if (o != null) {
                 properties.put(key, o);
             }
+        });
+        return cb;
+    }
+    
+    /**
+     * Creates a combobox that manages an int property from its values.
+     * 
+     * @param properties
+     * @param key
+     * @param values
+     * @return 
+     */
+    public static JComboBox createIntComboBox(final Map<String, Object> properties, final String key, final Collection<?> values) {
+        final JComboBox cb = new JComboBox(new Vector<Object>(values));
+        int minWidth = 120;
+        int width = Math.min(240, Math.max(minWidth, cb.getPreferredSize().width));
+        cb.setPreferredSize(new Dimension(width, cb.getPreferredSize().height));
+        cb.setMinimumSize(new Dimension(minWidth, cb.getPreferredSize().height));
+        
+        Object k = properties.get(key);        
+        if ((k != null) && k instanceof Integer) {
+            cb.setSelectedIndex((Integer) k);
+        } else {
+            cb.setSelectedIndex(0);
+        }
+
+        cb.addActionListener(evt -> {
+            int index = cb.getSelectedIndex();
+            properties.put(key, index);
         });
         return cb;
     }
