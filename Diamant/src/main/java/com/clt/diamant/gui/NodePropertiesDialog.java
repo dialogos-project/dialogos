@@ -67,6 +67,8 @@ import com.clt.gui.table.TextRenderer;
 import com.clt.script.ScriptEditor;
 import com.clt.script.UndoRedoTextComponent;
 import com.clt.util.StringTools;
+import java.awt.event.ItemEvent;
+import javax.swing.SwingUtilities;
 
 /**
  * NodePropertiesDialog contains several static methods which given a property
@@ -76,8 +78,7 @@ import com.clt.util.StringTools;
  */
 public class NodePropertiesDialog extends JDialog {
 
-    public static final String 
-            LAST_TAB = "__last_tab__", 
+    public static final String LAST_TAB = "__last_tab__",
             LAST_POSITION = "__last_position__",
             LAST_SIZE = "__last_size__";
 
@@ -345,8 +346,8 @@ public class NodePropertiesDialog extends JDialog {
 
         // creating a panel for the "delete" and "new" buttons
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        final JButton deleteButton = new CmdButton(() ->
-                model.deleteRows(table.getSelectedRows()), Resources.getString("Delete")
+        final JButton deleteButton = new CmdButton(()
+                -> model.deleteRows(table.getSelectedRows()), Resources.getString("Delete")
         );
         buttons.add(deleteButton);
         deleteButton.setEnabled(table.getSelectedRow() >= 0);
@@ -424,9 +425,9 @@ public class NodePropertiesDialog extends JDialog {
         f.addKeyListener(NodePropertiesDialog.cancelAction);
         return f;
     }
-    
+
     public static JComboBox createComboBox(final Map<String, Object> properties, final String key, final Object[] values) {
-         return NodePropertiesDialog.createComboBox(properties, key, Arrays.asList(values));
+        return NodePropertiesDialog.createComboBox(properties, key, Arrays.asList(values));
     }
 
     public static JComboBox createComboBox(final Map<String, Object> properties, final String key, final Collection<?> values) {
@@ -443,6 +444,8 @@ public class NodePropertiesDialog extends JDialog {
         }
 
         cb.addActionListener(evt -> {
+            System.err.println("CHANGE"); // AKAKAK
+
             Object o = cb.getSelectedItem(); // may be null if "values"
             // is empty
             if (o != null) {
@@ -451,14 +454,14 @@ public class NodePropertiesDialog extends JDialog {
         });
         return cb;
     }
-    
+
     /**
      * Creates a combobox that manages an int property from its values.
-     * 
+     *
      * @param properties
      * @param key
      * @param values
-     * @return 
+     * @return
      */
     public static JComboBox createIntComboBox(final Map<String, Object> properties, final String key, final Collection<?> values) {
         final JComboBox cb = new JComboBox(new Vector<Object>(values));
@@ -466,8 +469,8 @@ public class NodePropertiesDialog extends JDialog {
         int width = Math.min(240, Math.max(minWidth, cb.getPreferredSize().width));
         cb.setPreferredSize(new Dimension(width, cb.getPreferredSize().height));
         cb.setMinimumSize(new Dimension(minWidth, cb.getPreferredSize().height));
-        
-        Object k = properties.get(key);        
+
+        Object k = properties.get(key);
         if ((k != null) && k instanceof Integer) {
             cb.setSelectedIndex((Integer) k);
         } else {
@@ -478,6 +481,7 @@ public class NodePropertiesDialog extends JDialog {
             int index = cb.getSelectedIndex();
             properties.put(key, index);
         });
+
         return cb;
     }
 
@@ -674,9 +678,11 @@ public class NodePropertiesDialog extends JDialog {
         });
 
         this.addWindowListener(new WindowListener() {
-            public void windowActivated(WindowEvent e) { }
+            public void windowActivated(WindowEvent e) {
+            }
 
-            public void windowClosed(WindowEvent e) { }
+            public void windowClosed(WindowEvent e) {
+            }
 
             public void windowClosing(WindowEvent e) {
                 if (_propertiesChanged) {
@@ -707,13 +713,17 @@ public class NodePropertiesDialog extends JDialog {
                 }
             }
 
-            public void windowDeactivated(WindowEvent e) { }
+            public void windowDeactivated(WindowEvent e) {
+            }
 
-            public void windowDeiconified(WindowEvent e) { }
+            public void windowDeiconified(WindowEvent e) {
+            }
 
-            public void windowIconified(WindowEvent e) { }
+            public void windowIconified(WindowEvent e) {
+            }
 
-            public void windowOpened(WindowEvent e) { }
+            public void windowOpened(WindowEvent e) {
+            }
         });
 
         GUI.setDefaultButtons(this, okButton, this.cancelButton);
