@@ -257,10 +257,11 @@ public class FileChooser {
       chooser.setDialogTitle(title == null ? GUI.getString("OpenFile") : title);
       chooser.setApproveButtonText(GUI.getString("Choose"));
       if (this.filter != null) {
-        chooser.setFileFilter(this.filter);
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
+        chooser.addChoosableFileFilter(this.filter);
+        //chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setAcceptAllFileFilterUsed(true);
+        chooser.setFileFilter(this.filter);
       }
       if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
         return null;
