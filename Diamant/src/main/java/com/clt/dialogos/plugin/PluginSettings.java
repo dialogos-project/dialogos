@@ -27,10 +27,11 @@ public abstract class PluginSettings {
 
     /**
      * Writes settings to the graph file. This method is called whenever
-     * DialogOS saves the graph to a file. You can implement this method
-     * to save persistent information in this file. Use {@link Graph#printAtt(com.clt.xml.XMLWriter, java.lang.String, java.lang.Integer) }
+     * DialogOS saves the graph to a file. You can implement this method to save
+     * persistent information in this file. Use {@link Graph#printAtt(com.clt.xml.XMLWriter, java.lang.String, java.lang.Integer)
+     * }
      * and its sister methods for writing to the XMLWriter conveniently.
-     * 
+     *
      * Write these settings to XML
      */
     public abstract void writeAttributes(XMLWriter out, IdMap uidMap);
@@ -69,31 +70,30 @@ public abstract class PluginSettings {
                             }
                         });
                     } else {
-            PluginSettings.this.readAttribute(r, n, atts.getValue("value"), uid_map);
-          }
-        } else {
-          readOtherXML(r, name, atts, uid_map);
-        }
-      }
-    });
-  }
+                        PluginSettings.this.readAttribute(r, n, atts.getValue("value"), uid_map);
+                    }
+                } else {
+                    readOtherXML(r, name, atts, uid_map);
+                }
+            }
+        });
+    }
 
+    /**
+     * Reads a setting from a graph file. This method is called whenever
+     * DialogOS loads a previously saved graph from a file. It is called
+     * individually for each attribute that you saved with the writeAttributes
+     * method. The name of the attribute is "name"; its value is "value".
+     */
+    protected abstract void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException;
 
-  /**
-   * Reads a setting from a graph file. This method is called whenever
-   * DialogOS loads a previously saved graph from a file. It is called
-   * individually for each attribute that you saved with the writeAttributes
-   * method. The name of the attribute is "name"; its value is "value".
-   */
-  protected abstract void readAttribute(XMLReader r, String name, String value, IdMap uid_map)
-      throws SAXException;
-
-  /**
-   * override this operation if you need to deal with more than just name-value pairs
-   */
-  protected void readOtherXML(XMLReader r, String name, Attributes atts, IdMap uid_map) throws SAXException {
-    throw new RuntimeException(new IOException("weird xml, did not expect " + name + " here."));
-  }
+    /**
+     * override this operation if you need to deal with more than just
+     * name-value pairs
+     */
+    protected void readOtherXML(XMLReader r, String name, Attributes atts, IdMap uid_map) throws SAXException {
+        throw new RuntimeException(new IOException("weird xml, did not expect " + name + " here."));
+    }
 
     /**
      * Creates an editor component to configure the plug-in.
@@ -102,13 +102,9 @@ public abstract class PluginSettings {
      */
     public abstract JComponent createEditor();
 
-    public final PluginRuntime initializeRuntime(Component parent, WozInterface comm)
-            throws Exception {
-
+    public final PluginRuntime initializeRuntime(Component parent, WozInterface comm) throws Exception {
         PluginRuntime runtime = this.createRuntime(parent);
-
         this.runtimes.put(comm, runtime);
-
         return runtime;
     }
 

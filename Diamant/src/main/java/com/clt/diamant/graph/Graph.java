@@ -63,7 +63,6 @@ import com.clt.script.exp.Expression;
 import com.clt.script.exp.Pattern;
 import com.clt.script.exp.Type;
 import com.clt.script.exp.Value;
-import com.clt.script.exp.values.StringValue;
 import com.clt.undo.AbstractEdit;
 import com.clt.undo.Undo;
 import com.clt.util.StringTools;
@@ -1219,22 +1218,33 @@ public class Graph implements IdentityObject {
         }
     }
 
-    private static void printAtt(XMLWriter out, String type, String name,
-            Object value,
-            boolean close) {
+    private static void printAtt(XMLWriter out, String type, String name, Object value,  boolean close) {
         if (close) {
-            out.printElement("att", new String[]{"name", "type", "value"},
-                    new Object[]{name,
-                        type, value}, null);
+            out.printElement("att", 
+                    new String[]{"name", "type", "value"},
+                    new Object[]{name, type, value}, 
+                    null);
         } else {
-            out.openElement("att", new String[]{"name", "type", "value"},
-                    new Object[]{name,
-                        type, value});
+            out.openElement("att", 
+                    new String[]{"name", "type", "value"},
+                    new Object[]{name, type, value});
         }
     }
 
-    public static void printAtt(XMLWriter out, String type, String name,
-            Object value) {
+    /**
+     * Prints an XML "att" element to the XMLWriter. If value is non-null,
+     * this value is printed as the value attribute in this element,
+     * and the "att" element is closed immediately.
+     * Otherwise, an "att" element with the given name and type is opened,
+     * so it can receive sub-elements. It must then later be closed by
+     * calling {@link XMLWriter#closeElement(java.lang.String) }.
+     * 
+     * @param out
+     * @param type
+     * @param name
+     * @param value 
+     */
+    public static void printAtt(XMLWriter out, String type, String name, Object value) {
         Graph.printAtt(out, type, name, value, value != null);
     }
 

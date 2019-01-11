@@ -437,15 +437,16 @@ public class NodePropertiesDialog extends JDialog {
         cb.setPreferredSize(new Dimension(width, cb.getPreferredSize().height));
         cb.setMinimumSize(new Dimension(minWidth, cb.getPreferredSize().height));
         Object k = properties.get(key);
-        if ((k != null) && values.contains(k)) {
-            cb.setSelectedItem(k);
-        } else {
-            cb.setSelectedItem(null);
-        }
+
+        SwingUtilities.invokeLater(() -> {
+            if ((k != null) && values.contains(k)) {
+                cb.setSelectedItem(k);
+            } else {
+                cb.setSelectedItem(null);
+            }
+        });
 
         cb.addActionListener(evt -> {
-            System.err.println("CHANGE"); // AKAKAK
-
             Object o = cb.getSelectedItem(); // may be null if "values"
             // is empty
             if (o != null) {
@@ -471,12 +472,14 @@ public class NodePropertiesDialog extends JDialog {
         cb.setMinimumSize(new Dimension(minWidth, cb.getPreferredSize().height));
 
         Object k = properties.get(key);
-        if ((k != null) && k instanceof Integer) {
-            cb.setSelectedIndex((Integer) k);
-        } else {
-            cb.setSelectedIndex(0);
-        }
-
+        SwingUtilities.invokeLater(() -> {
+            if ((k != null) && k instanceof Integer) {
+                cb.setSelectedIndex((Integer) k);
+            } else {
+                cb.setSelectedIndex(0);
+            }
+        });
+        
         cb.addActionListener(evt -> {
             int index = cb.getSelectedIndex();
             properties.put(key, index);
