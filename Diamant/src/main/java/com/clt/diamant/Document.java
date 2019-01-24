@@ -96,7 +96,7 @@ public abstract class Document {
     /**
      * Saves this Document to a file. If isFullSave is set to true, this will
      * also clear the document's dirty status and set the window title to the
-     * new filename. This is useful e.g. for the File -> Save menu item and its
+     * new filename. This is useful e.g. for the File -&gt; Save menu item and its
      * relatives. Alternatively, if you only want to save a copy of the Document
      * to a file without a noticeable change to the user, use this method with
      * isFullSave=false.

@@ -340,7 +340,7 @@ public class Graph implements IdentityObject {
 
     /**
      * Returns the dialog graph into the state in which it was before a previous
-     * call to {@link #suspend(com.clt.diamant.graph.Node) }. Execution of the
+     * call to  {@link #suspend(com.clt.diamant.graph.Node, java.lang.Object) }. Execution of the
      * dialog can then be resumed by calling
      * {@link #execute(com.clt.diamant.WozInterface, com.clt.diamant.InputCenter, com.clt.diamant.ExecutionLogger) }.
      *

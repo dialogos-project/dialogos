@@ -49,8 +49,8 @@ public abstract class Value {
     }
 
     /**
-     * Converts this Value into a Java object (IntValue -> Integer;
-     * StringValue -> String; etc.).
+     * Converts this Value into a Java object (IntValue to Integer;
+     * StringValue to String; etc.).
      *
      * @return object with readable value
      */
