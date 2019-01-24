@@ -1,6 +1,10 @@
-**Version 2.0.6, unreleased**
 
-- The execution of a dialog can now be suspended and later resumed. This is important for running DialogOS dialogs from the context of Amazon Alexa and other webservices.
+**Version 2.1.0, 24 January 2019**
+
+Released by @alexanderkoller and @akoehn
+
+- Added plugin that compiles DialogOS dialogs into skills for Amazon Alexa.
+- Added plugin that allows DialogOS to control Lego Mindstorms EV3 robots.
 
 
 **Version 2.0.5, 2 January 2019**
