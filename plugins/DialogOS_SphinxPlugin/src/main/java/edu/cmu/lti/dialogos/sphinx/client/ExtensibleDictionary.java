@@ -17,8 +17,8 @@ public class ExtensibleDictionary extends TextDictionary {
         try {
             URL.setURLStreamHandlerFactory(protocol -> "data".equals(protocol) ? new DataStreamHandler() : null);
         } catch (Error e) {
-            System.err.println("ExtensibleDictionary");
             if (!"factory already defined".equals(e.getMessage())) {
+                System.err.println("ExtensibleDictionary");
                 throw e;
             }
         }
@@ -36,16 +36,16 @@ public class ExtensibleDictionary extends TextDictionary {
 
     public void loadExceptions(List<G2PEntry> g2pList) throws IOException {
         if (!g2pList.isEmpty()) {
-            StringBuilder sb = new StringBuilder("data:");
+            StringBuilder sb = new StringBuilder();
             for (G2PEntry e : g2pList) {
                 sb.append(e.getGraphemes());
                 sb.append(" ");
                 sb.append(e.getPhonemes());
                 sb.append("\n");
             }
-            System.err.println(sb.toString());
             addendaUrlList.clear();
-            addendaUrlList.add(new URL(sb.toString()));
+            //System.err.println("after encoding, data is: " + DataURLHelper.encodeData(sb.toString()));
+            addendaUrlList.add(new URL(DataURLHelper.encodeData(sb.toString())));
         }
     }
 
