@@ -118,7 +118,9 @@ public class Settings extends PluginSettings {
             r.setHandler(new AbstractHandler("g2p") {
                 @Override
                 protected void start(String name, Attributes atts) throws SAXException {
-                    sls.getG2PList().add(new G2PEntry(atts.getValue("g"), atts.getValue("p")));
+                    G2PEntry entry = new G2PEntry(atts.getValue("g"), atts.getValue("p"));
+                    if (!sls.getG2PList().contains(entry))
+                        sls.getG2PList().add(entry);
                 }
             });
         } else {
