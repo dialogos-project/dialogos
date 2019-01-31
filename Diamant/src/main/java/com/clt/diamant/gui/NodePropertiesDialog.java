@@ -438,6 +438,14 @@ public class NodePropertiesDialog extends JDialog {
         cb.setMinimumSize(new Dimension(minWidth, cb.getPreferredSize().height));
         Object k = properties.get(key);
 
+        cb.addActionListener(evt -> {
+            Object o = cb.getSelectedItem(); // may be null if "values" is empty
+            
+            if (o != null) {
+                properties.put(key, o);
+            }
+        });
+
         SwingUtilities.invokeLater(() -> {
             if ((k != null) && values.contains(k)) {
                 cb.setSelectedItem(k);
@@ -446,13 +454,6 @@ public class NodePropertiesDialog extends JDialog {
             }
         });
 
-        cb.addActionListener(evt -> {
-            Object o = cb.getSelectedItem(); // may be null if "values"
-            // is empty
-            if (o != null) {
-                properties.put(key, o);
-            }
-        });
         return cb;
     }
 

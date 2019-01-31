@@ -77,29 +77,6 @@ public class GroovyVariable extends AbstractVariable<Object,String> {
     public String toDetailedString() {
         return String.format("<GroovyVar[%s:%s:%s] %s>", getId(), getName(), type, getValue());
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final GroovyVariable other = (GroovyVariable) obj;
-        if (!Objects.equals(this.type, other.type)) {
-            return false;
-        }
-        if (!Objects.equals(this.value, other.value)) {
-            return false;
-        }
-        return true;
-    }
-    
-    
     
     @Override
     public JsonElement toJsonElement() {

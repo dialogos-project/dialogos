@@ -24,7 +24,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import java.util.Objects;
 
 /**
  * A class to save variables.
@@ -183,31 +182,7 @@ public class Slot extends AbstractVariable<Value, Type> {
     public String toDetailedString() {
         return String.format("<Slot[%s:%s:%s]: %s>", getId(), getName(), type, getValue());
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Slot other = (Slot) obj;
-        if (!Objects.equals(this.initValue, other.initValue)) {
-            return false;
-        }
-        if (!Objects.equals(this.type, other.type)) {
-            return false;
-        }
-        if (!Objects.equals(this.instances, other.instances)) {
-            return false;
-        }
-        return true;
-    }
-
+    
     @Override
     public JsonElement toJsonElement() {
         GsonBuilder gb = new GsonBuilder();

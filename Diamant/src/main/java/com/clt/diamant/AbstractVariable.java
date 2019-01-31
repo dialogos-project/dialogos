@@ -9,6 +9,7 @@ import com.clt.xml.XMLWriter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.util.Objects;
 import javax.swing.event.ChangeEvent;
 
 /**
@@ -18,9 +19,9 @@ import javax.swing.event.ChangeEvent;
  */
 public abstract class AbstractVariable<ValueClass, TypeClass> implements IdentityObject {
 
-    private String id;
-    private String name;
-    private boolean export;
+    protected String id;
+    protected String name;
+    protected boolean export;
 
     private List<ChangeListener> listeners;
 
@@ -203,4 +204,35 @@ public abstract class AbstractVariable<ValueClass, TypeClass> implements Identit
             super(message);
         }
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 83 * hash + Objects.hashCode(this.id);
+        hash = 83 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractVariable<?, ?> other = (AbstractVariable<?, ?>) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

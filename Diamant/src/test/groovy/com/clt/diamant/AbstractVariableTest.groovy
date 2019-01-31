@@ -127,6 +127,8 @@ class AbstractVariableTest {
         AbstractVariable decoded = AbstractVariable.fromJson(encoded);
         
         assert x == decoded : "expected " + x.toDetailedString() + ", but got " + decoded.toDetailedString()
+        assert x.getValue() == decoded.getValue() : String.format("expected value %s, but got %s", x.getValue().toString(), decoded.getValue().getString())
+        
     }
 }
 
