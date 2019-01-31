@@ -13,12 +13,11 @@ import edu.cmu.sphinx.linguist.dflat.DynamicFlatLinguist;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import static com.clt.srgf.Grammar.Format.JSGF;
 import static com.clt.srgf.Grammar.Format.JSGFwithGarbage;
+import static edu.cmu.lti.dialogos.sphinx.client.DataURLHelper.encodeData;
 
 /**
  * Created by timo on 13.10.17.
@@ -106,17 +105,6 @@ public class SphinxContext extends RecognitionContext {
             e.printStackTrace();
             throw new SpeechException(e);
         }
-    }
-
-    private static String encodeData(String data) {
-        String s = null;
-        data = data.replaceAll("\\+", "%2B");
-        try {
-            s = "data:" + URLEncoder.encode(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            s = "data:" + data; // let's try without encoding then...
-        }
-        return s;
     }
 
     @Override
