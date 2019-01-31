@@ -1,4 +1,8 @@
 
+**Version 2.1.1, unreleased**
+
+- Fixed bug in dialogos-distribution where gson failed to be bundled with distribution (see #157).
+
 **Version 2.1.0, 24 January 2019**
 
 Released by @alexanderkoller and @akoehn
