@@ -539,10 +539,8 @@ public class Graph implements IdentityObject {
     }
 
     public void add(Node n) {
-
-        this.nodes.add(n);
-
         n.setGraph(this);
+        this.nodes.add(n);
 
         for (GraphListener l : this.graphListeners) {
             l.elementAdded(this, n);
