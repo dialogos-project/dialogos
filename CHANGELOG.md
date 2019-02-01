@@ -4,7 +4,7 @@
 - Fixed bug in dialogos-distribution where gson failed to be bundled with distribution (see #157).
 - Fixed bug in EV3 plugin where dialog would crash if the EV3 dummy implementation was selected (see #159).
 - Fixed bug where test-variable node could not distinguish between different variables (see #162).
-- Fixed bug with pronunciations (see #121).
+- Fixed bug with pronunciations (see #121 and #165).
 
 **Version 2.1.0, 24 January 2019**
 
