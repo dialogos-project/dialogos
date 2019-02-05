@@ -77,6 +77,33 @@ public class SphinxTest {
         assertEquals(urlContent, plainUrlGramResult);
     }
 
+    /** test our data URL type with content up to 2MB in size */
+    @Test(timeout = 120000) public void testVeryLongDataURL() throws IOException {
+        String urlBase = "someverylongtextthathappenstobeexactly64charactersintotallength.";
+        String perIteration = "";
+        for (int i = 0; i < 64; i++) {
+            perIteration += urlBase;
+        }
+        String urlContent = "";
+        for (int i = 1; i <= 256; i++) {
+            urlContent += perIteration;
+            String urlText = "data:text/plain;base64," + DatatypeConverter.printBase64Binary(urlContent.getBytes(StandardCharsets.UTF_8));
+            URL url = new URL(null, urlText, new DataStreamHandler());
+            String urlResult = IOUtils.toString(url, StandardCharsets.UTF_8);
+            assertEquals("failing similarity test for size " + (i * 8), urlContent, urlResult);
+            // test that a trailing "/.gram" does not change the outcome (this is special behaviour needed to workaround Sphinx
+            urlText = "data:text/plain;base64," + DatatypeConverter.printBase64Binary(urlContent.getBytes(StandardCharsets.UTF_8)) + "/.gram";
+            url = new URL(null, urlText, new DataStreamHandler());
+            String urlGramResult = IOUtils.toString(url, StandardCharsets.UTF_8);
+            assertEquals("failing similarity test for size " + (i * 8), urlContent, urlGramResult);
+            // test that no-encoding does not change the outcome
+            urlText = "data:" + urlContent;
+            url = new URL(null, urlText, new DataStreamHandler());
+            String plainUrlGramResult = IOUtils.toString(url, StandardCharsets.UTF_8);
+            assertEquals("failing similarity test for size " + (i * 8), urlContent, plainUrlGramResult);
+        }
+    }
+
     /** test the JSGF parsing in Sphinx via normal and via data-URL-encoding */
     @Test(timeout = 10000) public void testJSGFParser() throws IOException, JSGFGrammarParseException {
         // load a minimal jsgf grammar from file
