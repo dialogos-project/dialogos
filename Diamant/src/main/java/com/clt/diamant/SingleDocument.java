@@ -74,6 +74,7 @@ import com.clt.xml.Base64;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 import java.io.InputStream;
+import java.util.stream.Collectors;
 
 public class SingleDocument extends Document implements GraphOwner {
 
@@ -362,9 +363,12 @@ public class SingleDocument extends Document implements GraphOwner {
         LongAction init = new DefaultLongAction(Resources.getString("InitializingModel")) {
             @Override
             protected void run(ProgressListener l) throws Exception {
+                Set<Class<? extends Node>> nodeTypes = graph.getNodes().stream().map(Node::getClass).collect(Collectors.toSet());
                 for (Plugin plugin : PluginLoader.getPlugins()) {
                     Class<? extends Plugin> c = plugin.getClass();
-                    SingleDocument.this.getPluginSettings(c).initializeRuntime(d, transition);
+                    PluginSettings plSettings = SingleDocument.this.getPluginSettings(c);
+                    if (plSettings.isRelevantForNodes(nodeTypes))
+                            plSettings.initializeRuntime(d, transition);
                 }
             }
         };
@@ -911,7 +915,7 @@ public class SingleDocument extends Document implements GraphOwner {
 
                         if (!(args[0] instanceof DeviceValue)) {
                             throw new EvaluationException(
-                                    "Wrong type of arguments in call to function isCOnnected()");
+                                    "Wrong type of arguments in call to function isConnected()");
                         }
                         DeviceValue d = (DeviceValue) args[0];
                         return new BoolValue(

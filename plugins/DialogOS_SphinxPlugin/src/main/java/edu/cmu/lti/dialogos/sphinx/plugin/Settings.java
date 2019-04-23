@@ -4,6 +4,7 @@ import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
 import com.clt.diamant.graph.Graph;
+import com.clt.diamant.graph.Node;
 import com.clt.properties.DefaultBooleanProperty;
 import com.clt.properties.DefaultEnumProperty;
 import com.clt.properties.Property;
@@ -166,6 +167,11 @@ public class Settings extends PluginSettings {
         superpanel.add(p, BorderLayout.NORTH);
         
         return superpanel;
+    }
+
+    @Override
+    public boolean isRelevantForNodes(Set<Class<? extends Node>> nodeTypes) {
+        return nodeTypes.contains(SphinxNode.class);
     }
 
 }

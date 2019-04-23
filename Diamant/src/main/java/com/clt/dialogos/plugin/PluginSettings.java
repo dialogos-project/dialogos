@@ -4,9 +4,11 @@ import java.awt.Component;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JComponent;
 
+import com.clt.diamant.graph.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -109,17 +111,19 @@ public abstract class PluginSettings {
     }
 
     public PluginRuntime getRuntime(WozInterface comm) {
-
         return this.runtimes.get(comm);
     }
 
     public void disposeRuntime(WozInterface comm) {
-
         PluginRuntime runtime = this.runtimes.get(comm);
         if (runtime != null) {
             runtime.dispose();
             this.runtimes.remove(comm);
         }
+    }
+
+    public boolean isRelevantForNodes(Set<Class<? extends Node>> nodeTypes) {
+        return true;
     }
 
     protected abstract PluginRuntime createRuntime(Component parent) throws Exception;
