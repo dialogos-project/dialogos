@@ -114,7 +114,7 @@ public abstract class PluginSettings {
         return this.runtimes.get(comm);
     }
 
-    public void disposeRuntime(WozInterface comm) {
+    public synchronized void disposeRuntime(WozInterface comm) {
         PluginRuntime runtime = this.runtimes.get(comm);
         if (runtime != null) {
             runtime.dispose();
