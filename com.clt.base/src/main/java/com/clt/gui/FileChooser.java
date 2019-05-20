@@ -82,61 +82,69 @@ public class FileChooser {
 
   public File standardGetFile(Component parent, String title) {
     if (FileChooser.useSystemFileChooser) {
-      FileDialog chooser =
-        new FileDialog(FileChooser.awtparent, Platform.isMac() ? null
-                    : (title == null ? GUI.getString("OpenFile") : title),
-          FileDialog.LOAD);
-      WindowUtils.installModalDialog(FileChooser.awtparent);
-      chooser.setDirectory(this.currentdir.getPath());
-      chooser.setVisible(true);
-      String file = chooser.getFile(), dir = chooser.getDirectory();
-      chooser.dispose();
-      WindowUtils.deinstallModalDialog(FileChooser.awtparent);
-
-      if ((file != null) && Platform.isMac()) {
-        // Fix a bug in the MacOS X GM FileDialog, where paths are
-        // returned as UTF.
-        if (!new File(dir, file).exists()) {
-          try {
-            String newfile = new String(file.getBytes(), "UTF8"), newdir = null;
-            if (dir != null) {
-              newdir = new String(dir.getBytes(), "UTF8");
-            }
-            if (new File(newdir, newfile).exists()) {
-              // Only change the file, if the original was not
-              // found
-              // but the UTF decoded file exists.
-              file = newfile;
-              dir = newdir;
-            }
-          } catch (UnsupportedEncodingException ignore) {
-            // UTF8 should always be supported.
-            // Simply ignore errors, this is a historical workaround anyways.
-          }
-        }
-      }
-      if (dir != null) {
-        this.currentdir = new File(dir);
-      }
-      return (file == null ? null : new File(dir, file));
+      return builtinGetFile(title);
     }
     else {
-      NativeJFileChooser chooser = new NativeJFileChooser(this.currentdir);
-      chooser.setDialogTitle(title == null ? GUI.getString("OpenFile") : title);
-      if (this.filter != null) {
-        chooser.setFileFilter(this.filter);
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setAcceptAllFileFilterUsed(true);
-      }
-      if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
-        return null;
-      }
-      else {
-        this.currentdir = chooser.getCurrentDirectory();
-        return chooser.getSelectedFile();
+      try {
+        NativeJFileChooser chooser = new NativeJFileChooser(this.currentdir);
+        chooser.setDialogTitle(title == null ? GUI.getString("OpenFile") : title);
+        if (this.filter != null) {
+          chooser.setFileFilter(this.filter);
+          chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
+          chooser.setAcceptAllFileFilterUsed(false);
+          chooser.setAcceptAllFileFilterUsed(true);
+        }
+        if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
+          return null;
+        } else {
+          this.currentdir = chooser.getCurrentDirectory();
+          return chooser.getSelectedFile();
+        }
+      } catch (java.lang.ExceptionInInitializerError e) {
+        return builtinGetFile(title);
       }
     }
+  }
+
+
+  private File builtinGetFile(String title) {
+    FileDialog chooser =
+            new FileDialog(FileChooser.awtparent, Platform.isMac() ? null
+                    : (title == null ? GUI.getString("OpenFile") : title),
+                    FileDialog.LOAD);
+    WindowUtils.installModalDialog(FileChooser.awtparent);
+    chooser.setDirectory(this.currentdir.getPath());
+    chooser.setVisible(true);
+    String file = chooser.getFile(), dir = chooser.getDirectory();
+    chooser.dispose();
+    WindowUtils.deinstallModalDialog(FileChooser.awtparent);
+
+    if ((file != null) && Platform.isMac()) {
+      // Fix a bug in the MacOS X GM FileDialog, where paths are
+      // returned as UTF.
+      if (!new File(dir, file).exists()) {
+        try {
+          String newfile = new String(file.getBytes(), "UTF8"), newdir = null;
+          if (dir != null) {
+            newdir = new String(dir.getBytes(), "UTF8");
+          }
+          if (new File(newdir, newfile).exists()) {
+            // Only change the file, if the original was not
+            // found
+            // but the UTF decoded file exists.
+            file = newfile;
+            dir = newdir;
+          }
+        } catch (UnsupportedEncodingException ignore) {
+          // UTF8 should always be supported.
+          // Simply ignore errors, this is a historical workaround anyways.
+        }
+      }
+    }
+    if (dir != null) {
+      this.currentdir = new File(dir);
+    }
+    return (file == null ? null : new File(dir, file));
   }
 
 

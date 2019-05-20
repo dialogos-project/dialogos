@@ -1,4 +1,8 @@
 
+**Version 2.1.2, unreleased**
+
+- Robustness against JavaFX issues
+
 **Version 2.1.1, unreleased**
 
 - Fixed bug in dialogos-distribution where gson failed to be bundled with distribution (see #157).
