@@ -18,8 +18,6 @@ import java.util.*;
 import java.io.Reader;
 import java.text.MessageFormat;
 
-import com.clt.io.PreprocessingReader;
-
 @SuppressWarnings("unused")
 
 %%
@@ -359,7 +357,7 @@ ABNF="#ABNF"
 
 
 
-{NONNEWLINE_WHITE_SPACE_CHAR}+	{ text(); }
+{NONNEWLINE_WHITE_SPACE_CHAR}	{ text(); }
 {NEWLINE}						{ newline(yytext()); }
 
 .	{
