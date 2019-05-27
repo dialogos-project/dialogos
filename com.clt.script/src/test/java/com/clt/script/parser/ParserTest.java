@@ -14,6 +14,5 @@ public class ParserTest {
         assertTrue(expr.evaluate() instanceof StringValue);
         assertEquals(new StringValue(testString), expr.evaluate());
         assertEquals(testString, ((StringValue) expr.evaluate()).getString());
-        System.err.println(expr);
     }
 }
