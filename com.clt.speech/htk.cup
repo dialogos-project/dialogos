@@ -5,7 +5,7 @@ import java.io.*;
 
 action code{:
 
-	private static MlfNonterminalNode createTree(List<List<MlfNode>> lines, Map<String, Map<List<String>, String>> substitutions) {
+	private MlfNonterminalNode createTree(List<List<MlfNode>> lines, Map<String, Map<List<String>, String>> substitutions) {
 		MlfNode matrix[][] = new MlfNode[lines.size()][];
 		int maxdepth = 0;
 		int size=0;
@@ -39,7 +39,7 @@ action code{:
 		return vroot;
 	}
 	
-	private static void substitute(MlfNode n, Map<String, Map<List<String>, String>> substitutions) {
+	private void substitute(MlfNode n, Map<String, Map<List<String>, String>> substitutions) {
 		if (!apply(n, substitutions)) {
 			for (int i=0; i<n.numChildren(); i++)
 				substitute(n.getChild(i), substitutions);
@@ -47,7 +47,7 @@ action code{:
 	}
 	
 
-	private static boolean apply(MlfNode n, Map<String, Map<List<String>, String>> substitutions) {
+	private boolean apply(MlfNode n, Map<String, Map<List<String>, String>> substitutions) {
 		if (substitutions != null && n instanceof MlfNonterminalNode) {
 			Map<List<String>, String> subs = substitutions.get(n.getLabel());
 			if (subs != null) {

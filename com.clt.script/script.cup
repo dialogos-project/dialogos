@@ -32,26 +32,26 @@ action code {:
 	private Block currentBlock = null;
 	private Tag currentTag = null;
 
-	static <T> List<T> createList() {
+	<T> List<T> createList() {
 		return new Vector<T>();
 	}
 	
-	static <T> List<T> createList(T o) {
+	<T> List<T> createList(T o) {
 		List<T> l = createList();
 		l.add(o);
 		return l;
 	}
 	
-	static <T> List<T> append(List<T> l, T o) {
+	<T> List<T> append(List<T> l, T o) {
 		l.add(o);
 		return l;
 	}
 	
-	static Expression getRValue(final Variable id) {
+	Expression getRValue(final Variable id) {
 		return new IDExpression(id);
 	}
 	
-	static Import createImport(String name) throws ParseException {
+	Import createImport(String name) throws ParseException {
 		boolean ok = name.length() > 0;
 		for (int i=0; ok && i<name.length(); i++) {
 			char c = name.charAt(i);
@@ -71,7 +71,7 @@ action code {:
 			throw new ParseException("Illegal import statement: import " + name + ";");
 	}
 	
-	static Variable createDotRef(final Variable variable, final String label) {
+	Variable createDotRef(final Variable variable, final String label) {
 		return new Variable() {
 			public String getName() {
 				return variable.getName() + "." + label;
@@ -105,7 +105,7 @@ action code {:
 		};
 	}
 	
-	static Variable createAttributeRef(final Variable variable, final String attribute) {
+	Variable createAttributeRef(final Variable variable, final String attribute) {
 		return new Variable() {
 			public String getName() {
 				return variable.getName() + "#" + attribute;
@@ -134,11 +134,11 @@ action code {:
 	}
 
 			
-	static void debug_output(String s) {
+	void debug_output(String s) {
 		//System.out.println(s);
 	}
 	
-	private static class Elements<ElemType> {
+	private class Elements<ElemType> {
 		public List<String> labels;
 		public List<ElemType> values;
 		
