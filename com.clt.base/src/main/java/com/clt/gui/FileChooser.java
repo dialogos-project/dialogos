@@ -100,7 +100,7 @@ public class FileChooser {
           this.currentdir = chooser.getCurrentDirectory();
           return chooser.getSelectedFile();
         }
-      } catch (java.lang.ExceptionInInitializerError e) {
+      } catch (java.lang.Error e) {
         return builtinGetFile(title);
       }
     }
