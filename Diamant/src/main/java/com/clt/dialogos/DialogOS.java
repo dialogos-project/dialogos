@@ -80,6 +80,7 @@ public class DialogOS {
                 execute = true;
             } else if (args[i].equals("-headless")) {
                 headless = true;
+                execute = true;
             } else if (args[i].equals("-clients")) {
                 loadClients = true;
             } else if (args[i].equals("-summarize")) {
@@ -172,11 +173,6 @@ public class DialogOS {
                         System.exit(1);
                     } else if (!initialModel.isFile()) {
                         System.err.println("The specified dialog model does not exist.");
-                        System.exit(1);
-                    }
-
-                    if (!execute) {
-                        System.err.println("You must specify the -execute option with -headless.");
                         System.exit(1);
                     }
 
