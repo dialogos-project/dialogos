@@ -2,9 +2,11 @@ package com.clt.dialogos.plugin;
 
 import java.awt.Component;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.JComponent;
 
@@ -33,7 +35,7 @@ public abstract class PluginSettings {
      * persistent information in this file. Use {@link Graph#printAtt(com.clt.xml.XMLWriter, java.lang.String, java.lang.Integer)
      * }
      * and its sister methods for writing to the XMLWriter conveniently.
-     *
+     * <p>
      * Write these settings to XML
      */
     public abstract void writeAttributes(XMLWriter out, IdMap uidMap);
@@ -120,6 +122,11 @@ public abstract class PluginSettings {
             runtime.dispose();
             this.runtimes.remove(comm);
         }
+    }
+
+    public boolean isRelevantForNodes(Collection<Node> nodes) {
+        Set<Class<? extends Node>> nodeTypes = nodes.stream().map(Node::getClass).collect(Collectors.toSet());
+        return isRelevantForNodes(nodeTypes);
     }
 
     public boolean isRelevantForNodes(Set<Class<? extends Node>> nodeTypes) {

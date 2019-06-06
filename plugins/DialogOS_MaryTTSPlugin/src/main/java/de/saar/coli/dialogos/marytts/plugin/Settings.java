@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -15,6 +16,7 @@ import javax.swing.JPanel;
 import com.clt.dialogos.plugin.PluginRuntime;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.IdMap;
+import com.clt.diamant.graph.Node;
 import com.clt.gui.GUI;
 import com.clt.gui.OptionPane;
 import com.clt.properties.DefaultEnumProperty;
@@ -148,6 +150,11 @@ public class Settings extends PluginSettings {
     @Override
     protected void readAttribute(XMLReader r, String name, String value, IdMap uidMap) {
         // nothing to be read
+    }
+
+    @Override
+    public boolean isRelevantForNodes(Set<Class<? extends Node>> nodeTypes) {
+        return nodeTypes.contains(TTSNode.class);
     }
 
     @Override

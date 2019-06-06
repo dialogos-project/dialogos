@@ -74,7 +74,6 @@ import com.clt.xml.Base64;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 import java.io.InputStream;
-import java.util.stream.Collectors;
 
 public class SingleDocument extends Document implements GraphOwner {
 
@@ -363,11 +362,10 @@ public class SingleDocument extends Document implements GraphOwner {
         LongAction init = new DefaultLongAction(Resources.getString("InitializingModel")) {
             @Override
             protected void run(ProgressListener l) throws Exception {
-                Set<Class<? extends Node>> nodeTypes = graph.getNodes().stream().map(Node::getClass).collect(Collectors.toSet());
                 for (Plugin plugin : PluginLoader.getPlugins()) {
                     Class<? extends Plugin> c = plugin.getClass();
                     PluginSettings plSettings = SingleDocument.this.getPluginSettings(c);
-                    if (plSettings.isRelevantForNodes(nodeTypes))
+                    if (plSettings.isRelevantForNodes(graph.getNodes()))
                             plSettings.initializeRuntime(d, transition);
                 }
             }
@@ -579,10 +577,11 @@ public class SingleDocument extends Document implements GraphOwner {
         }
 
         for (Plugin plugin : PluginLoader.getPlugins()) {
-            out.openElement("plugin", new String[]{"type"}, new String[]{plugin
-                .getId()});
-            this.getPluginSettings(plugin.getClass()).writeAttributes(out, uid_map);
-            out.closeElement("plugin");
+            if (getPluginSettings(plugin.getClass()).isRelevantForNodes(this.graph.getNodes())) {
+                out.openElement("plugin", new String[]{"type"}, new String[]{plugin.getId()});
+                this.getPluginSettings(plugin.getClass()).writeAttributes(out, uid_map);
+                out.closeElement("plugin");
+            }
         }
     }
 

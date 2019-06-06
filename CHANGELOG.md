@@ -4,6 +4,14 @@
 - Robustness against JavaFX issues
 - Fixed bug 189 which could lead to issues with Strings missing multiple consecutive whitespaces in DialogOS-script
 - if a file is opened via the commandline, the ProjectStartupWindow is suppressed 
+- the SQL plugin now supports writing to a database
+- Gradle version has been unified and updated to 4.10.3 (in most parts of the project)
+
+- (many) plugins now save their settings to a DialogOS dialog model only if there is a node that is 
+  relevant to the plugin and only those settings are saved that are different from the default settings.
+  WARNING: This change can potentially lead to data loss: imagine you have stored many G2P rules. 
+           If you then save the dialog model that does not contain any SphinxNode, the G2P rules will not
+           be stored in the file (because the plugin assumes that it is not relevant for the given file).
 
 **Version 2.1.1, 26 April 2019**
 
