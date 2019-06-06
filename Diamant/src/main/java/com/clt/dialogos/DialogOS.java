@@ -161,7 +161,7 @@ public class DialogOS {
         // Start built-in clients.
         try {
             final Main app = new Main(appDir);
-
+            boolean executedInitialModel = false;
             try {
                 if (loadClients) {
                     DialogOS.loadBuiltinClients(app, appDir, startupScreen);
@@ -227,23 +227,26 @@ public class DialogOS {
 
                         if (initialModel.isFile()) {
                             final DocumentWindow<?> window = app.openDocument(null, initialModel, progress);
-
                             if (execute) {
                                 if (window instanceof SingleDocumentWindow) {
                                     SwingUtilities.invokeLater(() -> window.doCommand(SingleDocumentWindow.cmdRun));
                                 }
                             }
+                            executedInitialModel = true;
                         } else {
                             OptionPane.error(startupScreen, Resources.format("CouldNotFindFile", initialModel));
                         }
                     }
                 }
+            } catch (Exception e) {
+                System.err.println(e);
+                executedInitialModel = false;
             } finally {
                 if (startupScreen != null) {
                     startupScreen.setVisible(false);
                 }
             }
-            if (!headless) {
+            if (!headless && !executedInitialModel) {
                 app.openApp(null);
             }
 

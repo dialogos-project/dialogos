@@ -105,7 +105,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
     public Main(File appDir) {
         ApplicationUtils.registerEventHandler(this.systemEventHandler);
 
-        if( singletonInstance != null ) {
+        if (singletonInstance != null) {
             throw new RuntimeException("Attempting to open a second instance of singleton class Main.");
         } else {
             singletonInstance = this;

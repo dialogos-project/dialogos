@@ -3,8 +3,9 @@
 
 - Robustness against JavaFX issues
 - Fixed bug 189 which could lead to issues with Strings missing multiple consecutive whitespaces in DialogOS-script
+- if a file is opened via the commandline, the ProjectStartupWindow is suppressed 
 
-**Version 2.1.1, unreleased**
+**Version 2.1.1, 26 April 2019**
 
 - Fixed bug in dialogos-distribution where gson failed to be bundled with distribution (see #157).
 - Fixed bug in EV3 plugin where dialog would crash if the EV3 dummy implementation was selected (see #159).
