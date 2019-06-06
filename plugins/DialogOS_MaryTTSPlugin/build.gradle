@@ -5,9 +5,17 @@ dependencies {
   implementation project(':com.clt.xml')
   implementation project(':com.clt.script')
 
+  implementation group: 'de.dfki.mary', name: 'voice-dfki-prudence-hsmm', version: '5.2'
+  implementation group: 'de.dfki.mary', name: 'voice-dfki-obadiah-hsmm', version: '5.2'
+  implementation group: 'de.dfki.mary', name: 'voice-dfki-spike-hsmm', version: '5.2'
+  implementation group: 'de.dfki.mary', name: 'voice-dfki-poppy-hsmm', version: '5.2'
   implementation group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'     //Englisch,männlich
+  implementation group: 'de.dfki.mary', name: 'voice-cmu-rms-hsmm', version: '5.2'
+  implementation group: 'de.dfki.mary', name: 'voice-cmu-bdl-hsmm', version: '5.2'
+  implementation group: 'de.dfki.mary', name: 'voice-cmu-nk-hsmm', version: '5.2'
   implementation group: 'de.dfki.mary', name: 'voice-bits1-hsmm', version: '5.2'       //Deutsch,weiblich
   implementation group: 'de.dfki.mary', name: 'voice-bits3-hsmm', version: '5.2'       //Deutsch,männlich
+  implementation group: 'de.dfki.mary', name: 'voice-dfki-pavoque-neutral-hsmm', version: '5.2'
   implementation group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2' //Französisch,männlich
 
 }
