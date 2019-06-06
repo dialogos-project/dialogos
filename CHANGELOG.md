@@ -2,6 +2,7 @@
 **Version 2.1.2, unreleased**
 
 - Robustness against JavaFX issues
+- Fixed bug 189 which could lead to issues with Strings missing multiple consecutive whitespaces in DialogOS-script
 
 **Version 2.1.1, unreleased**
 

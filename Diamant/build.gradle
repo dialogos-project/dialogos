@@ -1,7 +1,6 @@
 apply plugin: 'groovy' // for tests; necessary dependencies are included from com.clt.script
 
 dependencies {
-  implementation group: 'org.json', name: 'json', version: '20180130'
   implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
     
   implementation group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.1'
