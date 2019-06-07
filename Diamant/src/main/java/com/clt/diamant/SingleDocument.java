@@ -74,6 +74,7 @@ import com.clt.xml.Base64;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 import java.io.InputStream;
+import java.util.stream.Collectors;
 
 public class SingleDocument extends Document implements GraphOwner {
 
@@ -94,12 +95,7 @@ public class SingleDocument extends Document implements GraphOwner {
         public void start(String name, Attributes atts) throws SAXException {
 
             if (name.equals("att")) {
-                String n = atts.getValue("name");
-                if (n.equals("delay")) {
-                    // ignore
-                } else if (n.equals("executeInSeparateWindows")) {
-                    // ignore
-                }
+                // ignore
             } else if (name.equals("device")) {
                 final String id = atts.getValue("id");
 
@@ -204,17 +200,17 @@ public class SingleDocument extends Document implements GraphOwner {
                 SingleDocument.this.getDevices().add(d);
             } else if (name.equals("plugin")) {
                 String id = atts.getValue("type");
-                try {
-                    for (Plugin plugin : PluginLoader.getPlugins()) {
-                        if (plugin.getId().equals(id)) {
-                            PluginSettings settings
-                                    = SingleDocument.this.getPluginSettings(plugin.getClass());
-                            settings.read(this.r, this.uid_map);
-                            break;
-                        }
+                Map<String,Class> plugins = PluginLoader.getPlugins().stream().
+                        collect(Collectors.toMap(Plugin::getId, Object::getClass));
+                if (plugins.containsKey(id)) {
+                    try {
+                        PluginSettings settings = SingleDocument.this.getPluginSettings(plugins.get(id));
+                        settings.read(this.r, this.uid_map);
+                    } catch (Exception exn) {
+                        this.r.raiseException(exn);
                     }
-                } catch (Exception exn) {
-                    System.err.println(exn);
+                } else {
+                    this.r.raiseException(Resources.format("PluginXNotFound", id));
                 }
             } else if (name.equals("grammar")) {
                 final Grammar g = new Grammar("grammar");
@@ -232,10 +228,13 @@ public class SingleDocument extends Document implements GraphOwner {
                                 StringBuilder s = new StringBuilder((int) grammarFile.length());
                                 Reader in = new BufferedReader(new FileReader(grammarFile));
                                 char c;
-                                while ((c = (char) in.read()) != -1) {
-                                    s.append(c);
+                                try {
+                                    while ((c = (char) in.read()) != -1) {
+                                        s.append(c);
+                                    }
+                                } finally {
+                                    in.close();
                                 }
-                                in.close();
                                 g.setGrammar(s.toString());
                             } catch (Exception exn) {
                                 // dabo: die Warnings muessen anders
@@ -262,7 +261,7 @@ public class SingleDocument extends Document implements GraphOwner {
 
         public void end(String name) {
 
-            if (name.equals(SingleDocument.this.getDocumentType().toLowerCase())) {
+            if (name.equalsIgnoreCase(SingleDocument.this.getDocumentType())) {
                 this.r.addCompletionRoutine(new Runnable() {
 
                     public void run() {
@@ -537,6 +536,7 @@ public class SingleDocument extends Document implements GraphOwner {
         r.setHandler(new DeviceXMLHandler(this.getDocumentType().toLowerCase(), graph, new IdMap(), r));
     }
 
+    @Override
     public void validate(Collection<SearchResult> errors, ProgressListener progress) {
         super.validate(errors, progress);
         this.graph.validate(errors, progress);
