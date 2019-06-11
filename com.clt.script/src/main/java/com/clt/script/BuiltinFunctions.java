@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
+import com.clt.script.cmd.ExecutionException;
 import com.clt.script.exp.EvaluationException;
 import com.clt.script.exp.Value;
 import com.clt.script.exp.values.BoolValue;
@@ -777,8 +777,12 @@ public class BuiltinFunctions {
                 msg[i] = message[i].toString();
             }
         }
-
-        JOptionPane.showMessageDialog(null, msg);
+        try {
+            SwingUtilities.invokeAndWait(() ->
+            JOptionPane.showMessageDialog(null, msg));
+        } catch (Exception e) {
+            throw new ExecutionException(e.toString());
+        }
     }
 
     public static void error(StringValue message) {
