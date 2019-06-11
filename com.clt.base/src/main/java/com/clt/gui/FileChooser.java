@@ -17,7 +17,7 @@ import com.clt.util.Platform;
 
 public class FileChooser {
 
-  public static boolean useSystemFileChooser = false;
+  public static boolean useSystemFileChooser = true;
 
   private static Frame awtparent;
 
@@ -70,11 +70,6 @@ public class FileChooser {
   // Datei laden
   // **************************************************************************************************************
 
-  public File standardGetFile() {
-    return this.standardGetFile(null);
-  }
-
-
   public File standardGetFile(Component parent) {
     return this.standardGetFile(parent, null);
   }
@@ -105,7 +100,6 @@ public class FileChooser {
       }
     }
   }
-
 
   private File builtinGetFile(String title) {
     FileDialog chooser =
@@ -147,153 +141,9 @@ public class FileChooser {
     return (file == null ? null : new File(dir, file));
   }
 
-
-  public File standardGetFileOrFolder(Component parent, String title) {
-    JFileChooser chooser = new NativeJFileChooser(this.currentdir);
-    chooser.setDialogTitle(title == null ? GUI.getString("OpenFile") : title);
-    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-    if (this.filter != null) {
-      chooser.setFileFilter(this.filter);
-    }
-    if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
-      return null;
-    }
-    else {
-      this.currentdir = chooser.getCurrentDirectory();
-      return chooser.getSelectedFile();
-    }
-  }
-
-
-  // **************************************************************************************************************
-  // Verzeichnis laden
-  // **************************************************************************************************************
-
-  private boolean supportsFolderChooser() {
-    if (Platform.isMac()) {
-      try {
-        new FileDialog(FileChooser.awtparent, "Test", 3).dispose();
-        return true;
-      } catch (Exception exn) {
-        return false;
-      }
-    }
-    else {
-      return false;
-    }
-  }
-
-
-  public File standardGetDir() {
-    return this.standardGetDir(null);
-  }
-
-
-  public File standardGetDir(Component parent) {
-    return this.standardGetDir(parent, null);
-  }
-
-
-  public File standardGetDir(Component parent, String title) {
-    // Der AWT FolderChooser funktioniert nur auf dem Mac (type = 3)
-    if (FileChooser.useSystemFileChooser && this.supportsFolderChooser()) {
-      FileDialog chooser =
-        new FileDialog(
-          FileChooser.awtparent,
-          Platform.isMac()
-            ? null
-                    : (title == null ? GUI.getString("ChooseDirectory") : title),
-          3);
-      WindowUtils.installModalDialog(FileChooser.awtparent);
-      if (Platform.isMac()) {
-        chooser.setFile(null);
-        chooser.setDirectory(null);
-      }
-      else {
-        chooser.setDirectory(this.currentdir.getPath());
-      }
-      chooser.setVisible(true);
-      String file = chooser.getFile(), dir = chooser.getDirectory();
-      chooser.dispose();
-      WindowUtils.deinstallModalDialog(FileChooser.awtparent);
-
-      if ((file == null) && (dir != null) && Platform.isMac()) {
-        // Fix for the fact, that HFS dirs on Mac OS X are
-        // sometimes returned in the 'dir' field with an empty file
-        // field
-        File ff = new File(dir);
-        file = ff.getName();
-        dir = ff.getParent();
-      }
-
-      if ((file != null) && Platform.isMac()) {
-        // Fix a bug in the MacOS X GM FileDialog, where paths are
-        // returned as UTF.
-        if (!new File(dir, file).exists()) {
-          try {
-            String newfile = new String(file.getBytes(), "UTF8"), newdir = null;
-            if (dir != null) {
-              newdir = new String(dir.getBytes(), "UTF8");
-            }
-            if (new File(newdir, newfile).exists()) {
-              // Only change the file, if the original was not
-              // found
-              // but the UTF decoded file exists.
-              file = newfile;
-              dir = newdir;
-            }
-          } catch (UnsupportedEncodingException exn) {
-            // UTF8 should always be supported.
-            // Simply ignore errors, this is a historical workaround anyways.
-          }
-        }
-      }
-      if (dir != null) {
-        this.currentdir = new File(dir);
-      }
-      if (file == null) {
-        return null;
-      }
-      else {
-        File f = new File(dir, file);
-        return f.isDirectory() ? f : new File(dir);
-      }
-    }
-    else {
-      JFileChooser chooser = new SwingFileChooser(this.currentdir);
-      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      chooser.setDialogTitle(title == null ? GUI.getString("OpenFile") : title);
-      chooser.setApproveButtonText(GUI.getString("Choose"));
-      if (this.filter != null) {
-        chooser.setFileFilter(this.filter);
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setAcceptAllFileFilterUsed(true);
-      }
-      if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
-        return null;
-      }
-      else {
-        this.currentdir = chooser.getCurrentDirectory();
-        return chooser.getSelectedFile();
-      }
-    }
-  }
-
-
   // **************************************************************************************************************
   // Datei speichern
   // **************************************************************************************************************
-
-  public File standardPutFile() {
-    return this.standardPutFile(null);
-  }
-
-
-  public File standardPutFile(String filename) {
-    return this.standardPutFile(null, filename);
-  }
-
 
   public File standardPutFile(Component parent, String filename) {
     return this.standardPutFile(parent, filename, null);
@@ -302,45 +152,52 @@ public class FileChooser {
 
   public File standardPutFile(Component parent, String filename, String title) {
     if (FileChooser.useSystemFileChooser) {
-      FileDialog chooser =
-        new FileDialog(FileChooser.awtparent, title == null ? GUI
-          .getString("SaveAs")
-                    : title, FileDialog.SAVE);
-      WindowUtils.installModalDialog(FileChooser.awtparent);
-      chooser.setDirectory(this.currentdir.getPath());
-      if (filename != null) {
-        chooser.setFile(filename);
-      }
-      chooser.setVisible(true);
-      String file = chooser.getFile(), dir = chooser.getDirectory();
-      chooser.dispose();
-      WindowUtils.deinstallModalDialog(FileChooser.awtparent);
-      if (dir != null) {
-        this.currentdir = new File(dir);
-      }
-      return (file == null ? null : new File(dir, file));
+      return builtinPutFile(title, filename);
     }
     else {
-      JFileChooser chooser = new NativeJFileChooser(this.currentdir);
-      if (filename != null) {
-        chooser.setSelectedFile(new File(this.currentdir, filename));
-      }
-      chooser.setDialogTitle(title == null ? GUI.getString("SaveAs") : title);
-      if (this.filter != null) {
-        chooser.setFileFilter(this.filter);
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
-        chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setAcceptAllFileFilterUsed(true);
-      }
+      try {
+        JFileChooser chooser = new NativeJFileChooser(this.currentdir);
+        if (filename != null) {
+          chooser.setSelectedFile(new File(this.currentdir, filename));
+        }
+        chooser.setDialogTitle(title == null ? GUI.getString("SaveAs") : title);
+        if (this.filter != null) {
+          chooser.setFileFilter(this.filter);
+          chooser.addChoosableFileFilter(new FileNameExtensionFilter("DialogOS dialog model", "dos"));
+          chooser.setAcceptAllFileFilterUsed(false);
+          chooser.setAcceptAllFileFilterUsed(true);
+        }
 
-      if (chooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) {
-        return null;
-      }
-      else {
-        this.currentdir = chooser.getCurrentDirectory();
-        return chooser.getSelectedFile();
+        if (chooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) {
+          return null;
+        } else {
+          this.currentdir = chooser.getCurrentDirectory();
+          return chooser.getSelectedFile();
+        }
+      } catch (Error e) {
+        return builtinPutFile(title, filename);
       }
     }
+  }
+
+  private File builtinPutFile(String title, String filename) {
+    FileDialog chooser =
+            new FileDialog(FileChooser.awtparent, title == null ? GUI
+                    .getString("SaveAs")
+                    : title, FileDialog.SAVE);
+    WindowUtils.installModalDialog(FileChooser.awtparent);
+    chooser.setDirectory(this.currentdir.getPath());
+    if (filename != null) {
+      chooser.setFile(filename);
+    }
+    chooser.setVisible(true);
+    String file = chooser.getFile(), dir = chooser.getDirectory();
+    chooser.dispose();
+    WindowUtils.deinstallModalDialog(FileChooser.awtparent);
+    if (dir != null) {
+      this.currentdir = new File(dir);
+    }
+    return (file == null ? null : new File(dir, file));
   }
 
   // ACHTUNG: Um einige Bugs im JRE 1.2 zu umgehen, veraendert der
