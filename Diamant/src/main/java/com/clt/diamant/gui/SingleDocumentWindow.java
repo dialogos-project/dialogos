@@ -1001,6 +1001,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     }
 
     private Icon rescaleToMaxSize(Icon pluginIcon, int maxHeight, int maxWidth) {
+        if (pluginIcon == null)
+            return null;
         int imgHeight = pluginIcon.getIconHeight();
         int imgWidth = pluginIcon.getIconWidth();
         int newHeight, newWidth;
