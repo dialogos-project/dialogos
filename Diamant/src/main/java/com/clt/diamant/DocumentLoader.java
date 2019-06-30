@@ -39,7 +39,17 @@ public class DocumentLoader {
             LongAction loading = new LoadingAction(description, r, f);
 
             if (progress == null) {
-                new ProgressDialog(null).run(loading);
+                try {
+                    new ProgressDialog(null).run(loading);
+                } catch (java.awt.HeadlessException he) {
+                    ProgressListener pl = e -> System.err.println(e.getMessage());
+                    loading.addProgressListener(pl);
+                    try {
+                        loading.run();
+                    } finally {
+                        loading.removeProgressListener(pl);
+                    }
+                }
             } else {
                 loading.addProgressListener(progress);
                 progress.progressChanged(new ProgressEvent(this, loading.getDescription(), 0, 0, 0));

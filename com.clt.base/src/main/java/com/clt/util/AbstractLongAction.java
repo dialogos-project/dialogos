@@ -22,11 +22,9 @@ public abstract class AbstractLongAction implements LongAction, Cancellable {
     protected abstract void run(ProgressListener l) throws Exception;
 
     final public void run() throws Exception {
-        this.run(new ProgressListener() {
-            public void progressChanged(ProgressEvent e) {
-                for (ProgressListener l : AbstractLongAction.this.listeners) {
-                    l.progressChanged(e);
-                }
+        this.run(e -> {
+            for (ProgressListener l : AbstractLongAction.this.listeners) {
+                l.progressChanged(e);
             }
         });
     }
