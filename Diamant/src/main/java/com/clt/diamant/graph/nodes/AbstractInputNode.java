@@ -636,7 +636,10 @@ abstract public class AbstractInputNode extends Node {
      */
     @Override
     public Node execute(WozInterface comm, InputCenter input, ExecutionLogger logger) {
-        return recognizeExec(comm != null ? comm.getLayeredPane() : null, comm, input, this.properties, false);
+        Node returnNode = recognizeExec(comm != null ? comm.getLayeredPane() : null, comm, input, this.properties, false);
+        if (returnNode == null)
+            throw new NodeExecutionException(this, "recognition returned null and we have no clue why", logger);
+        return returnNode;
     }
 
     /**

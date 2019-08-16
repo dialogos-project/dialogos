@@ -1,5 +1,8 @@
+**Version 2.1.3, unreleased**
 
-**Version 2.1.2, unreleased**
+- a next synthesis will now always abort any previous syntheses that might still be ongoing (#196)
+
+**Version 2.1.2, 2019-08-16**
 
 - Robustness against JavaFX issues
 - Fixed bug 189 which could lead to issues with Strings missing multiple consecutive whitespaces in DialogOS-script
