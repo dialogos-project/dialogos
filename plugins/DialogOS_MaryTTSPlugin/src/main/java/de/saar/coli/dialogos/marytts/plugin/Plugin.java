@@ -9,6 +9,10 @@ import javax.swing.Icon;
 import com.clt.dialogos.plugin.PluginSettings;
 import com.clt.diamant.graph.Node;
 import com.clt.gui.Images;
+import com.clt.script.exp.ExecutableFunctionDescriptor;
+import com.clt.script.exp.Type;
+import com.clt.script.exp.Value;
+import com.clt.script.exp.values.RealValue;
 import com.clt.speech.tts.VoiceName;
 import de.saar.coli.dialogos.marytts.MaryTTS;
 
@@ -26,6 +30,23 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
 
     Node.registerNodeTypes(com.clt.speech.Resources.getResources().createLocalizedString("IONode"),
         Arrays.asList(TTSNode.class));
+  }
+
+  @Override
+  public List<ExecutableFunctionDescriptor> registerScriptFunctions() {
+    return Arrays.asList(new ExecutableFunctionDescriptor("tts_awaitEndOfSpeech", Type.Void, new Type[]{}) {
+                           @Override
+                           public Value eval(Value[] args) {
+                             getSynthesizer().awaitEndOfSpeech();
+                             return Value.Void;
+                           }
+                         }, new ExecutableFunctionDescriptor("tts_expectedDurationToSay", Type.Real, new Type[] {Type.Any}) {
+                           @Override
+                           public Value eval(Value[] args) {
+                             return new RealValue(getSynthesizer().estimateDurationToSay(args[0].toString()));
+                           }
+                         }
+    );
   }
 
   public static List<VoiceName> getAvailableVoices() {

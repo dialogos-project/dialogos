@@ -61,8 +61,7 @@ public class MaryTTS
     initProperties();
   }
 
-  /*
-  * initProperties: */
+  /* initProperties: */
   private void initProperties() {
     Collection<MaryTTSVoice> voices = getMaryVoices();
     MaryTTSVoice[] voicesArray = getMaryVoices().toArray(new MaryTTSVoice[voices.size()]);
@@ -260,6 +259,17 @@ public class MaryTTS
     } catch (SynthesisException e) {
       e.printStackTrace();
     }
+  }
+
+  public double estimateDurationToSay(String text) {
+    try {
+      this.setUserText2MaryXML(text);
+      AudioInputStream audioIS = mary.generateAudio(this.maryXML);
+      return ((double) audioIS.getFrameLength()) / audioIS.getFormat().getFrameRate();
+    } catch (SynthesisException e) {
+      e.printStackTrace();
+    }
+    return 0f;
   }
 
   public void awaitEndOfSpeech() {
