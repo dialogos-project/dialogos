@@ -255,11 +255,21 @@ public class MaryTTS
       audioPlayer.setAudio(audioIS);
       audioPlayer.start();
       if (waitUntilDone){
-        audioPlayer.join();
+        awaitEndOfSpeech();
       }
-    } catch (SynthesisException | InterruptedException e){
-      //Something in audioPlayer.join() went wrong.
+    } catch (SynthesisException e) {
       e.printStackTrace();
+    }
+  }
+
+  public void awaitEndOfSpeech() {
+    if (audioPlayer != null) {
+      try {
+        audioPlayer.join();
+      } catch (InterruptedException e) {
+        //Something in audioPlayer.join() went wrong.
+        e.printStackTrace();
+      }
     }
   }
 

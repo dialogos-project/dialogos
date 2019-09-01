@@ -40,6 +40,7 @@ public abstract class AbstractOutputNode extends Node {
     protected static final String PROMPT = "prompt";
     protected static final String VOICE = "voice";
     protected static final String WAIT = "wait";
+    protected static final String AWAIT_SILENCE = "await_silence";
 
     /**
      * Enumeration of different types of prompts.
@@ -90,6 +91,7 @@ public abstract class AbstractOutputNode extends Node {
         this.setProperty(PROMPT, "");
         this.setProperty(PROMPT_TYPE, getDefaultPromptType());
         this.setProperty(WAIT, Boolean.TRUE);
+        this.setProperty(AWAIT_SILENCE, Boolean.FALSE);
         this.setProperty(VOICE, new VoiceName("", null));
         this.addEdge(); // output nodes have one port for an outgoing edge
     }
@@ -177,6 +179,10 @@ public abstract class AbstractOutputNode extends Node {
 
         p.add(NodePropertiesDialog.createCheckBox(properties, WAIT,
                 getResourceString("WaitUntilDone")), gbc);
+
+        gbc.gridy++;
+        p.add(NodePropertiesDialog.createCheckBox(properties, AWAIT_SILENCE,
+                getResourceString("LetPreviousOutputFinish")), gbc);
 
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -435,6 +441,9 @@ public abstract class AbstractOutputNode extends Node {
         else if (name.equals(WAIT)) {
             this.setProperty(WAIT, Boolean.valueOf(value.equals("1")));
         }
+        else if (name.equals(AWAIT_SILENCE)) {
+            this.setProperty(AWAIT_SILENCE, Boolean.valueOf(value.equals("1")));
+        }
         else {
             super.readAttribute(r, name, value, uid_map);
         }
@@ -459,6 +468,7 @@ public abstract class AbstractOutputNode extends Node {
             Graph.printAtt(out, PROMPT_TYPE, promptType.name());
         }
         Graph.printAtt(out, WAIT, ((Boolean)this.getProperty(WAIT)).booleanValue());
+        Graph.printAtt(out, AWAIT_SILENCE, ((Boolean)this.getProperty(AWAIT_SILENCE)).booleanValue());
     }
 
 

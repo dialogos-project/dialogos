@@ -169,7 +169,7 @@ public class TTSNode extends AbstractOutputNode {
         //      voicename = settings.getDefaultVoice();
         //    }
         //    TTSNode.speak(settings, voicename, prompt);
-        Synthesizer synthesizer = Plugin.getSynthesizer();
+        MaryTTS synthesizer = (MaryTTS) Plugin.getSynthesizer();
         VoiceName voicename = (VoiceName) properties.get(VOICE);
         setVoice(settings, synthesizer, voicename);
         ((MaryTTS) synthesizer).setProsody2MaryXML(settings.getStrVolume(), settings.getPitch(), settings.getSpeed());
@@ -177,12 +177,17 @@ public class TTSNode extends AbstractOutputNode {
         boolean wait = ((Boolean) properties.get(WAIT)).booleanValue();
         PromptType pType = (PromptType) properties.get(PROMPT_TYPE);
         //Prompt is maryxml or text?
+        boolean awaitSilence = ((Boolean) properties.get(AWAIT_SILENCE)).booleanValue();
+        if (awaitSilence)
+            synthesizer.awaitEndOfSpeech();
+        else
+            synthesizer.stop();
         if (PromptType.maryxml.equals(pType)) {
             //Note: Regardless of the configurations in Settings it will
             //speak according to the configs in the prompt (xml)
-            ((MaryTTS) synthesizer).speakStrMaryXML(prompt, wait);
+            synthesizer.speakStrMaryXML(prompt, wait);
         } else { //text
-            ((MaryTTS) synthesizer).speak(prompt, wait);
+            synthesizer.speak(prompt, wait);
         }
     }
 
