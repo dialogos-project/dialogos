@@ -61,14 +61,6 @@ public abstract class Expression {
         return w.toString();
     }
 
-    public static String[] getBuiltInFunctions(boolean html) {
-        List<String> functions = new ArrayList<>();
-        for (MethodDescriptor md : new DefaultEnvironment().getMethods()) {
-            functions.add(md.getDescription(html));
-        }
-        return functions.toArray(new String[] {});
-    }
-
     public static Expression parseExpression(String exp) throws Exception {
         return parseExpression(exp, new DefaultEnvironment());
     }

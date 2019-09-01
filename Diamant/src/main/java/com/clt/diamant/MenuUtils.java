@@ -35,13 +35,12 @@ import com.clt.gui.menus.CmdMenuItem;
 import com.clt.gui.menus.MenuCommander;
 import com.clt.gui.menus.MenuOwner;
 import com.clt.mac.RequiredEventHandler;
+import com.clt.script.DefaultEnvironment;
+import com.clt.script.Environment;
 import com.clt.script.exp.DefaultFunctionDescriptor;
-import com.clt.script.exp.Expression;
 import com.clt.script.exp.FunctionDescriptor;
 import com.clt.script.exp.Type;
 import com.clt.script.exp.Value;
-import com.clt.script.exp.types.ListType;
-import com.clt.script.exp.types.StructType;
 import com.clt.script.exp.types.TypeVariable;
 import com.clt.script.exp.values.ListValue;
 import com.clt.script.exp.values.StringValue;
@@ -60,10 +59,6 @@ public class MenuUtils {
         CmdMenu m = mbar.addMenu(Resources.getString("FileMenu"));
 
         m.addItem(Resources.getString("New"), Commands.cmdNew, KeyEvent.VK_N);
-        // m.addItem(Resources.getString("NewExperiment"), cmdNewEx,
-        // KeyStroke.getKeyStroke(
-        // KeyEvent.VK_N, (m.getToolkit().getMenuShortcutKeyMask() |
-        // KeyEvent.SHIFT_MASK)));
 
         m.addItem(Resources.getString("Open") + "...", Commands.cmdOpen,
                 KeyEvent.VK_O);
@@ -105,22 +100,10 @@ public class MenuUtils {
             final RequiredEventHandler systemEventHandler) {
         final File lastUsedFile = Preferences.getPrefs().lastUsedFile.getValue();
         if (lastUsedFile != null) {
-            mru.add(new CmdMenuItem(lastUsedFile.getName(), new Runnable() {
-
-                public void run() {
-
-                    systemEventHandler.handleOpenFile(lastUsedFile);
-                }
-            }));
+            mru.add(new CmdMenuItem(lastUsedFile.getName(), () -> systemEventHandler.handleOpenFile(lastUsedFile)));
         }
         for (final File f : Preferences.getPrefs().additional_mru) {
-            mru.add(new CmdMenuItem(f.getName(), new Runnable() {
-
-                public void run() {
-
-                    systemEventHandler.handleOpenFile(f);
-                }
-            }));
+            mru.add(new CmdMenuItem(f.getName(), () -> systemEventHandler.handleOpenFile(f)));
         }
     }
 
@@ -180,8 +163,17 @@ public class MenuUtils {
         m.add(item);
     }
 
-    public static CmdMenu addHelpMenu(final CmdMenuBar mbar) {
+    static DefaultEnvironment scriptEnvironment = null;
 
+    public static CmdMenu addHelpMenu(final CmdMenuBar mbar) {
+        return addHelpMenu(mbar, new DefaultEnvironment());
+    }
+
+    public static CmdMenu addHelpMenu(final CmdMenuBar mbar, Environment scriptEnvironment) {
+        if (scriptEnvironment instanceof DefaultEnvironment) {
+            MenuUtils.scriptEnvironment = (DefaultEnvironment) scriptEnvironment;
+            helpWindow = null;
+        }
         MenuOwner owner = new MenuOwner() {
             public void updateMenus() {
                 mbar.updateMenus();
@@ -257,13 +249,7 @@ public class MenuUtils {
         // m.addItem("Test", cmdTest);
         if (Version.DEBUG) {
             JMenuItem item = new JMenuItem("Show active threads");
-            item.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-
-                    Misc.dumpThreads();
-                }
-            });
+            item.addActionListener(e -> Misc.dumpThreads());
             m.add(item);
         }
 
@@ -282,30 +268,22 @@ public class MenuUtils {
         if (MenuUtils.helpWindow == null) {
             JPanel labels = new JPanel(new GridLayout(0, 1));
 
-            labels.add(new JLabel("<html><b>Builtin scripting functions:<b></html>"));
-            String[] functions = Expression.getBuiltInFunctions(true);
-            for (int i = 0; i < functions.length; i++) {
-                labels.add(new JLabel(functions[i]));
+            for (String group : scriptEnvironment.getFunctionGroups()) {
+                labels.add(new JLabel("<html><b>" + group + " scripting functions:<b></html>"));
+                for (String f : scriptEnvironment.getFunctions(group, true)) {
+                    labels.add(new JLabel(f));
+                }
+                labels.add(new JLabel(""));
             }
 
-            labels.add(new JLabel(""));
-            labels.add(new JLabel("<html><b>" + Version.PRODUCT_NAME
+            labels.add(new JLabel("<html><b>More " + Version.PRODUCT_NAME
                     + " functions:<b><html>"));
 
             FunctionDescriptor[] fs
                     = new FunctionDescriptor[]{
-                        new DefaultFunctionDescriptor("getModelName", Type.String,
-                                new Type[0]),
-                        new DefaultFunctionDescriptor("getModelPath", Type.String,
-                                new Type[0]),
                         new DefaultFunctionDescriptor("getGrammar", Type.String,
-                                new Type[]{Type.String}),
-                        new DefaultFunctionDescriptor("rpc", new TypeVariable(),
-                                new Type[]{
-                                    DeviceValue.TYPE, Type.String}, true),
-                        new DefaultFunctionDescriptor("getNBestList",
-                                new ListType(),
-                                new Type[]{new StructType()})};
+                                new Type[]{Type.String})
+            };
 
             for (int i = 0; i < fs.length; i++) {
                 labels.add(new JLabel(fs[i].getDescription(true)));
@@ -321,13 +299,7 @@ public class MenuUtils {
             JPanel content = new JPanel(new BorderLayout(6, 6));
             content.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
             content.add(jsp, BorderLayout.CENTER);
-            JButton ok = new CmdButton(new Runnable() {
-
-                public void run() {
-
-                    MenuUtils.helpWindow.setVisible(false);
-                }
-            }, GUI.getString("OK"));
+            JButton ok = new CmdButton(() -> MenuUtils.helpWindow.setVisible(false), GUI.getString("OK"));
             content.add(GUI.createButtonPanel(new JButton[]{ok}),
                     BorderLayout.SOUTH);
             MenuUtils.helpWindow.getContentPane().add(content);

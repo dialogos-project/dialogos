@@ -1,7 +1,11 @@
 package com.clt.dialogos.plugin;
 
 import com.clt.diamant.graph.Node;
+import com.clt.script.exp.ExecutableFunctionDescriptor;
+
 import javax.swing.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The interface for DialogOS plugins. A plugin provides a set of custom node
@@ -78,4 +82,13 @@ public interface Plugin {
      * @return the plugin settings
      */
     PluginSettings createDefaultSettings();
+
+    /**
+     * enables a plugin to register script functions
+     * so that they become available to the scripting language
+     * @return a list of executable function descriptions for the scripting language
+     */
+    default List<ExecutableFunctionDescriptor> registerScriptFunctions() {
+        return Collections.emptyList();
+    }
 }

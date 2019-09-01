@@ -7,28 +7,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
-import java.net.ConnectException;
-import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.clt.dialogos.plugin.PluginLoader;
+import com.clt.script.DefaultEnvironment;
+import com.clt.script.exp.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import com.clt.dialog.client.ConnectionChooser;
-import com.clt.dialog.client.ConnectionState;
 import com.clt.dialog.client.Connector;
 import com.clt.dialog.client.ServerDevice;
 import com.clt.dialogos.plugin.Plugin;
@@ -45,28 +38,10 @@ import com.clt.diamant.graph.search.SearchResult;
 import com.clt.event.ProgressListener;
 import com.clt.gui.ProgressDialog;
 import com.clt.properties.Property;
-import com.clt.script.DefaultEnvironment;
 import com.clt.script.Environment;
-import com.clt.script.debug.Debugger;
-import com.clt.script.exp.EvaluationException;
-import com.clt.script.exp.Expression;
-import com.clt.script.exp.Type;
-import com.clt.script.exp.TypeException;
-import com.clt.script.exp.Value;
-import com.clt.script.exp.Variable;
-import com.clt.script.exp.expressions.Function;
-import com.clt.script.exp.types.ListType;
-import com.clt.script.exp.types.StructType;
-import com.clt.script.exp.types.TypeVariable;
-import com.clt.script.exp.values.BoolValue;
-import com.clt.script.exp.values.IntValue;
-import com.clt.script.exp.values.ListValue;
 import com.clt.script.exp.values.StringValue;
-import com.clt.script.exp.values.StructValue;
-import com.clt.script.exp.values.Undefined;
 import com.clt.util.DefaultLongAction;
 import com.clt.util.LongAction;
-import com.clt.util.StringTools;
 import com.clt.util.TemplateBundle;
 import com.clt.util.UserCanceledException;
 import com.clt.xml.AbstractHandler;
@@ -281,6 +256,8 @@ public class SingleDocument extends Document implements GraphOwner {
 
     private Map<String, TemplateBundle> localizationBundles;
 
+    private DefaultEnvironment environment;
+
     /**
      * Constructs a new single document with one start node.
      */
@@ -289,16 +266,41 @@ public class SingleDocument extends Document implements GraphOwner {
         this.pluginSettings = new HashMap<Class<? extends Plugin>, PluginSettings>();
         this.localizationBundles = new HashMap<String, TemplateBundle>();
 
+        environment = new DeviceAwareEnvironment(devices);
+        environment.registerFunction("DialogOS", new ExecutableFunctionDescriptor("getModelName", Type.String, new Type[] {}) {
+            @Override
+            public Value eval(Value[] args) {
+                return new StringValue(SingleDocument.this.getTitle());
+            }
+        });
+        environment.registerFunction("DialogOS", new ExecutableFunctionDescriptor("getModelPath", Type.String, new Type[] {}) {
+            @Override
+            public Value eval(Value[] args) {
+                File f = SingleDocument.this.getFile();
+                if (f == null) {
+                    throw new EvaluationException("Error in getModelPath(): Model "
+                            + SingleDocument.this.getTitle() + " hasn't been saved yet.");
+                } else {
+                    if (f.getParent() == null) {
+                        return new StringValue(System.getProperty("user.dir"));
+                    } else {
+                        return new StringValue(f.getParent());
+                    }
+                }
+            }
+        });
         for (Plugin plugin : PluginLoader.getPlugins()) {
             this.pluginSettings.put(plugin.getClass(), plugin.createDefaultSettings());
+            for (ExecutableFunctionDescriptor efd : plugin.registerScriptFunctions()) {
+                environment.registerFunction(plugin.getName(), efd);
+            }
         }
-        
+
         Graph g = new Graph(this);
         this.setGraph(g);
     }
 
     void setGraph(Graph graph) {
-
         if (this.graph != graph) {
             Graph oldGraph = this.graph;
             this.graph = graph;
@@ -308,7 +310,6 @@ public class SingleDocument extends Document implements GraphOwner {
     }
 
     public String getDocumentType() {
-
         return "Wizard";
     }
 
@@ -337,7 +338,6 @@ public class SingleDocument extends Document implements GraphOwner {
     }
 
     public void closeDevices() {
-
         for (Device d : this.getDevices()) {
             try {
                 d.close();
@@ -620,7 +620,6 @@ public class SingleDocument extends Document implements GraphOwner {
      * Helper method to convert int arrays to byte arrays
      */
     private static byte[] createByteArray(int[] intArray) {
-
         byte byteArray[] = new byte[intArray.length * 4];
         for (int i = 0; i < intArray.length; i++) {
             byteArray[4 * i] = (byte) ((intArray[i] >> 24) & 0x000000ff);
@@ -633,19 +632,14 @@ public class SingleDocument extends Document implements GraphOwner {
 
     @Override
     public void write(final XMLWriter out, final IdMap uid_map) {
-
         out.openElement(this.getDocumentType().toLowerCase());
-
         this.writeDocumentSettings(out, this.getFile(), uid_map);
-
         this.graph.save(out, uid_map);
-
         out.closeElement(this.getDocumentType().toLowerCase());
     }
 
     private void addGlobalProcs(Graph addToThisGraph, Graph procsFromThisGraph,
             Mapping map) {
-
         Map<ProcNode, Node> freeprocs = procsFromThisGraph
                 .getFreeProcedures(new Hashtable<ProcNode, Node>());
 
@@ -661,17 +655,13 @@ public class SingleDocument extends Document implements GraphOwner {
 
     public void exportVoiceXML(XMLWriter w, IdMap uid_map)
             throws IOException {
-
         w.openElement("vxml", new String[]{"version"}, new String[]{"2.0"});
-
         this.getOwnedGraph().exportVoiceXML(w, uid_map);
-
         w.closeElement("vxml");
     }
 
     public void export(final Graph export_graph, File file)
             throws IOException {
-
         if (export_graph instanceof Procedure) {
             List<Slot> p = ((Procedure) export_graph).getParameters();
             if (p.size() > 0) {
@@ -680,9 +670,7 @@ public class SingleDocument extends Document implements GraphOwner {
         }
 
         Mapping map = new Mapping();
-
         final Graph g = export_graph.clone(map);
-
         this.addGlobalProcs(g, export_graph, map);
 
         // update references to global variables and procedures
@@ -722,53 +710,43 @@ public class SingleDocument extends Document implements GraphOwner {
         g.setOwner(new GraphOwner() {
 
             public Graph getSuperGraph() {
-
                 return null;
             }
 
             public Graph getOwnedGraph() {
-
                 return g;
             }
 
             public Collection<Device> getDevices() {
-
                 return SingleDocument.this.getDevices();
             }
 
             public List<Grammar> getGrammars() {
-
                 return SingleDocument.this.getGrammars();
             }
 
             public PluginSettings getPluginSettings(
                     Class<? extends Plugin> pluginClass) {
-
                 return SingleDocument.this.getPluginSettings(pluginClass);
             }
 
             public Environment getEnvironment(boolean local) {
-
                 return SingleDocument.this.getEnvironment(local);
             }
 
             public void setDirty(boolean dirty) {
-
             }
 
             public void export(Graph g, File f)
                     throws IOException {
-
                 SingleDocument.this.export(g, f);
             }
 
             public String getGraphName() {
-
                 return "Dialogue";
             }
 
             public void setGraphName(String name) {
-
             }
         });
 
@@ -781,195 +759,16 @@ public class SingleDocument extends Document implements GraphOwner {
         this.writeDocumentSettings(out, file, uid_map);
 
         g.save(out, uid_map);
-
         out.closeElement(this.getDocumentType().toLowerCase());
-
         out.close();
     }
 
-    private Environment environment = new DefaultEnvironment() {
-
-        @Override
-        public Variable createVariableReference(final String name) {
-            for (final Device d : SingleDocument.this.devices) {
-                if (d.getName().equals(name)) {
-                    return new Variable() {
-
-                        public String getName() {
-                            return name;
-                        }
-
-                        public Value getValue() {
-                            return new DeviceValue(d);
-                        }
-
-                        public void setValue(Value value) {
-
-                        }
-
-                        public Type getType() {
-                            return DeviceValue.TYPE;
-                        }
-                    };
-                }
-            }
-            return super.createVariableReference(name);
-        }
+    /* environment = new DeviceAwareEnvironment(this.devices) {
 
         @Override
         public Expression createFunctionCall(final String name,
                 final Expression[] arguments) {
-
-            if (name.equals("rpc")) {
-                if (arguments.length < 2) {
-                    throw new TypeException(
-                            "Wrong number of arguments in call to function rpc()");
-                }
-                return new Function(name, arguments) {
-
-                    @Override
-                    protected Value eval(Debugger dbg, Value[] args) {
-                        if (!(args[0] instanceof DeviceValue)
-                                || !(args[1] instanceof StringValue)) {
-                            throw new EvaluationException(
-                                    "Wrong type of arguments in call to function rpc()");
-                        }
-                        try {
-                            Device d = ((DeviceValue) args[0]).getDevice();
-                            String procedure = ((StringValue) args[1]).getString();
-                            Value[] as = new Value[args.length - 2];
-                            System.arraycopy(args, 2, as, 0, args.length - 2);
-                            try {
-                                return d.rpc(procedure, as);
-                            } catch (ConnectException exn) {
-                                throw new EvaluationException(
-                                        "RPC failed because the device \""
-                                        + d.getName() + "\" is not connected");
-                            } catch (RemoteException exn) {
-                                throw new EvaluationException(
-                                        "RPC failed because the remote procedure " + procedure
-                                        + "() raised an error: "
-                                        + exn.getLocalizedMessage());
-                            }
-                        } catch (Exception exn) {
-                            throw new EvaluationException(exn.getLocalizedMessage());
-                        }
-                    }
-
-                    @Override
-                    public Type getType() {
-
-                        Type.unify(arguments[0].getType(), DeviceValue.TYPE);
-                        Type.unify(arguments[1].getType(), Type.String);
-
-                        return new TypeVariable();
-                    }
-                };
-            } else if (name.equals("isConnected")) {
-                if (arguments.length != 1) {
-                    throw new TypeException(
-                            "Wrong number of arguments in call to function isConnected()");
-                }
-                return new Function(name, arguments) {
-
-                    @Override
-                    protected Value eval(Debugger dbg, Value[] args) {
-                        if (!(args[0] instanceof DeviceValue)) {
-                            throw new EvaluationException(
-                                    "Wrong type of arguments in call to function isConnected()");
-                        }
-                        DeviceValue d = (DeviceValue) args[0];
-                        return new BoolValue(
-                                d.getDevice().getState() == ConnectionState.CONNECTED);
-                    }
-
-                    @Override
-                    public Type getType() {
-                        Type.unify(arguments[0].getType(), DeviceValue.TYPE);
-                        return Type.Bool;
-                    }
-                };
-            } else if (name.equals("getNBestList")) {
-                if (arguments.length != 1) {
-                    throw new TypeException(
-                            "Wrong number of arguments in call to function getNBestList()");
-                }
-                return new Function(name, arguments) {
-
-                    protected Value eval(Debugger dbg, Value[] args) {
-                        if (!(args[0] instanceof StructValue)) {
-                            throw new EvaluationException(
-                                    "Wrong type of arguments in call to function getNBestList()");
-                        }
-                        StructValue v = (StructValue) args[0];
-                        Map<Integer, Value> map = new TreeMap<Integer, Value>();
-                        for (Iterator<String> it = v.labels(); it.hasNext();) {
-                            String label = it.next();
-                            if (label.startsWith("r")) {
-                                try {
-                                    int num = Integer.parseInt(label.substring(1));
-                                    map.put(new Integer(num), v.getValue(label));
-                                } catch (Exception ignore) {
-                                }
-                            }
-                        }
-
-                        Value[] nbest = new Value[map.size()];
-                        int i = 0;
-                        for (Iterator<Integer> it = map.keySet().iterator(); it.hasNext(); i++) {
-                            nbest[i] = map.get(it.next());
-                        }
-                        return new ListValue(nbest);
-                    }
-
-                    public Type getType() {
-                        Type.unify(arguments[0].getType(), new StructType());
-                        return new ListType(Type.String);
-                    }
-                };
-            } else if (name.equals("getModelName")) {
-                if (arguments.length != 0) {
-                    throw new TypeException(
-                            "Wrong number of arguments in call to function " + name
-                            + "()");
-                }
-                return new Function(name, arguments) {
-
-                    protected Value eval(Debugger dbg, Value[] args) {
-                        return new StringValue(SingleDocument.this.getTitle());
-                    }
-
-                    public Type getType() {
-                        return Type.String;
-                    }
-                };
-            } else if (name.equals("getModelPath")) {
-                if (arguments.length != 0) {
-                    throw new TypeException(
-                            "Wrong number of arguments in call to function " + name
-                            + "()");
-                }
-                return new Function(name, arguments) {
-
-                    protected Value eval(Debugger dbg, Value[] args) {
-                        File f = SingleDocument.this.getFile();
-                        if (f == null) {
-                            throw new EvaluationException("Error in getModelPath(): Model "
-                                    + SingleDocument.this.getTitle() + " hasn't been saved yet.");
-                        } else {
-                            if (f.getParent() == null) {
-                                return new StringValue(System.getProperty("user.dir"));
-                            } else {
-                                return new StringValue(f.getParent());
-                            }
-                        }
-                    }
-
-                    public Type getType() {
-                        return Type.String;
-                    }
-                };
-            } else if (name.equals("formatString")) {
+            if (name.equals("formatString")) {
                 if (arguments.length < 2) {
                     throw new TypeException(
                             "Wrong number of arguments in call to function " + name
@@ -1088,6 +887,7 @@ public class SingleDocument extends Document implements GraphOwner {
         }
 
     };
+    */
 
     public Environment getEnvironment(boolean local) {
         return this.environment;

@@ -78,7 +78,7 @@ public class ClassEnvironment implements Environment {
         }
     }
 
-    public Iterable<MethodDescriptor> getMethods() {
+    public Collection<MethodDescriptor> getMethods() {
         return Collections.unmodifiableCollection(this.methods);
     }
 

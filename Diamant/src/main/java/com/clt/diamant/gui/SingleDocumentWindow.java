@@ -503,7 +503,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
             mbar.add(this.getWindowMenu());
         }
 
-        m = MenuUtils.addHelpMenu(mbar);
+        m = MenuUtils.addHelpMenu(mbar, this.getDocument().getEnvironment(false));
         if (Version.DEBUG) {
             JMenuItem item = new JMenuItem("Convert CatchAll Edges");
             item.addActionListener(new ActionListener() {

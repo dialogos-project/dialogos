@@ -492,7 +492,7 @@ public class GraphDialog extends ManagedFrame implements GraphEditor, MenuComman
         this.windowMenu = new JMenu(Resources.getString("Window"));
         mbar.add(this.windowMenu);
 
-        MenuUtils.addHelpMenu(mbar);
+        MenuUtils.addHelpMenu(mbar, graph.getGraph().getEnvironment(false));
 
         rootpane.setJMenuBar(mbar);
         mbars.add(mbar);

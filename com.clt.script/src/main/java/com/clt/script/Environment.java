@@ -24,16 +24,28 @@ public interface Environment {
 
     public Reader include(String name) throws IOException;
 
+    static String functionSignature(String name, Expression[] arguments) {
+        StringBuilder f = new StringBuilder();
+        f.append(name);
+        f.append('(');
+        for (int i = 0; i < arguments.length; i++) {
+            if (i > 0) {
+                f.append(", ");
+            }
+            f.append(arguments[i].getType().resolve());
+        }
+        f.append(')');
+        return f.toString();
+    }
+
     public class NoSuchFunctionException extends TypeException {
 
         public NoSuchFunctionException(String name, Expression[] arguments) {
-
             super("Unknown function or wrong number/type of arguments: "
-                    + DefaultEnvironment.functionSignature(name, arguments));
+                    + functionSignature(name, arguments));
         }
 
         public NoSuchFunctionException(String message) {
-
             super(message);
         }
     }
