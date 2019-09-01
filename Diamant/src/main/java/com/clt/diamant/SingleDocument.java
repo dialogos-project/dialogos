@@ -791,18 +791,15 @@ public class SingleDocument extends Document implements GraphOwner {
 
         @Override
         public Variable createVariableReference(final String name) {
-
             for (final Device d : SingleDocument.this.devices) {
                 if (d.getName().equals(name)) {
                     return new Variable() {
 
                         public String getName() {
-
                             return name;
                         }
 
                         public Value getValue() {
-
                             return new DeviceValue(d);
                         }
 
@@ -811,13 +808,11 @@ public class SingleDocument extends Document implements GraphOwner {
                         }
 
                         public Type getType() {
-
                             return DeviceValue.TYPE;
                         }
                     };
                 }
             }
-
             return super.createVariableReference(name);
         }
 
@@ -834,7 +829,6 @@ public class SingleDocument extends Document implements GraphOwner {
 
                     @Override
                     protected Value eval(Debugger dbg, Value[] args) {
-
                         if (!(args[0] instanceof DeviceValue)
                                 || !(args[1] instanceof StringValue)) {
                             throw new EvaluationException(
@@ -871,37 +865,6 @@ public class SingleDocument extends Document implements GraphOwner {
                         return new TypeVariable();
                     }
                 };
-            } else if (name.equals("getLetters")) {
-                if (arguments.length != 3) {
-                    throw new TypeException(
-                            "Wrong number of arguments in call to function getLetters()");
-                }
-                return new Function(name, arguments) {
-
-                    @Override
-                    protected Value eval(Debugger dbg, Value[] args) {
-
-                        if (!((args[0] instanceof ListValue)
-                                && (args[1] instanceof StringValue) && (args[2] instanceof IntValue))) {
-                            throw new EvaluationException(
-                                    "Wrong type of arguments in call to function getLetters()");
-                        }
-                        String prefix = ((StringValue) args[1]).getString();
-                        int numLetters = (int) ((IntValue) args[2]).getInt();
-                        ListValue list = (ListValue) args[0];
-                        return SingleDocument.getPrefixLetters(list, prefix, numLetters);
-                    }
-
-                    @Override
-                    public Type getType() {
-
-                        Type.unify(arguments[0].getType(), new ListType(Type.String));
-                        Type.unify(arguments[1].getType(), Type.String);
-                        Type.unify(arguments[2].getType(), Type.Int);
-
-                        return new ListType(Type.String);
-                    }
-                };
             } else if (name.equals("isConnected")) {
                 if (arguments.length != 1) {
                     throw new TypeException(
@@ -911,7 +874,6 @@ public class SingleDocument extends Document implements GraphOwner {
 
                     @Override
                     protected Value eval(Debugger dbg, Value[] args) {
-
                         if (!(args[0] instanceof DeviceValue)) {
                             throw new EvaluationException(
                                     "Wrong type of arguments in call to function isConnected()");
@@ -923,45 +885,8 @@ public class SingleDocument extends Document implements GraphOwner {
 
                     @Override
                     public Type getType() {
-
                         Type.unify(arguments[0].getType(), DeviceValue.TYPE);
                         return Type.Bool;
-                    }
-                };
-            } else if (name.equals("capitalize")) {
-                if (arguments.length != 1) {
-                    throw new TypeException(
-                            "Wrong number of arguments in call to function capitalize()");
-                }
-                return new Function(name, arguments) {
-
-                    @Override
-                    protected Value eval(Debugger dbg, Value[] args) {
-
-                        if (!(args[0] instanceof ListValue)) {
-                            throw new EvaluationException(
-                                    "Wrong type of arguments in call to function capitalize()");
-                        }
-                        ListValue list = (ListValue) args[0];
-                        Value result[] = new StringValue[list.size()];
-                        for (int i = 0; i < list.size(); i++) {
-                            String s = ((StringValue) list.get(i)).getString();
-                            // dont't use String.toUpperCase(), because it will
-                            // transform \u00df -> SS
-                            StringBuffer b = new StringBuffer(s.length());
-                            for (int j = 0; j < s.length(); j++) {
-                                b.append(Character.toUpperCase(s.charAt(j)));
-                            }
-                            result[i] = new StringValue(b.toString());
-                        }
-
-                        return new ListValue(result);
-                    }
-
-                    public Type getType() {
-
-                        Type.unify(arguments[0].getType(), new ListType(Type.String));
-                        return new ListType(Type.String);
                     }
                 };
             } else if (name.equals("getNBestList")) {
@@ -972,7 +897,6 @@ public class SingleDocument extends Document implements GraphOwner {
                 return new Function(name, arguments) {
 
                     protected Value eval(Debugger dbg, Value[] args) {
-
                         if (!(args[0] instanceof StructValue)) {
                             throw new EvaluationException(
                                     "Wrong type of arguments in call to function getNBestList()");
@@ -999,7 +923,6 @@ public class SingleDocument extends Document implements GraphOwner {
                     }
 
                     public Type getType() {
-
                         Type.unify(arguments[0].getType(), new StructType());
                         return new ListType(Type.String);
                     }
@@ -1013,12 +936,10 @@ public class SingleDocument extends Document implements GraphOwner {
                 return new Function(name, arguments) {
 
                     protected Value eval(Debugger dbg, Value[] args) {
-
                         return new StringValue(SingleDocument.this.getTitle());
                     }
 
                     public Type getType() {
-
                         return Type.String;
                     }
                 };
@@ -1031,7 +952,6 @@ public class SingleDocument extends Document implements GraphOwner {
                 return new Function(name, arguments) {
 
                     protected Value eval(Debugger dbg, Value[] args) {
-
                         File f = SingleDocument.this.getFile();
                         if (f == null) {
                             throw new EvaluationException("Error in getModelPath(): Model "
@@ -1046,7 +966,6 @@ public class SingleDocument extends Document implements GraphOwner {
                     }
 
                     public Type getType() {
-
                         return Type.String;
                     }
                 };
@@ -1059,7 +978,6 @@ public class SingleDocument extends Document implements GraphOwner {
                 return new Function(name, arguments) {
 
                     protected Value eval(Debugger dbg, Value[] args) {
-
                         String bundleName = ((StringValue) args[0]).getString();
                         String language = ((StringValue) args[1]).getString();
                         String templateName = ((StringValue) args[2]).getString();
@@ -1105,7 +1023,6 @@ public class SingleDocument extends Document implements GraphOwner {
                     }
 
                     public Type getType() {
-
                         return Type.String;
                     }
                 };
@@ -1119,7 +1036,6 @@ public class SingleDocument extends Document implements GraphOwner {
 
                     @Override
                     protected Value eval(Debugger dbg, Value[] args) {
-
                         String name = ((StringValue) args[0]).getString();
 
                         File f = SingleDocument.this.getFile();
@@ -1158,13 +1074,11 @@ public class SingleDocument extends Document implements GraphOwner {
                         }
 
                         SingleDocument.this.localizationBundles.put(name, bundle);
-
                         return Value.Void;
                     }
 
                     @Override
                     public Type getType() {
-
                         return Type.Void;
                     }
                 };
@@ -1175,92 +1089,39 @@ public class SingleDocument extends Document implements GraphOwner {
 
     };
 
-    static ListValue getPrefixLetters(ListValue words, String prefix,
-            int numLetters) {
-
-        int position = prefix.length();
-        Set<String> letters = new HashSet<String>();
-        for (int i = 0; i < words.size(); i++) {
-            String s = ((StringValue) words.get(i)).getString();
-            if (s.startsWith(prefix) && (s.length() > position)) {
-                if (numLetters == -1) {
-                    letters.add(s.substring(position));
-                } else {
-                    if (s.charAt(position) == ' ') {
-                        letters.add(" ");
-                    } else {
-                        StringBuilder b = new StringBuilder();
-                        for (int j = 0; (j < numLetters) && (position + j < s.length())
-                                && (s.charAt(position + j) != ' '); j++) {
-                            if (j > 0) {
-                                b.append(' ');
-                            }
-                            b.append(s.charAt(position + j));
-                            letters.add(b.toString());
-                        }
-                    }
-                }
-                /*
-         * if (firstLetterOnly) { letters.add(s.substring(position,
-         * position+1)); if (s.length() > position+1)
-         * letters.add(s.substring(position, position+1) + " " +
-         * s.substring(position+1, position+2)); } else
-         * letters.add(s.substring(position));
-                 */
-            }
-        }
-
-        StringValue s[] = new StringValue[letters.size()];
-        int i = 0;
-        for (String letter : new TreeSet<String>(letters)) {
-            s[i++] = new StringValue(letter);
-        }
-
-        return new ListValue(s);
-    }
-
     public Environment getEnvironment(boolean local) {
-
         return this.environment;
     }
 
     public Collection<Device> getDevices() {
-
         return this.devices;
     }
 
     public PluginSettings getPluginSettings(Class<? extends Plugin> pluginClass) {
-
         return this.pluginSettings.get(pluginClass);
     }
 
     public List<Grammar> getGrammars() {
-
         return this.getOwnedGraph().getGrammars();
     }
 
     public Graph getSuperGraph() {
-
         return null;
     }
 
     public Graph getOwnedGraph() {
-
         return this.graph;
     }
 
     public String getGraphName() {
-
         return this.getTitle();
     }
 
     public void setGraphName(String name) {
-
         this.setTitle(name);
     }
 
     public Collection<SearchResult> find(NodeSearchFilter filter) {
-
         return this.graph.find(filter);
     }
 }

@@ -52,7 +52,6 @@ public class BuiltinFunctions {
      * Return the length of string <code>s</code>
      */
     public static IntValue length(StringValue s) {
-
         return new IntValue(s.getString().length());
     }
 
@@ -60,7 +59,6 @@ public class BuiltinFunctions {
      * Return the substring of <code>s</code> starting at <code>offset</code>
      */
     public static StringValue substring(StringValue s, IntValue offset) {
-
         return BuiltinFunctions.substring(s, offset, new IntValue(s.getString().length() - offset.getInt()));
     }
 
@@ -69,7 +67,6 @@ public class BuiltinFunctions {
      * with length <code>length</code>
      */
     public static StringValue substring(StringValue s, IntValue offset, IntValue length) {
-
         long start = offset.getInt();
         long end = start + length.getInt();
         return new StringValue(s.getString().substring((int) start, (int) end));
@@ -80,7 +77,6 @@ public class BuiltinFunctions {
      * lowercase
      */
     public static StringValue toLowerCase(StringValue s) {
-
         return new StringValue(s.getString().toLowerCase());
     }
 
@@ -89,7 +85,6 @@ public class BuiltinFunctions {
      * uppercase
      */
     public static StringValue toUpperCase(StringValue s) {
-
         return new StringValue(s.getString().toUpperCase());
     }
 
@@ -97,7 +92,6 @@ public class BuiltinFunctions {
      * Return the nth character of <code>s</code> as a string
      */
     public static StringValue charAt(StringValue s, IntValue index) {
-
         return new StringValue(String.valueOf(s.getString().charAt(
                 (int) index.getInt())));
     }
@@ -106,7 +100,6 @@ public class BuiltinFunctions {
      * Test whether <code>s</code> starts with <code>prefix</code>
      */
     public static BoolValue startsWith(StringValue s, StringValue prefix) {
-
         return new BoolValue(s.getString().startsWith(prefix.getString()));
     }
 
@@ -114,7 +107,6 @@ public class BuiltinFunctions {
      * Test whether <code>s</code> ends with <code>suffix</code>
      */
     public static BoolValue endsWith(StringValue s, StringValue suffix) {
-
         return new BoolValue(s.getString().endsWith(suffix.getString()));
     }
 
@@ -122,7 +114,6 @@ public class BuiltinFunctions {
      * Test whether <code>s</code> contains <code>infix</code>
      */
     public static BoolValue contains(StringValue s, StringValue infix) {
-
         return new BoolValue(s.getString().indexOf(infix.getString()) >= 0);
     }
 
@@ -132,7 +123,6 @@ public class BuiltinFunctions {
      * <code>-1</code>.
      */
     public static IntValue indexOf(StringValue s, StringValue infix) {
-
         return new IntValue(s.getString().indexOf(infix.getString()));
     }
 
@@ -166,7 +156,6 @@ public class BuiltinFunctions {
      * Test whether <code>s</code> can be converted to an <code>int</code>.
      */
     public static BoolValue isInt(StringValue s) {
-
         try {
             Long.parseLong(s.getString());
             return BoolValue.TRUE;
@@ -179,7 +168,6 @@ public class BuiltinFunctions {
      * Test whether <code>s</code> can be converted to a <code>real</code>.
      */
     public static BoolValue isReal(StringValue s) {
-
         try {
             Double.parseDouble(s.getString());
             return BoolValue.TRUE;
@@ -193,7 +181,6 @@ public class BuiltinFunctions {
      * <code>undefined</code> if conversion fails.
      */
     public static IntValue parseInt(StringValue s) {
-
         try {
             return new IntValue(Long.parseLong(s.getString()));
         } catch (NumberFormatException exn) {
@@ -206,7 +193,6 @@ public class BuiltinFunctions {
      * <code>undefined</code> if conversion fails.
      */
     public static RealValue parseReal(StringValue s) {
-
         try {
             return new RealValue(Double.parseDouble(s.getString()));
         } catch (NumberFormatException exn) {
@@ -218,7 +204,6 @@ public class BuiltinFunctions {
      * Convert to string
      */
     public static StringValue str(Value v) {
-
         if (v instanceof StringValue) {
             return (StringValue) v;
         } else if (v instanceof IntValue) {
@@ -236,7 +221,6 @@ public class BuiltinFunctions {
      * Return the absolute value of <code>i</code>
      */
     public static IntValue abs(IntValue i) {
-
         return new IntValue(Math.abs(i.getInt()));
     }
 
@@ -244,7 +228,6 @@ public class BuiltinFunctions {
      * Returns Euler's number <i>e</i> raised to the power of <code>r</code>.
      */
     public static RealValue exp(RealValue r) {
-
         return new RealValue(Math.exp(r.getReal()));
     }
 
@@ -252,7 +235,6 @@ public class BuiltinFunctions {
      * Returns the natural logarithm of <code>r</code>.
      */
     public static RealValue log(RealValue r) {
-
         return new RealValue(Math.log(r.getReal()));
     }
 
@@ -261,7 +243,6 @@ public class BuiltinFunctions {
      * <code>max</code> including both.
      */
     public static IntValue random(IntValue min, IntValue max) {
-
         return new IntValue(min.getInt()
                 + Math.round(Math.random() * (max.getInt() - min.getInt())));
     }
@@ -270,7 +251,6 @@ public class BuiltinFunctions {
      * Round <code>r</code> to the nearest <code>int</code>
      */
     public static IntValue round(RealValue r) {
-
         return new IntValue(Math.round(r.getReal()));
     }
 
@@ -366,7 +346,6 @@ public class BuiltinFunctions {
      * Returns the length of list <code>l</code>
      */
     public static IntValue length(ListValue l) {
-
         return new IntValue(l.size());
     }
 
@@ -374,7 +353,6 @@ public class BuiltinFunctions {
      * Returns whether the list <code>l</code> is empty
      */
     public static BoolValue empty(ListValue l) {
-
         return new BoolValue(l.size() == 0);
     }
 
@@ -382,7 +360,6 @@ public class BuiltinFunctions {
      * Returns the first (head) element of <code>l</code>
      */
     public static Value head(ListValue l) {
-
         if (l.size() == 0) {
             throw new EvaluationException("head() called with empty list");
         }
@@ -408,7 +385,6 @@ public class BuiltinFunctions {
      * Returns the nth element of <code>l</code>
      */
     public static Value get(ListValue l, IntValue index) {
-
         try {
             return l.get((int) index.getInt());
         } catch (IndexOutOfBoundsException exn) {
@@ -422,7 +398,6 @@ public class BuiltinFunctions {
      * Equivalent to <code>contains(list, v)</code>
      */
     public static BoolValue member(ListValue list, Value v) {
-
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).equals(v)) {
                 return BoolValue.TRUE;
@@ -435,7 +410,6 @@ public class BuiltinFunctions {
      * Returns whether <code>l</code> contains <code>v</code>
      */
     public static BoolValue contains(ListValue list, Value v) {
-
         return BuiltinFunctions.member(list, v);
     }
 
@@ -444,7 +418,6 @@ public class BuiltinFunctions {
      * <code>-1</code> if <code>list</code> does not contain <code>v</code>
      */
     public static IntValue indexOf(ListValue list, Value v) {
-
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).equals(v)) {
                 return new IntValue(i);
@@ -457,7 +430,6 @@ public class BuiltinFunctions {
      * Return the sublist of <code>list</code> starting at <code>offset</code>
      */
     public static ListValue sublist(ListValue list, IntValue offset) {
-
         return list.subList((int) offset.getInt(), list.size());
     }
 
@@ -467,7 +439,6 @@ public class BuiltinFunctions {
      */
     public static ListValue sublist(ListValue list, IntValue offset,
             IntValue length) {
-
         return list.subList((int) offset.getInt(), (int) (offset.getInt() + length
                 .getInt()));
     }
@@ -476,7 +447,6 @@ public class BuiltinFunctions {
      * Return a reversed copy of <code>list</code>
      */
     public static ListValue reverse(ListValue list) {
-
         Value[] elems = new Value[list.size()];
         for (int i = 0; i < elems.length; i++) {
             elems[elems.length - i - 1] = list.get(i);
@@ -489,7 +459,6 @@ public class BuiltinFunctions {
      * must have the same type.
      */
     public static ListValue sort(ListValue list) {
-
         Value[] elements = new Value[list.size()];
         for (int i = 0; i < list.size(); i++) {
             elements[i] = list.get(i);
@@ -536,7 +505,6 @@ public class BuiltinFunctions {
      * Returns whether <code>str</code> contains a label named <code>key</code>
      */
     public static BoolValue contains(StructValue str, StringValue key) {
-
         if (str.containsLabel(key.getString())) {
             return BoolValue.TRUE;
         } else {
@@ -549,7 +517,6 @@ public class BuiltinFunctions {
      * <code>key</code>
      */
     public static Value get(StructValue str, StringValue key) {
-
         if (str.containsLabel(key.getString())) {
             return str.getValue(key.getString());
         } else {
@@ -561,7 +528,6 @@ public class BuiltinFunctions {
      * The counterpart to get(struct, string)
      */
     public static StructValue put(StructValue str, StringValue key, Value value) {
-
         return BuiltinFunctions.merge(str, new StructValue(new String[]{key
             .getString()}, new Value[]{value}));
     }
@@ -609,7 +575,6 @@ public class BuiltinFunctions {
      * <code>{ x={x=3, y=4}, y=5 }</code>
      */
     public static StructValue merge(StructValue str1, StructValue str2) {
-
         return StructValue.merge(str1, str2);
     }
 
@@ -618,7 +583,6 @@ public class BuiltinFunctions {
      * in <code>str2</code> is not undefined.
      */
     public static StructValue mergeDefined(StructValue str1, StructValue str2) {
-
         return StructValue.mergeDefined(str1, str2);
     }
 
@@ -626,7 +590,6 @@ public class BuiltinFunctions {
      * Return the current time as a structure <code>{ h:int, m:int }</code>
      */
     public static StructValue currentTime() {
-
         Calendar c = Calendar.getInstance();
 
         return new StructValue(new String[]{"h", "m"}, new Value[]{
@@ -639,7 +602,6 @@ public class BuiltinFunctions {
      * and midnight, January 1, 1970 UTC.
      */
     public static IntValue currentTimeMillis() {
-
         return new IntValue(System.currentTimeMillis());
     }
 
@@ -720,7 +682,6 @@ public class BuiltinFunctions {
      * Print a string representation of <code>v</code> to stdout.
      */
     public static void print(Value v) {
-
         if (v instanceof StringValue) {
             System.out.println(((StringValue) v).getString());
         } else {
@@ -786,7 +747,6 @@ public class BuiltinFunctions {
     }
 
     public static void error(StringValue message) {
-
         throw new EvaluationException(message.getString());
     }
 
@@ -838,7 +798,6 @@ public class BuiltinFunctions {
     }
 
     public static ListValue stripSpecialCharacters(ListValue list) {
-
         Value[] stripped = new Value[list.size()];
         int n = 0;
         for (Value element : list) {
@@ -866,7 +825,6 @@ public class BuiltinFunctions {
     }
 
     public static StringValue trim(StringValue v) {
-
         return new StringValue(v.getString().trim());
     }
 }

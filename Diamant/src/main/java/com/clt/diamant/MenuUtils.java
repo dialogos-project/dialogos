@@ -221,7 +221,8 @@ public class MenuUtils {
                         }
                         ListValue words = new ListValue(names);
                         long time = System.currentTimeMillis();
-                        SingleDocument.getPrefixLetters(words, "", maxLength);
+                        // the following call isn't doing anything:
+                        //SingleDocument.getPrefixLetters(words, "", maxLength);
                         time = System.currentTimeMillis() - time;
                         OptionPane.message(null, time + "ms");
                         break;
@@ -302,13 +303,6 @@ public class MenuUtils {
                         new DefaultFunctionDescriptor("rpc", new TypeVariable(),
                                 new Type[]{
                                     DeviceValue.TYPE, Type.String}, true),
-                        new DefaultFunctionDescriptor("getLetters", new ListType(
-                                Type.String),
-                                new Type[]{new ListType(Type.String), Type.String,
-                                    Type.Int}),
-                        new DefaultFunctionDescriptor("capitalize", new ListType(
-                                Type.String),
-                                new Type[]{new ListType(Type.String)}),
                         new DefaultFunctionDescriptor("getNBestList",
                                 new ListType(),
                                 new Type[]{new StructType()})};
