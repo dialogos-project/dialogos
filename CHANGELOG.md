@@ -1,6 +1,11 @@
-**Version 2.1.3, unreleased**
+**Version 2.1.3, 2019-09-01**
 
+- Plugins can now register functions to be available via DialogOS script. See #197 for details.
+  As an example, the tts plugin provides a function to query how long it would take to say a certain 
+  text.
 - a next synthesis will now always abort any previous syntheses that might still be ongoing (#196)
+- a synthesis node can be instructed to only start speaking when the previous synthesis has ended
+  (or, alternatively, to interrupt the previous synthesis)
 
 **Version 2.1.2, 2019-08-16**
 
