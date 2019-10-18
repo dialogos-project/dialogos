@@ -4,12 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 
@@ -20,6 +15,7 @@ import com.clt.event.DocumentChangeListener;
 import com.clt.gui.CmdButton;
 import com.clt.gui.GUI;
 import com.clt.gui.table.TableEditor;
+import com.clt.script.Script;
 import com.clt.script.ScriptEditor;
 import com.clt.script.UndoRedoTextComponent;
 
@@ -41,7 +37,6 @@ public class ScriptEditorDialog extends JDialog {
 
         this.result = text;
 
-        System.out.println("Type: " + type);
         this.editor = new ScriptEditor(type);
         if (text != null) {
             this.editor.setText(text);
@@ -82,21 +77,11 @@ public class ScriptEditorDialog extends JDialog {
         }
 
         p.add(new UndoRedoTextComponent(this.editor), BorderLayout.CENTER);
-        CmdButton ok = new CmdButton(new Runnable() {
-
-            public void run() {
-
-                ScriptEditorDialog.this.result = ScriptEditorDialog.this.editor.getText();
-                ScriptEditorDialog.this.dispose();
-            }
+        CmdButton ok = new CmdButton(() -> {
+            ScriptEditorDialog.this.result = ScriptEditorDialog.this.editor.getText();
+            ScriptEditorDialog.this.dispose();
         }, Resources.getString("OK"));
-        CmdButton cancel = new CmdButton(new Runnable() {
-
-            public void run() {
-
-                ScriptEditorDialog.this.dispose();
-            }
-        }, Resources.getString("Cancel"));
+        CmdButton cancel = new CmdButton(() -> ScriptEditorDialog.this.dispose(), Resources.getString("Cancel"));
         p.add(TableEditor.createButtonPanel(new JButton[0], new JButton[]{cancel, ok}), BorderLayout.SOUTH);
 
         this.setContentPane(p);
@@ -125,6 +110,12 @@ public class ScriptEditorDialog extends JDialog {
         d.setVisible(true);
 
         String modified = d.result;
+        try {
+            Script.parseFunctions(modified);
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(parent, Resources.getString("ScriptValidationError") + ":\n" + e.toString(), Resources.getString("Warning"),
+                    JOptionPane.WARNING_MESSAGE);
+        }
         if (modified != original) {
             functions.setScript(modified);
             functions.setName(d.name);
@@ -142,6 +133,12 @@ public class ScriptEditorDialog extends JDialog {
         d.setVisible(true);
 
         String modified = d.result;
+        try {
+            com.clt.srgf.Grammar.create(modified);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(parent, Resources.getString("GrammarValidationError") + ":\n" + e.toString(), Resources.getString("Warning"),
+                    JOptionPane.WARNING_MESSAGE);
+        }
         if (modified != original) {
             grammar.setGrammar(modified);
             grammar.setName(d.name);
