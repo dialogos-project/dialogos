@@ -1,3 +1,10 @@
+**unreleased**
+
+- better handling for user-defined functions that do not compile because of syntax errors. 
+  Now a warning is shown after editing the function. Note that the function may still fail 
+  when called at runtime (e.g. because you reference variables that are not accessible).
+  However, this will already solve many frequent issues (like missing semicolons. (fix for #102)
+
 **Version 2.1.3, 2019-09-01**
 
 - Plugins can now register functions to be available via DialogOS script. See #197 for details.
