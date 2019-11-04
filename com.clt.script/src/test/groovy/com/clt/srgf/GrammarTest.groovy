@@ -4,31 +4,35 @@ import com.clt.script.exp.Type;
 import com.clt.script.exp.Value;
 import com.clt.script.exp.values.IntValue;
 import com.clt.script.exp.values.StringValue
-import com.clt.script.parser.ParseException;
+import com.clt.script.parser.ParseException
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*
 
 
 class GrammarTest {
+
     /*
     // this test fails. It's sad: Sphinx supports left-recursive rules, just the DialogOS parser fails here.
     
     // AK commented this out instead of using @Ignore, because @Ignore causes Netbeans to
     // fold together all tests of this class as "skipped". Commenting out has the same effect.
     @Test public void testLeftRecursion() throws ParseException {
-        Grammar g = gr(RIGHT_RECURSIVE);
+        Grammar g = gr(LEFT_RECURSIVE);
         Value v = g.match("one minus two plus three", null);
         assertNotNull(v);
         assert v.getType().equals(Type.Int);
         assertEquals(2, ((IntValue) v).getInt());
     }
-    */
+    /* */
+
+    @Test
+    public void testLeftRecursionFails() {
+        Grammar g = gr(LEFT_RECURSIVE);
+        Collection<Exception> issues = g.check(true);
+        assert issues.size() == 1;
+        assert issues.iterator().next().toString().equals("java.lang.Exception: input is left recursive");
+    }
 
     @Test
     public void testRightRecursion() throws ParseException {
@@ -141,7 +145,7 @@ root $input;
 
 // right recursion for chain calculations is annoying because semantic evaluation will be right-to-left
 // and as a result subtraction will be wrong if implemented naively. The solution is to change to a separate
-// rule on subtraction, which reverses operation in following nodes (until another subtraction is found.
+// rule on subtraction, which reverses operation in following nodes (until another subtraction is found).
 $input =
    $zahl { $zahl }
  | $zahl plus  $input    { $zahl + $input    }
