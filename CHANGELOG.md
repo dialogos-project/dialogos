@@ -6,6 +6,7 @@
   no checking for grammars that are created from expressions at runtime. 
   However, this will already solve many frequent issues (like missing semicolons. 
   (fix for #102, #200, #201)
+- left recursion, which leads to unexplainable behaviour in the parser, is now warned about.
 
 **Version 2.1.3, 2019-09-01**
 
