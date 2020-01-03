@@ -781,28 +781,6 @@ public class Grammar implements NamedEntity {
         this.compiled = true;
     }
 
-    public void printPossibleTokens(PrintWriter w) {
-        if (!this.compiled) {
-            this.compile();
-        }
-
-        w.println("Possible first terminal symbols for rule...");
-        for (Rule r : this.getRules()) {
-            Set<Token<?>> ts = new TreeSet<>(Comparator.comparing(Token::toString));
-            ts.addAll(r.getPossibleTokens());
-
-            w.print(r + " : ");
-            for (Iterator<Token<?>> tokens = ts.iterator(); tokens.hasNext();) {
-                w.print(tokens.next());
-                if (tokens.hasNext()) {
-                    w.print(", ");
-                }
-            }
-            w.println();
-        }
-        w.flush();
-    }
-
     public Iterator<String> generate(GenerationOptions options) {
         Rule root = this.getRule(this.getRoot());
         final Iterator<StringBuilder> it
