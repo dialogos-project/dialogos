@@ -222,7 +222,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
         return Node.getLocalizedNodeTypeName(n.getClass());
     }
 
-    public static String getLocalizedNodeTypeName(Class<?> c) {
+    public static String getLocalizedNodeTypeName(Class<? extends Node> c) {
         Class<?> parent = c;
         while (parent != null) {
             try {
@@ -231,8 +231,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
                 parent = parent.getSuperclass();
             }
         }
-
-        return Node.getNodeTypeName(c);
+        throw new RuntimeException("This was supposed to be unreachable (but apparently it is reachable)");
     }
 
     protected static String getNodeTypeName(Class<?> c) {
