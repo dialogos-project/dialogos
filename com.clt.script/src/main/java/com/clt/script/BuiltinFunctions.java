@@ -746,6 +746,15 @@ public class BuiltinFunctions {
         }
     }
 
+    public static void sleep(IntValue duration) {
+        try {
+            Thread.sleep(duration.getInt());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static void error(StringValue message) {
         throw new EvaluationException(message.getString());
     }

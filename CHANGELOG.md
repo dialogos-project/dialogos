@@ -7,6 +7,7 @@
   However, this will already solve many frequent issues (like missing semicolons. 
   (fix for #102, #200, #201)
 - left recursion, which leads to unexplainable behaviour in the parser, is now warned about.
+- new script function `sleep` which does what you'd expect.
 
 **Version 2.1.3, 2019-09-01**
 
