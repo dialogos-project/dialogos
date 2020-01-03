@@ -122,12 +122,10 @@ public class Grammar implements NamedEntity {
         private String description;
 
         private Format(String description) {
-
             this.description = description;
         }
 
         public String getDescription() {
-
             return this.description;
         }
     }
@@ -154,12 +152,10 @@ public class Grammar implements NamedEntity {
      * GARBAGE and VOID
      */
     public Grammar() {
-
         this(null);
     }
 
     public Grammar(String name) {
-
         this.name = name;
         this.rules = new HashMap<String, Rule>();
         this.defaultRules = new HashMap<String, Rule>();
@@ -174,13 +170,11 @@ public class Grammar implements NamedEntity {
 
             @Override
             public String getGlobalName() {
-
                 return this.getName();
             }
 
             @Override
             void export(PrintWriter w, Format format) {
-
                 switch (format) {
                     case SRGF:
                     case TEMIC:
@@ -222,18 +216,15 @@ public class Grammar implements NamedEntity {
 
                     @Override
                     public String getGlobalName() {
-
                         return this.getName();
                     }
 
                     @Override
                     public boolean isVoid() {
-
                         return true;
                     }
 
                     void export(PrintWriter w, Grammar.Format format) {
-
                         switch (format) {
                             case SRGF:
                             case TEMIC:
@@ -278,7 +269,6 @@ public class Grammar implements NamedEntity {
 
     // This method shouldn't be called directly. Use GrammarContext.add() instead.
     void setContext(GrammarContext context) {
-
         if (context != this.context) {
             if (this.context != null) {
                 GrammarContext oldContext = this.context;
@@ -291,14 +281,12 @@ public class Grammar implements NamedEntity {
     }
 
     private void addDefaultRule(Rule r) {
-
         r.setGrammar(this);
         this.defaultRules.put(r.getName(), r);
         r.precompileTokens(new Object());
     }
 
     public void setName(String name) {
-
         this.name = name;
     }
 
@@ -306,47 +294,38 @@ public class Grammar implements NamedEntity {
      * Return the name of this grammar.
      */
     public final String getName() {
-
         return this.name;
     }
 
     public String getLanguage() {
-
         return this.getProperty("language");
     }
 
     public void setLanguage(String language) {
-
         this.setProperty("language", language);
     }
 
     public void setRoot(String root) {
-
         this.root = root;
     }
 
     public String getRoot() {
-
         return this.root;
     }
 
     public void addImport(Import importTarget) {
-
         this.imports.add(importTarget);
     }
 
     public void setTagFormat(String tagFormat) {
-
         this.tagFormat = tagFormat;
     }
 
     public String getTagFormat() {
-
         return this.tagFormat;
     }
 
     public void setProperty(String key, String value) {
-
         if (key.equals("grammar")) {
             this.setName(value);
         } else {
@@ -355,32 +334,26 @@ public class Grammar implements NamedEntity {
     }
 
     public String getProperty(String key) {
-
         return this.features.get(key);
     }
 
     public void setMetaData(String key, String value) {
-
         this.metadata.put(key, value);
     }
 
     public String getMetaData(String key) {
-
         return this.metadata.get(key);
     }
 
     public void addLexicon(String lexicon) {
-
         this.lexica.add(lexicon);
     }
 
     public List<String> getLexica() {
-
         return Collections.unmodifiableList(this.lexica);
     }
 
     public Script getScript() {
-
         return this.script;
     }
 
@@ -388,16 +361,12 @@ public class Grammar implements NamedEntity {
      * Check that all rules, especially the tags contained in rule expansions,
      * are valid.
      */
-    public Collection<Exception> check()
-            throws SemanticException {
-
+    public Collection<Exception> check() throws SemanticException {
         return this.check(false);
     }
 
-    public Collection<Exception> check(boolean forceRoot)
-            throws SemanticException {
-
-        Collection<Exception> warnings = new ArrayList<Exception>();
+    public Collection<Exception> check(boolean forceRoot) throws SemanticException {
+        Collection<Exception> warnings = new ArrayList<>();
         this.compile();
         for (Rule r : this.getRules()) {
             r.check(warnings);
@@ -420,7 +389,6 @@ public class Grammar implements NamedEntity {
      */
     @SuppressWarnings("unused")
     private Grammar optimize(boolean removeTags) {
-
         this.check();
 
         Grammar g = new Grammar();
@@ -451,7 +419,6 @@ public class Grammar implements NamedEntity {
      * Optimize this grammar by modifying its rules in place
      */
     public void optimizeInPlace(boolean removeTags) {
-
         this.check();
 
         /*
@@ -464,7 +431,6 @@ public class Grammar implements NamedEntity {
     }
 
     public void removeUnusedRules(Rule[] entryPoints, ParseOptions options) {
-
         Set<Rule> rules = new HashSet<Rule>();
         for (int i = 0; i < entryPoints.length; i++) {
             rules.add(entryPoints[i]);
@@ -504,7 +470,6 @@ public class Grammar implements NamedEntity {
     }
 
     public Rule[] getRecursiveRules() {
-
         Collection<Rule> rules = new LinkedList<Rule>();
         ParseOptions options = new ParseOptions();
         for (Rule r : this.getRules()) {
@@ -516,9 +481,7 @@ public class Grammar implements NamedEntity {
         return rules.toArray(new Rule[rules.size()]);
     }
 
-    private Rule[] sortByDependencies(boolean onlyPublicRules)
-            throws IllegalStateException {
-
+    private Rule[] sortByDependencies(boolean onlyPublicRules) throws IllegalStateException {
         if (this.getRoot() == null) {
             throw new IllegalStateException("No root specified");
         }
@@ -551,7 +514,7 @@ public class Grammar implements NamedEntity {
             }
         }
 
-        final Map<Rule, Integer> priority = new HashMap<Rule, Integer>();
+        final Map<Rule, Integer> priority = new HashMap<>();
         for (Rule r : usedRulesMap.keySet()) {
             priority.put(r, new Integer(0));
         }
@@ -577,16 +540,13 @@ public class Grammar implements NamedEntity {
 
         } while (changed);
 
-        Collection<Rule> sorted = new TreeSet<Rule>(new Comparator<Rule>() {
+        Collection<Rule> sorted = new TreeSet<Rule>((r1, r2) -> {
 
-            public int compare(Rule r1, Rule r2) {
-
-                int result = priority.get(r1).intValue() - priority.get(r2).intValue();
-                if (result == 0) {
-                    return r1.getName().compareTo(r2.getName());
-                } else {
-                    return result;
-                }
+            int result = priority.get(r1).intValue() - priority.get(r2).intValue();
+            if (result == 0) {
+                return r1.getName().compareTo(r2.getName());
+            } else {
+                return result;
             }
         });
         sorted.addAll(priority.keySet());
@@ -601,7 +561,6 @@ public class Grammar implements NamedEntity {
      * really only useful to determine the set of externally linked rules).
      */
     private Set<Rule> getUsedRules(Rule r, ParseOptions options) {
-
         Collection<Rule> s = new HashSet<Rule>();
         if (r != null) {
             s.add(r);
@@ -629,7 +588,6 @@ public class Grammar implements NamedEntity {
      * set is a string.
      */
     public Set<String> getWords(ParseOptions options) {
-
         Set<String> s = new HashSet<String>();
         for (Rule r : this.getRules()) {
             r.collectWords(s, options);
@@ -642,7 +600,6 @@ public class Grammar implements NamedEntity {
      * root. Each element of the set is a string.
      */
     public Set<String> getUsedWords(ParseOptions options) {
-
         if (this.getRoot() == null) {
             return this.getWords(options);
         } else {
@@ -674,9 +631,7 @@ public class Grammar implements NamedEntity {
      * same name
      * @see Rule
      */
-    public void add(Rule r)
-            throws SemanticException {
-
+    public void add(Rule r) throws SemanticException {
         if (this.getRule(r.getName()) != null) {
             throw new SemanticException(this,
                     "Duplicate definition of grammar rule '"
@@ -694,9 +649,7 @@ public class Grammar implements NamedEntity {
      *
      * @see Rule
      */
-    public void remove(Rule r)
-            throws SemanticException {
-
+    public void remove(Rule r) throws SemanticException {
         this.rules.remove(r.getName());
         r.setGrammar(null);
 
@@ -708,7 +661,6 @@ public class Grammar implements NamedEntity {
      * <code>null</code> if no such rule exists.
      */
     public Rule getRule(String name) {
-
         Rule r = this.rules.get(name);
         if (r == null) {
             r = this.defaultRules.get(name);
@@ -717,7 +669,6 @@ public class Grammar implements NamedEntity {
     }
 
     public Rule resolveRule(String name) {
-
         Rule r = this.getRule(name);
 
         if (r == null) {
@@ -730,7 +681,6 @@ public class Grammar implements NamedEntity {
     }
 
     public boolean isSpecialRule(String name) {
-
         return this.defaultRules.containsKey(name);
     }
 
@@ -738,12 +688,10 @@ public class Grammar implements NamedEntity {
      * Return an iterator of all {@link Rule}s of this grammar.
      */
     public Collection<Rule> getRules() {
-
         return Collections.unmodifiableCollection(this.rules.values());
     }
 
     public Collection<Rule> getClasses() {
-
         Collection<Rule> classes = new ArrayList<Rule>();
         for (Rule r : this.getRules()) {
             if (r.isClass()) {
@@ -754,7 +702,6 @@ public class Grammar implements NamedEntity {
     }
 
     public Collection<Rule> getImportedRules() {
-
         ParseOptions options = new ParseOptions();
         Set<Rule> rules = new HashSet<Rule>();
         rules.addAll(this.getRules());
@@ -777,7 +724,6 @@ public class Grammar implements NamedEntity {
     }
 
     public Collection<Grammar> getExternalGrammars() {
-
         Set<Rule> usedRules = new HashSet<Rule>();
         ParseOptions options = new ParseOptions();
 
@@ -802,10 +748,9 @@ public class Grammar implements NamedEntity {
      * to parse any input.
      */
     public void compile() {
-
         Object id = new Object();
 
-        Collection<Rule> rules = new HashSet<Rule>(this.getRules());
+        Collection<Rule> rules = new HashSet<>(this.getRules());
 
         boolean changed = false;
         do {
@@ -816,7 +761,7 @@ public class Grammar implements NamedEntity {
                 }
             }
 
-            for (Rule r : new HashSet<Rule>(rules)) {
+            for (Rule r : new HashSet<>(rules)) {
                 if (r.precompileTokens(id)) {
                     changed = true;
                 }
@@ -837,20 +782,13 @@ public class Grammar implements NamedEntity {
     }
 
     public void printPossibleTokens(PrintWriter w) {
-
         if (!this.compiled) {
             this.compile();
         }
 
         w.println("Possible first terminal symbols for rule...");
         for (Rule r : this.getRules()) {
-            Set<Token<?>> ts = new TreeSet<Token<?>>(new Comparator<Token<?>>() {
-
-                public int compare(Token<?> o1, Token<?> o2) {
-
-                    return o1.toString().compareTo(o2.toString());
-                }
-            });
+            Set<Token<?>> ts = new TreeSet<>(Comparator.comparing(Token::toString));
             ts.addAll(r.getPossibleTokens());
 
             w.print(r + " : ");
@@ -866,7 +804,6 @@ public class Grammar implements NamedEntity {
     }
 
     public Iterator<String> generate(GenerationOptions options) {
-
         Rule root = this.getRule(this.getRoot());
         final Iterator<StringBuilder> it
                 = root.generate(new StringBuilder(), options);
@@ -930,15 +867,12 @@ public class Grammar implements NamedEntity {
      *
      * @return The result of the evaluation of the grammars semantic tags
      */
-    public Value match(Word[] input, String rulename)
-            throws SemanticException {
-
+    public Value match(Word[] input, String rulename) throws SemanticException {
         return this.match(input, rulename, null);
     }
 
     public Value match(Word[] input, String rulename, ParseOptions options)
             throws SemanticException {
-
         if (options == null) {
             options = new ParseOptions();
         } else {
@@ -1009,10 +943,8 @@ public class Grammar implements NamedEntity {
      * {@link ParseOptions#maxParses} best parse trees
      * @see ParseOptions
      */
-    public ParseNode[] getParseTrees(String input, String rulename,
-            ParseOptions options)
+    public ParseNode[] getParseTrees(String input, String rulename, ParseOptions options)
             throws SemanticException {
-
         return this.getParseTrees(new Input(input), rulename, options);
     }
 
@@ -1024,17 +956,13 @@ public class Grammar implements NamedEntity {
      * {@link ParseOptions#maxParses} best parse trees
      * @see ParseOptions
      */
-    public ParseNode[] getParseTrees(Word[] input, String rulename,
-            ParseOptions options)
+    public ParseNode[] getParseTrees(Word[] input, String rulename, ParseOptions options)
             throws SemanticException {
-
         return this.getParseTrees(new Input(input), rulename, options);
     }
 
-    private ParseNode[] getParseTrees(Input input, String rulename,
-            ParseOptions options)
+    private ParseNode[] getParseTrees(Input input, String rulename, ParseOptions options)
             throws SemanticException {
-
         Parse[] p = this.parse(input, rulename, options);
         ParseNode[] result = new ParseNode[p.length];
         for (int i = 0; i < result.length; i++) {
@@ -1062,7 +990,7 @@ public class Grammar implements NamedEntity {
 
         Parse mainParse = new Parse(this, start, in, options);
 
-        Map<Integer, PenaltyList> penaltyLists = new HashMap<Integer, PenaltyList>();
+        Map<Integer, PenaltyList> penaltyLists = new HashMap<>();
         Integer lowestPenalty = new Integer(mainParse.getPenalty());
         PenaltyList p0 = new PenaltyList();
         p0.add(mainParse);
@@ -1111,42 +1039,32 @@ public class Grammar implements NamedEntity {
             l.add(p);
         }
 
-        final Comparator<Parse> penaltyComparator = new Comparator<Parse>() {
-
-            public int compare(Parse p1, Parse p2) {
-
-                // sort lower penalty or greater confidence first
-                int result = p1.getPenalty() - p2.getPenalty();
-                if (result == 0) {
-                    if (p1.getProbability() > p2.getProbability()) {
-                        result = -1;
-                    } else if (p1.getProbability() < p2.getProbability()) {
-                        result = 1;
-                    } else {
-                        result = 0;
-                    }
+        final Comparator<Parse> penaltyComparator = (p1, p2) -> {
+            // sort lower penalty or greater confidence first
+            int result = p1.getPenalty() - p2.getPenalty();
+            if (result == 0) {
+                if (p1.getProbability() > p2.getProbability()) {
+                    result = -1;
+                } else if (p1.getProbability() < p2.getProbability()) {
+                    result = 1;
+                } else {
+                    result = 0;
                 }
-                return result;
             }
+            return result;
         };
 
-        Collection<Parse> results = new TreeSet<Parse>(new Comparator<Parse>() {
-
-            public int compare(Parse p1, Parse p2) {
-
-                int result = penaltyComparator.compare(p1, p2);
-                if (result == 0) {
-                    return System.identityHashCode(p1) - System.identityHashCode(p2);
-                } else {
-                    return result;
-                }
+        Collection<Parse> results = new TreeSet<Parse>((p1, p2) -> {
+            int result = penaltyComparator.compare(p1, p2);
+            if (result == 0) {
+                return System.identityHashCode(p1) - System.identityHashCode(p2);
+            } else {
+                return result;
             }
         }) {
-
             Map<ParseNode, Parse> parseTrees = new HashMap<>();
 
             public boolean add(Parse parse) {
-
                 parse.postProcess();
 
                 if (options.buildParseTree && options.eliminateDuplicateParseTrees) {
@@ -1278,7 +1196,6 @@ public class Grammar implements NamedEntity {
     public void export(OutputStream out, Grammar.Format format,
             Tokenizer tokenizer)
             throws IOException {
-
         PrintWriter w;
         switch (format) {
             case SRGF:
@@ -1325,12 +1242,10 @@ public class Grammar implements NamedEntity {
      * @see Format#SRGF
      */
     public void export(Writer out, Grammar.Format format) {
-
         this.export(out, format, null);
     }
 
     public void export(Writer out, Grammar.Format format, Tokenizer tokenizer) {
-
         PrintWriter w;
         switch (format) {
             case SRGF:
@@ -1395,10 +1310,9 @@ public class Grammar implements NamedEntity {
      * @see Format#SRGF
      */
     private void exportImpl(PrintWriter w, Grammar.Format format, Tokenizer tokenizer) {
-        Collection<Rule> allRules = new ArrayList<Rule>(this.rules.size() + this.defaultRules.size());
+        Collection<Rule> allRules = new ArrayList<>(this.rules.size() + this.defaultRules.size());
         allRules.addAll(this.rules.values());
         allRules.addAll(this.defaultRules.values());
-
         switch (format) {
             case SRGF:
                 if (this.getName() != null) {
@@ -1631,7 +1545,6 @@ public class Grammar implements NamedEntity {
     }
 
     public String toString() {
-
         return this.toString(Format.SRGF);
     }
 
@@ -1647,7 +1560,6 @@ public class Grammar implements NamedEntity {
      * @see Word
      */
     static final List<String> tokenize(String s) {
-
         List<String> words = new LinkedList<String>();
         StringTokenizer tokenizer = new StringTokenizer(s, " \t\n", false);
 
@@ -1659,7 +1571,6 @@ public class Grammar implements NamedEntity {
     }
 
     public static final Word[] splitWords(String s) {
-
         List<String> words = Grammar.tokenize(s);
         Word[] result = new Word[words.size()];
         int i = 0;
@@ -1686,7 +1597,6 @@ public class Grammar implements NamedEntity {
      * result.
      */
     public static String substituteName(String filter, String name) {
-
         StringBuilder b = new StringBuilder(filter.length());
         for (int i = 0; i < filter.length(); i++) {
             char c = filter.charAt(i);
@@ -1786,7 +1696,6 @@ public class Grammar implements NamedEntity {
         try {
             return com.clt.script.parser.Parser.parseSRGF(r, env);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new ParseException(e.toString());
         }
     }

@@ -1,3 +1,13 @@
+**unreleased**
+
+- better handling for user-defined functions and grammars that do not compile because of syntax errors. 
+  Now a warning is shown after editing the function/grammar. Note that functions may still fail 
+  when called at runtime (e.g. because you reference variables that are not accessible) and there is 
+  no checking for grammars that are created from expressions at runtime. 
+  However, this will already solve many frequent issues (like missing semicolons. 
+  (fix for #102, #200, #201)
+- left recursion, which leads to unexplainable behaviour in the parser, is now warned about.
+
 **Version 2.1.3, 2019-09-01**
 
 - Plugins can now register functions to be available via DialogOS script. See #197 for details.

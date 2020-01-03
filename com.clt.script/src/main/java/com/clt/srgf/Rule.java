@@ -45,7 +45,6 @@ public class Rule implements Comparable<Rule>, NamedEntity {
      */
     public Rule(boolean isPublic, boolean isClass, String name,
             Expansion expansion) {
-
         this.grammar = null;
         this.name = name;
         this.isPublic = isPublic;
@@ -57,17 +56,14 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     public final Grammar getGrammar() {
-
         return this.grammar;
     }
 
     void setGrammar(Grammar grammar) {
-
         this.grammar = grammar;
     }
 
     public void check(Collection<Exception> warnings) {
-
         this.expansion.check(new HashSet<String>(), warnings);
         if (this.getPossibleTokens().contains(new RuleToken(this))) {
             warnings.add(new Exception(this + " is left recursive"));
@@ -75,7 +71,6 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     public int compareTo(Rule r) {
-
         int result = this.getName().compareTo(r.getName());
         if (this.getGrammar() == r.getGrammar()) {
             return result;
@@ -90,7 +85,6 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     public Rule optimize(boolean removeTags) {
-
         return new Rule(this.isPublic(), this.isClass(), this.getName(),
                 this.expansion.optimize(removeTags));
     }
@@ -98,7 +92,6 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     @SuppressWarnings("unchecked")
     public Iterator<StringBuilder> generate(final StringBuilder prefix,
             final GenerationOptions options) {
-
         if (this.isClass() && (options.classFilter != null)) {
             String s = Grammar.substituteName(options.classFilter, this.getName());
 
@@ -157,27 +150,22 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     public boolean isPublic() {
-
         return this.isPublic;
     }
 
     public void setPublic(boolean isPublic) {
-
         this.isPublic = isPublic;
     }
 
     public boolean isClass() {
-
         return this.isClass;
     }
 
     public String getName() {
-
         return this.name;
     }
 
     public String getGlobalName() {
-
         if ((this.getGrammar() != null) && (this.getGrammar().getName() != null)) {
             return this.getGrammar().getName() + "." + this.getName();
         } else {
@@ -186,7 +174,6 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     public String getNormalizedRuleName(Grammar.Format format) {
-
         if (format == Grammar.Format.VOCON_G) {
             // return getGlobalName().replace('.', '_');
             return this.getGlobalName();
@@ -197,17 +184,14 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     Expansion getExpansion() {
-
         return this.expansion;
     }
 
     public boolean isVoid() {
-
         return this.isVoid(this.expansion);
     }
 
     private boolean isVoid(Expansion e) {
-
         if ((e instanceof Rulename) && ((Rulename) e).getRulename().equals("VOID")) {
             return true;
         } else if ((e instanceof Alternatives) && (((Alternatives) e).size() == 0)
@@ -223,8 +207,7 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     List<Item> createInstance(Input input, ParseOptions options) {
-
-        List<Item> instances = new ArrayList<Item>(2);
+        List<Item> instances = new ArrayList<>(2);
         Collection<String> words = options.getDynamicVocabularyKeys(this.getName());
         if (words != null) {
             // System.out.println("DynVoc for rule " + getName());
@@ -282,7 +265,6 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     Collection<TreeMatch> match(TreeNode node, Grammar grammar,
             ParseOptions options,
             boolean insideFillerRule) {
-
         LinkedList<TreeNode> children = new LinkedList<TreeNode>();
         for (int i = 0; i < node.getChildCount(); i++) {
             TreeNode n = node.getChildAt(i);
@@ -318,14 +300,12 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     Collection<TreeMatch> match(TreeNode parent, LinkedList<TreeNode> children,
             Grammar grammar,
             ParseOptions options, boolean insideFillerRule) {
-
         return this.matchImpl(new TreeMatch(parent, children, insideFillerRule),
                 grammar, options);
     }
 
     private Collection<TreeMatch> matchImpl(TreeMatch match, Grammar grammar,
             ParseOptions options) {
-
         List<TreeMatch> l = new LinkedList<TreeMatch>();
         Collection<String> words = options.getDynamicVocabularyKeys(this.getName());
         if (words != null) {
@@ -354,9 +334,8 @@ public class Rule implements Comparable<Rule>, NamedEntity {
 
                     l.add(dynMatch);
                     /* +++ */
-                    l
-                            .addAll(dynMatch
-                                    .createSparseBranches(grammar, options, false, this));
+                    l.addAll(dynMatch
+                        .createSparseBranches(grammar, options, false, this));
                 }
             }
         }
@@ -371,12 +350,10 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     boolean collectRules(Collection<Rule> s, ParseOptions options) {
-
         return this.expansion.collectRules(s, options);
     }
 
     boolean collectWords(Collection<String> s, ParseOptions options) {
-
         boolean changed = false;
         if (options != null) {
             Collection<String> entry
@@ -398,7 +375,6 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     boolean precompileTokens(Object id) {
-
         if (this.getGrammar() == null) {
             throw new IllegalStateException(this.getGlobalName()
                     + " is not part of a grammar");
@@ -410,17 +386,14 @@ public class Rule implements Comparable<Rule>, NamedEntity {
     }
 
     Set<Token<?>> getPossibleTokens() {
-
         return this.expansion.getPossibleTokens();
     }
 
     boolean isDirty() {
-
         return this.expansion.isDirty() || !this.compilationStable;
     }
 
     void export(PrintWriter w, Grammar.Format format) {
-
         switch (format) {
             case SRGF:
                 if (this.isPublic()) {
@@ -486,28 +459,23 @@ public class Rule implements Comparable<Rule>, NamedEntity {
 
     @Override
     public String toString() {
-
         return this.getName();
     }
 
     // RuleTokens are only used to mark rules. They never match any input.
-    static class RuleToken
-            extends Token<Rule> {
+    static class RuleToken extends Token<Rule> {
 
         public RuleToken(Rule r) {
-
             super(r);
         }
 
         @Override
         boolean match(Input input) {
-
             return false;
         }
 
         @Override
         public String toString() {
-
             return "$" + this.getSource().getGlobalName();
         }
     }
@@ -518,26 +486,22 @@ public class Rule implements Comparable<Rule>, NamedEntity {
         Collection<Input.Match> matches;
 
         public DynVocItem(Collection<Input.Match> matches) {
-
             super(1, 1);
             this.matches = matches;
         }
 
         private DynVocItem(DynVocItem item) {
-
             super(item);
             this.matches = item.matches;
         }
 
         @Override
         public Item copy() {
-
             return new DynVocItem(this);
         }
 
         @Override
         protected List<Parse> shift_(Parse parse) {
-
             this.setDone(true);
             List<Parse> continuations = new ArrayList<Parse>(this.matches.size());
             for (Iterator<Input.Match> it = this.matches.iterator(); it.hasNext();) {

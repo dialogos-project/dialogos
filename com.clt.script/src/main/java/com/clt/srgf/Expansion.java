@@ -30,12 +30,10 @@ public abstract class Expansion {
     private int repeatMax; // an expansion with repeatMax==0 is equivalent to NULL
 
     public Expansion() {
-
         this(null);
     }
 
     public Expansion(Expansion owner) {
-
         this.owner = owner;
 
         // default: expansion is evaluated exactly once
@@ -44,17 +42,14 @@ public abstract class Expansion {
     }
 
     public final Rule getRule() {
-
         return this.rule;
     }
 
     void setRule(Rule rule) {
-
         this.rule = rule;
     }
 
     public void setRepeat(int min, int max) {
-
         if ((max != -1) && (min > max)) {
             throw new IllegalArgumentException("must be min <= max or max == -1");
         }
@@ -63,32 +58,26 @@ public abstract class Expansion {
     }
 
     public int getRepeatMin() {
-
         return this.repeatMin;
     }
 
     public int getRepeatMax() {
-
         return this.repeatMax;
     }
 
     protected Expansion getOwner() {
-
         return this.owner;
     }
 
     protected void setOwner(Expansion owner) {
-
         this.owner = owner;
     }
 
     boolean isDirty() {
-
         return this.compileID == null;
     }
 
     protected void makeDirty() {
-
         this.compileID = null;
         if (this.owner != null) {
             this.owner.makeDirty();
@@ -96,12 +85,10 @@ public abstract class Expansion {
     }
 
     static <T> Set<T> createSet(int size) {
-
         return new HashSet<T>(size * 4 / 3 + 1, 0.75f);
     }
 
     final boolean canMatch(Input input) {
-
         for (Iterator<Token<?>> it = this.possibleTokens.iterator(); it.hasNext();) {
             Token<?> t = it.next();
             if (t.match(input)) {
@@ -112,12 +99,10 @@ public abstract class Expansion {
     }
 
     final boolean addPossibleToken(Token<?> t) {
-
         return this.possibleTokens.add(t);
     }
 
     final boolean computePossibleTokens(Object id) {
-
         boolean changed = false;
 
         if (this.compileID != id) {
@@ -146,7 +131,6 @@ public abstract class Expansion {
 
     final Iterator<StringBuilder> generate(StringBuilder prefix,
             final GenerationOptions options) {
-
         int min = this.getRepeatMin();
         int max = this.getRepeatMax();
         if (max == -1) {
@@ -191,7 +175,6 @@ public abstract class Expansion {
     private Iterator<StringBuilder> generateRepetitions(
             final Iterator<StringBuilder> source,
             final GenerationOptions options, final int n) {
-
         if (n == 0) {
             return source;
         } else {
@@ -224,27 +207,22 @@ public abstract class Expansion {
     }
 
     Object getCompileID() {
-
         return this.compileID;
     }
 
     final Set<Token<?>> getPossibleTokens() {
-
         return this.possibleTokens;
     }
 
     boolean collectRules(Collection<Rule> s, ParseOptions options) {
-
         return false;
     }
 
     boolean collectWords(Collection<String> s, ParseOptions options) {
-
         return false;
     }
 
     final Expansion optimize(boolean removeTags) {
-
         Set<Token<?>> s = this.getPossibleTokens();
         if ((this.getRepeatMax() == 0) || Token.onlyEmptyToken(s, removeTags)) {
             Expansion e = new Sequence();
@@ -261,7 +239,6 @@ public abstract class Expansion {
 
     final Collection<TreeMatch> match(TreeMatch match, Grammar grammar,
             ParseOptions options) {
-
         Collection<TreeMatch> continuations = Collections.singleton(match);
 
         // Idee zur Behandlung von n* et.al.:
@@ -323,7 +300,6 @@ public abstract class Expansion {
     abstract boolean eq(Expansion e);
 
     private void write(PrintWriter w, Grammar.Format format, boolean parens) {
-
         if (format == Grammar.Format.GRXML) {
             if (parens) {
                 ((com.clt.xml.XMLWriter) w).openElement("item");
@@ -344,7 +320,6 @@ public abstract class Expansion {
     }
 
     public void export(PrintWriter w, Grammar.Format format) {
-
         boolean multiToken
                 = ((this instanceof NonTerminal) && (((NonTerminal) this).size() > 1))
                 || ((this instanceof Terminal) && (((Terminal) this).size() > 1));
@@ -532,7 +507,6 @@ public abstract class Expansion {
     WordGraph.Node[] createWordGraph(WordGraph.Node predecessors[],
             boolean mergePrivateRules,
             Tokenizer tokenizer) {
-
         int min = this.getRepeatMin();
         int max = this.getRepeatMax();
         if ((min == 1) && (max == 1)) {
@@ -589,15 +563,12 @@ public abstract class Expansion {
 
     @Override
     public String toString() {
-
         StringWriter w = new StringWriter();
         this.export(new PrintWriter(w), Grammar.Format.SRGF);
         return w.toString();
     }
 
-    public static Expansion parse(String in)
-            throws Exception {
-
+    public static Expansion parse(String in) throws Exception {
         return com.clt.script.parser.Parser.parseRuleExpansion(in, null);
     }
 }

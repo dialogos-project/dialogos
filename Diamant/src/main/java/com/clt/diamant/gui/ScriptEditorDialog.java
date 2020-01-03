@@ -3,13 +3,10 @@ package com.clt.diamant.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.util.Collection;
+import java.util.Collections;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 
@@ -20,6 +17,7 @@ import com.clt.event.DocumentChangeListener;
 import com.clt.gui.CmdButton;
 import com.clt.gui.GUI;
 import com.clt.gui.table.TableEditor;
+import com.clt.script.Script;
 import com.clt.script.ScriptEditor;
 import com.clt.script.UndoRedoTextComponent;
 
@@ -36,12 +34,10 @@ public class ScriptEditorDialog extends JDialog {
     private String name;
 
     private ScriptEditorDialog(Component parent, String windowTitle, ScriptEditor.Type type, String text, String name) {
-
         super(GUI.getFrameForComponent(parent), windowTitle, true);
 
         this.result = text;
 
-        System.out.println("Type: " + type);
         this.editor = new ScriptEditor(type);
         if (text != null) {
             this.editor.setText(text);
@@ -74,7 +70,6 @@ public class ScriptEditorDialog extends JDialog {
 
                 @Override
                 public void documentChanged(DocumentEvent evt) {
-
                     ScriptEditorDialog.this.name = nameField.getText();
                 }
             });
@@ -82,21 +77,11 @@ public class ScriptEditorDialog extends JDialog {
         }
 
         p.add(new UndoRedoTextComponent(this.editor), BorderLayout.CENTER);
-        CmdButton ok = new CmdButton(new Runnable() {
-
-            public void run() {
-
-                ScriptEditorDialog.this.result = ScriptEditorDialog.this.editor.getText();
-                ScriptEditorDialog.this.dispose();
-            }
+        CmdButton ok = new CmdButton(() -> {
+            ScriptEditorDialog.this.result = ScriptEditorDialog.this.editor.getText();
+            ScriptEditorDialog.this.dispose();
         }, Resources.getString("OK"));
-        CmdButton cancel = new CmdButton(new Runnable() {
-
-            public void run() {
-
-                ScriptEditorDialog.this.dispose();
-            }
-        }, Resources.getString("Cancel"));
+        CmdButton cancel = new CmdButton(ScriptEditorDialog.this::dispose, Resources.getString("Cancel"));
         p.add(TableEditor.createButtonPanel(new JButton[0], new JButton[]{cancel, ok}), BorderLayout.SOUTH);
 
         this.setContentPane(p);
@@ -109,7 +94,6 @@ public class ScriptEditorDialog extends JDialog {
     }
 
     public static String editScript(Component parent, String script) {
-
         ScriptEditorDialog d = new ScriptEditorDialog(parent, Resources.getString("EditScript"),
                 ScriptEditor.Type.SCRIPT, script, null);
         d.setVisible(true);
@@ -118,13 +102,18 @@ public class ScriptEditorDialog extends JDialog {
     }
 
     public static boolean editFunctions(Component parent, Functions functions) {
-
         String original = functions.getScript();
         ScriptEditorDialog d = new ScriptEditorDialog(parent, Resources.getString("EditFunctions"),
                 ScriptEditor.Type.FUNCTIONS, original, functions.getName());
         d.setVisible(true);
 
         String modified = d.result;
+        try {
+            Script.parseFunctions(modified);
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(parent, Resources.getString("ScriptValidationError") + ":\n" + e.toString(), Resources.getString("Warning"),
+                    JOptionPane.WARNING_MESSAGE);
+        }
         if (modified != original) {
             functions.setScript(modified);
             functions.setName(d.name);
@@ -135,13 +124,28 @@ public class ScriptEditorDialog extends JDialog {
     }
 
     public static boolean editGrammar(Component parent, Grammar grammar) {
-
         String original = grammar.getGrammar();
         ScriptEditorDialog d = new ScriptEditorDialog(parent, Resources.getString("EditGrammar"),
                 ScriptEditor.Type.SRGF, original, grammar.getName());
         d.setVisible(true);
 
         String modified = d.result;
+        Collection<Exception> grammarIssues = null;
+        try {
+            com.clt.srgf.Grammar gr = com.clt.srgf.Grammar.create(modified);
+            grammarIssues = gr.check(true);
+        } catch (Exception e) {
+            grammarIssues = Collections.singleton(e);
+        }
+        if (grammarIssues != null && !grammarIssues.isEmpty()) {
+            StringBuilder sb = new StringBuilder(Resources.getString("GrammarValidationError") + ":\n");
+            for (Exception e : grammarIssues) {
+                sb.append(e.getLocalizedMessage());
+                sb.append("\n");
+            }
+            JOptionPane.showMessageDialog(parent, sb.toString(), Resources.getString("Warning"),
+                    JOptionPane.WARNING_MESSAGE);
+        }
         if (modified != original) {
             grammar.setGrammar(modified);
             grammar.setName(d.name);
