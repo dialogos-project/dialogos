@@ -53,7 +53,7 @@ public class Plugin implements com.clt.dialogos.plugin.Plugin {
     return Arrays.stream(getSynthesizer().getAvailableVoices())
         .map(voice -> new VoiceName(voice.getName(), voice))
         .collect(Collectors.toList());
-}
+  }
 
   @Override
   public String getId() {
