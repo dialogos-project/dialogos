@@ -5,6 +5,29 @@ dependencies {
   implementation project(':com.clt.xml')
   implementation project(':com.clt.script')
 
+
+  // include pre-release version of MaryTTS (works with recent Java versions)
+  
+  implementation 'gov.nist.math:Jampack:1.0'
+  
+  implementation('com.github.marytts.marytts:marytts-runtime:1df2faf45a') {
+    exclude group: 'com.github.marytts.marytts', module: 'Jampack'
+  }
+
+  implementation('com.github.marytts.marytts:marytts-lang-de:1df2faf45a') {
+    exclude group: 'com.github.marytts.marytts', module: 'Jampack'
+    exclude group: 'de.dfki.mary', module: 'marytts-runtime'
+  }
+
+  // include MaryTTS voices, with dependencies forced to pre-release MaryTTS;
+  // note that MaryTTS 5.2 uses group 'de.dfki.mary', but the pre-release version
+  // from Jitpack uses com.github.marytts.
+
+  configurations {
+    implementation.exclude group: 'de.dfki.mary', module: 'marytts-lang-de'
+    implementation.exclude group: 'de.dfki.mary', module: 'marytts-runtime'
+  }
+
   implementation group: 'de.dfki.mary', name: 'voice-dfki-prudence-hsmm', version: '5.2'
   implementation group: 'de.dfki.mary', name: 'voice-dfki-obadiah-hsmm', version: '5.2'
   implementation group: 'de.dfki.mary', name: 'voice-dfki-spike-hsmm', version: '5.2'
