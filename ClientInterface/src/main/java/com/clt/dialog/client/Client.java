@@ -243,7 +243,8 @@ public abstract class Client {
      * This should be an instance of {@link com.clt.script.exp.Value}.
      * <code>Client</code> tries to automatically map instances of other classes
      * to appropriate subclasses of {@link com.clt.script.exp.Value}:
-     * <table summary="The class mapping">
+     * <table>
+     * <caption>The class mapping</caption>
      * <tr>
      * <td valign=top>java.lang.Object[]</td>
      * <td>{@link com.clt.script.exp.values.ListValue}</td>
