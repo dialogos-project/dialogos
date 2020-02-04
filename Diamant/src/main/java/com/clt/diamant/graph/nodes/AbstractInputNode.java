@@ -98,7 +98,8 @@ abstract public class AbstractInputNode extends Node {
         }
     };
 
-    private static final boolean supportDynamicGrammars = true;
+    protected boolean supportDynamicGrammars = true;
+    protected boolean supportDirectGrammar = true;
 
     private EdgeManager edgeManager = new EdgeManager(this, TIMEOUT);
 
@@ -346,12 +347,14 @@ abstract public class AbstractInputNode extends Node {
         final PatternTable patternTable = new PatternTable(edgeModel);
 
         Vector<Object> grammars = new Vector<>();
-        grammars.add(DIRECT_GRAMMAR);
+        if (supportDirectGrammar) {
+            grammars.add(DIRECT_GRAMMAR);
+        }
         if (supportDynamicGrammars) {
             grammars.add(DYNAMIC_GRAMMAR);
         }
 
-        List<Grammar> definedGrammars = this.getGraph().getOwner().getGrammars();
+        List<Object> definedGrammars = getGrammars();
         if (!definedGrammars.isEmpty()) {
             grammars.add(new JSeparator());
             grammars.addAll(definedGrammars);
@@ -865,6 +868,11 @@ abstract public class AbstractInputNode extends Node {
     abstract public RecognitionExecutor createRecognitionExecutor(com.clt.srgf.Grammar recGrammar);
 
     abstract public Device getDevice();
+
+    @SuppressWarnings("unchecked")
+    public List<Object> getGrammars() {
+        return (List) this.getGraph().getOwner().getGrammars();
+    }
 
     private boolean hasGrammar() {
         return properties.get(GRAMMAR) != null;
