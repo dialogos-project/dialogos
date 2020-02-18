@@ -82,7 +82,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     public static final int cmdDebug = Commands.cmdDocument + 13;
     public static final int cmdWoz = Commands.cmdDocument + 14;
     public static final int cmdDelay = Commands.cmdDocument + 15;
-    //public static final int cmdExportVXML = Commands.cmdDocument + 16;
+
 
     private DefaultToolbox toolbox;
     private NodeToolbox nodebox;
