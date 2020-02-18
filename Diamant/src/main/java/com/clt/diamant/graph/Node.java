@@ -953,28 +953,12 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
      * @param w
      * @param uid_map
      * @throws IOException
+     * @deprecated only left for compatibiity with plugins; will be removed eventually
+     * TODO: remove (as promised)
      */
-    abstract public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException;
+    public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException {}
 
-    protected final void writeVoiceXMLGoto(XMLWriter w, IdMap uid_map, int edgeIndex) {
-        Node target = this.getEdge(edgeIndex).getTarget();
-        if (target != null) {
-            w.printElement("goto", new String[]{"next"}, new String[]{"#node" + uid_map.nodes.put(target)});
-        }
-    }
-
-    public static final String vxmlExp(String expression) {
-        return expression;
-    }
-
-    public void exportVoiceXML(XMLWriter w, IdMap uid_map) throws IOException {
-        w.openElement("form", new String[]{"id"}, new String[]{"node" + uid_map.nodes.put(this)});
-
-        this.writeVoiceXML(w, uid_map);
-
-        w.closeElement("form");
-    }
-
+    
     public String getId() {
         return this.id;
     }

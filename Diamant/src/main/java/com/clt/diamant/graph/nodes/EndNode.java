@@ -56,21 +56,5 @@ public class EndNode extends Node {
         // there is nothing else to do
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-        Graph superGraph = this.getGraph().getSuperGraph();
-        List<Slot> vars = superGraph == null ? new ArrayList<Slot>()
-                : superGraph.getAllVariables(Graph.GLOBAL);
 
-        StringBuffer varnames = new StringBuffer();
-        for (int i = 0; i < vars.size(); i++) {
-            if (i > 0) {
-                varnames.append(" ");
-            }
-            varnames.append(vars.get(i).getName());
-        }
-
-        w.printElement("return", new String[]{"namelist"},
-                new String[]{varnames.toString()});
-    }
 }

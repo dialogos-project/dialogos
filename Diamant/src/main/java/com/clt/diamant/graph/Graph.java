@@ -1662,45 +1662,6 @@ public class Graph implements IdentityObject {
                 : this.globalEnvironment;
     }
 
-    protected void exportVoiceXMLVariables(XMLWriter w) {
-
-        // export all visible variables. Since VoiceXML has no automatic access
-        // to variables in the calling scope, we have to pass all global
-        // variables
-        // manually
-        Collection<Slot> vars = this.getAllVariables(Graph.LOCAL);
-        for (Slot s : vars) {
-            w.printElement("var", new String[]{"name"},
-                    new Object[]{s.getName()});
-        }
-
-        // write initialization of local variables
-        for (Slot s : this.variables) {
-            if (s.getInitValue() != null) {
-                w.printElement("assign", new String[]{"name", "expr"}, new Object[]{
-                    s.getName(), Node.vxmlExp(s.getInitValue())});
-            }
-        }
-    }
-
-    public void exportVoiceXML(XMLWriter w, IdMap uid_map)
-            throws IOException {
-
-        w.openElement("form", new String[]{"id"}, new String[]{"graph"
-            + uid_map.graphs.put(this)});
-
-        this.exportVoiceXMLVariables(w);
-
-        w.printElement("goto", new String[]{"next"}, new String[]{"#node"
-            + uid_map.nodes.put(this.getStartNode())});
-
-        for (Node n : this.getNodes()) {
-            n.exportVoiceXML(w, uid_map);
-        }
-
-        w.closeElement("form");
-    }
-
     public Expression parseExpression(String expression)
             throws Exception {
 
