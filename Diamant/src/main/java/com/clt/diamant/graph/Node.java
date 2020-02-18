@@ -958,7 +958,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
      */
     public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException {}
 
-    
+
     public String getId() {
         return this.id;
     }
