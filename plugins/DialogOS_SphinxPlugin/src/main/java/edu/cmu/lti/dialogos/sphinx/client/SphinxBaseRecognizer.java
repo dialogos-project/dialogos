@@ -3,6 +3,7 @@ package edu.cmu.lti.dialogos.sphinx.client;
 import com.clt.properties.Property;
 import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
+import com.clt.speech.recognition.SingleDomainRecognizer;
 
 import javax.sound.sampled.AudioFormat;
 
