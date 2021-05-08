@@ -28,7 +28,6 @@ public class Sphinx extends SphinxBaseRecognizer {
 
     public Sphinx() {
         languageSettings = SphinxLanguageSettings.createDefault();
-        System.err.println(languageSettings); // AKAKAK
         /* addRecognizerListener(evt -> {
             System.err.println("DialogOS recognizer listener defined in Sphinx.java: " + evt.toString());
         }); */
