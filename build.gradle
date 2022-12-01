@@ -37,6 +37,7 @@ mainClassName = 'com.clt.dialogos.DialogOS'
 
 run {
   systemProperties System.getProperties()
+  jvmArgs '-Dfile.encoding=UTF8'
 }
 
 def version = '2.1.4-SNAPSHOT' // DO NOT EDIT - THIS IS CHANGED BY THE RELEASE SCRIPT

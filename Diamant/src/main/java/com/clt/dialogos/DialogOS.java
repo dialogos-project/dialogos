@@ -18,8 +18,8 @@ import com.clt.util.Misc;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author dabo, 2mfriedr
@@ -51,19 +51,11 @@ public class DialogOS {
         return null;
     }
 
-    // Enforce that the character encoding is UTF-8,
-    // even on Windows, where the default is CP1252.
-    // This is a trick from http://araklefeistel.blogspot.com/2015/10/set-fileencoding-in-jvm.html
-    private static void enforceUtf8() {
-        try {
-            System.setProperty("file.encoding", "UTF-8");
-            Field cs = Charset.class.getDeclaredField("defaultCharset");
-            cs.setAccessible(true);
-            cs.set(null, null);
-        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
-            System.err.println("An exception occurred while trying to set the character encoding to UTF-8:");
-            System.err.println(ex);
-            System.exit(1);
+    // Ensure that the character encoding is UTF-8,
+    private static void assertUtf8() {
+        if (!Charset.defaultCharset().equals(StandardCharsets.UTF_8)) {
+            System.err.println("Apparently, the default character encoding is not UTF-8 which is required for DialogOS to function well.");
+            System.err.println("Please consider re-running DialogOS specifying -Dfile.encoding=UTF8 as a JVM argument.");
         }
     }
 
@@ -73,7 +65,7 @@ public class DialogOS {
         boolean loadClients = false;
         File model = null;
 
-        enforceUtf8();
+        assertUtf8();
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-execute")) {
