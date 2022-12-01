@@ -42,6 +42,9 @@ public abstract class AbstractOutputNode extends Node {
     protected static final String WAIT = "wait";
     protected static final String AWAIT_SILENCE = "await_silence";
 
+    private JComboBox cbVoices;
+
+
     /**
      * Enumeration of different types of prompts.
      * A prompt type specifies how the value that this node outputs
@@ -121,8 +124,8 @@ public abstract class AbstractOutputNode extends Node {
 
         p.add(new JLabel(getResourceString("Voice") + ':'), gbc);
         gbc.gridx++;
-        p.add(NodePropertiesDialog
-                .createComboBox(properties, VOICE, voices), gbc);
+        cbVoices = NodePropertiesDialog.createComboBox(properties, VOICE, voices);
+        p.add(cbVoices, gbc);
 
         gbc.gridy++;
         gbc.gridx = 0;
@@ -226,10 +229,27 @@ public abstract class AbstractOutputNode extends Node {
 
         //Add tabs
         JTabbedPane jtp = new JTabbedPane();
-        jtp.addTab("Speech Synthesis", p);
+        jtp.addTab(Resources.getString("SpeechSynthesis"), p);
         jtp = addMoreTabsToEditorComponent(jtp);
         return jtp;
     }
+
+    /**
+     * Returns the voice that is currently selected in the combobox of the
+     * editor component. If the default voice is selected, the method
+     * returns null, so the caller can look up the default voice elsewhere.
+     * 
+     * @return
+     */
+    protected VoiceName getSelectedVoice() {
+        if( cbVoices.getSelectedIndex() == 0 ) {
+            return null;
+        } else {
+            return (VoiceName) cbVoices.getSelectedItem();
+        }
+    }
+
+
 
     protected JTabbedPane addMoreTabsToEditorComponent(JTabbedPane jtp) {
         return jtp;

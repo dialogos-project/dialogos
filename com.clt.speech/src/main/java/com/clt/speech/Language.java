@@ -12,6 +12,7 @@ public class Language {
   static {
     Language.localeNames.put("Deutsch", Locale.GERMANY);
     Language.localeNames.put("US English", Locale.US);
+    Language.localeNames.put("english", Locale.US);
     Language.localeNames.put("British English", Locale.UK);
     Language.localeNames.put("Italiano", Locale.ITALY);
     Language.localeNames.put("Fran\u00E7ais", Locale.FRANCE);

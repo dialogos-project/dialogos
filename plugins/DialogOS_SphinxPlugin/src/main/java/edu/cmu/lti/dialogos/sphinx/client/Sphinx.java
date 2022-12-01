@@ -105,12 +105,20 @@ public class Sphinx extends SphinxBaseRecognizer {
     Map<Language, SphinxContext> contextCache = new HashMap<>();
 
     @Override protected SphinxContext createContext(String name, Grammar g, Domain domain, long timestamp) {
-        //TODO: figure out what to do if the grammar does not have a language -> use default language?
         assert g.getLanguage() != null;
+
         Language l = new Language(Language.findLocale(g.getLanguage()));
+        SphinxLanguageSettings ls = languageSettings.get(l);
+
+	// Fallback if no language could be found
+        if( ls == null ) {
+            ls = languageSettings.values().iterator().next();
+        }
+
+
         assert l != null;
         if (!contextCache.containsKey(l)) {
-            contextCache.put(l, new SphinxContext(name, g, this.languageSettings.get(l)));
+            contextCache.put(l, new SphinxContext(name, g, ls));
         }
         SphinxContext sc = contextCache.get(l);
         sc.setGrammar(g);
