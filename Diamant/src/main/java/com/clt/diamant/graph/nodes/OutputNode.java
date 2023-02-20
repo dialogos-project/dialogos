@@ -758,34 +758,4 @@ public class OutputNode extends Node {
 
         }
     }
-
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        // vxml
-        Map<Device, DialogOutput> h = this.getOutputMap(false);
-        if (h != null) {
-            if (this.getBooleanProperty("reset")) {
-                for ( // @SuppressWarnings("unused")
-                        Device d : h.keySet()) {
-                    // no reset in VoiceXML
-                }
-            }
-
-            final boolean wait = this.getBooleanProperty("wait");
-            for (Device d : h.keySet()) {
-                DialogOutput out = h.get(d);
-                w.openElement("prompt", new String[]{"device", "bargein"},
-                        new String[]{
-                            d.getName(), wait ? "false" : "true"});
-
-                for (int i = 0; i < out.size(); i++) {
-                    w.printElement("value", new String[]{"expr"},
-                            new String[]{Node.vxmlExp(out.getValue(i))});
-                }
-
-                w.closeElement("prompt");
-            }
-        }
-    }
 }

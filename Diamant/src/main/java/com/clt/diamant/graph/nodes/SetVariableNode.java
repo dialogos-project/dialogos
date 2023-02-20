@@ -523,17 +523,6 @@ public class SetVariableNode extends Node {
         return h;
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-        List<VarAssignment> assignments = this.getAssignments(this.properties, false);
-        if (assignments != null) {
-            for (VarAssignment va : assignments) {
-                w.printElement("assign", new String[]{"name", "expr"}, new Object[]{
-                    va.getVariable(), Node.vxmlExp(va.getValue())});
-            }
-        }
-    }
-
     public static class VarAssignment {
 
         Slot variable;

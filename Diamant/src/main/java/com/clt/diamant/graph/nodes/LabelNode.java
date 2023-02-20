@@ -39,10 +39,6 @@ public class LabelNode extends Node {
         return target;
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-        this.writeVoiceXMLGoto(w, uid_map, 0);
-    }
 
     // wichtig fuer ComboBox im EditDialog fuer GotoNode
     @Override

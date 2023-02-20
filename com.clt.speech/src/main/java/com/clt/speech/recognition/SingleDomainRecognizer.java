@@ -1,11 +1,7 @@
-package edu.cmu.lti.dialogos.sphinx.client;
+package com.clt.speech.recognition;
 
 import com.clt.speech.Language;
 import com.clt.speech.SpeechException;
-import com.clt.speech.recognition.AbstractRecognizer;
-import com.clt.speech.recognition.Domain;
-import com.clt.speech.recognition.RecognitionContext;
-import com.clt.speech.recognition.RecognizerException;
 
 import java.util.ArrayList;
 import java.util.List;

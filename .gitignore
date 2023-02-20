@@ -14,3 +14,4 @@ Diamant/src/main/resources/VERSION
 /log/
 /.gradle/
 /.idea/
+*.DS_Store

@@ -128,13 +128,4 @@ public class ScriptNode extends Node {
             super.readAttribute(r, name, value, uid_map);
         }
     }
-
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-        w.openElement("script");
-        w.println("<![CDATA[");
-        w.println((String) this.getProperty(ScriptNode.SCRIPT));
-        w.println("]]>");
-        w.closeElement("script");
-    }
 }
