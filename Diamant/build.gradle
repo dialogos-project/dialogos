@@ -19,14 +19,14 @@ dependencies {
 
 buildscript {
     repositories {
-        jcenter()
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
  
     dependencies {
         // Add dependency for build script,
         // so we can access Git from our
         // build script.
-        classpath 'org.ajoberstar:grgit:2.2.1'
+        classpath 'org.ajoberstar.grgit:grgit-gradle:4.1.1'
     }
 }
  
