@@ -653,13 +653,6 @@ public class SingleDocument extends Document implements GraphOwner {
         }
     }
 
-    public void exportVoiceXML(XMLWriter w, IdMap uid_map)
-            throws IOException {
-        w.openElement("vxml", new String[]{"version"}, new String[]{"2.0"});
-        this.getOwnedGraph().exportVoiceXML(w, uid_map);
-        w.closeElement("vxml");
-    }
-
     public void export(final Graph export_graph, File file)
             throws IOException {
         if (export_graph instanceof Procedure) {

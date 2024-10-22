@@ -226,9 +226,6 @@ public class InputHandler extends OwnerNode {
         return h;
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
-    }
 
 }

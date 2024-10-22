@@ -196,8 +196,4 @@ public class SwitchNode extends Node {
                 ? new Color(255, 153, 153)
                 : super.getPortColor(portNumber);
     }
-
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException { }
-
 }

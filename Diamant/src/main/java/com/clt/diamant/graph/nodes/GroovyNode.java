@@ -208,15 +208,7 @@ public class GroovyNode extends Node {
         }
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
-        w.openElement("script");
-        w.println("<![CDATA[");
-        w.println((String) this.getProperty(GroovyNode.SCRIPT));
-        w.println("]]>");
-        w.closeElement("script");
-    }
 
     @SuppressWarnings("unchecked")
     private List<Edge> getEdgeModel() {
