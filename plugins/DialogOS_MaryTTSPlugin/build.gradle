@@ -8,38 +8,23 @@ dependencies {
 
   // include pre-release version of MaryTTS (works with recent Java versions)
   
-  implementation 'gov.nist.math:Jampack:1.0'
-  
-  implementation('com.github.marytts.marytts:marytts-runtime:1df2faf45a') {
-    exclude group: 'com.github.marytts.marytts', module: 'Jampack'
-  }
+  implementation('de.dfki.mary:marytts-runtime:5.2.1')
 
-  implementation('com.github.marytts.marytts:marytts-lang-de:1df2faf45a') {
-    exclude group: 'com.github.marytts.marytts', module: 'Jampack'
-    exclude group: 'de.dfki.mary', module: 'marytts-runtime'
-  }
+  implementation('de.dfki.mary:marytts-lang-en:5.2.1')
+  implementation('de.dfki.mary:marytts-lang-de:5.2.1') 
 
-  // include MaryTTS voices, with dependencies forced to pre-release MaryTTS;
-  // note that MaryTTS 5.2 uses group 'de.dfki.mary', but the pre-release version
-  // from Jitpack uses com.github.marytts.
-
-  configurations {
-    implementation.exclude group: 'de.dfki.mary', module: 'marytts-lang-de'
-    implementation.exclude group: 'de.dfki.mary', module: 'marytts-runtime'
-  }
-
-  implementation group: 'de.dfki.mary', name: 'voice-dfki-prudence-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-dfki-obadiah-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-dfki-spike-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-dfki-poppy-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2'     //Englisch,männlich
-  implementation group: 'de.dfki.mary', name: 'voice-cmu-rms-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-cmu-bdl-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-cmu-nk-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-bits1-hsmm', version: '5.2'       //Deutsch,weiblich
-  implementation group: 'de.dfki.mary', name: 'voice-bits3-hsmm', version: '5.2'       //Deutsch,männlich
-  implementation group: 'de.dfki.mary', name: 'voice-dfki-pavoque-neutral-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2' //Französisch,männlich
-
+//  implementation group: 'de.dfki.mary', name: 'voice-dfki-prudence-hsmm', version: '5.2.1'
+//  implementation group: 'de.dfki.mary', name: 'voice-dfki-obadiah-hsmm', version: '5.2'
+//  implementation group: 'de.dfki.mary', name: 'voice-dfki-spike-hsmm', version: '5.2'
+//  implementation group: 'de.dfki.mary', name: 'voice-dfki-poppy-hsmm', version: '5.2'
+  implementation group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2.1'     //Englisch,männlich
+//  implementation group: 'de.dfki.mary', name: 'voice-cmu-rms-hsmm', version: '5.2'
+//  implementation group: 'de.dfki.mary', name: 'voice-cmu-bdl-hsmm', version: '5.2'
+//  implementation group: 'de.dfki.mary', name: 'voice-cmu-nk-hsmm', version: '5.2'
+//  implementation('de.dfki.mary:voice-bits1-hsmm:5.2')       //Deutsch,weiblich
+//  implementation group: 'de.dfki.mary', name: 'voice-bits3-hsmm', version: '5.2'       //Deutsch,männlich
+//    implementation group: 'de.dfki.mary', name: 'voice-bits1-hsmm', version: '5.2.1'
+//  implementation group: 'de.dfki.mary', name: 'voice-dfki-pavoque-neutral-hsmm', version: '5.2'
+//  implementation group: 'de.dfki.mary', name: 'voice-upmc-pierre-hsmm', version: '5.2' //Französisch,männlich
 }
 
