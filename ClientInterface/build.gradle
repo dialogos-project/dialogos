@@ -3,12 +3,12 @@ plugins {
 }
 
 dependencies {
-  compile 'org.jmdns:jmdns:3.5.3'
+  implementation 'org.jmdns:jmdns:3.5.3'
 
-  compile project(':com.clt.base')
-  compile project(':com.clt.script')
-  compile project(':com.clt.mac')
-  compile project(':com.clt.xml')
+  implementation project(':com.clt.base')
+  implementation project(':com.clt.script')
+  implementation project(':com.clt.mac')
+  implementation project(':com.clt.xml')
 }
 
 
@@ -18,7 +18,7 @@ shadowJar {
    archiveName = "ClientInterface-${version}.jar"
    
    dependencies {
-       exclude(dependency('org.codehaus.groovy:groovy-all:2.4.10'))
+       exclude(dependency('org.codehaus.groovy:groovy-all:2.4.21'))
    }
 }
 

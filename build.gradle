@@ -1,3 +1,19 @@
+buildscript {
+    repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name 'DFKI-MLT'
+                    url 'https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main'
+                }
+            }
+            filter {
+                includeGroup 'de.dfki.lt.jtok'
+            }
+        }
+    }
+}
+
 plugins {
   id 'application'
   id 'java'
@@ -13,7 +29,11 @@ allprojects {
   repositories {
     mavenCentral()
     maven { url "https://jitpack.io/" }
-    mavenLocal()
+     maven {
+                    name 'DFKI-MLT'
+                    url 'https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main'
+                }
+//    mavenLocal()
 }
 
   apply plugin: 'java'
@@ -24,12 +44,12 @@ allprojects {
   licenseTest.onlyIf { project.file('LICENSE ').exists() }
 
   dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
   }
 }
 
 dependencies {
-  compile subprojects
+  implementation subprojects
 }
 
 mainClassName = 'com.clt.dialogos.DialogOS'
@@ -51,7 +71,7 @@ publishing {
             artifactId = 'dialogos'
             from components.java
 
-	    artifact javadocJar
+//	    artifact javadocJar
         }
     }
 }

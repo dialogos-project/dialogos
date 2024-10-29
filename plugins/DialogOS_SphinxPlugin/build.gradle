@@ -12,10 +12,10 @@ dependencies {
     exclude module: 'sphinx4-data'
     exclude module: 'sphinx4-samples'
   }
-  runtime(group: 'com.github.cmusphinx', name:'sphinx4', version:'44a5c08') {
+  runtimeOnly(group: 'com.github.cmusphinx', name:'sphinx4', version:'44a5c08') {
     exclude module: 'sphinx4-samples'
   }
-  runtime group: 'com.github.dialogos-project', name:'sphinx-de-de-uhh', version:'1.0'
+  runtimeOnly group: 'com.github.dialogos-project', name:'sphinx-de-de-uhh', version:'1.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version:'2.2.8'
 }

@@ -32,18 +32,18 @@ dependencies {
   javaCup group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   flex group: 'de.jflex', name: 'jflex', version: '1.7.0'
 
-  compile group: 'org.json', name: 'json', version: '20180130'
+  implementation group: 'org.json', name: 'json', version: '20180130'
 
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
 
   // NB When you update to a newer version of Groovy here, also change
   // the shadowJar#dependencies#exclude entry for Groovy in ../ClientInterface/build.gradle.
-  compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
+  implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.21'
 
   implementation project(':com.clt.base')
   implementation project(':com.clt.xml')
   
   // for testing
-  testCompileOnly 'junit:junit:4.12'
+  testCompileOnly 'junit:junit:4.13.2'
 }
 

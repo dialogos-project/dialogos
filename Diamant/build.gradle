@@ -13,8 +13,9 @@ dependencies {
   implementation project(':com.clt.speech')
   implementation project(':com.clt.mac')
   implementation project(':ClientInterface')
+  implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.21'
   
-  runtime fileTree(dir: "${projectDir}/../plugins", include: '*/build/libs/*.jar')
+  runtimeOnly fileTree(dir: "${projectDir}/../plugins", include: '*/build/libs/*.jar')
 }
 
 buildscript {

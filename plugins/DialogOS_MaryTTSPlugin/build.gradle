@@ -8,16 +8,34 @@ dependencies {
 
   // include pre-release version of MaryTTS (works with recent Java versions)
   
-  implementation('de.dfki.mary:marytts-runtime:5.2.1')
+  implementation('com.github.marytts.marytts:marytts-common:master-SNAPSHOT') {
+    exclude(group:'de.dfki.mary')
+  }
+  implementation('com.github.marytts.marytts:marytts-runtime:master-SNAPSHOT') {
+    exclude(group:'de.dfki.mary')
+  }
 
-  implementation('de.dfki.mary:marytts-lang-en:5.2.1')
-  implementation('de.dfki.mary:marytts-lang-de:5.2.1') 
+  implementation('com.github.marytts.marytts:marytts-lang-en:master-SNAPSHOT') {
+    exclude(group:'de.dfki.mary')
+  }
+/*  implementation('com.github.marytts.marytts:marytts-lang-de:master-SNAPSHOT') {
+    exclude(group:'de.dfki.mary')
+  } */
+  implementation('de.dfki.mary:emotionml-checker-java:1.2.2')
+  implementation('com.github.marytts.marytts:marytts-signalproc:master-SNAPSHOT') {
+    exclude(group:'de.dfki.mary')
+  }
 
 //  implementation group: 'de.dfki.mary', name: 'voice-dfki-prudence-hsmm', version: '5.2.1'
 //  implementation group: 'de.dfki.mary', name: 'voice-dfki-obadiah-hsmm', version: '5.2'
 //  implementation group: 'de.dfki.mary', name: 'voice-dfki-spike-hsmm', version: '5.2'
 //  implementation group: 'de.dfki.mary', name: 'voice-dfki-poppy-hsmm', version: '5.2'
-  implementation group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2.1'     //Englisch,männlich
+  implementation(group: 'de.dfki.mary', name: 'marytts-lexicon-en_US-cmudict', version: '0.1.1') {
+    exclude(group:'de.dfki.mary')
+  }
+  implementation(group: 'com.github.marytts.marytts', name: 'voice-cmu-slt-hsmm', version: 'master-SNAPSHOT') {
+   exclude(group:'de.dfki.mary')
+  }     //Englisch,männlich
 //  implementation group: 'de.dfki.mary', name: 'voice-cmu-rms-hsmm', version: '5.2'
 //  implementation group: 'de.dfki.mary', name: 'voice-cmu-bdl-hsmm', version: '5.2'
 //  implementation group: 'de.dfki.mary', name: 'voice-cmu-nk-hsmm', version: '5.2'
