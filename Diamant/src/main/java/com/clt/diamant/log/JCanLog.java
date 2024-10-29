@@ -21,8 +21,6 @@ public class JCanLog {
                 System.loadLibrary("JCanLog");
                 JCanLog.libraryLoaded = true;
             }
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable t) {
             throw new InstantiationException(t.getLocalizedMessage());
         }

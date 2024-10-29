@@ -372,7 +372,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
             }
         });
 
-        this.setProperty("numEdges", new Integer(this.numEdges()));
+        this.setProperty("numEdges", Integer.valueOf(this.numEdges()));
 
         if (this.getProperty(VisualGraphElement.LOCATION) == null) {
             this.setProperty(VisualGraphElement.LOCATION, new Point(0, 0));
@@ -449,7 +449,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
             e.getTarget().unregisterInEdge(e);
         }
 
-        this.setProperty("numEdges", new Integer(this.numEdges()));
+        this.setProperty("numEdges", Integer.valueOf(this.numEdges()));
         return e;
     }
 
@@ -493,7 +493,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
             edge.getTarget().registerInEdge(edge);
         }
 
-        this.setProperty("numEdges", new Integer(this.numEdges()));
+        this.setProperty("numEdges", Integer.valueOf(this.numEdges()));
 
         return edge;
     }
@@ -512,7 +512,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
             }
             this.out_edges.set(to, edge);
         }
-        this.setProperty("numEdges", new Integer(this.numEdges()));
+        this.setProperty("numEdges", Integer.valueOf(this.numEdges()));
     }
 
     /**
@@ -991,7 +991,7 @@ public abstract class Node extends VisualGraphElement implements IdentityObject 
         if (this.breakpoint != breakpoint) {
             boolean oldValue = this.breakpoint;
             this.breakpoint = breakpoint;
-            this.firePropertyChange("breakpoint", new Boolean(oldValue), new Boolean(breakpoint));
+            this.firePropertyChange("breakpoint", Boolean.valueOf(oldValue), Boolean.valueOf(breakpoint));
         }
     }
 

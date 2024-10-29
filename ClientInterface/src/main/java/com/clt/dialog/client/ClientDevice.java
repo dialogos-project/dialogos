@@ -208,8 +208,6 @@ class ClientDevice
                             r.run();
                         } catch (InterruptedException exn) {
                             throw exn;
-                        } catch (ThreadDeath d) {
-                            throw d;
                         } catch (Throwable exn) {
                             exn.printStackTrace();
                             ClientDevice.this.client.error(exn);
@@ -305,8 +303,6 @@ class ClientDevice
 
             try {
                 this.execute(connection);
-            } catch (ThreadDeath d) {
-                throw d;
             } catch (Throwable t) {
             }
 
@@ -425,8 +421,6 @@ class ClientDevice
                                     } catch (Exception ioexn) {
                                         ClientDevice.this.error(ioexn);
                                     }
-                                } catch (ThreadDeath d) {
-                                    throw d;
                                 } catch (Throwable exn) {
                                     try {
                                         w.printElement(Protocol.XML_RPC_ERR, exn.getLocalizedMessage());
@@ -547,8 +541,6 @@ class ClientDevice
                         } catch (Exception ioexn) {
                             this.error(ioexn);
                         }
-                    } catch (ThreadDeath d) {
-                        throw d;
                     } catch (Throwable exn) {
                         try {
                             w.writeByte(Protocol.BIN_RPC_ERR);

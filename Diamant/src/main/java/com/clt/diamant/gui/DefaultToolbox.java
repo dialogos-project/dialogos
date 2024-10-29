@@ -563,7 +563,7 @@ public class DefaultToolbox
 
             if (enabled != this.enabled) {
                 this.enabled = enabled;
-                this.firePropertyChange("enabled", new Boolean(!enabled), new Boolean(enabled));
+                this.firePropertyChange("enabled", Boolean.valueOf(!enabled), Boolean.valueOf(enabled));
             }
         }
 

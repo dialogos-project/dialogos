@@ -15,7 +15,7 @@ dependencies {
 shadowJar {
    // overwrite the original ClientInterface-<VERSION>.jar
    // with the shadow version
-   archiveName = "ClientInterface-${version}.jar"
+   archiveFileName = "ClientInterface-${archiveVersion}.jar"
    
    dependencies {
        exclude(dependency('org.codehaus.groovy:groovy-all:2.4.21'))

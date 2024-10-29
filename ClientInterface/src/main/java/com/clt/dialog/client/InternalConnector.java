@@ -167,9 +167,6 @@ public class InternalConnector extends AbstractConnector {
                     catch (InterruptedException exn) {
                       break;
                     }
-                    catch (ThreadDeath d) {
-                      throw d;
-                    }
                     catch (Throwable t) {
                       client.error(t);
                     }

@@ -878,8 +878,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                     }
                     break;
             }
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Exception t) {
             // This is the global exception handler for all the commands that
             // can be handled in this method.

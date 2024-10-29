@@ -58,11 +58,6 @@ public class Platform {
                 try {
                     Class<?> c = Class.forName("com.apple.mrj.macos.carbon.CarbonLock");
                     c.getMethod("acquire", new Class[0]).invoke(null, new Object[0]);
-                } catch (ThreadDeath e) {
-                    // wird bei System.exit() geworfen. Muss laut Java
-                    // Spezifikation
-                    // immer weitergegeben werden.
-                    throw e;
                 } catch (Throwable t) {
                     // couldn't aquire lock. No problem, this is legacy code anyways.
                 }
@@ -79,11 +74,6 @@ public class Platform {
                 try {
                     Class<?> c = Class.forName("com.apple.mrj.macos.carbon.CarbonLock");
                     c.getMethod("release", (Class[]) null).invoke(null, (Object[]) null);
-                } catch (ThreadDeath e) {
-                    // wird bei System.exit() geworfen. Muss laut Java
-                    // Spezifikation
-                    // immer weitergegeben werden.
-                    throw e;
                 } catch (Throwable t) {
                     // couldn't release lock. No problem, this is legacy code anyways.
                 }

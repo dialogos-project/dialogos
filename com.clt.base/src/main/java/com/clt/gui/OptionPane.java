@@ -533,10 +533,6 @@ public class OptionPane {
 
             try {
                 dialog.setResizable(false);
-            } catch (ThreadDeath d) {
-                // wird bei System.exit() geworfen. Muss laut Java Spezifikation
-                // immer weitergegeben werden.
-                throw d;
             } catch (Throwable t) {
                 // Mac OS X DP3 hat Probleme, wenn das Fenster schon gepackt ist
                 // Loesung: peer wegschmeissen, und danach wieder neu packen

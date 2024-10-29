@@ -104,8 +104,6 @@ public class Launcher {
                         "setLookAndFeel",
                         new Class[]{String.class}).invoke(null,
                                 new Object[]{systemLAF});
-            } catch (ThreadDeath d) {
-                throw d;
             } catch (Throwable t) {
                 // setting the LAF failed. That's no problem.
             }
@@ -117,8 +115,6 @@ public class Launcher {
                             new Class[]{Class.forName("java.awt.Component"), Object.class})
                     .invoke(null,
                             new Object[]{null, message});
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable swingError) {
             try {
                 Class<?> c = Class.forName("com.clt.gui.AWTOptionPane");
@@ -128,8 +124,6 @@ public class Launcher {
                                 new Class[]{Class.forName("java.awt.Frame"), String.class})
                         .invoke(null,
                                 new Object[]{null, message});
-            } catch (ThreadDeath d) {
-                throw d;
             } catch (java.lang.reflect.InvocationTargetException awtError) {
                 awtError.getTargetException().printStackTrace(System.err);
             } catch (Throwable awtError) {

@@ -298,9 +298,6 @@ abstract class Device {
                                       attributes.put(attrname, (Value)o);
                                     }
                                   }
-                            catch (ThreadDeath d) {
-                              throw d;
-                            }
                             catch (Throwable exn) {
                               Device.this.error(exn);
                             }

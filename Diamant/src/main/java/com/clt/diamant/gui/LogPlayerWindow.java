@@ -133,7 +133,7 @@ public class LogPlayerWindow extends ManagedFrame {
                         LogPlayerWindow.this.selectAndCenter(p);
                     }
                 } else if (src instanceof TimeLine) {
-                    long time = new Long(evt.getActionCommand()).longValue();
+                    long time = Long.valueOf(evt.getActionCommand()).longValue();
                     TreePath p
                             = ((ParentNode) LogPlayerWindow.this.callTree.getModel()
                                     .getRoot()).findTime(time);

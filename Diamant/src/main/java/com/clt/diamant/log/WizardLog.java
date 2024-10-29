@@ -248,8 +248,6 @@ public class WizardLog {
             if (this.CanLog != null) {
                 this.CanLog.start();
             }
-        } catch (ThreadDeath exn) {
-            throw exn;
         } catch (Throwable exn) {
             OptionPane
                     .error(
@@ -353,10 +351,10 @@ public class WizardLog {
             if (argvalues != null) {
                 Object[] tmp = new Object[argvalues.length + 1];
                 System.arraycopy(argvalues, 0, tmp, 0, argvalues.length);
-                tmp[tmp.length - 1] = new Long(time);
+                tmp[tmp.length - 1] = Long.valueOf(time);
                 argvalues = tmp;
             } else {
-                argvalues = new Object[]{new Long(time)};
+                argvalues = new Object[]{Long.valueOf(time)};
             }
 
             this.out.printElement(tag, argnames, argvalues, value);
@@ -388,10 +386,10 @@ public class WizardLog {
             if (argvalues != null) {
                 Object[] tmp = new Object[argvalues.length + 1];
                 System.arraycopy(argvalues, 0, tmp, 0, argvalues.length);
-                tmp[tmp.length - 1] = new Long(time);
+                tmp[tmp.length - 1] = Long.valueOf(time);
                 argvalues = tmp;
             } else {
-                argvalues = new Object[]{new Long(time)};
+                argvalues = new Object[]{Long.valueOf(time)};
             }
 
             this.out.openElement(type, argnames, argvalues);

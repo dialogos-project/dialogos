@@ -612,8 +612,6 @@ abstract public class AbstractInputNode extends Node {
                 } else {
                     OptionPane.error(test, exn);
                 }
-            } catch (ThreadDeath d) {
-                throw d;
             } catch (Exception exn) {
                 OptionPane.error(test, exn);
             }
@@ -842,8 +840,6 @@ abstract public class AbstractInputNode extends Node {
                     }
                 }
             }
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (InterruptedException exn) {
             recExecutor.stop();
             throw new ExecutionStoppedException();
@@ -1112,7 +1108,7 @@ abstract public class AbstractInputNode extends Node {
             this.setProperty(name, value.equals("1") ? Boolean.TRUE : Boolean.FALSE);
         } else if (name.equals(THRESHOLD)) {
             try {
-                Long threshold = new Long(value);
+                Long threshold = Long.valueOf(value);
                 if ((threshold < 0) || (threshold > 100)) {
                     throw new NumberFormatException("Value out of range");
                 }

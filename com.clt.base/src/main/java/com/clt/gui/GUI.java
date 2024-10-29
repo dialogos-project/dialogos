@@ -731,8 +731,6 @@ public class GUI {
 
         try {
             GUI.invokeAndWaitCanThrow(r);
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable t) {
             // ignore all errors.
             // If you want errors, use invokeAndWaitCanThrow()

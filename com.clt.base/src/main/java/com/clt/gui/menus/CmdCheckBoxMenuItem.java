@@ -54,8 +54,6 @@ public class CmdCheckBoxMenuItem extends JCheckBoxMenuItem {
                             CmdCheckBoxMenuItem.this.getToolkit().beep();
                         }
                     }
-                } catch (ThreadDeath d) {
-                    throw d;
                 } catch (Throwable t) {
                     OptionPane.error(CmdCheckBoxMenuItem.this, new String[]{
                         GUI.getString("CouldNotComplete"), t.toString()});

@@ -253,8 +253,6 @@ public class GUIClientWindow extends JFrame implements MenuCommander {
     for (final GUIClient client : this.clients) {
       try {
         client.open();
-      } catch (ThreadDeath d) {
-        throw d;
       } catch (final Throwable exn) {
         exn.printStackTrace();
         client.error(exn);
@@ -370,8 +368,6 @@ public class GUIClientWindow extends JFrame implements MenuCommander {
 
         try {
           this.clientUIs.add(client.setupUI(moduleMenu));
-        } catch (ThreadDeath d) {
-          throw d;
         } catch (Throwable exn) {
           exn.printStackTrace();
           this.clientUIs.add(new StaticText("Failed to create UI for "
@@ -439,15 +435,10 @@ public class GUIClientWindow extends JFrame implements MenuCommander {
             OptionPane.message(GUIClientWindow.this, new Object[] { jsp },
                             client.getName() + " v" + client.getVersion(),
               OptionPane.INFORMATION);
-          }
-                    catch (ThreadDeath d) {
-                      throw d;
-                    }
-                    catch (Throwable exn) {
-                      OptionPane.error(GUIClientWindow.this, exn);
-                    }
-
-                  }
+          } catch (Throwable exn) {
+	    OptionPane.error(GUIClientWindow.this, exn);
+	  }
+        }
       });
       help.add(item);
     }

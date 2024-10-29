@@ -192,8 +192,6 @@ public class PortAudioInput extends JPanel {
                 this.sampleSize16.setEnabled(true);
                 this.sampleRate.setEnabled(true);
                 this.numChannels.setEnabled(true);
-            } catch (ThreadDeath d) {
-                throw d;
             } catch (Throwable exn) {
                 exn.printStackTrace();
             }

@@ -873,7 +873,7 @@ class WizardUI extends JDialog implements WozInterface {
                 long start_time
                         = this.log.printEvent(tag, new String[]{"title", "uid"},
                                 new Object[]{ownerName, ownerID}, null);
-                this.subgraph_times.push(new Long(start_time));
+                this.subgraph_times.push(Long.valueOf(start_time));
             } else {
                 long end_time
                         = this.log.printEvent((owner instanceof ProcNode) ? "return" : "exit",
@@ -882,7 +882,7 @@ class WizardUI extends JDialog implements WozInterface {
                 long time = end_time - this.subgraph_times.pop().longValue();
                 this.log.printElement("duration", new String[]{"title", "uid"},
                         new Object[]{
-                            owner.getGraphName(), ownerID}, new Long(time));
+                            owner.getGraphName(), ownerID}, Long.valueOf(time));
             }
         }
     }

@@ -32,8 +32,6 @@ public class JPortAudio {
                             System.loadLibrary("JPortAudio");
                             JPortAudio.inited = true;
                         }
-                    } catch (ThreadDeath d) {
-                        throw d;
                     } catch (Throwable t) {
                         throw new RuntimeException();
                     }
@@ -48,8 +46,6 @@ public class JPortAudio {
                             = JPortAudio.this.getNumDevices();
                 }
             });
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable t) {
             if (StringTools.isEmpty(t.getLocalizedMessage())) {
                 throw new InstantiationException("JPortAudio "
@@ -130,8 +126,6 @@ public class JPortAudio {
                     }
                 }
             });
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable t) {
             throw new AudioException(t.getLocalizedMessage());
         }
@@ -147,8 +141,6 @@ public class JPortAudio {
                     }
                 }
             });
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable t) {
             throw new AudioException(t.getLocalizedMessage());
         }
@@ -179,8 +171,6 @@ public class JPortAudio {
                         DeviceInfo.this.sampleRates = pa.getSampleRates(index);
                     }
                 });
-            } catch (ThreadDeath d) {
-                throw d;
             } catch (Throwable t) {
                 throw new InstantiationError(t.getLocalizedMessage());
             }

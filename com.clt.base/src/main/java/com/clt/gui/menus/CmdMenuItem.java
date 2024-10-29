@@ -72,8 +72,6 @@ public class CmdMenuItem extends JMenuItem {
                             CmdMenuItem.this.getToolkit().beep();
                         }
                     }
-                } catch (ThreadDeath d) {
-                    throw d;
                 } catch (Throwable t) {
                     t.printStackTrace(System.err);
                     OptionPane.error(CmdMenuItem.this, new String[]{

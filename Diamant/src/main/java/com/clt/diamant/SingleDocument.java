@@ -399,8 +399,6 @@ public class SingleDocument extends Document implements GraphOwner {
         } catch (ExecutionStoppedException exn) {
             message = Resources.getString("ExecutionStopped");
             type = ExecutionResult.INFORMATION;
-        } catch (ThreadDeath death) {
-            throw death;
         } catch (DialogSuspendedException exn) {
             // pass DialogSuspendedExceptions through to caller
             throw exn;

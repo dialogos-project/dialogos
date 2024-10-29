@@ -17,7 +17,7 @@ buildscript {
 plugins {
   id 'application'
   id 'java'
-  id 'com.github.hierynomus.license' version '0.14.0'
+  id 'com.github.hierynomus.license' version '0.16.1'
 }
 
 apply plugin: 'maven-publish' // to provide "gradlew publishToMavenLocal"
@@ -29,12 +29,11 @@ allprojects {
   repositories {
     mavenCentral()
     maven { url "https://jitpack.io/" }
-     maven {
-                    name 'DFKI-MLT'
-                    url 'https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main'
-                }
-//    mavenLocal()
-}
+    maven {
+            name 'DFKI-MLT'
+            url 'https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main'
+    }
+  }
 
   apply plugin: 'java'
   sourceCompatibility = '1.8'
@@ -152,7 +151,7 @@ task shadowJar(type:Jar) {
 	'Main-Class': mainClassName
     }
 
-    baseName = 'dialogos-with-dependencies'
+    archiveBaseName = 'dialogos-with-dependencies'
 
     dependsOn configurations.childJars
     from { configurations.childJars.collect { zipTree(it) } }

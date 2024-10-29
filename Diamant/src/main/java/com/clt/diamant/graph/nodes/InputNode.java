@@ -830,13 +830,13 @@ public class InputNode extends OutputNode {
                 catchAllEdge = i;
             } else if (e instanceof HandlerEdge) {
                 if (InputNode.differentiateContinueNodes) {
-                    handlerTargets.put(((HandlerEdge) e).getEndNode(), new Integer(i));
+                    handlerTargets.put(((HandlerEdge) e).getEndNode(), Integer.valueOf(i));
                 } else {
-                    handlerTargets.put(((HandlerEdge) e).getHandler(), new Integer(i));
+                    handlerTargets.put(((HandlerEdge) e).getHandler(), Integer.valueOf(i));
                 }
             } else {
                 patterns.add(e.getCondition());
-                patternTargets.add(new Integer(i));
+                patternTargets.add(Integer.valueOf(i));
             }
         }
 

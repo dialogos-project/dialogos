@@ -198,8 +198,6 @@ public class ProgressDialog extends JDialog implements ProgressListener, Command
                 } catch (OutOfMemoryError e) {
                     System.gc();
                     ProgressDialog.this.error = e;
-                } catch (ThreadDeath e) {
-                    throw e;
                 } catch (Throwable t) {
                     ProgressDialog.this.error = t;
                 }

@@ -433,7 +433,7 @@ public abstract class GUIClient extends Client implements MenuCommander {
     if (properties.getProperty("Public") != null) {
       try {
         this.isPublic =
-          new Boolean(properties.getProperty("Public")).booleanValue();
+          Boolean.valueOf(properties.getProperty("Public")).booleanValue();
       } catch (Exception exn) {
         this.error(new IllegalArgumentException(
                     "Error while reading property 'Public' from Clients.ini: "
@@ -444,7 +444,7 @@ public abstract class GUIClient extends Client implements MenuCommander {
     if (properties.getProperty("Private") != null) {
       try {
         this.isPublic =
-          !new Boolean(properties.getProperty("Private")).booleanValue();
+          !Boolean.valueOf(properties.getProperty("Private")).booleanValue();
       } catch (Exception exn) {
         this.error(new IllegalArgumentException(
                     "Error while reading property 'Private' from Clients.ini: "
@@ -455,7 +455,7 @@ public abstract class GUIClient extends Client implements MenuCommander {
     if (properties.getProperty("Priority") != null) {
       try {
         int priority =
-          new Integer(properties.getProperty("Priority")).intValue();
+          Integer.valueOf(properties.getProperty("Priority")).intValue();
         if (priority < Thread.MIN_PRIORITY) {
           priority = Thread.MIN_PRIORITY;
         }

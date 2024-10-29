@@ -173,11 +173,11 @@ public class GUIClientFactory {
         boolean enabled = true;
         if (properties != null) {
             if (properties.get("Enabled") != null) {
-                enabled = new Boolean(properties.getProperty("Enabled")).booleanValue();
+                enabled = Boolean.valueOf(properties.getProperty("Enabled")).booleanValue();
             }
             if (properties.get("Disabled") != null) {
                 enabled
-                        = !new Boolean(properties.getProperty("Disabled")).booleanValue();
+                        = ! Boolean.valueOf(properties.getProperty("Disabled")).booleanValue();
             }
         }
 
@@ -207,8 +207,6 @@ public class GUIClientFactory {
                 clients.addAll(this
                         .loadModules(parent, classLoader, "main program", is));
             }
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable exn) {
             OptionPane.error(parent, new String[]{
                 "Could not load builtin modules.",
@@ -242,8 +240,6 @@ public class GUIClientFactory {
                             final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
                             clients.addAll(this.loadModules(parent, classLoader, files[i].getName(), is));
                         }
-                    } catch (ThreadDeath d) {
-                        throw d;
                     } catch (Throwable exn) {
                         OptionPane.error(parent, new String[]{
                             "Could not load modules from "
@@ -278,8 +274,6 @@ public class GUIClientFactory {
                     GUIClient client = (GUIClient) module.newInstance();
                     client.setClassLoader(classLoader);
                     this.addClient(clients, client);
-                } catch (ThreadDeath d) {
-                    throw d;
                 } catch (Throwable exn) {
                     exn.printStackTrace();
                     OptionPane.error(parent, new String[]{
@@ -361,8 +355,6 @@ public class GUIClientFactory {
                         }
                     });
                 }
-            } catch (ThreadDeath d) {
-                throw d;
             } catch (final Throwable exn) {
                 exn.printStackTrace();
                 if (startupWindow != null) {
@@ -548,8 +540,6 @@ public class GUIClientFactory {
             factory.startup(appDir, args, null, true);
             factory.runEventLoop(true);
             System.exit(0);
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable t) {
             t.printStackTrace();
             OptionPane.error(null, t);

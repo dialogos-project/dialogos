@@ -260,7 +260,7 @@ public class StringTools {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            String encoded = StringTools.entities.get(new Character(c));
+            String encoded = StringTools.entities.get(Character.valueOf(c));
             if ((c == '\n') || (c == '<') || (c == '>')) {
                 if (encodeTagsAndLinebreaks) {
                     b.append(encoded);
@@ -681,7 +681,7 @@ public class StringTools {
      */
     public static final String format(String formatString, char arg) {
 
-        return MessageFormat.format(formatString, new Character(arg));
+        return MessageFormat.format(formatString, Character.valueOf(arg));
     }
 
     /**
@@ -692,7 +692,7 @@ public class StringTools {
      */
     public static final String format(String formatString, long arg) {
 
-        return MessageFormat.format(formatString, new Long(arg));
+        return MessageFormat.format(formatString, Long.valueOf(arg));
     }
 
     /**
@@ -703,7 +703,7 @@ public class StringTools {
      */
     public static final String format(String formatString, double arg) {
 
-        return MessageFormat.format(formatString, new Double(arg));
+        return MessageFormat.format(formatString, Double.valueOf(arg));
     }
 
     private static final Map<Character, String> entities;
@@ -757,114 +757,114 @@ public class StringTools {
         }
 
         entities = new HashMap<Character, String>();
-        StringTools.entities.put(new Character('\n'), "<br>");
-        StringTools.entities.put(new Character('&'), "&amp;");
-        StringTools.entities.put(new Character('<'), "&lt;");
-        StringTools.entities.put(new Character('>'), "&gt;");
-        StringTools.entities.put(new Character('\u0083'), "&fnof;");
-        StringTools.entities.put(new Character('\u0086'), "&Yacute;");
-        StringTools.entities.put(new Character('\u0087'), "&yacute;");
-        StringTools.entities.put(new Character('\u008C'), "&OElig;");
-        StringTools.entities.put(new Character('\u0095'), "&bull;");
-        StringTools.entities.put(new Character('\u009C'), "&oelig;");
-        StringTools.entities.put(new Character('\u009F'), "&Yuml;");
+        StringTools.entities.put(Character.valueOf('\n'), "<br>");
+        StringTools.entities.put(Character.valueOf('&'), "&amp;");
+        StringTools.entities.put(Character.valueOf('<'), "&lt;");
+        StringTools.entities.put(Character.valueOf('>'), "&gt;");
+        StringTools.entities.put(Character.valueOf('\u0083'), "&fnof;");
+        StringTools.entities.put(Character.valueOf('\u0086'), "&Yacute;");
+        StringTools.entities.put(Character.valueOf('\u0087'), "&yacute;");
+        StringTools.entities.put(Character.valueOf('\u008C'), "&OElig;");
+        StringTools.entities.put(Character.valueOf('\u0095'), "&bull;");
+        StringTools.entities.put(Character.valueOf('\u009C'), "&oelig;");
+        StringTools.entities.put(Character.valueOf('\u009F'), "&Yuml;");
 
-        StringTools.entities.put(new Character('\u00A0'), "&nbsp;");
-        StringTools.entities.put(new Character('\u00A1'), "&iexcl;");
-        StringTools.entities.put(new Character('\u00A2'), "&cent;");
-        StringTools.entities.put(new Character('\u00A3'), "&pound;");
-        StringTools.entities.put(new Character('\u00A4'), "&curren;");
-        StringTools.entities.put(new Character('\u00A5'), "&yen;");
-        StringTools.entities.put(new Character('\u00A6'), "&brvbar;");
-        StringTools.entities.put(new Character('\u00A7'), "&sect;");
-        StringTools.entities.put(new Character('\u00A8'), "&uml;");
-        StringTools.entities.put(new Character('\u00A9'), "&copy;");
-        StringTools.entities.put(new Character('\u00AA'), "&ordf;");
-        StringTools.entities.put(new Character('\u00AB'), "&laquo;");
-        StringTools.entities.put(new Character('\u00AC'), "&not;");
-        StringTools.entities.put(new Character('\u00AD'), "&shy;");
-        StringTools.entities.put(new Character('\u00AE'), "&reg;");
-        StringTools.entities.put(new Character('\u00AF'), "&macr;");
-        StringTools.entities.put(new Character('\u00B0'), "&deg;");
-        StringTools.entities.put(new Character('\u00B1'), "&plusmn;");
-        StringTools.entities.put(new Character('\u00B2'), "&sup2;");
-        StringTools.entities.put(new Character('\u00B3'), "&sup3;");
-        StringTools.entities.put(new Character('\u00B4'), "&acute;");
-        StringTools.entities.put(new Character('\u00B5'), "&micro;");
-        StringTools.entities.put(new Character('\u00B6'), "&para;");
-        StringTools.entities.put(new Character('\u00B7'), "&middot;");
-        StringTools.entities.put(new Character('\u00B8'), "&cedil;");
-        StringTools.entities.put(new Character('\u00B9'), "&sup1;");
-        StringTools.entities.put(new Character('\u00BA'), "&ordm;");
-        StringTools.entities.put(new Character('\u00BB'), "&raquo;");
-        StringTools.entities.put(new Character('\u00BC'), "&frac14;");
-        StringTools.entities.put(new Character('\u00BD'), "&frac12;");
-        StringTools.entities.put(new Character('\u00BE'), "&frac34;");
-        StringTools.entities.put(new Character('\u00BF'), "&iquest;");
-        StringTools.entities.put(new Character('\u00C0'), "&Agrave;");
-        StringTools.entities.put(new Character('\u00C1'), "&Aacute;");
-        StringTools.entities.put(new Character('\u00C2'), "&Acirc;");
-        StringTools.entities.put(new Character('\u00C3'), "&Atilde;");
-        StringTools.entities.put(new Character('\u00C4'), "&Auml;");
-        StringTools.entities.put(new Character('\u00C5'), "&Aring;");
-        StringTools.entities.put(new Character('\u00C6'), "&AElig;");
-        StringTools.entities.put(new Character('\u00C7'), "&Ccedil;");
-        StringTools.entities.put(new Character('\u00C8'), "&Egrave;");
-        StringTools.entities.put(new Character('\u00C9'), "&Eacute;");
-        StringTools.entities.put(new Character('\u00CA'), "&Ecirc;");
-        StringTools.entities.put(new Character('\u00CB'), "&Euml;");
-        StringTools.entities.put(new Character('\u00CC'), "&Igrave;");
-        StringTools.entities.put(new Character('\u00CD'), "&Iacute;");
-        StringTools.entities.put(new Character('\u00CE'), "&Icirc;");
-        StringTools.entities.put(new Character('\u00CF'), "&Iuml;");
-        StringTools.entities.put(new Character('\u00D0'), "&ETH;");
-        StringTools.entities.put(new Character('\u00D1'), "&Ntilde;");
-        StringTools.entities.put(new Character('\u00D2'), "&Ograve;");
-        StringTools.entities.put(new Character('\u00D3'), "&Oacute;");
-        StringTools.entities.put(new Character('\u00D4'), "&Ocirc;");
-        StringTools.entities.put(new Character('\u00D5'), "&Otilde;");
-        StringTools.entities.put(new Character('\u00D6'), "&Ouml;");
-        StringTools.entities.put(new Character('\u00D7'), "&times;");
-        StringTools.entities.put(new Character('\u00D8'), "&Oslash;");
-        StringTools.entities.put(new Character('\u00D9'), "&Ugrave;");
-        StringTools.entities.put(new Character('\u00DA'), "&Uacute;");
-        StringTools.entities.put(new Character('\u00DB'), "&Ucirc;");
-        StringTools.entities.put(new Character('\u00DC'), "&Uuml;");
-        StringTools.entities.put(new Character('\u00DD'), "&Yacute;");
-        StringTools.entities.put(new Character('\u00DE'), "&THORN;");
-        StringTools.entities.put(new Character('\u00DF'), "&szlig;");
-        StringTools.entities.put(new Character('\u00E0'), "&agrave;");
-        StringTools.entities.put(new Character('\u00E1'), "&aacute;");
-        StringTools.entities.put(new Character('\u00E2'), "&acirc;");
-        StringTools.entities.put(new Character('\u00E3'), "&atilde;");
-        StringTools.entities.put(new Character('\u00E4'), "&auml;");
-        StringTools.entities.put(new Character('\u00E5'), "&aring;");
-        StringTools.entities.put(new Character('\u00E6'), "&aelig;");
-        StringTools.entities.put(new Character('\u00E7'), "&ccedil;");
-        StringTools.entities.put(new Character('\u00E8'), "&egrave;");
-        StringTools.entities.put(new Character('\u00E9'), "&eacute;");
-        StringTools.entities.put(new Character('\u00EA'), "&ecirc;");
-        StringTools.entities.put(new Character('\u00EB'), "&euml;");
-        StringTools.entities.put(new Character('\u00EC'), "&igrave;");
-        StringTools.entities.put(new Character('\u00ED'), "&iacute;");
-        StringTools.entities.put(new Character('\u00EE'), "&icirc;");
-        StringTools.entities.put(new Character('\u00EF'), "&iuml;");
-        StringTools.entities.put(new Character('\u00F0'), "&eth;");
-        StringTools.entities.put(new Character('\u00F1'), "&ntilde;");
-        StringTools.entities.put(new Character('\u00F2'), "&ograve;");
-        StringTools.entities.put(new Character('\u00F3'), "&oacute;");
-        StringTools.entities.put(new Character('\u00F4'), "&ocirc;");
-        StringTools.entities.put(new Character('\u00F5'), "&otilde;");
-        StringTools.entities.put(new Character('\u00F6'), "&ouml;");
-        StringTools.entities.put(new Character('\u00F7'), "&divide;");
-        StringTools.entities.put(new Character('\u00F8'), "&oslash;");
-        StringTools.entities.put(new Character('\u00F9'), "&ugrave;");
-        StringTools.entities.put(new Character('\u00FA'), "&uacute;");
-        StringTools.entities.put(new Character('\u00FB'), "&ucirc;");
-        StringTools.entities.put(new Character('\u00FC'), "&uuml;");
-        StringTools.entities.put(new Character('\u00FD'), "&yacute;");
-        StringTools.entities.put(new Character('\u00FE'), "&thorn;");
-        StringTools.entities.put(new Character('\u00FF'), "&yuml;");
+        StringTools.entities.put(Character.valueOf('\u00A0'), "&nbsp;");
+        StringTools.entities.put(Character.valueOf('\u00A1'), "&iexcl;");
+        StringTools.entities.put(Character.valueOf('\u00A2'), "&cent;");
+        StringTools.entities.put(Character.valueOf('\u00A3'), "&pound;");
+        StringTools.entities.put(Character.valueOf('\u00A4'), "&curren;");
+        StringTools.entities.put(Character.valueOf('\u00A5'), "&yen;");
+        StringTools.entities.put(Character.valueOf('\u00A6'), "&brvbar;");
+        StringTools.entities.put(Character.valueOf('\u00A7'), "&sect;");
+        StringTools.entities.put(Character.valueOf('\u00A8'), "&uml;");
+        StringTools.entities.put(Character.valueOf('\u00A9'), "&copy;");
+        StringTools.entities.put(Character.valueOf('\u00AA'), "&ordf;");
+        StringTools.entities.put(Character.valueOf('\u00AB'), "&laquo;");
+        StringTools.entities.put(Character.valueOf('\u00AC'), "&not;");
+        StringTools.entities.put(Character.valueOf('\u00AD'), "&shy;");
+        StringTools.entities.put(Character.valueOf('\u00AE'), "&reg;");
+        StringTools.entities.put(Character.valueOf('\u00AF'), "&macr;");
+        StringTools.entities.put(Character.valueOf('\u00B0'), "&deg;");
+        StringTools.entities.put(Character.valueOf('\u00B1'), "&plusmn;");
+        StringTools.entities.put(Character.valueOf('\u00B2'), "&sup2;");
+        StringTools.entities.put(Character.valueOf('\u00B3'), "&sup3;");
+        StringTools.entities.put(Character.valueOf('\u00B4'), "&acute;");
+        StringTools.entities.put(Character.valueOf('\u00B5'), "&micro;");
+        StringTools.entities.put(Character.valueOf('\u00B6'), "&para;");
+        StringTools.entities.put(Character.valueOf('\u00B7'), "&middot;");
+        StringTools.entities.put(Character.valueOf('\u00B8'), "&cedil;");
+        StringTools.entities.put(Character.valueOf('\u00B9'), "&sup1;");
+        StringTools.entities.put(Character.valueOf('\u00BA'), "&ordm;");
+        StringTools.entities.put(Character.valueOf('\u00BB'), "&raquo;");
+        StringTools.entities.put(Character.valueOf('\u00BC'), "&frac14;");
+        StringTools.entities.put(Character.valueOf('\u00BD'), "&frac12;");
+        StringTools.entities.put(Character.valueOf('\u00BE'), "&frac34;");
+        StringTools.entities.put(Character.valueOf('\u00BF'), "&iquest;");
+        StringTools.entities.put(Character.valueOf('\u00C0'), "&Agrave;");
+        StringTools.entities.put(Character.valueOf('\u00C1'), "&Aacute;");
+        StringTools.entities.put(Character.valueOf('\u00C2'), "&Acirc;");
+        StringTools.entities.put(Character.valueOf('\u00C3'), "&Atilde;");
+        StringTools.entities.put(Character.valueOf('\u00C4'), "&Auml;");
+        StringTools.entities.put(Character.valueOf('\u00C5'), "&Aring;");
+        StringTools.entities.put(Character.valueOf('\u00C6'), "&AElig;");
+        StringTools.entities.put(Character.valueOf('\u00C7'), "&Ccedil;");
+        StringTools.entities.put(Character.valueOf('\u00C8'), "&Egrave;");
+        StringTools.entities.put(Character.valueOf('\u00C9'), "&Eacute;");
+        StringTools.entities.put(Character.valueOf('\u00CA'), "&Ecirc;");
+        StringTools.entities.put(Character.valueOf('\u00CB'), "&Euml;");
+        StringTools.entities.put(Character.valueOf('\u00CC'), "&Igrave;");
+        StringTools.entities.put(Character.valueOf('\u00CD'), "&Iacute;");
+        StringTools.entities.put(Character.valueOf('\u00CE'), "&Icirc;");
+        StringTools.entities.put(Character.valueOf('\u00CF'), "&Iuml;");
+        StringTools.entities.put(Character.valueOf('\u00D0'), "&ETH;");
+        StringTools.entities.put(Character.valueOf('\u00D1'), "&Ntilde;");
+        StringTools.entities.put(Character.valueOf('\u00D2'), "&Ograve;");
+        StringTools.entities.put(Character.valueOf('\u00D3'), "&Oacute;");
+        StringTools.entities.put(Character.valueOf('\u00D4'), "&Ocirc;");
+        StringTools.entities.put(Character.valueOf('\u00D5'), "&Otilde;");
+        StringTools.entities.put(Character.valueOf('\u00D6'), "&Ouml;");
+        StringTools.entities.put(Character.valueOf('\u00D7'), "&times;");
+        StringTools.entities.put(Character.valueOf('\u00D8'), "&Oslash;");
+        StringTools.entities.put(Character.valueOf('\u00D9'), "&Ugrave;");
+        StringTools.entities.put(Character.valueOf('\u00DA'), "&Uacute;");
+        StringTools.entities.put(Character.valueOf('\u00DB'), "&Ucirc;");
+        StringTools.entities.put(Character.valueOf('\u00DC'), "&Uuml;");
+        StringTools.entities.put(Character.valueOf('\u00DD'), "&Yacute;");
+        StringTools.entities.put(Character.valueOf('\u00DE'), "&THORN;");
+        StringTools.entities.put(Character.valueOf('\u00DF'), "&szlig;");
+        StringTools.entities.put(Character.valueOf('\u00E0'), "&agrave;");
+        StringTools.entities.put(Character.valueOf('\u00E1'), "&aacute;");
+        StringTools.entities.put(Character.valueOf('\u00E2'), "&acirc;");
+        StringTools.entities.put(Character.valueOf('\u00E3'), "&atilde;");
+        StringTools.entities.put(Character.valueOf('\u00E4'), "&auml;");
+        StringTools.entities.put(Character.valueOf('\u00E5'), "&aring;");
+        StringTools.entities.put(Character.valueOf('\u00E6'), "&aelig;");
+        StringTools.entities.put(Character.valueOf('\u00E7'), "&ccedil;");
+        StringTools.entities.put(Character.valueOf('\u00E8'), "&egrave;");
+        StringTools.entities.put(Character.valueOf('\u00E9'), "&eacute;");
+        StringTools.entities.put(Character.valueOf('\u00EA'), "&ecirc;");
+        StringTools.entities.put(Character.valueOf('\u00EB'), "&euml;");
+        StringTools.entities.put(Character.valueOf('\u00EC'), "&igrave;");
+        StringTools.entities.put(Character.valueOf('\u00ED'), "&iacute;");
+        StringTools.entities.put(Character.valueOf('\u00EE'), "&icirc;");
+        StringTools.entities.put(Character.valueOf('\u00EF'), "&iuml;");
+        StringTools.entities.put(Character.valueOf('\u00F0'), "&eth;");
+        StringTools.entities.put(Character.valueOf('\u00F1'), "&ntilde;");
+        StringTools.entities.put(Character.valueOf('\u00F2'), "&ograve;");
+        StringTools.entities.put(Character.valueOf('\u00F3'), "&oacute;");
+        StringTools.entities.put(Character.valueOf('\u00F4'), "&ocirc;");
+        StringTools.entities.put(Character.valueOf('\u00F5'), "&otilde;");
+        StringTools.entities.put(Character.valueOf('\u00F6'), "&ouml;");
+        StringTools.entities.put(Character.valueOf('\u00F7'), "&divide;");
+        StringTools.entities.put(Character.valueOf('\u00F8'), "&oslash;");
+        StringTools.entities.put(Character.valueOf('\u00F9'), "&ugrave;");
+        StringTools.entities.put(Character.valueOf('\u00FA'), "&uacute;");
+        StringTools.entities.put(Character.valueOf('\u00FB'), "&ucirc;");
+        StringTools.entities.put(Character.valueOf('\u00FC'), "&uuml;");
+        StringTools.entities.put(Character.valueOf('\u00FD'), "&yacute;");
+        StringTools.entities.put(Character.valueOf('\u00FE'), "&thorn;");
+        StringTools.entities.put(Character.valueOf('\u00FF'), "&yuml;");
     }
 
     /**

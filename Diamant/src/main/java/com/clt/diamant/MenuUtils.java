@@ -256,8 +256,6 @@ public class MenuUtils {
         mbar.add(m);
         try {
             mbar.setHelpMenu(m);
-        } catch (ThreadDeath d) {
-            throw d;
         } catch (Throwable t) {
         }
 
