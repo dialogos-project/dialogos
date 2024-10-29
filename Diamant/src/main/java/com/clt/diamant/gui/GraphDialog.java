@@ -331,8 +331,6 @@ public class GraphDialog extends ManagedFrame implements GraphEditor, MenuComman
                     break;
             }
         } catch (Throwable t) {
-            System.gc();
-            System.runFinalization();
             t.printStackTrace();
             OptionPane.error(this, new String[]{
                 Resources.getString("CouldNotComplete"), t.toString()});

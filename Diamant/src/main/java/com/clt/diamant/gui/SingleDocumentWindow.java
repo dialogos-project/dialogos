@@ -881,11 +881,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         } catch (Exception t) {
             // This is the global exception handler for all the commands that
             // can be handled in this method.
-            
             OptionPane.error(SingleDocumentWindow.this, t);
-
-            System.gc();
-            System.gc();
         }
         this.updateMenus();
         return cmdHandled;

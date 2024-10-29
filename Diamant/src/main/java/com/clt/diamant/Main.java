@@ -511,10 +511,6 @@ public class Main implements MenuCommander, MenuOwner, Commands {
                     break;
             }
         } catch (Throwable t) {
-            System.gc();
-            System.runFinalization();
-            System.gc();
-            System.runFinalization();
             t.printStackTrace();
             OptionPane.error(this.currentDocument, new String[]{
                 Resources.getString("CouldNotComplete"), t.toString()});
