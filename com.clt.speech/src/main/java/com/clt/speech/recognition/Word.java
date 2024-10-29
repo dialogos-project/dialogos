@@ -29,11 +29,11 @@ public abstract class Word implements com.clt.srgf.Word, PropertyContainer<Objec
         if (key.equals("word")) {
             return this.getWord();
         } else if (key.equals("confidence")) {
-            return new Float(this.getConfidence());
+            return Float.valueOf(this.getConfidence());
         } else if (key.equals("start")) {
-            return new Long(this.getStart());
+            return Long.valueOf(this.getStart());
         } else if (key.equals("end")) {
-            return new Long(this.getEnd());
+            return Long.valueOf(this.getEnd());
         } else {
             return null;
         }

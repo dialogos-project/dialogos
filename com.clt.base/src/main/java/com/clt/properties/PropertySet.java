@@ -233,7 +233,7 @@ public class PropertySet<T extends Property<?>> extends UniqueList<T> {
 
                             try {
                                 if (setter != null) {
-                                    setter.invoke(object, new Object[]{new Boolean(value)});
+                                    setter.invoke(object, new Object[]{Boolean.valueOf(value)});
                                 }
                             } catch (Exception exn) {
                             }
@@ -272,7 +272,7 @@ public class PropertySet<T extends Property<?>> extends UniqueList<T> {
 
                             try {
                                 if (setter != null) {
-                                    setter.invoke(object, new Object[]{new Integer(value)});
+                                    setter.invoke(object, new Object[]{Integer.valueOf(value)});
                                 }
                             } catch (Exception exn) {
                             }
@@ -311,7 +311,7 @@ public class PropertySet<T extends Property<?>> extends UniqueList<T> {
 
                             try {
                                 if (setter != null) {
-                                    setter.invoke(object, new Object[]{new Float(value)});
+                                    setter.invoke(object, new Object[]{Float.valueOf(value)});
                                 }
                             } catch (Exception exn) {
                             }

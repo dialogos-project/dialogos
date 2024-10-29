@@ -201,7 +201,7 @@ line	::= t:t
 		  ;
 
 
-score	::= INT:n	{: RESULT = new Double(n.longValue()); :}
+score	::= INT:n	{: RESULT = Double.valueOf(n.longValue()); :}
 		  | DBL:n	{: RESULT = n; :}
 		  ;
 

@@ -58,7 +58,7 @@ import java.text.MessageFormat;
 	}
 	
 	void yy_push(int state) {
-		states.push(new Integer(yystate()));
+		states.push(Integer.valueOf(yystate()));
 		yybegin(state);
 	}
 	
@@ -91,8 +91,8 @@ import java.text.MessageFormat;
 		public String toString() {
 			return MessageFormat.format(error_format, new Object[] {
 				text,
-				new Long(line + 1),
-				new Long(left - line_start + 1)
+				Long.valueOf(line + 1),
+				Long.valueOf(left - line_start + 1)
 			}) + ":\n" + linetext;
 		}
 	}
@@ -368,8 +368,8 @@ ABNF="#ABNF"
 	else {
 		throw new ParseException(MessageFormat.format(error_format, new Object[] {
 			yytext().substring(0, 1),
-			new Long(yyline+1),
-			new Long(getPos()-line_start+1)
+			Long.valueOf(yyline+1),
+			Long.valueOf(getPos()-line_start+1)
 		}) + ":\n" + currentLine);
 	}
 }

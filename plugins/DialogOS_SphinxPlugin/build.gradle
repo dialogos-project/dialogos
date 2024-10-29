@@ -7,6 +7,7 @@ dependencies {
 
   implementation group: 'commons-codec', name: 'commons-codec', version: '1.10'
   implementation group: 'commons-io', name: 'commons-io', version: '2.5'
+  implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.8'
 
   implementation(group:'com.github.cmusphinx', name:'sphinx4', version:'44a5c08') {
     exclude module: 'sphinx4-data'
@@ -17,6 +18,9 @@ dependencies {
   }
   runtimeOnly group: 'com.github.dialogos-project', name:'sphinx-de-de-uhh', version:'1.0'
 
-  implementation group: 'javax.xml.bind', name: 'jaxb-api', version:'2.2.8'
+  testImplementation project(':plugins:DialogOS_MaryTTSPlugin')
 }
 
+test {
+    dependsOn(jar)
+}

@@ -967,8 +967,8 @@ scope			::=			{: RESULT = Boolean.FALSE; :}
 				  | PUBLIC	{: RESULT = Boolean.TRUE; :}  
 				  ;
 
-probability		::=					{: RESULT = new Double(1.0); :}
-				  | PROBABILITY:p	{: RESULT = new Double(p); :}
+probability		::=					{: RESULT = Double.valueOf(1.0); :}
+				  | PROBABILITY:p	{: RESULT = Double.valueOf(p); :}
 				  ;
 
 alternatives	::= probability:p sequence:s

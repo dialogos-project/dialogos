@@ -100,7 +100,7 @@ public class PortAudioInput extends JPanel {
             this.adjustSettings(0);
             ComboBoxModel m = this.sampleRate.getModel();
             for (int i = 0; i < m.getSize(); i++) {
-                if (m.getElementAt(i).equals(new Double(16000.0))) {
+                if (m.getElementAt(i).equals(Double.valueOf(16000.0))) {
                     this.sampleRate.setSelectedIndex(i);
                     break;
                 }
@@ -178,13 +178,13 @@ public class PortAudioInput extends JPanel {
                 double[] sr = info.getSampleRates();
                 Vector<Double> srs = new Vector<Double>();
                 for (int i = 0; i < sr.length; i++) {
-                    srs.add(new Double(sr[i]));
+                    srs.add(Double.valueOf(sr[i]));
                 }
                 this.sampleRate.setModel(new DefaultComboBoxModel(srs));
 
                 Vector<Integer> ch = new Vector<Integer>();
                 for (int i = 0; i < info.getInputs(); i++) {
-                    ch.addElement(new Integer(i + 1));
+                    ch.addElement(Integer.valueOf(i + 1));
                 }
                 this.numChannels.setModel(new DefaultComboBoxModel(ch));
 

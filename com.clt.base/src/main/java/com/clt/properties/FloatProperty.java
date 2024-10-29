@@ -122,7 +122,7 @@ public abstract class FloatProperty extends Property<Float> {
     @Override
     public Float getValueAsObject() {
 
-        return new Float(this.getValue());
+        return Float.valueOf(this.getValue());
     }
 
     @Override
@@ -248,7 +248,7 @@ public abstract class FloatProperty extends Property<Float> {
                             for (int i = 0; i <= majorTicks; i++) {
                                 labels
                                         .put(
-                                                new Integer(i * this.getMajorTickSpacing()),
+                                                Integer.valueOf(i * this.getMajorTickSpacing()),
                                                 new JLabel(
                                                         format
                                                                 .format(min

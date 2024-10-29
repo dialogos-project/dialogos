@@ -142,7 +142,7 @@ abstract class CLTConnector extends AbstractConnector {
         if (this.xml_out != null) {
             this.xml_out.openElement(Protocol.XML_RPC,
                     new String[]{Protocol.XML_RPC_SRC},
-                    new Object[]{new Integer(CLTConnector.this.hashCode())});
+                    new Object[]{Integer.valueOf(CLTConnector.this.hashCode())});
             this.xml_out.printElement(Protocol.XML_RPC_PROC, procedure);
             if (arguments != null) {
                 for (int i = 0; i < arguments.length; i++) {

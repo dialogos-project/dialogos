@@ -120,7 +120,7 @@ public abstract class MlfNode implements PropertyContainer<Object> {
     public Object getProperty(String key) {
 
         if (key.equals(MlfNode.CONFIDENCE)) {
-            return new Double(this.getConfidence());
+            return Double.valueOf(this.getConfidence());
         } else {
             return null;
         }

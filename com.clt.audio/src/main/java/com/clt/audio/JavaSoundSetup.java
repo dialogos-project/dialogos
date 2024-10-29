@@ -165,23 +165,19 @@ public class JavaSoundSetup extends JPanel {
 
         this.sampleSize = new DefaultEnumProperty<Integer>("SampleSize", Audio
                         .getString("SampleSize"),
-                        Audio.getString("SampleSizeDesc"), new Integer[]{new Integer(8),
-            new Integer(16)},
-                        new Integer(16));
+                        Audio.getString("SampleSizeDesc"), new Integer[]{8, 16},
+                        Integer.valueOf(16));
         this.sampleSize.setEditType(Property.EDIT_TYPE_RADIOBUTTONS_HORIZONTAL);
 
         this.sampleRate = new DefaultEnumProperty<Integer>("SampleRate", Audio
                         .getString("SampleRate"),
                         Audio.getString("SampleRateDesc"), new Integer[]{
-            new Integer(11025),
-            new Integer(16000), new Integer(22050), new Integer(32000),
-            new Integer(44100),
-            new Integer(48000)}, new Integer(44100));
+            11025, 16000, 22050, 32000, 44100, 48000}, Integer.valueOf(44100));
         this.sampleSize.setEditType(Property.EDIT_TYPE_COMBOBOX);
 
         this.numChannels = new DefaultEnumProperty<Integer>("Channels", Audio.getString("Channels"),
-                        Audio.getString("ChannelsDesc"), new Integer[]{new Integer(1), new Integer(2)},
-                        new Integer(2));
+                        Audio.getString("ChannelsDesc"), new Integer[]{1, 2},
+                        Integer.valueOf(2));
         this.numChannels.setEditType(Property.EDIT_TYPE_RADIOBUTTONS_HORIZONTAL);
 
         this.signed = new DefaultBooleanProperty("Signed", Audio.getString("Signed"),

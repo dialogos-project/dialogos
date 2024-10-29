@@ -101,7 +101,7 @@ public abstract class IntegerProperty extends Property<Integer> {
         } else if ((minimum != maximum) && (maximum - minimum < 10)) {
             this.values = new Integer[maximum - minimum + 1];
             for (int i = minimum; i <= maximum; i++) {
-                this.values[i - minimum] = new Integer(i);
+                this.values[i - minimum] = Integer.valueOf(i);
             }
             this.setEditType(Property.EDIT_TYPE_COMBOBOX);
         } else {
@@ -141,7 +141,7 @@ public abstract class IntegerProperty extends Property<Integer> {
     @Override
     public Integer getValueAsObject() {
 
-        return new Integer(this.getValue());
+        return Integer.valueOf(this.getValue());
     }
 
     @Override

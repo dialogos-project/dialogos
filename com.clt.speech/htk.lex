@@ -30,10 +30,10 @@ import com.clt.util.StringTools;
 	
 	private Double createDouble(String s) {
 		try {
-			return new Double(doubleFormat.parse(s).doubleValue());
+			return Double.valueOf(doubleFormat.parse(s).doubleValue());
 		}
 		catch (Exception exn) {
-			return new Double(s);
+			return Double.valueOf(s);
 		}
 	}
 	
@@ -49,7 +49,7 @@ import com.clt.util.StringTools;
 	
 	
 	void yy_push(int state) {
-		states.push(new Integer(yystate()));
+		states.push(Integer.valueOf(yystate()));
 		yybegin(state);
 	}
 
@@ -72,8 +72,8 @@ import com.clt.util.StringTools;
 		public String toString() {
 			return MessageFormat.format(error_format, new Object[] {
 				text,
-				new Long(line + 1),
-				new Long(left - line_start + 1)
+				Long.valueOf(line + 1),
+				Long.valueOf(left - line_start + 1)
 			});
 		}
 	}
@@ -125,7 +125,7 @@ HEADER      = "#!MLF!#"
 %%
 
 <YYINITIAL> {
-    {INTEGER}     { return createSymbol(Sym.INT, new Long(yytext())); }
+    {INTEGER}     { return createSymbol(Sym.INT, Long.valueOf(yytext())); }
     {DOUBLE}      { return createSymbol(Sym.DBL, createDouble(yytext())); }
 
 
@@ -150,7 +150,7 @@ HEADER      = "#!MLF!#"
 .	{
 		throw new ParseException(MessageFormat.format(error_format, new Object[] {
 			yytext().substring(0, 1),
-			new Long(yyline+1),
-			new Long(getPos()-line_start+1)
+			Long.valueOf(yyline+1),
+			Long.valueOf(getPos()-line_start+1)
 		}));
 	}

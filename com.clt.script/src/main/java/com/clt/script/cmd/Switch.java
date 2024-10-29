@@ -34,7 +34,7 @@ public class Switch implements Command {
                 if (this.cases.containsKey(value)) {
                     throw new TypeException("Duplicate case label: " + c);
                 } else {
-                    this.cases.put(value, new Integer(this.commands.size()));
+                    this.cases.put(value, Integer.valueOf(this.commands.size()));
                 }
             }
 

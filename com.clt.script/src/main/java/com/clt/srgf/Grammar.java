@@ -516,7 +516,7 @@ public class Grammar implements NamedEntity {
 
         final Map<Rule, Integer> priority = new HashMap<>();
         for (Rule r : usedRulesMap.keySet()) {
-            priority.put(r, new Integer(0));
+            priority.put(r, Integer.valueOf(0));
         }
 
         boolean changed;
@@ -530,7 +530,7 @@ public class Grammar implements NamedEntity {
                     Integer p2 = priority.get(usedRule);
                     if (p2 != null) {
                         if (p2.intValue() >= p.intValue()) {
-                            p = new Integer(p2.intValue() + 1);
+                            p = Integer.valueOf(p2.intValue() + 1);
                             e.setValue(p);
                             changed = true;
                         }
@@ -969,7 +969,7 @@ public class Grammar implements NamedEntity {
         Parse mainParse = new Parse(this, start, in, options);
 
         Map<Integer, PenaltyList> penaltyLists = new HashMap<>();
-        Integer lowestPenalty = new Integer(mainParse.getPenalty());
+        Integer lowestPenalty = Integer.valueOf(mainParse.getPenalty());
         PenaltyList p0 = new PenaltyList();
         p0.add(mainParse);
         penaltyLists.put(lowestPenalty, p0);
@@ -1008,7 +1008,7 @@ public class Grammar implements NamedEntity {
         }
 
         for (Parse p : sparseParses) {
-            Integer penalty = new Integer(p.getPenalty());
+            Integer penalty = Integer.valueOf(p.getPenalty());
             PenaltyList l = penaltyLists.get(penalty);
             if (l == null) {
                 l = new PenaltyList();
@@ -1118,7 +1118,7 @@ public class Grammar implements NamedEntity {
                 for (Iterator<Parse> it = continuations.iterator(); it.hasNext();) {
                     p = it.next();
 
-                    Integer penalty = new Integer(p.getPenalty());
+                    Integer penalty = Integer.valueOf(p.getPenalty());
                     if (penalty.intValue() <= maxAllowedPenalty) {
                         PenaltyList s = penaltyLists.get(penalty);
                         if (s == null) {
@@ -1137,7 +1137,7 @@ public class Grammar implements NamedEntity {
                     return results.toArray(new Parse[results.size()]);
                 } else {
                     // suche den neuen kleinsten Wert
-                    lowestPenalty = new Integer(Integer.MAX_VALUE);
+                    lowestPenalty = Integer.valueOf(Integer.MAX_VALUE);
                     for (Iterator<Integer> it = penaltyLists.keySet().iterator(); it
                             .hasNext();) {
                         Integer penalty = it.next();

@@ -211,9 +211,9 @@ public class PList {
             } else if (name.equals("string")) {
                 this.value = this.getValue();
             } else if (name.equals("integer")) {
-                this.value = new Long(this.getValue());
+                this.value = Long.valueOf(this.getValue());
             } else if (name.equals("real")) {
-                this.value = new Double(this.getValue());
+                this.value = Double.valueOf(this.getValue());
             } else if (name.equals("true")) {
                 this.value = Boolean.TRUE;
             } else if (name.equals("false")) {

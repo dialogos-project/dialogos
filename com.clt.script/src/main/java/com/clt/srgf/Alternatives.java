@@ -48,7 +48,7 @@ public class Alternatives extends NonTerminal {
     public Alternatives add(Expansion s, double probability) {
 
         this.alternatives.add(s);
-        this.probabilities.add(new Double(probability));
+        this.probabilities.add(Double.valueOf(probability));
         s.setOwner(this);
         s.setRule(this.getRule());
         this.makeDirty();
@@ -260,13 +260,13 @@ public class Alternatives extends NonTerminal {
                 if (j != i) {
                     Expansion exp2 = this.alternatives.get(j);
                     if (this.subsumes(exp, exp2)) {
-                        this.probabilities.set(i, new Double(this.getWeight(i)
+                        this.probabilities.set(i, Double.valueOf(this.getWeight(i)
                                 + this.getWeight(j)));
                         this.probabilities.remove(j);
                         this.alternatives.remove(j);
                         j--;
                     } else if (this.subsumes(exp2, exp)) {
-                        this.probabilities.set(j, new Double(this.getWeight(i)
+                        this.probabilities.set(j, Double.valueOf(this.getWeight(i)
                                 + this.getWeight(j)));
                         this.probabilities.remove(i);
                         this.alternatives.remove(i);

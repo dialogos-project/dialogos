@@ -36,8 +36,10 @@ allprojects {
   }
 
   apply plugin: 'java'
-  sourceCompatibility = '1.8'
-
+  java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+  }
+  
   apply plugin: 'license'
   licenseMain.onlyIf { project.file('LICENSE ').exists() }
   licenseTest.onlyIf { project.file('LICENSE ').exists() }
@@ -51,7 +53,9 @@ dependencies {
   implementation subprojects
 }
 
-mainClassName = 'com.clt.dialogos.DialogOS'
+application {
+  mainClassName = 'com.clt.dialogos.DialogOS'
+}
 
 run {
   systemProperties System.getProperties()
@@ -96,7 +100,7 @@ task allJavadoc(type: Javadoc) {
 
 // package Javadoc into one Jar file in build/libs
 task javadocJar(type: Jar, dependsOn: allJavadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
@@ -112,7 +116,7 @@ task clean_all {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
+  archiveClassifier = 'sources'
   from sourceSets.main.allSource
 }
 

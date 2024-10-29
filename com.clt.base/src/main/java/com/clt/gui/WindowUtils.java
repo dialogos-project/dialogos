@@ -208,13 +208,13 @@ public class WindowUtils {
             if (window instanceof RootPaneContainer) {
                 ((RootPaneContainer) window).getRootPane().putClientProperty(
                         "windowModified",
-                        new Boolean(modified));
+                        Boolean.valueOf(modified));
             } else {
                 // other windows need to use JDirect
                 Class.forName("com.clt.jdirect.WindowUtils").getMethod(
                         "setWindowModified",
                         new Class[]{Window.class, Boolean.TYPE}).invoke(null,
-                                new Object[]{window, new Boolean(modified)});
+                                new Object[]{window, Boolean.valueOf(modified)});
             }
         } catch (Exception ignore) {
             // ignore errors. This is only a visual clue anyways
