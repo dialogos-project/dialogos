@@ -32,7 +32,7 @@ dependencies {
   javaCup group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b', version: '2015.03.26'
   flex group: 'de.jflex', name: 'jflex', version: '1.7.0'
 
-  implementation group: 'org.json', name: 'json', version: '20180130'
+  implementation group: 'org.json', name: 'json', version: '20200518' //20200518 is the most recent working version
 
   implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
 
