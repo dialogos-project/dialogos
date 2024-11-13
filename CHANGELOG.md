@@ -1,5 +1,14 @@
 **unreleased**
 
+**Version 2.1.4, 2024-11-15**
+
+- support for Java > 9 (which previously broke) and compile without deprecation warnings on Java 21.
+- update MaryTTS version to 5.3-SNAPSHOT which makes DialogOS runnable again (although, only with one 
+  single English voice available from maven artifact repositories; the full list remains available 
+  through the installer)
+- removed DialogOS's handling of character encodings. We'll just go with what Java uses, which typically
+  is Utf-8.
+- updated Gradle (mostly?) across the board to 8.10.2; also updated many dependencies to newer versions.
 - better handling for user-defined functions and grammars that do not compile because of syntax errors. 
   Now a warning is shown after editing the function/grammar. Note that functions may still fail 
   when called at runtime (e.g. because you reference variables that are not accessible) and there is 
@@ -7,7 +16,7 @@
   However, this will already solve many frequent issues (like missing semicolons. 
   (fix for #102, #200, #201)
 - left recursion, which leads to unexplainable behaviour in the parser, is now warned about.
-- new script function `sleep` which does what you'd expect.
+- new script function `sleep` which does what you'd expect (in milliseconds).
 
 **Version 2.1.3, 2019-09-01**
 
