@@ -98,7 +98,7 @@ public class Version {
     };
 
     private static final String[] implementers = {
-        "Timo Baumann (CMU)",
+        "Timo Baumann (OTH Regensburg)",
         "Daniel Beck (CLT)",
         "Daniel Bobbert (CLT)",
         "Bri Burr (U Hamburg)",
