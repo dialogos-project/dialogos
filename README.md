@@ -8,7 +8,7 @@ DialogOS has been used in a variety of projects for university and high-school s
 
 The open-source DialogOS runs under Windows, MacOS, and Linux. This is in contrast to the commercial version, which only worked under Windows due to limitations in the speech recognizer.
 
-<img src="http://deacademic.com/pictures/dewiki/68/DialogOS.jpg" width="500" />
+<img src="https://www.dialogos.app/images/DialogOS.jpg" />
 
 
 ## Documentation
