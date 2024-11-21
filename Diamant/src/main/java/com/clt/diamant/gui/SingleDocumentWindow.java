@@ -474,7 +474,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         m.addItem(Resources.getString("Validate"), SingleDocumentWindow.cmdValidate, KeyEvent.VK_K);
         /*
      * m.addItem(Resources.getString("CheckSamples") + "...", cmdCheckSamples);
-     * //m.addItem("Export as VoiceXML", cmdExportVXML); m.addSeparator();
      * m.addItem(Resources.getString("ZoomIn"), cmdZoomIn);
      * m.addItem(Resources.getString("ZoomOut"), cmdZoomOut);
          */
