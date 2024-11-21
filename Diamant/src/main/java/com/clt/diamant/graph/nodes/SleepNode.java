@@ -143,11 +143,4 @@ public class SleepNode extends Node {
             super.readAttribute(r, name, value, uid_map);
         }
     }
-
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        // vxml
-    }
-
 }

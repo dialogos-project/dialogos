@@ -39,10 +39,4 @@ public class StartNode extends Node {
         comm.transition(this, target, 0, null);
         return target;
     }
-
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        this.writeVoiceXMLGoto(w, uid_map, 0);
-    }
 }

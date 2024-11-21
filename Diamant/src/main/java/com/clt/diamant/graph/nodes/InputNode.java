@@ -1339,16 +1339,6 @@ public class InputNode extends OutputNode {
         }
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        // vxml
-        w.openElement("field", new String[]{"name"}, new String[]{"input"});
-
-        super.writeVoiceXML(w, uid_map);
-
-        w.closeElement("field");
-    }
 
     static class BargeInTableModel
             extends AbstractTableModel {

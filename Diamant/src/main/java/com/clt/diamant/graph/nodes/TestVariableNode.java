@@ -441,12 +441,6 @@ public class TestVariableNode extends Node {
     }
 
     @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        // vxml
-    }
-
-    @Override
     public boolean acceptableToSave() {
         return !existDuplicateEdgesOrEmptyLabels(this.edgeModel.getEdges());
     }

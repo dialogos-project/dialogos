@@ -83,14 +83,6 @@ public class GraphNode extends OwnerNode {
         return target;
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) throws IOException {
-        w.printElement("subdialog", new String[]{"name"}, new String[]{"graph"
-            + uid_map.graphs.put(this.getOwnedGraph())});
-
-        this.getOwnedGraph().exportVoiceXML(w, uid_map);
-    }
-
     /**
      * Returns a List of all Groovy-specific and non-Groovy variables
      *
