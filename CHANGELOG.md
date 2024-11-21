@@ -1,4 +1,6 @@
 **unreleased**
+- merged the pull request to get rid of VoiceXML export (which never worked). Thanks Mikhail Raudin!
+  This goes towards fixing issue #97 (however, the abstract interface still remains).
 
 **Version 2.1.4, 2024-11-15**
 
