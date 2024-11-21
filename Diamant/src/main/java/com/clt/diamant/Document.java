@@ -16,6 +16,8 @@ import com.clt.gui.OptionPane;
 import com.clt.xml.XMLReader;
 import com.clt.xml.XMLWriter;
 
+import javax.swing.SwingUtilities;
+
 public abstract class Document {
 
     public final static boolean validateXML = false;
@@ -68,8 +70,12 @@ public abstract class Document {
 
         String oldTitle = this.title;
         this.title = title;
-
-        this.firePropertyChange("title", oldTitle, title);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Document.this.firePropertyChange("title", oldTitle, title);
+            }
+        });
     }
 
     protected void writeHeader(XMLWriter out) {

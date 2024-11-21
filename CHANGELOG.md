@@ -1,6 +1,7 @@
 **unreleased**
 - merged the pull request to get rid of VoiceXML export (which never worked). Thanks Mikhail Raudin!
   This goes towards fixing issue #97 (however, the abstract interface still remains).
+- fix a thread-safety issue with Swing that is triggered on (recent?) Java 8 when saving a document 
 
 **Version 2.1.4, 2024-11-15**
 
