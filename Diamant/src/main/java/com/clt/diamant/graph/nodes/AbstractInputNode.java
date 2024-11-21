@@ -54,7 +54,7 @@ import java.util.concurrent.TimeoutException;
  *
  * Created by timo on 09.10.17.
  */
-abstract public class AbstractInputNode extends Node {
+ abstract public class AbstractInputNode extends Node {
 
     /**
      * used while the recognizer is loading
@@ -1188,11 +1188,7 @@ abstract public class AbstractInputNode extends Node {
         }
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-        // TODO: implement? doesn't seem to be implemented anywhere in DialogOS...
-        // see #97 (AK)
-    }
+
 
     @Override
     public String getDescription(Edge selectedEdge) {

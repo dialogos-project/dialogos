@@ -197,19 +197,4 @@ public class ConditionalNode extends Node {
         }
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        w.openElement("if", new String[]{"cond"},
-                new String[]{Node.vxmlExp((String) this
-                            .getProperty(ConditionalNode.EXPRESSION))});
-
-        this.writeVoiceXMLGoto(w, uid_map, 0);
-
-        w.printElement("else", null);
-
-        this.writeVoiceXMLGoto(w, uid_map, 1);
-
-        w.closeElement("if");
-    }
 }

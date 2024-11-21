@@ -154,9 +154,5 @@ public class GotoNode extends Node {
         }
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
-        // vxml
-    }
 }

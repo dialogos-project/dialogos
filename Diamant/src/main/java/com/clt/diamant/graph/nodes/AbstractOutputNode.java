@@ -431,12 +431,6 @@ public abstract class AbstractOutputNode extends Node {
 
 
     @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-        // nothing needed
-        // see #97 (AK)
-    }
-
-    @Override
     protected void readAttribute(XMLReader r, String name, String value, IdMap uid_map) throws SAXException {
         if (name.equals(PROMPT)) {
             this.setProperty(name, value);

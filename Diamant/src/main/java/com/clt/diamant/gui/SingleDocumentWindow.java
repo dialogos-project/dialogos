@@ -82,7 +82,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     public static final int cmdDebug = Commands.cmdDocument + 13;
     public static final int cmdWoz = Commands.cmdDocument + 14;
     public static final int cmdDelay = Commands.cmdDocument + 15;
-    public static final int cmdExportVXML = Commands.cmdDocument + 16;
+
 
     private DefaultToolbox toolbox;
     private NodeToolbox nodebox;
@@ -474,7 +474,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
         m.addItem(Resources.getString("Validate"), SingleDocumentWindow.cmdValidate, KeyEvent.VK_K);
         /*
      * m.addItem(Resources.getString("CheckSamples") + "...", cmdCheckSamples);
-     * //m.addItem("Export as VoiceXML", cmdExportVXML); m.addSeparator();
      * m.addItem(Resources.getString("ZoomIn"), cmdZoomIn);
      * m.addItem(Resources.getString("ZoomOut"), cmdZoomOut);
          */
@@ -579,7 +578,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
         switch (cmd) {
             case cmdSetup:
-            case cmdExportVXML:
             case cmdEditDevices:
             case cmdResetDevices:
             case cmdRun:
@@ -626,19 +624,6 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
 
         try {
             switch (cmd) {
-                case cmdExportVXML:
-                    File vxml = new FileChooser().standardPutFile(this, "Dialog.vxml");
-                    if (vxml != null) {
-                        XMLWriter w = new XMLWriter(vxml);
-                        IdMap uid_map = new IdMap(true);
-                        try {
-                            doc.exportVoiceXML(w, uid_map);
-                        } finally {
-                            w.close();
-                        }
-                    }
-                    break;
-
                 case cmdSetup:
                     this.showSetupDialog(null);
                     break;

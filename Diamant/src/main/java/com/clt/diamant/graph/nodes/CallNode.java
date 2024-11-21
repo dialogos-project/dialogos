@@ -844,9 +844,5 @@ public class CallNode extends Node {
         return buffer.toString();
     }
 
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
 
-        // vxml
-    }
 }

@@ -81,18 +81,4 @@ public class ProcNode extends OwnerNode {
 
         return this.getTitle();
     }
-
-    @Override
-    public void writeVoiceXML(XMLWriter w, IdMap uid_map) {
-
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void exportVoiceXML(XMLWriter w, IdMap uid_map)
-            throws IOException {
-
-        this.getOwnedGraph().exportVoiceXML(w, uid_map);
-    }
-
 }
