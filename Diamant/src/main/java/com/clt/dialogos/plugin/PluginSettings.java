@@ -53,7 +53,7 @@ public abstract class PluginSettings {
                 if (name.equals("att")) {
                     final String n = atts.getValue("name");
 
-                    if (atts.getValue("type").equals("text")) {
+                    if (atts.getValue("type") != null && atts.getValue("type").equals("text")) {
                         r.setHandler(new AbstractHandler("att") {
 
                             String value;
