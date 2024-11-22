@@ -140,7 +140,7 @@ public class Settings extends PluginSettings {
     @Override
     public void writeAttributes(XMLWriter out, IdMap uidMap) {
         if (!this.getDefaultVoice().equals(Plugin.getAvailableVoices().get(0))) {
-            Graph.printAtt(out, DEFAULT_VOICE, this.getDefaultVoice().toString());
+            Graph.printAtt(out, DEFAULT_VOICE, this.getDefaultVoice().getName());
         }
         if (this.getSpeed() != DEFAULT_SPEED_VALUE) {
             Graph.printAtt(out, DEFAULT_SPEED, this.getSpeed());

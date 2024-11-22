@@ -435,13 +435,17 @@ public abstract class AbstractOutputNode extends Node {
         if (name.equals(PROMPT)) {
             this.setProperty(name, value);
         } else if (name.equals(VOICE)) {
-            this.setProperty(name, new VoiceName(value, null));
             List<VoiceName> voices = getAvailableVoices();
+            boolean voiceFound = false;
             for (VoiceName voice : voices) {
-                if (voice.getName().equals(value)) {
+                if (voice.getName().equals(value) || voice.toString().equals(value)) {
                     this.setProperty(name, voice);
+                    voiceFound = true;
                     break;
                 }
+            }
+            if (!voiceFound) {
+                this.setProperty(name, getAvailableVoices().get(0));
             }
         }
         else if (name.equals(PROMPT_TYPE)) {
@@ -468,9 +472,9 @@ public abstract class AbstractOutputNode extends Node {
     protected void writeAttributes(XMLWriter out, IdMap uid_map) {
         super.writeAttributes(out, uid_map);
 
-        VoiceName voice = (VoiceName)this.getProperty(VOICE);
-        String prompt = (String)this.getProperty(PROMPT);
-        IPromptType promptType = (IPromptType)this.getProperty(PROMPT_TYPE);
+        VoiceName voice = (VoiceName) this.getProperty(VOICE);
+        String prompt = (String) this.getProperty(PROMPT);
+        IPromptType promptType = (IPromptType) this.getProperty(PROMPT_TYPE);
 
         if ((voice != null) && !StringTools.isEmpty(voice.getName())) {
             Graph.printAtt(out, VOICE, voice.getName());
@@ -481,8 +485,8 @@ public abstract class AbstractOutputNode extends Node {
         if (promptType != null) {
             Graph.printAtt(out, PROMPT_TYPE, promptType.name());
         }
-        Graph.printAtt(out, WAIT, ((Boolean)this.getProperty(WAIT)).booleanValue());
-        Graph.printAtt(out, AWAIT_SILENCE, ((Boolean)this.getProperty(AWAIT_SILENCE)).booleanValue());
+        Graph.printAtt(out, WAIT, ((Boolean) this.getProperty(WAIT)).booleanValue());
+        Graph.printAtt(out, AWAIT_SILENCE, ((Boolean) this.getProperty(AWAIT_SILENCE)).booleanValue());
     }
 
 
