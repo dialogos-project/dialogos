@@ -2,6 +2,8 @@ plugins {
   id 'application'
   id 'java'
   id 'com.github.hierynomus.license' version '0.16.1'
+  id 'com.github.johnrengelman.shadow' version '8.1.1'
+
 }
 
 apply plugin: 'maven-publish' // to provide "gradlew publishToMavenLocal"
@@ -132,15 +134,10 @@ dependencies {
     }
 }
 
-task shadowJar(type:Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'DialogOS',
-        'Implementation-Version': version,
-	'Main-Class': mainClassName
-    }
 
-    archiveBaseName = 'dialogos-with-dependencies'
 
-    dependsOn configurations.childJars
-    from { configurations.childJars.collect { zipTree(it) } }
+
+shadowJar {
+    mergeServiceFiles()
 }
+
