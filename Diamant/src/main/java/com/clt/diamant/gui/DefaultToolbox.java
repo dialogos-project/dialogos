@@ -196,7 +196,7 @@ public class DefaultToolbox
 
     private AbstractButton addToggleButton(final BooleanProperty p, String icon) {
 
-        AbstractButton b = this.addButtonGroup(new Tool[]{new Tool(p.getName(), 0, icon) {
+        AbstractButton b = this.addButtonGroup(new Tool[]{new Tool(p.getID(), 0, icon) {
 
             @Override
             public String getName() {
