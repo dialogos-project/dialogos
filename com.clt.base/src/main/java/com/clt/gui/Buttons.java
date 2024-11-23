@@ -4,11 +4,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 
-import javax.swing.AbstractButton;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import com.clt.util.Platform;
 
@@ -45,7 +41,7 @@ public class Buttons {
     public static void showOnlyIcon(AbstractButton button) {
 
         button.setMargin(new Insets(0, 0, 0, 0));
-        button.setBorder(null);
+        button.setBorder(BorderFactory.createEmptyBorder());
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
     }
