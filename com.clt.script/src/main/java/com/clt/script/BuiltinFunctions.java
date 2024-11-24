@@ -25,7 +25,7 @@ import com.clt.script.exp.values.RealValue;
 import com.clt.script.exp.values.StringValue;
 import com.clt.script.exp.values.StructValue;
 import com.clt.script.exp.values.Undefined;
-import com.clt.util.StringTools;
+import com.clt.util.StringTools;;
 
 /**
  * This class provides built-in functions for all users of the script package.
@@ -395,6 +395,18 @@ public class BuiltinFunctions {
     }
 
     /**
+     * Returns a new List where the n'th element has been changed to v
+     */
+    public static ListValue set(ListValue l, IntValue index, Value v) {
+        try {
+            l.set((int) index.getInt(), v);
+        } catch(IndexOutOfBoundsException exn) {
+            throw new EvaluationException("set(" + index.getInt() + ") called with list of length " + l.size());
+        }
+        return l;
+    }
+
+    /**
      * Equivalent to <code>contains(list, v)</code>
      */
     public static BoolValue member(ListValue list, Value v) {
@@ -682,15 +694,10 @@ public class BuiltinFunctions {
      * Print a string representation of <code>v</code> to stdout.
      */
     public static void print(Value v) {
-        if (v instanceof StringValue) {
-            System.out.println(((StringValue) v).getString());
-        } else {
-            System.out.println(v.toString());
-        }
+        System.out.println(str(v));
     }
 
     public static void printf(StringValue format, Value[] args) {
-
         int argp = 0;
         StringBuilder b = new StringBuilder();
 

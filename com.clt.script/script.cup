@@ -79,14 +79,14 @@ action code {:
 			public Value getValue() {
 				Value v = variable.getValue();
 				if (!(v instanceof Reference))
-					throw new EvaluationException(v + " does not have a member " + label);
+					throw new EvaluationException(v + " does not evaluate to a struct type.");
 				else
 					return ((Reference) v).getValue(label);
 			}
 			public void setValue(Value value) {
 				Value v = variable.getValue();
 				if (!(v instanceof Reference))
-					throw new EvaluationException(v + " does not have a member " + label);
+					throw new EvaluationException(v + " does not evaluate to a struct type.");
 				else
 					((Reference) v).setValue(label, value);
 			}
@@ -133,9 +133,8 @@ action code {:
 		};
 	}
 
-			
 	void debug_output(String s) {
-		//System.out.println(s);
+		System.err.println(s);
 	}
 	
 	private class Elements<ElemType> {
@@ -439,8 +438,8 @@ parser code {:
 	}
 	
 	public void report_error(String message, Object info) {
-		//System.err.println(message);
-		//System.err.println(info.toString());
+		System.err.println(message);
+		System.err.println(info.toString());
 	}	
 :}
 
@@ -466,7 +465,7 @@ non terminal
 	is, functions, function, script, all, srgf_header, srgf_head;
 
 non terminal String			varpattern, rulename, token;
-non terminal Expression		exp, expcmd, forexp;
+non terminal Expression		exp, expcmd, forexp, indexp;
 non terminal Variable		longid, fullid;
 non terminal List			exps, parameters, cmds, cases, ids;
 non terminal Constant		const, number;
@@ -506,6 +505,8 @@ precedence left EQUAL, NOTEQUAL;
 precedence left LESSTHEN, EQUALLESS, GREATERTHEN, EQUALGREATER, INSTANCEOF;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE, MOD;
+precedence left LEPAREN;
+precedence left LPAREN;
 precedence right CONS;
 precedence right AS;
 precedence left NOT;
@@ -557,7 +558,10 @@ exp			::= const:c						{: RESULT = c; :}
 			  | LEPAREN exps:es REPAREN		{: RESULT = new ListExpression(es); :}
 			  | LPAREN RPAREN				{: RESULT = new StructExpression(); :}
 			  | LPAREN str_elems:es RPAREN	{: RESULT = new StructExpression((String[]) es.labels.toArray(new String[es.labels.size()]), (Expression[]) es.values.toArray(new Expression[es.values.size()])); :}
-			  ;	
+			  ;
+
+indexp      ::= LEPAREN exp:e REPAREN {: RESULT = e; :}
+              ;
 
 exps		::= exp:e 				{: RESULT = createList(e); :}
 			  | exps:es COMMA exp:e	{: RESULT = append(es, e); :}
@@ -725,6 +729,14 @@ forstep		::=				{: RESULT = null; :}
 
 expcmd	::= fullid:a IS exp:e
 				{: RESULT = new Assignment(a, e); :}
+		  | fullid:list indexp:index IS exp:e
+		        {:
+		        //String funcName = (list.getType() instanceof ReferenceType) ? "put" : "set";
+		        String funcName = (index.getType() == Type.Int) ? "set" : "put";
+                RESULT = new Assignment(list, parser.createFunctionCall(funcName, Arrays.asList(getRValue(list), index, e)));
+		        :}
+    	  | fullid:list indexp:index
+    	        {: RESULT = parser.createFunctionCall("get", Arrays.asList(getRValue(list), index)); :}
 		  | fullid:a PLUS_EQ exp:b
 				{: RESULT = new Assignment(a, new Plus(getRValue(a), b)); :}
 		  | fullid:a MINUS_EQ exp:b

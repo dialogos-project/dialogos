@@ -103,6 +103,13 @@ public class ListValue extends Value implements Iterable<Value> {
         return this.elements[n];
     }
 
+    public void set(int n, Value v) {
+        if ((n < 0) || (n >= this.elements.length)) {
+            throw new IndexOutOfBoundsException();
+        }
+        this.elements[n] = v;
+    }
+
     /**
      * Return an iteration of all list elements.
      */
