@@ -1,10 +1,13 @@
 package de.saar.coli.dialogos.marytts.plugin;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 
 import com.clt.diamant.graph.nodes.AbstractOutputNode;
 import de.saar.coli.dialogos.marytts.MaryTTS;
@@ -15,6 +18,8 @@ import com.clt.speech.tts.Synthesizer;
 import com.clt.speech.tts.Voice;
 import com.clt.speech.tts.VoiceName;
 import com.clt.util.StringTools;
+import marytts.util.dom.DomUtils;
+import org.xml.sax.SAXException;
 
 /**
  * This is the implementation of the text-to-speech node for the
@@ -41,41 +46,6 @@ public class TTSNode extends AbstractOutputNode {
     }
 
     private static final String XMLAREA = "xmlarea";
-
-    public enum PromptType implements IPromptType {
-        text("Text"),
-        maryxml("MaryXML"),
-        expression("Expression"),
-        groovy("GroovyScript");
-
-        public IPromptType groovy() {
-            return groovy;
-        }
-
-        public IPromptType expression() {
-            return expression;
-        }
-        private String key;
-
-        public IPromptType[] getValues() {
-            return values();
-        }
-
-        ;
-
-    private PromptType(String key) {
-            this.key = key;
-        }
-
-        @Override
-        public String toString() {
-            return Resources.getString(this.key);
-        }
-    }
-
-    public IPromptType getDefaultPromptType() {
-        return PromptType.text;
-    }
 
     public String getResourceString(String key) {
         return Resources.getString(key);
@@ -175,14 +145,19 @@ public class TTSNode extends AbstractOutputNode {
         ((MaryTTS) synthesizer).setProsody2MaryXML(settings.getStrVolume(), settings.getPitch(), settings.getSpeed());
         //Should the audio be played uninterrumped?
         boolean wait = ((Boolean) properties.get(WAIT)).booleanValue();
-        PromptType pType = (PromptType) properties.get(PROMPT_TYPE);
-        //Prompt is maryxml or text?
         boolean awaitSilence = ((Boolean) properties.get(AWAIT_SILENCE)).booleanValue();
         if (awaitSilence)
             synthesizer.awaitEndOfSpeech();
         else
             synthesizer.stop();
-        if (PromptType.maryxml.equals(pType)) {
+        //Prompt is maryxml or text?
+        boolean isMaryXML = true;
+        try {
+            DomUtils.parseDocument(new StringReader(prompt), false);
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            isMaryXML = false;
+        }
+        if (isMaryXML) {
             //Note: Regardless of the configurations in Settings it will
             //speak according to the configs in the prompt (xml)
             synthesizer.speakStrMaryXML(prompt, wait);

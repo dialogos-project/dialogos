@@ -25,7 +25,7 @@ public final class XMLHelper {
    * str2Document: Given a valid XML in String, produces a
    * corresponding Document Element.
    **/
-  public static Document str2Document(String str, String errorMsg){
+  public static Document str2Document(String str, String errorMsg) {
     Object d = new Object();
     try {
       d = DomUtils.parseDocument(new StringReader(str));
@@ -41,7 +41,7 @@ public final class XMLHelper {
     return (Document) d;
   }
 
-    /*
+  /*
   * xml2Str: Reproduces a String from a Document-type
   *
   * Taken from:
