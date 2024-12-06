@@ -790,9 +790,29 @@ public class GUI {
 
         UIManager.put("ColorChooser.okText", GUI.getString("OK"));
         UIManager.put("ColorChooser.cancelText", GUI.getString("Cancel"));
+
         UIManager.put("ColorChooser.rgbRedText", GUI.getString("Red"));
         UIManager.put("ColorChooser.rgbGreenText", GUI.getString("Green"));
         UIManager.put("ColorChooser.rgbBlueText", GUI.getString("Blue"));
+        UIManager.put("ColorChooser.rgbAlphaText", GUI.getString("Alpha"));
+        UIManager.put("ColorChooser.rgbHexCodeText", GUI.getString("ColourCode"));
+
+        UIManager.put("ColorChooser.cmykCyanText", GUI.getString("Cyan"));
+        UIManager.put("ColorChooser.cmykMagentaText", GUI.getString("Magenta"));
+        UIManager.put("ColorChooser.cmykYellowText", GUI.getString("Yellow"));
+        UIManager.put("ColorChooser.cmykBlackText", GUI.getString("Black"));
+        UIManager.put("ColorChooser.cmykAlphaText", GUI.getString("Alpha"));
+
+        UIManager.put("ColorChooser.hsvHueText", GUI.getString("Hue"));
+        UIManager.put("ColorChooser.hsvSaturationText", GUI.getString("Saturation"));
+        UIManager.put("ColorChooser.hsvValueText", GUI.getString("Value"));
+        UIManager.put("ColorChooser.hsvTransparencyText", GUI.getString("Transparency"));
+
+        UIManager.put("ColorChooser.hslHueText", GUI.getString("Hue"));
+        UIManager.put("ColorChooser.hslSaturationText", GUI.getString("Saturation"));
+        UIManager.put("ColorChooser.hslLightnessText", GUI.getString("Lightness"));
+        UIManager.put("ColorChooser.hslTransparencyText", GUI.getString("Transparency"));
+
     }
 
     public static void tweakLookAndFeel() {
@@ -822,10 +842,11 @@ public class GUI {
         UIManager.put("FileChooser.openButtonMnemonic", "");
         UIManager.put("FileChooser.cancelButtonMnemonic", "");
 
-        UIManager.put("ColorChooser.resetText", "Zur\u00fccksetzen");
+        //These four do not seem to have the correct Key, but I can't find the correct ones either
+        UIManager.put("ColorChooser.resetText", GUI.getString("Reset"));
         UIManager.put("ColorChooser.swatchesNameText", "Farbfelder");
-        UIManager.put("ColorChooser.swatchesRecentText", "Vorherige:");
-        UIManager.put("ColorChooser.previewText", "Vorschau:");
+        UIManager.put("ColorChooser.swatchesRecentText", GUI.getString("Current"));
+        UIManager.put("ColorChooser.previewText", GUI.getString("Preview"));
 
         if (Platform.isWindows()) {
             UIManager.put("Button.margin", new Insets(1, 9, 1, 9));
