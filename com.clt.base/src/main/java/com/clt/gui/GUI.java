@@ -823,17 +823,17 @@ public class GUI {
         // OptionPane
         GUI.localizeLookAndFeel();
 
-        UIManager.put("FileChooser.lookInLabelText", "Suchen in:");
-        UIManager.put("FileChooser.fileNameLabelText", "Dateiname");
-        UIManager.put("FileChooser.filesOfTypeLabelText", "Dateityp");
-        UIManager.put("FileChooser.newFolderToolTipText",
-                "Neuen Ordner anlegen");
-        UIManager.put("FileChooser.listViewButtonToolTipText", "Listenansicht");
-        UIManager.put("FileChooser.detailsViewButtonToolTipText",
-                "Detailansicht");
+        //These options don't seem to do anything on Windows as these Settings are tied to the Account Langauge
+        //Alternatively the Keys might be wrong
+        UIManager.put("FileChooser.lookInLabelText", GUI.getString("LookIn"));
+        UIManager.put("FileChooser.fileNameLabelText", GUI.getString("FileName"));
+        UIManager.put("FileChooser.filesOfTypeLabelText", GUI.getString("FileType"));
+        UIManager.put("FileChooser.newFolderToolTipText", GUI.getString("NewFolder"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", GUI.getString("ListView"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", GUI.getString("DetailView"));
         UIManager.put("FileChooser.upFolderToolTipText",
                 "\u00dcbergeordnetes Verzeichnis");
-        UIManager.put("FileChooser.homeFolderToolTipText", "Homeverzeichnis");
+        UIManager.put("FileChooser.homeFolderToolTipText", GUI.getString("Home"));
 
         UIManager.put("FileChooser.lookInLabelMnemonic", "");
         UIManager.put("FileChooser.fileNameLabelMnemonic", "");
@@ -842,7 +842,6 @@ public class GUI {
         UIManager.put("FileChooser.openButtonMnemonic", "");
         UIManager.put("FileChooser.cancelButtonMnemonic", "");
 
-        //These four do not seem to have the correct Key, but I can't find the correct ones either
         UIManager.put("ColorChooser.resetText", GUI.getString("Reset"));
         UIManager.put("ColorChooser.swatchesNameText", "Farbfelder");
         UIManager.put("ColorChooser.swatchesRecentText", GUI.getString("Current"));
