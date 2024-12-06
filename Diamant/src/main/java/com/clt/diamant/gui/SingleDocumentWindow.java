@@ -61,6 +61,7 @@ import com.clt.gui.menus.CmdMenuItem;
 import com.clt.gui.menus.MenuCommander;
 import com.clt.gui.plaf.IconTabbedPaneUI;
 import com.clt.mac.RequiredEventHandler;
+import com.clt.properties.BooleanProperty;
 import com.clt.util.DefaultLongAction;
 import com.clt.util.UserCanceledException;
 import com.clt.xml.XMLWriter;
@@ -82,7 +83,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
     public static final int cmdDebug = Commands.cmdDocument + 13;
     public static final int cmdWoz = Commands.cmdDocument + 14;
     public static final int cmdDelay = Commands.cmdDocument + 15;
-
+    public static final int cmdEnableGrid = Commands.cmdDocument + 20;
+    public static final int cmdEnableSnapping = Commands.cmdDocument + 21;
 
     private DefaultToolbox toolbox;
     private NodeToolbox nodebox;
@@ -854,6 +856,16 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                         OptionPane.error(this, exn.getTargetException());
                     }
                     
+                    break;
+
+                case cmdEnableGrid:
+                    BooleanProperty grid = Preferences.getPrefs().showGrid;
+                    grid.setValue(!grid.getValue());
+                    break;
+
+                case cmdEnableSnapping:
+                    BooleanProperty snapping = Preferences.getPrefs().snapToGrid;
+                    snapping.setValue(!snapping.getValue());
                     break;
 
                 default:
