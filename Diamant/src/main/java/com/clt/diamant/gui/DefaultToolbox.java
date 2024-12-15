@@ -267,10 +267,8 @@ public class DefaultToolbox
             this.tools.add(tool);
 
             if (toggle) {
-                System.out.println("1Toggle");
                 groupButtons[i] = new JToggleButton();
             } else {
-                System.out.println("1Push");
                 groupButtons[i] = new JButton();
             }
 
@@ -344,7 +342,6 @@ public class DefaultToolbox
 
             b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("test");
                     if (b.isSelected() && (groupButtons.length == 1)) {
                         actionListener.optionSelected(-1);
                     } else {
@@ -353,14 +350,13 @@ public class DefaultToolbox
                 }
             });
 
-            GUI.setKeyBinding(this, KeyStroke.getKeyStroke(tool.getKey(), 0), new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    b.doClick();
-                }
-            });
-
-            if(tool.getKey() != 0) {
+            if(tool.getKey() > 0) {
+                GUI.setKeyBinding(this, KeyStroke.getKeyStroke(tool.getKey(), 0), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        b.doClick();
+                    }
+                });
                 b.setToolTipText(KeyEvent.getKeyText(tool.getKey()));
             }
 
@@ -507,6 +503,7 @@ public class DefaultToolbox
 
         public Tool(String name, int value, Object newIcon) {
             init(name,value,newIcon);
+            this.key = -1;
         }
 
         public Tool(String name, int value, Object newIcon, int key) {
@@ -541,7 +538,6 @@ public class DefaultToolbox
         }
 
         public int getValue() {
-
             return this.value;
         }
 
