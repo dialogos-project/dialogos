@@ -403,7 +403,6 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                 GraphUI.this.dragStart = GraphUI.this.dragEnd = null;
                 GraphUI.this.draggedEdge = null;
                 // handStart = null;
-
                 switch (GraphUI.this.currentTool) {
                     case DefaultToolbox.ANCHOR:
                         // because of a bug in Mac OS X which overloads alt and
@@ -439,7 +438,12 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                         break;
                     case DefaultToolbox.DELETE:
                         EdgeUI selectedEdge = this.findEdge(e);
-                        if (selectedEdge != null) {
+                        if (selectedEdge == null) {
+                            GraphUI.this.getSelectionModel().clear();
+                            GraphUI.this.dragStart = e.getPoint();
+                            GraphUI.this.draggedEdge = null;
+                        }
+                        else{
                             GraphUI.this.deleteElements(Collections.singleton(selectedEdge
                                     .getEdge()));
                         }
@@ -450,7 +454,7 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
             }
 
             public void mouseDragged(MouseEvent e) {
-                if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
+                if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR || GraphUI.this.currentTool == DefaultToolbox.DELETE) {
                     if (GraphUI.this.dragStart != null) {
                         Rectangle r = GraphUI.this.getSelectingArea();
                         // constrain to canvas bounds
@@ -463,6 +467,7 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                         }
                         r = r.union(this.selectElements(GraphUI.this.getSelectingArea()));
 
+
                         r.width++;
                         r.height++;
                         GraphUI.this.repaint(r);
@@ -471,10 +476,13 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
             }
 
             public void mouseReleased(MouseEvent e) {
-                if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
-                    if ((GraphUI.this.dragStart != null)
-                            && (GraphUI.this.dragEnd != null)) {
+                if ((GraphUI.this.dragStart != null)
+                        && (GraphUI.this.dragEnd != null)) {
+                    if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
                         this.selectElements(GraphUI.this.getSelectingArea());
+                    }
+                    else if (GraphUI.this.currentTool == DefaultToolbox.DELETE) {
+                        GraphUI.this.deleteElements(GraphUI.this.getSelectionModel().getSelectedObjects(Node.class));
                     }
                 }
                 GraphUI.this.dragStart = null;
@@ -2795,7 +2803,12 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                 GraphUI.drawLine(g, this.dragStart, this.dragEnd, Color.red);
             } else {
                 Rectangle r = this.getSelectingArea();
-                g.setColor(Color.black);
+                if(GraphUI.this.currentTool == DefaultToolbox.DELETE) {
+                    g.setColor(Color.red);
+                }
+                else {
+                    g.setColor(Color.black);
+                }
 
                 this.drawMarchingAnts(g, r);
             }
@@ -3026,9 +3039,14 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
         }
 
         try {
-            int gray = 128;
             int opacity = 60;
-            g.setColor(new Color(gray, gray, gray, opacity));
+            int gray = 128;
+            if (GraphUI.this.currentTool != DefaultToolbox.DELETE) {
+                g.setColor(new Color(gray, gray, gray, opacity));
+            }
+            else {
+                g.setColor(new Color(gray, 0, 0, opacity));
+            }
             g.fillRect(r.x + 1, r.y + 1, r.width - 1, r.height - 1);
         } catch (Exception ignore) {
         }
