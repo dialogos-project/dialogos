@@ -413,7 +413,7 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                         // same in Document and GraphUI.
                         if (GUI.isPopupTrigger(e)) {
                             this.showContextMenu(e.getX(), e.getY());
-                        } else if (e.isAltDown()) {
+                        } else if (e.isAltDown() || e.getButton() == MouseEvent.BUTTON2) {
                             // don't do anything
                         } else {
                             EdgeUI selectedEdge = this.findEdge(e);
@@ -611,11 +611,10 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                                 .getRelativeBounds(e.getComponent(), GraphUI.this.graphScrollPane
                                         .getViewport());
                 pos.translate(r.x, r.y);
-
                 if (GUI.isPopupTrigger(e)) {
                     // don't drag or scroll on popup
                 } else if (e.isAltDown()
-                        || (GraphUI.this.currentTool == DefaultToolbox.HAND)) {
+                        || (GraphUI.this.currentTool == DefaultToolbox.HAND) || e.getButton() == MouseEvent.BUTTON2) {
                     this.handStart
                             = GraphUI.this.graphScrollPane.getViewport().getViewPosition();
                     this.handStart.translate(pos.x, pos.y);
