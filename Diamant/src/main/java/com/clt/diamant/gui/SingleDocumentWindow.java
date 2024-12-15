@@ -14,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -655,6 +656,9 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 case cmdRunWithLog:
                 case cmdDebug:
                 case cmdWoz:
+                    String home = System.getProperty("user.dir");
+                    new File(Paths.get(home,"autosaves").toUri()).mkdir();
+                    save(new File(Paths.get(home,"autosaves",(getTitle() + "_autosave.dos")).toUri()));
                     if (this.runtime != null) {
                         synchronized (this.runtime) {
                             this.runtime.abort();

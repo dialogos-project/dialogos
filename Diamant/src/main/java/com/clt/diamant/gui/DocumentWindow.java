@@ -174,7 +174,7 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
                         Resources.getString("SaveChanges?"), OptionPane.SAVE_OPTION);
             }
             if (result == OptionPane.SAVE) {
-                return this.save(this.document.getFile());
+                return this.manualSave(this.document.getFile());
             } else if (result == OptionPane.DONTSAVE) {
                 return true;
             } else {
@@ -195,6 +195,13 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
         } else {
             return false;
         }
+    }
+
+    public boolean manualSave(final File f){
+        if (f.getName().contains("_autosave")){
+            return this.saveAs();
+        }
+        return save(f);
     }
 
     public boolean save(final File f) {
@@ -280,7 +287,7 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
                 break;
 
             case cmdSave:
-                this.save(this.getFile());
+                this.manualSave(this.getFile());
                 break;
 
             case cmdSaveAs:
