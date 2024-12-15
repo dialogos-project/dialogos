@@ -32,19 +32,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -2309,14 +2297,11 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                                 GraphUI.this.getSelectionModel().clear();
                                 GraphUI.this.selectElement(edge, true);
                             }
-                            if (edge.getTarget() == null) {
-                                GraphUI.this.dragStart
-                                        = ((EdgeUI) c).getOutputRelativeTo(GraphUI.this);
-                                GraphUI.this.draggedEdge = edge;
-                                this.target = null;
-                            } else {
-                                GraphUI.this.dragStart = null;
-                            }
+
+                            GraphUI.this.dragStart
+                                    = ((EdgeUI) c).getOutputRelativeTo(GraphUI.this);
+                            GraphUI.this.draggedEdge = edge;
+                            this.target = null;
                         }
                         GraphUI.this.repaint();
                     } else if (c instanceof NodeComponent) {
