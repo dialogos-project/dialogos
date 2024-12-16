@@ -15,3 +15,4 @@ Diamant/src/main/resources/VERSION
 /.gradle/
 /.idea/
 *.DS_Store
+/autosaves
