@@ -658,7 +658,14 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 case cmdWoz:
                     String home = System.getProperty("user.dir");
                     new File(Paths.get(home,"autosaves").toUri()).mkdir();
-                    save(new File(Paths.get(home,"autosaves",(getTitle() + "_autosave.dos")).toUri()));
+                    String title = getTitle();
+                    if (title.contains("\u200B_autosave")){       //prevent nonsensical autosave names
+                        title = title.substring(0,title.indexOf("\u200B_autosave"));
+                    }
+                    if (title.contains(".dos")){
+                        title = title.substring(0,title.indexOf(".dos"));
+                    }
+                    save(new File(Paths.get(home,"autosaves",(title + "\u200B_autosave.dos")).toUri()));
                     if (this.runtime != null) {
                         synchronized (this.runtime) {
                             this.runtime.abort();

@@ -107,7 +107,7 @@ public class MenuUtils {
     public static void addMRU(JMenu mru,
             final RequiredEventHandler systemEventHandler) {
         final File lastUsedFile = Preferences.getPrefs().lastUsedFile.getValue();
-        if (lastUsedFile != null && !lastUsedFile.getName().contains("_autosave")) {
+        if (lastUsedFile != null && !lastUsedFile.getName().contains("\u200B_autosave")) {
             mru.add(new CmdMenuItem(lastUsedFile.getName(), () -> systemEventHandler.handleOpenFile(lastUsedFile)));
         }
         for (final File f : Preferences.getPrefs().additional_mru) {
@@ -122,7 +122,7 @@ public class MenuUtils {
             Arrays.sort(autosaves, Comparator.comparingLong(File::lastModified).reversed());
             for (int i = 0; i < Math.max(autosaves.length, 15);i ++) {
                 File autosave = autosaves[i];
-                if (autosave.getName().contains("_autosave")) {
+                if (autosave.getName().contains("\u200B_autosave")) {
                     recovery.add(new CmdMenuItem(autosave.getName(), () -> systemEventHandler.handleOpenFile(autosave)));
                 }
             }

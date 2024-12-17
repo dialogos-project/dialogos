@@ -198,7 +198,7 @@ public class DocumentWindow<DocType extends Document> extends ManagedFrame imple
     }
 
     public boolean manualSave(final File f){
-        if (f.getName().contains("_autosave")){
+        if (f.getName().contains("\u200B_autosave")){
             return this.saveAs();
         }
         return save(f);
