@@ -69,6 +69,10 @@ public class UndoRedoTextComponent extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         this.mUndo.setEnabled(false);
         this.mRedo.setEnabled(false);
+        GUI.setKeyBinding(this, KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), e -> mUndo.doClick());
+        GUI.setKeyBinding(this, KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_MASK), e -> mRedo.doClick());
+        this.mUndo.setToolTipText(GUI.getString("CtrlZ"));
+        this.mRedo.setToolTipText(GUI.getString("CtrlShiftZ"));
         buttonPanel.add(this.mUndo);
         buttonPanel.add(this.mRedo);
 
