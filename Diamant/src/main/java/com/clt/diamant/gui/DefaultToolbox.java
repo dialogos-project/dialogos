@@ -110,8 +110,8 @@ public class DefaultToolbox
         //this.addToggleButton(Preferences.getPrefs().showGrid, "toolbar/T_Grid.png");
 
         this.addToggleButtons(new Tool[]{
-                new Tool("Grid", SingleDocumentWindow.cmdEnableGrid, "toolbar/T_Grid.png"),
-                new Tool("Snapping", SingleDocumentWindow.cmdEnableSnapping, "toolbar/T_Snap.png"),
+                new Tool("Grid", SingleDocumentWindow.cmdEnableGrid, "toolbar/T_Grid.png", KeyEvent.VK_G),
+                new Tool("Snapping", SingleDocumentWindow.cmdEnableSnapping, "toolbar/T_Snap.png", KeyEvent.VK_H),
         });
 
         this.currentTool.addChangeListener(new ChangeListener() {
