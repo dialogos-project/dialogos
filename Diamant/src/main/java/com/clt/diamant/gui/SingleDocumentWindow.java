@@ -656,6 +656,7 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                 case cmdRunWithLog:
                 case cmdDebug:
                 case cmdWoz:
+                    //create auto-save
                     String home = System.getProperty("user.dir");
                     new File(Paths.get(home,"autosaves").toUri()).mkdir();
                     String title = getTitle();
@@ -666,6 +667,8 @@ public class SingleDocumentWindow<DocType extends SingleDocument>
                         title = title.substring(0,title.indexOf(".dos"));
                     }
                     save(new File(Paths.get(home,"autosaves",(title + "\u200B_autosave.dos")).toUri()));
+
+                    //run
                     if (this.runtime != null) {
                         synchronized (this.runtime) {
                             this.runtime.abort();
