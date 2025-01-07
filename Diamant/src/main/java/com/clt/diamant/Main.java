@@ -38,6 +38,7 @@ public class Main implements MenuCommander, MenuOwner, Commands {
 
     private static Window projectStartupWindow = null;
     private static JMenu projectStartupMRU = null;
+    private static JMenu projectStartupRecovery = null;
     private static com.clt.dialog.client.GUIClientFactory clients = null;
 
     private DocumentWindow<?> currentDocument = null;
@@ -122,11 +123,16 @@ public class Main implements MenuCommander, MenuOwner, Commands {
         if (Main.projectStartupWindow == null) {
             Main.projectStartupMRU = new JMenu(Resources.getString("MRU"));
             MenuUtils.addMRU(Main.projectStartupMRU, this.systemEventHandler);
-            Main.projectStartupWindow = new ProjectStartupFrame(Main.this, projectStartupMRU, this.systemEventHandler);
+            Main.projectStartupRecovery = new JMenu(Resources.getString("Auto-Save"));
+            MenuUtils.addRecovery(Main.projectStartupRecovery, this.systemEventHandler);
+            Main.projectStartupWindow = new ProjectStartupFrame(Main.this, projectStartupMRU, Main.projectStartupRecovery, this.systemEventHandler);
         }
 
         Main.projectStartupMRU.removeAll();
         MenuUtils.addMRU(Main.projectStartupMRU, this.systemEventHandler);
+
+        Main.projectStartupRecovery.removeAll();
+        MenuUtils.addRecovery(Main.projectStartupRecovery, this.systemEventHandler);
         return Main.projectStartupWindow;
     }
 

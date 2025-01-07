@@ -8,7 +8,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -66,6 +73,7 @@ public class MenuUtils {
         if (systemEventHandler != null) {
             MenuUtils.addMRU(m.addSubMenu(Resources.getString("MRU")),
                     systemEventHandler);
+            MenuUtils.addRecovery(m.addSubMenu(Resources.getString("Auto-Save")),systemEventHandler);
         }
 
         // m.addItem(Resources.getString("Import") + "...", Commands.cmdImport);
@@ -99,12 +107,27 @@ public class MenuUtils {
     public static void addMRU(JMenu mru,
             final RequiredEventHandler systemEventHandler) {
         final File lastUsedFile = Preferences.getPrefs().lastUsedFile.getValue();
-        if (lastUsedFile != null) {
+        if (lastUsedFile != null && !lastUsedFile.getName().contains("\u200B_autosave")) {
             mru.add(new CmdMenuItem(lastUsedFile.getName(), () -> systemEventHandler.handleOpenFile(lastUsedFile)));
         }
         for (final File f : Preferences.getPrefs().additional_mru) {
             mru.add(new CmdMenuItem(f.getName(), () -> systemEventHandler.handleOpenFile(f)));
         }
+    }
+
+    public static void addRecovery(JMenu recovery, final RequiredEventHandler systemEventHandler){
+        try {
+            File autosaveDir = new File(Paths.get(System.getProperty("user.dir"), "autosaves").toUri());
+            File[] autosaves = autosaveDir.listFiles();
+            Arrays.sort(autosaves, Comparator.comparingLong(File::lastModified).reversed());
+            for (int i = 0; i < Math.max(autosaves.length, 15);i ++) {
+                File autosave = autosaves[i];
+                if (autosave.getName().contains("\u200B_autosave")) {
+                    recovery.add(new CmdMenuItem(autosave.getName(), () -> systemEventHandler.handleOpenFile(autosave)));
+                }
+            }
+        }
+        catch (Exception ignored){}
     }
 
     public static CmdMenu addEditMenu(CmdMenuBar mbar) {

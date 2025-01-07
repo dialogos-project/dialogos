@@ -23,9 +23,10 @@ public class ProjectStartupFrame extends JFrame {
     AbstractAction quit;
     Main main;
     JMenu projectStartupMRU; // most recently used dialog models
+    JMenu projectStartupRecovery;  //Auto-Saves
 
 
-    public ProjectStartupFrame(final Main main, final JMenu projectStartupMRU, final RequiredEventHandler systemEventHandler) {
+    public ProjectStartupFrame(final Main main, final JMenu projectStartupMRU, final JMenu projectStartupRecovery, final RequiredEventHandler systemEventHandler) {
         super(Version.PRODUCT_NAME);
         setIconImage(Images.load("logo/DialogOS.png").getImage());
         this.preferenceListener = evt -> {
@@ -34,6 +35,7 @@ public class ProjectStartupFrame extends JFrame {
             }
         };
         this.projectStartupMRU = projectStartupMRU;
+        this.projectStartupRecovery = projectStartupRecovery;
         this.main = main;
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -86,6 +88,7 @@ public class ProjectStartupFrame extends JFrame {
 
     private void updateLanguage() {
         projectStartupMRU.setText(Resources.getString("MRU"));
+        projectStartupRecovery.setText(Resources.getString("Auto-Save"));
         newProject.setName(Resources.getString("CreateNewDialog"));
         openProject.setName(Resources.getString("OpenDialog"));
         quit.setName(Resources.getString("Quit"));
@@ -99,6 +102,7 @@ public class ProjectStartupFrame extends JFrame {
         menu.add(new JMenuItem(openProject));
 
         menu.add(projectStartupMRU);
+        menu.add(projectStartupRecovery);
 
         if (Platform.showQuitMenuItem()) {
             menu.addSeparator();
