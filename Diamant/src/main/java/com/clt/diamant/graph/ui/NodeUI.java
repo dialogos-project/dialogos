@@ -152,7 +152,7 @@ public class NodeUI<N extends Node> extends UIElement implements PropertyChangeL
 
     @Override
     public void setSize(int width, int height) {
-
+        if (width % 2 != 0) width -= 1;     //forces node width to be even, so edges are straight between aligned nodes
         if ((width != this.getWidth()) || (height != this.getHeight())) {
             super.setSize(width, height);
             this.getNode().setSize(width, height);
