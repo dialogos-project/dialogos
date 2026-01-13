@@ -1,5 +1,6 @@
 package com.clt.diamant.graph;
 
+import com.clt.diamant.graph.nodes.*;
 import com.clt.diamant.suspend.SuspendingNode;
 import com.clt.diamant.suspend.DialogState;
 import com.clt.diamant.suspend.DialogSuspendedException;
@@ -40,14 +41,6 @@ import com.clt.diamant.SingleDocument;
 import com.clt.diamant.Slot;
 import com.clt.diamant.Version;
 import com.clt.diamant.WozInterface;
-import com.clt.diamant.graph.nodes.CatchAllEdge;
-import com.clt.diamant.graph.nodes.EndNode;
-import com.clt.diamant.graph.nodes.GraphNode;
-import com.clt.diamant.graph.nodes.InputNode;
-import com.clt.diamant.graph.nodes.NodeExecutionException;
-import com.clt.diamant.graph.nodes.ProcNode;
-import com.clt.diamant.graph.nodes.StartNode;
-import com.clt.diamant.graph.nodes.TimeoutEdge;
 import com.clt.diamant.graph.search.GraphSearchResult;
 import com.clt.diamant.graph.search.NodeSearchFilter;
 import com.clt.diamant.graph.search.SearchResult;
@@ -731,6 +724,17 @@ public class Graph implements IdentityObject {
             }
         }
         return v;
+    }
+
+    public Collection<Node> getAllConnectedNodes() {
+        List<Node> allNodes = new ArrayList<>(this.getNodes());
+        for (int i = 0; i < allNodes.size(); i++) {
+            Node n = allNodes.get(i);
+            if (n instanceof OwnerNode) {
+                allNodes.addAll(((OwnerNode) n).getOwnedGraph().getAllConnectedNodes());
+            }
+        }
+        return new HashSet<>(allNodes); // avoid duplicates (it might make sense to avoid duplicates in the addAll above...)
     }
 
     protected void writeVariables(XMLWriter out, IdMap uid_map) {

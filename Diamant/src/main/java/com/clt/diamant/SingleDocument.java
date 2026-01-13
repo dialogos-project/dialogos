@@ -361,10 +361,11 @@ public class SingleDocument extends Document implements GraphOwner {
         LongAction init = new DefaultLongAction(Resources.getString("InitializingModel")) {
             @Override
             protected void run(ProgressListener l) throws Exception {
+                Collection<Node> allNodes = graph.getAllConnectedNodes();
                 for (Plugin plugin : PluginLoader.getPlugins()) {
                     Class<? extends Plugin> c = plugin.getClass();
                     PluginSettings plSettings = SingleDocument.this.getPluginSettings(c);
-                    if (plSettings.isRelevantForNodes(graph.getNodes()))
+                    if (plSettings.isRelevantForNodes(allNodes))
                             plSettings.initializeRuntime(d, transition);
                 }
             }
