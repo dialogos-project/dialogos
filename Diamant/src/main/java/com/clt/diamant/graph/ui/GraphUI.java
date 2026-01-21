@@ -32,19 +32,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -403,7 +391,6 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                 GraphUI.this.dragStart = GraphUI.this.dragEnd = null;
                 GraphUI.this.draggedEdge = null;
                 // handStart = null;
-
                 switch (GraphUI.this.currentTool) {
                     case DefaultToolbox.ANCHOR:
                         // because of a bug in Mac OS X which overloads alt and
@@ -413,7 +400,7 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                         // same in Document and GraphUI.
                         if (GUI.isPopupTrigger(e)) {
                             this.showContextMenu(e.getX(), e.getY());
-                        } else if (e.isAltDown()) {
+                        } else if (e.isAltDown() || e.getButton() == MouseEvent.BUTTON2) {
                             // don't do anything
                         } else {
                             EdgeUI selectedEdge = this.findEdge(e);
@@ -439,7 +426,12 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                         break;
                     case DefaultToolbox.DELETE:
                         EdgeUI selectedEdge = this.findEdge(e);
-                        if (selectedEdge != null) {
+                        if (selectedEdge == null) {
+                            GraphUI.this.getSelectionModel().clear();
+                            GraphUI.this.dragStart = e.getPoint();
+                            GraphUI.this.draggedEdge = null;
+                        }
+                        else{
                             GraphUI.this.deleteElements(Collections.singleton(selectedEdge
                                     .getEdge()));
                         }
@@ -450,7 +442,7 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
             }
 
             public void mouseDragged(MouseEvent e) {
-                if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
+                if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR || GraphUI.this.currentTool == DefaultToolbox.DELETE) {
                     if (GraphUI.this.dragStart != null) {
                         Rectangle r = GraphUI.this.getSelectingArea();
                         // constrain to canvas bounds
@@ -463,6 +455,7 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                         }
                         r = r.union(this.selectElements(GraphUI.this.getSelectingArea()));
 
+
                         r.width++;
                         r.height++;
                         GraphUI.this.repaint(r);
@@ -471,10 +464,13 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
             }
 
             public void mouseReleased(MouseEvent e) {
-                if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
-                    if ((GraphUI.this.dragStart != null)
-                            && (GraphUI.this.dragEnd != null)) {
+                if ((GraphUI.this.dragStart != null)
+                        && (GraphUI.this.dragEnd != null)) {
+                    if (GraphUI.this.currentTool == DefaultToolbox.ANCHOR) {
                         this.selectElements(GraphUI.this.getSelectingArea());
+                    }
+                    else if (GraphUI.this.currentTool == DefaultToolbox.DELETE) {
+                        GraphUI.this.deleteElements(GraphUI.this.getSelectionModel().getSelectedObjects(Node.class));
                     }
                 }
                 GraphUI.this.dragStart = null;
@@ -611,11 +607,10 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                                 .getRelativeBounds(e.getComponent(), GraphUI.this.graphScrollPane
                                         .getViewport());
                 pos.translate(r.x, r.y);
-
                 if (GUI.isPopupTrigger(e)) {
                     // don't drag or scroll on popup
                 } else if (e.isAltDown()
-                        || (GraphUI.this.currentTool == DefaultToolbox.HAND)) {
+                        || (GraphUI.this.currentTool == DefaultToolbox.HAND) || e.getButton() == MouseEvent.BUTTON2) {
                     this.handStart
                             = GraphUI.this.graphScrollPane.getViewport().getViewPosition();
                     this.handStart.translate(pos.x, pos.y);
@@ -2302,14 +2297,11 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                                 GraphUI.this.getSelectionModel().clear();
                                 GraphUI.this.selectElement(edge, true);
                             }
-                            if (edge.getTarget() == null) {
-                                GraphUI.this.dragStart
-                                        = ((EdgeUI) c).getOutputRelativeTo(GraphUI.this);
-                                GraphUI.this.draggedEdge = edge;
-                                this.target = null;
-                            } else {
-                                GraphUI.this.dragStart = null;
-                            }
+
+                            GraphUI.this.dragStart
+                                    = ((EdgeUI) c).getOutputRelativeTo(GraphUI.this);
+                            GraphUI.this.draggedEdge = edge;
+                            this.target = null;
                         }
                         GraphUI.this.repaint();
                     } else if (c instanceof NodeComponent) {
@@ -2796,7 +2788,12 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
                 GraphUI.drawLine(g, this.dragStart, this.dragEnd, Color.red);
             } else {
                 Rectangle r = this.getSelectingArea();
-                g.setColor(Color.black);
+                if(GraphUI.this.currentTool == DefaultToolbox.DELETE) {
+                    g.setColor(Color.red);
+                }
+                else {
+                    g.setColor(Color.black);
+                }
 
                 this.drawMarchingAnts(g, r);
             }
@@ -3027,9 +3024,14 @@ public class GraphUI extends JPanel implements MenuCommander, Commands, Printabl
         }
 
         try {
-            int gray = 128;
             int opacity = 60;
-            g.setColor(new Color(gray, gray, gray, opacity));
+            int gray = 128;
+            if (GraphUI.this.currentTool != DefaultToolbox.DELETE) {
+                g.setColor(new Color(gray, gray, gray, opacity));
+            }
+            else {
+                g.setColor(new Color(gray, 0, 0, opacity));
+            }
             g.fillRect(r.x + 1, r.y + 1, r.width - 1, r.height - 1);
         } catch (Exception ignore) {
         }

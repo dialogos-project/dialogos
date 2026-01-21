@@ -790,9 +790,29 @@ public class GUI {
 
         UIManager.put("ColorChooser.okText", GUI.getString("OK"));
         UIManager.put("ColorChooser.cancelText", GUI.getString("Cancel"));
+
         UIManager.put("ColorChooser.rgbRedText", GUI.getString("Red"));
         UIManager.put("ColorChooser.rgbGreenText", GUI.getString("Green"));
         UIManager.put("ColorChooser.rgbBlueText", GUI.getString("Blue"));
+        UIManager.put("ColorChooser.rgbAlphaText", GUI.getString("Alpha"));
+        UIManager.put("ColorChooser.rgbHexCodeText", GUI.getString("ColourCode"));
+
+        UIManager.put("ColorChooser.cmykCyanText", GUI.getString("Cyan"));
+        UIManager.put("ColorChooser.cmykMagentaText", GUI.getString("Magenta"));
+        UIManager.put("ColorChooser.cmykYellowText", GUI.getString("Yellow"));
+        UIManager.put("ColorChooser.cmykBlackText", GUI.getString("Black"));
+        UIManager.put("ColorChooser.cmykAlphaText", GUI.getString("Alpha"));
+
+        UIManager.put("ColorChooser.hsvHueText", GUI.getString("Hue"));
+        UIManager.put("ColorChooser.hsvSaturationText", GUI.getString("Saturation"));
+        UIManager.put("ColorChooser.hsvValueText", GUI.getString("Value"));
+        UIManager.put("ColorChooser.hsvTransparencyText", GUI.getString("Transparency"));
+
+        UIManager.put("ColorChooser.hslHueText", GUI.getString("Hue"));
+        UIManager.put("ColorChooser.hslSaturationText", GUI.getString("Saturation"));
+        UIManager.put("ColorChooser.hslLightnessText", GUI.getString("Lightness"));
+        UIManager.put("ColorChooser.hslTransparencyText", GUI.getString("Transparency"));
+
     }
 
     public static void tweakLookAndFeel() {
@@ -803,17 +823,17 @@ public class GUI {
         // OptionPane
         GUI.localizeLookAndFeel();
 
-        UIManager.put("FileChooser.lookInLabelText", "Suchen in:");
-        UIManager.put("FileChooser.fileNameLabelText", "Dateiname");
-        UIManager.put("FileChooser.filesOfTypeLabelText", "Dateityp");
-        UIManager.put("FileChooser.newFolderToolTipText",
-                "Neuen Ordner anlegen");
-        UIManager.put("FileChooser.listViewButtonToolTipText", "Listenansicht");
-        UIManager.put("FileChooser.detailsViewButtonToolTipText",
-                "Detailansicht");
+        //These options don't seem to do anything on Windows as these Settings are tied to the Account Langauge
+        //Alternatively the Keys might be wrong
+        UIManager.put("FileChooser.lookInLabelText", GUI.getString("LookIn"));
+        UIManager.put("FileChooser.fileNameLabelText", GUI.getString("FileName"));
+        UIManager.put("FileChooser.filesOfTypeLabelText", GUI.getString("FileType"));
+        UIManager.put("FileChooser.newFolderToolTipText", GUI.getString("NewFolder"));
+        UIManager.put("FileChooser.listViewButtonToolTipText", GUI.getString("ListView"));
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", GUI.getString("DetailView"));
         UIManager.put("FileChooser.upFolderToolTipText",
                 "\u00dcbergeordnetes Verzeichnis");
-        UIManager.put("FileChooser.homeFolderToolTipText", "Homeverzeichnis");
+        UIManager.put("FileChooser.homeFolderToolTipText", GUI.getString("Home"));
 
         UIManager.put("FileChooser.lookInLabelMnemonic", "");
         UIManager.put("FileChooser.fileNameLabelMnemonic", "");
@@ -822,10 +842,10 @@ public class GUI {
         UIManager.put("FileChooser.openButtonMnemonic", "");
         UIManager.put("FileChooser.cancelButtonMnemonic", "");
 
-        UIManager.put("ColorChooser.resetText", "Zur\u00fccksetzen");
+        UIManager.put("ColorChooser.resetText", GUI.getString("Reset"));
         UIManager.put("ColorChooser.swatchesNameText", "Farbfelder");
-        UIManager.put("ColorChooser.swatchesRecentText", "Vorherige:");
-        UIManager.put("ColorChooser.previewText", "Vorschau:");
+        UIManager.put("ColorChooser.swatchesRecentText", GUI.getString("Current"));
+        UIManager.put("ColorChooser.previewText", GUI.getString("Preview"));
 
         if (Platform.isWindows()) {
             UIManager.put("Button.margin", new Insets(1, 9, 1, 9));

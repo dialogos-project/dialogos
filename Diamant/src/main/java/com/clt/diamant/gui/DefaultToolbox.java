@@ -8,6 +8,8 @@ import java.awt.Image;
 import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -17,21 +19,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.GrayFilter;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JToggleButton;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.clt.diamant.Preferences;
 import com.clt.diamant.Resources;
+import com.clt.diamant.graph.ui.GraphUI;
 import com.clt.gui.Buttons;
 import com.clt.gui.GUI;
 import com.clt.gui.Images;
@@ -98,22 +92,27 @@ public class DefaultToolbox
 
         this.initIcons();
 
-        AbstractButton tools[] = this.addOptionGroup(this.currentTool, new Tool[]{
-            new Tool("Selection", DefaultToolbox.ANCHOR, "toolbar/T_Arrow.png"),
-            new Tool("Scroll", DefaultToolbox.HAND, "toolbar/T_Hand.png"),
-            new Tool("Delete", DefaultToolbox.DELETE, "toolbar/T_Delete.png")});
+        this.addOptionGroup(this.currentTool, new Tool[]{
+            new Tool("Selection", DefaultToolbox.ANCHOR, "toolbar/T_Arrow.png",KeyEvent.VK_1),
+            new Tool("Scroll", DefaultToolbox.HAND, "toolbar/T_Hand.png", KeyEvent.VK_2),
+            new Tool("Delete", DefaultToolbox.DELETE, "toolbar/T_Delete.png", KeyEvent.VK_3)});
         this.addSeparator();
 
         if (commander != null) {
             this.addActionButtons(new Tool[]{
-                new Tool("Run", SingleDocumentWindow.cmdRun, "toolbar/T_Run.png"),
-                new Tool("Debug", SingleDocumentWindow.cmdDebug, "toolbar/T_Debug.png"),
-                new Tool("Woz", SingleDocumentWindow.cmdWoz, "toolbar/T_Woz.png")});
+                new Tool("Run", SingleDocumentWindow.cmdRun, "toolbar/T_Run.png", KeyEvent.VK_F5),
+                new Tool("Debug", SingleDocumentWindow.cmdDebug, "toolbar/T_Debug.png", KeyEvent.VK_F6),
+                new Tool("Woz", SingleDocumentWindow.cmdWoz, "toolbar/T_Woz.png", KeyEvent.VK_F7)});
         }
 
         this.addSeparator();
 
-        this.addToggleButton(Preferences.getPrefs().showGrid, "toolbar/T_Grid.png");
+        //this.addToggleButton(Preferences.getPrefs().showGrid, "toolbar/T_Grid.png");
+
+        this.addToggleButtons(new Tool[]{
+                new Tool("Grid", SingleDocumentWindow.cmdEnableGrid, "toolbar/T_Grid.png", KeyEvent.VK_G),
+                new Tool("Snapping", SingleDocumentWindow.cmdEnableSnapping, "toolbar/T_Snap.png", KeyEvent.VK_H),
+        });
 
         this.currentTool.addChangeListener(new ChangeListener() {
 
@@ -192,6 +191,10 @@ public class DefaultToolbox
                 DefaultToolbox.this.commander.doCommand(value);
             }
         }, null);
+    }
+
+    private AbstractButton[] addToggleButtons(Tool tools[]){
+        return this.addButtonGroup(tools, true,  (value) -> DefaultToolbox.this.commander.doCommand(value), null);
     }
 
     private AbstractButton addToggleButton(final BooleanProperty p, String icon) {
@@ -345,6 +348,7 @@ public class DefaultToolbox
             final AbstractButton b = groupButtons[i];
             this.setIcons(b, i, groupButtons.length, tool.getIcon(), width, height);
 
+
             b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if (b.isSelected() && (groupButtons.length == 1)) {
@@ -354,6 +358,17 @@ public class DefaultToolbox
                     }
                 }
             });
+
+            if(tool.getKey() > 0) {
+                GUI.setKeyBinding(this, KeyStroke.getKeyStroke(tool.getKey(), 0), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        b.doClick();
+                    }
+                });
+                b.setToolTipText(KeyEvent.getKeyText(tool.getKey()));
+            }
+
 
             this.add(b);
         }
@@ -491,9 +506,21 @@ public class DefaultToolbox
         private int value;
         private ImageIcon icon;
 
+        private int key;
+
         private Collection<PropertyChangeListener> listeners = new LinkedList<PropertyChangeListener>();
 
         public Tool(String name, int value, Object newIcon) {
+            init(name,value,newIcon);
+            this.key = -1;
+        }
+
+        public Tool(String name, int value, Object newIcon, int key) {
+            init(name,value,newIcon);
+            this.key = key;
+        }
+
+        private void init(String name, int value, Object newIcon){
             this.toolName = name;
             this.enabled = true;
             this.description = Resources.getString(name);
@@ -520,7 +547,6 @@ public class DefaultToolbox
         }
 
         public int getValue() {
-
             return this.value;
         }
 
@@ -549,6 +575,9 @@ public class DefaultToolbox
         public ImageIcon getIcon() {
 
             return this.icon;
+        }
+        public int getKey() {
+            return this.key;
         }
 
         public boolean isEnabled() {
