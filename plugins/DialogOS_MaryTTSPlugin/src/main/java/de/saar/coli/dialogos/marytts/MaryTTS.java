@@ -247,7 +247,7 @@ public class MaryTTS
   * it will lock the resources, ie: further audioplayers won't be
   * able to reproduce audio until the first one is finished.
   * */
-  private void speakMaryXML(Document xml, boolean waitUntilDone){
+  private void speakMaryXML(Document xml, boolean waitUntilDone) {
     try {
       audioPlayer = new AudioPlayer();
       AudioInputStream audioIS = mary.generateAudio(xml);
