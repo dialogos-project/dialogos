@@ -2,14 +2,10 @@ package com.clt.script;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+
+import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
@@ -62,6 +58,13 @@ public class UndoRedoTextComponent extends JPanel {
     public UndoRedoTextComponent(final JTextComponent textComponent) {
 
         this.mTextComponent = textComponent;
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent componentEvent) {
+                super.componentResized(componentEvent);
+                mTextComponent.setSize(getWidth()-100,mTextComponent.getHeight());
+            }
+        });
         this.mJsp = new EditorScrollPane(this.getTextComponent());
 
         this.setLayout(new BorderLayout());
@@ -69,6 +72,10 @@ public class UndoRedoTextComponent extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         this.mUndo.setEnabled(false);
         this.mRedo.setEnabled(false);
+        GUI.setKeyBinding(this, KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), e -> mUndo.doClick());
+        GUI.setKeyBinding(this, KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_MASK), e -> mRedo.doClick());
+        this.mUndo.setToolTipText(GUI.getString("CtrlZ"));
+        this.mRedo.setToolTipText(GUI.getString("CtrlShiftZ"));
         buttonPanel.add(this.mUndo);
         buttonPanel.add(this.mRedo);
 
